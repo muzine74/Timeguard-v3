@@ -1,0 +1,198 @@
+<div class="toast" [class.toast-show]="saved()" [class.toast-error]="saveSvc.isError()">{{ toast }}</div>
+<div class="progress-bar" *ngIf="isSaving()">
+  <div class="progress-fill" [style.width.%]="progress()"></div>
+</div>
+
+<div class="page-layout">
+
+  <aside class="sidebar">
+    <div class="sidebar-hdr">
+      <span class="sidebar-title">Employés</span>
+      <a routerLink="/employee-form" class="btn-add" *ngIf="auth.isAdmin()" title="Ajouter">+</a>
+    </div>
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-inp" placeholder="Rechercher..."
+             [value]="searchQuery()" (input)="onSearch($event)" />
+    </div>
+
+    <div class="emp-list" *ngIf="!loadingList(); else listSkeleton">
+      <div *ngFor="let emp of filteredEmployees"
+           class="emp-item"
+           [class.active]="emp.id === selectedId()"
+           (click)="selectEmployee(emp.id)">
+        <div class="emp-avatar" [class.inactive]="emp.status === 'inactive'">{{ initials(emp) }}</div>
+        <div class="emp-meta">
+          <span class="emp-name">{{ emp.firstName }} {{ emp.lastName }}</span>
+          <span class="emp-dept">{{ emp.department }}</span>
+        </div>
+        <span class="status-dot" [class.active-dot]="emp.status === 'active'"></span>
+      </div>
+      <p class="empty-list" *ngIf="filteredEmployees.length === 0">Aucun résultat</p>
+    </div>
+
+    <ng-template #listSkeleton>
+      <div class="skeleton-list">
+        <div class="skeleton-item" *ngFor="let i of [1,2,3,4,5]"></div>
+      </div>
+    </ng-template>
+  </aside>
+
+  <div class="content" *ngIf="selected(); else noSelection">
+
+    <div class="profile-card">
+      <div class="profile-hdr">
+        <div class="profile-avatar">{{ initials(selected()!) }}</div>
+        <div class="profile-info">
+          <h2 class="profile-name">{{ selected()!.firstName }} {{ selected()!.lastName }}</h2>
+          <p class="profile-pos">{{ selected()!.position }} · {{ selected()!.department }}</p>
+          <p class="profile-email">✉ {{ selected()!.email }}</p>
+        </div>
+        <div class="profile-actions">
+          <span class="status-badge"
+                [class.active-badge]="selected()!.status === 'active'"
+                [class.inactive-badge]="selected()!.status === 'inactive'">
+            {{ selected()!.status === 'active' ? '● Actif' : '○ Inactif' }}
+          </span>
+          <button class="btn-save" (click)="save()" [disabled]="isSaving()">
+            <span class="spinner" *ngIf="isSaving()"></span>
+            <span *ngIf="!isSaving()">💾 Sauvegarder</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <app-stats-bar></app-stats-bar>
+
+    <section class="section">
+      <app-section-header mode="employee" icon="👤"
+        title="Pointage Employé" subtitle="Présences hebdomadaires par compagnie">
+        <app-date-picker (weekChange)="onWeekChange()"></app-date-picker>
+        <button class="btn-ghost" (click)="ptEmpSvc.selectAll(weekSvc.weekDays())">Tout ✓</button>
+        <button class="btn-ghost" (click)="ptEmpSvc.clearAll()">Effacer</button>
+      </app-section-header>
+      <app-pointage-table mode="employee"></app-pointage-table>
+    </section>
+
+    <section class="section">
+      <app-section-header mode="admin" icon="🛡"
+        title="Validé par Admin" subtitle="Validation administrative">
+        <span class="badge-div" *ngIf="admSvc.divergences() > 0">
+          {{ admSvc.divergences() }} non validé{{ admSvc.divergences() > 1 ? 's' : '' }}
+        </span>
+        <button class="btn-ghost" (click)="admSvc.copyFromEmployee()">Copier depuis employé</button>
+        <button class="btn-danger-sm" (click)="admSvc.clearAll()">Réinitialiser</button>
+      </app-section-header>
+      <app-pointage-table mode="admin"></app-pointage-table>
+    </section>
+
+    <section class="section" *ngIf="!loadingDetail()">
+      <app-section-header mode="employee" icon="📅"
+        title="Historique mensuel" subtitle="Pointages individuels enregistrés">
+        <input type="month" class="month-input"
+               [(ngModel)]="selectedMonth" (ngModelChange)="reloadPointage()" />
+        <button class="btn-add-entry" (click)="openAddModal()" *ngIf="auth.isAdmin()">+ Ajouter</button>
+      </app-section-header>
+
+      <div class="monthly-stats" *ngIf="stats()">
+        <div class="mstat"><span class="mval">{{ stats()!.presentDays }}</span><span class="mlbl">Présents</span></div>
+        <div class="mstat mstat-absent"><span class="mval">{{ stats()!.absentDays }}</span><span class="mlbl">Absents</span></div>
+        <div class="mstat mstat-late"><span class="mval">{{ stats()!.lateDays }}</span><span class="mlbl">Retards</span></div>
+        <div class="mstat mstat-hours"><span class="mval">{{ stats()!.totalHours | number:'1.0-0' }}h</span><span class="mlbl">Total heures</span></div>
+      </div>
+
+      <div class="hist-table-wrap">
+        <table class="hist-table" *ngIf="workDates().length; else emptyHist">
+          <thead>
+            <tr>
+              <th>Date</th><th>Arrivée</th><th>Départ</th><th>Durée</th>
+              <th>Statut</th><th>Note</th><th *ngIf="auth.isAdmin()">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let w of workDates()">
+              <td class="td-date">{{ w.date | date:'dd/MM/yyyy' }}</td>
+              <td>{{ w.checkIn }}</td>
+              <td>{{ w.checkOut ?? '—' }}</td>
+              <td>{{ w.totalHours ? (w.totalHours | number:'1.0-1') + 'h' : '—' }}</td>
+              <td><span class="status-pill" [ngClass]="statusClass(w.status)">{{ statusLabel(w.status) }}</span></td>
+              <td class="td-note">{{ w.note || '—' }}</td>
+              <td *ngIf="auth.isAdmin()" class="td-actions">
+                <button class="action-btn edit" (click)="openEditModal(w)">✏</button>
+                <button class="action-btn del"  (click)="deleteEntry(w.id)">✕</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <ng-template #emptyHist>
+          <div class="empty-hist">📅 Aucun pointage pour cette période</div>
+        </ng-template>
+      </div>
+    </section>
+
+    <app-loading-spinner *ngIf="loadingDetail()" message="Chargement..."></app-loading-spinner>
+  </div>
+
+  <ng-template #noSelection>
+    <div class="no-selection">
+      <span class="no-sel-icon">👈</span>
+      <h3>Sélectionnez un employé</h3>
+      <p>Choisissez un employé dans la liste pour afficher ses données.</p>
+    </div>
+  </ng-template>
+
+</div>
+
+<div class="modal-overlay" *ngIf="showModal()" (click)="closeModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-hdr">
+      <h3>{{ editingEntry() ? 'Modifier le pointage' : 'Ajouter un pointage' }}</h3>
+      <button class="modal-close" (click)="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="mfield">
+        <label>Date</label>
+        <input type="date" class="minp"
+               [value]="modalForm().date"
+               (change)="onModalDate($event)" />
+      </div>
+      <div class="mrow">
+        <div class="mfield">
+          <label>Arrivée</label>
+          <input type="time" class="minp"
+                 [value]="modalForm().checkIn"
+                 (change)="onModalCheckIn($event)" />
+        </div>
+        <div class="mfield">
+          <label>Départ</label>
+          <input type="time" class="minp"
+                 [value]="modalForm().checkOut ?? ''"
+                 (change)="onModalCheckOut($event)" />
+        </div>
+      </div>
+      <div class="mfield">
+        <label>Statut</label>
+        <select class="minp"
+                [value]="modalForm().status"
+                (change)="onModalStatus($event)">
+          <option value="present">Présent</option>
+          <option value="absent">Absent</option>
+          <option value="late">Retard</option>
+          <option value="half-day">Mi-journée</option>
+        </select>
+      </div>
+      <div class="mfield">
+        <label>Note</label>
+        <input type="text" class="minp" placeholder="Optionnel..."
+               [value]="modalForm().note ?? ''"
+               (input)="onModalNote($event)" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeModal()">Annuler</button>
+      <button class="btn-save-modal" (click)="saveEntry()">
+        {{ editingEntry() ? '💾 Enregistrer' : '+ Ajouter' }}
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,48 @@
+<div class="form-card">
+  <div class="form-header">
+    <div class="form-icon">👤</div>
+    <div class="form-titles">
+      <div class="form-title">Informations Employé</div>
+      <div class="form-sub">Identifiants, coordonnées et informations personnelles</div>
+    </div>
+    <div class="form-actions">
+      <button *ngIf="editMode()" class="btn-cancel" (click)="cancelEdit()">✕ Annuler</button>
+      <button class="btn-edit" [class.active]="editMode()" (click)="toggleEdit()">
+        {{ editMode() ? '✓ Terminer' : '✏ Modifier' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="form-body">
+    <div class="fields-grid">
+      <div *ngFor="let f of fields" class="field-row" [class.span-full]="f.span">
+        <label>{{ f.label }}</label>
+        <div class="input-wrap" [class.nas-wrap]="f.nas">
+          <span class="input-icon">{{ f.icon }}</span>
+
+          <input *ngIf="editMode()"
+                 [value]="get(f.key)"
+                 (input)="update(f.key, $any($event.target).value)"
+                 [placeholder]="f.placeholder"
+                 maxlength="11"
+                 class="inp" [class.inp-nas]="f.nas" />
+
+          <div *ngIf="!editMode()" class="readonly-val">
+            <ng-container *ngIf="f.nas && get(f.key); else normalVal">
+              <span class="nas-mask">●●● ●●● ●●●</span>
+              <span class="badge-masked">Masqué</span>
+            </ng-container>
+            <ng-template #normalVal>
+              <span *ngIf="get(f.key); else emptyVal">{{ get(f.key) }}</span>
+              <ng-template #emptyVal><span class="placeholder-text">{{ f.placeholder }}</span></ng-template>
+            </ng-template>
+          </div>
+          <span *ngIf="f.nas && editMode()" class="badge-conf">Confidentiel</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider-v"></div>
+    <app-date-picker (weekChange)="onWeekChange($event)"></app-date-picker>
+  </div>
+</div>

@@ -1,0 +1,55 @@
+<div class="login-page">
+  <div class="login-card">
+
+    <div class="brand">
+      <span class="dot"></span>
+      <span class="brand-name">TimeGuard</span>
+      <span class="brand-ver">v2.0</span>
+    </div>
+
+    <div class="card-header">
+      <h1 class="card-title">Connexion</h1>
+      <p class="card-sub">Gestion des présences et pointages</p>
+    </div>
+
+    <form class="form" (ngSubmit)="submit()">
+
+      <div class="field">
+        <label class="flabel">Identifiant</label>
+        <div class="input-wrap">
+          <span class="field-icon">👤</span>
+          <input type="text" class="inp" placeholder="Nom d'utilisateur"
+                 [(ngModel)]="username" name="username"
+                 autocomplete="username" [disabled]="loading()" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="flabel">Mot de passe</label>
+        <div class="input-wrap">
+          <span class="field-icon">🔒</span>
+          <input [type]="showPw() ? 'text' : 'password'"
+                 class="inp" placeholder="••••••••"
+                 [(ngModel)]="password" name="password"
+                 autocomplete="current-password" [disabled]="loading()" />
+          <button type="button" class="toggle-pw" (click)="togglePw()">
+            {{ showPw() ? '🙈' : '👁' }}
+          </button>
+        </div>
+      </div>
+
+      <div class="error-banner" *ngIf="error()">
+        ⚠ {{ error() }}
+      </div>
+
+      <button type="submit" class="btn-login" [disabled]="loading()">
+        <span class="spinner" *ngIf="loading()"></span>
+        <span *ngIf="!loading()">→ Se connecter</span>
+        <span *ngIf="loading()">Connexion...</span>
+      </button>
+
+    </form>
+
+    <p class="hint">Sans API : entrez n'importe quels identifiants</p>
+  </div>
+</div>

@@ -1,0 +1,71 @@
+<!-- Toast global -->
+<div class="toast" [class.toast-show]="saved()" [class.toast-error]="saveSvc.isError()">
+  {{ toast }}
+</div>
+
+<!-- Barre de progression pendant la sauvegarde -->
+<div class="progress-bar" *ngIf="isSaving()">
+  <div class="progress-fill" [style.width.%]="progress()"></div>
+</div>
+
+<main class="main">
+
+  <!-- En-tête de page -->
+  <header class="page-hdr">
+    <div>
+      <h1 class="page-title">Pointage Employé</h1>
+      <p class="page-sub">Gestion hebdomadaire des présences par compagnie</p>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-outline">↓ Exporter</button>
+      <button class="btn btn-primary"
+              [disabled]="isSaving()"
+              (click)="save()">
+        <span *ngIf="!isSaving()">💾 Sauvegarder</span>
+        <span *ngIf="isSaving()" class="spinner"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Bloc 1 : Informations Employé + date picker intégré -->
+  <!-- weekChange recharge les pointages depuis l'API -->
+  <app-employee-form (weekChange)="onWeekChange()"></app-employee-form>
+
+  <!-- Bloc 2 : Statistiques dynamiques -->
+  <app-stats-bar></app-stats-bar>
+
+  <!-- Bloc 3 : Pointage Employé -->
+  <section class="section">
+    <app-section-header
+      mode="employee"
+      icon="👤"
+      title="Pointage Employé"
+      subtitle="Cochez les jours de présence par compagnie">
+      <button class="btn btn-sm btn-ghost"
+              (click)="ptEmpSvc.selectAll(weekSvc.weekDays())">Tout ✓</button>
+      <button class="btn btn-sm btn-ghost"
+              (click)="ptEmpSvc.clearAll()">Effacer</button>
+    </app-section-header>
+    <app-pointage-table mode="employee"></app-pointage-table>
+  </section>
+
+  <!-- Bloc 4 : Pointage Admin -->
+  <section class="section">
+    <app-section-header
+      mode="admin"
+      icon="🛡"
+      title="Pointage Validé par Admin"
+      subtitle="Validation administrative des présences">
+      <!-- Badge divergences -->
+      <span class="badge-div" *ngIf="admSvc.divergences() > 0">
+        {{ admSvc.divergences() }} non validé{{ admSvc.divergences() > 1 ? 's' : '' }}
+      </span>
+      <button class="btn btn-sm btn-ghost"
+              (click)="admSvc.copyFromEmployee()">Copier depuis employé</button>
+      <button class="btn btn-sm btn-danger"
+              (click)="admSvc.clearAll()">Réinitialiser</button>
+    </app-section-header>
+    <app-pointage-table mode="admin"></app-pointage-table>
+  </section>
+
+</main>

@@ -1,0 +1,53 @@
+<div class="table-scroll">
+  <table class="ptable">
+    <thead>
+      <tr>
+        <th class="th-arrow"></th>
+        <th class="th-comp">Compagnie</th>
+        <th class="th-total">Total</th>
+        <th *ngFor="let day of weekDays; trackBy: trackByKey"
+            class="th-day"
+            [class.th-today]="day.isToday"
+            [class.th-weekend]="day.isWeekend">
+          <span class="day-label-full">{{ day.labelFull }}</span>
+          <span class="day-label-short">{{ day.labelShort }}</span>
+          <span *ngIf="day.isToday" class="today-badge">Auj.</span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let c of compagnies; let odd = odd; trackBy: trackById"
+          class="row"
+          [class.row-sel]="c.selected"
+          [class.row-odd]="odd"
+          (click)="select(c)">
+        <td class="td-arrow">
+          <span *ngIf="c.selected">▶</span>
+        </td>
+        <td class="td-comp">
+          <div class="comp-name">
+            <div class="comp-dot" [class.dot-sel]="c.selected"></div>
+            {{ c.nom }}
+          </div>
+        </td>
+        <td class="td-total">
+          <span class="total-badge" [class.total-nz]="count(c) > 0">
+            {{ count(c) }}/7
+          </span>
+        </td>
+        <td *ngFor="let day of weekDays; trackBy: trackByKey"
+            class="td-check"
+            [class.td-today]="day.isToday"
+            [class.td-weekend]="day.isWeekend"
+            (click)="toggle(c, day.dateKey, $event)">
+          <button class="chk"
+                  [class.chk-on]="isChecked(c, day.dateKey)"
+                  [class.chk-admin]="isAdmin"
+                  type="button">
+            <span *ngIf="isChecked(c, day.dateKey)">✓</span>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
