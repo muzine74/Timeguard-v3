@@ -1,4 +1,4 @@
-import { Injectable, signal, computed, Optional } from '@angular/core';
+import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Compagnie, WeekDay, SavePayload } from '../../models';
 
@@ -28,9 +28,9 @@ export class WeekService {
     return `Semaine du ${d[0].labelFull} au ${d[6].labelFull}`;
   });
 
-  setDate(d: Date):        void { this._anchor.set(this._monday(d)); }
-  shift(days: number):     void { const d = new Date(this._anchor()); d.setDate(d.getDate()+days); this._anchor.set(this._monday(d)); }
-  goToday():               void { this._anchor.set(this._monday(new Date())); }
+  setDate(d: Date):    void { this._anchor.set(this._monday(d)); }
+  shift(days: number): void { const d = new Date(this._anchor()); d.setDate(d.getDate()+days); this._anchor.set(this._monday(d)); }
+  goToday():           void { this._anchor.set(this._monday(new Date())); }
 
   private _monday(d: Date): Date {
     const c = new Date(d); c.setHours(0,0,0,0);
@@ -50,8 +50,12 @@ export class WeekService {
 // ── PointageEmployeeService ────────────────────────────────────────────────────
 @Injectable({ providedIn: 'root' })
 export class PointageEmployeeService {
-  private _compagnies = signal<Compagnie[]>([]);
-  private _loading    = signal(false);
+  private _compagnies  = signal<Compagnie[]>([]);
+  private _loading     = signal(false);
+
+  // Cache par semaine : weekKey → { compId → { dateKey → bool } }
+  private _cache       = new Map<string, Record<number, Record<string, boolean>>>();
+  private _currentWeek = '';
 
   readonly compagnies = this._compagnies.asReadonly();
   readonly isLoading  = this._loading.asReadonly();
@@ -59,12 +63,29 @@ export class PointageEmployeeService {
   constructor(private http: HttpClient) {}
 
   load(weekKey: string): void {
+    // Sauvegarder la semaine courante avant de changer
+    if (this._currentWeek && this._currentWeek !== weekKey) {
+      this._cache.set(this._currentWeek, this.snapshot());
+    }
+    this._currentWeek = weekKey;
+
+    // Restaurer depuis le cache si disponible
+    const cached = this._cache.get(weekKey);
+    if (cached) {
+      this._compagnies.update(l => l.map(c => ({
+        ...c, pointages: cached[c.id] ?? {}
+      })));
+      return;
+    }
+
     this._loading.set(true);
     this.http.get<{ compagnies: Compagnie[]; pointages: Record<number, Record<string, boolean>> }>(
       `/api/pointage/employee?week=${weekKey}`
     ).subscribe({
       next: d => {
-        this._compagnies.set(d.compagnies.map(c => ({ ...c, pointages: d.pointages[c.id] ?? {}, selected: false })));
+        this._compagnies.set(d.compagnies.map(c => ({
+          ...c, pointages: d.pointages[c.id] ?? {}, selected: false
+        })));
         this._loading.set(false);
       },
       error: () => { this._compagnies.set(this._demo()); this._loading.set(false); }
@@ -75,11 +96,23 @@ export class PointageEmployeeService {
     this._compagnies.update(l => l.map(c => c.id !== compId ? c : {
       ...c, pointages: { ...c.pointages, [dateKey]: !c.pointages?.[dateKey] }
     }));
+    if (this._currentWeek) this._cache.set(this._currentWeek, this.snapshot());
   }
+
   selectAll(days: WeekDay[]): void {
-    this._compagnies.update(l => l.map(c => ({ ...c, pointages: Object.fromEntries(days.map(d => [d.dateKey, true])) })));
+    this._compagnies.update(l => l.map(c => ({
+      ...c, pointages: Object.fromEntries(days.map(d => [d.dateKey, true]))
+    })));
+    if (this._currentWeek) this._cache.set(this._currentWeek, this.snapshot());
   }
-  clearAll(): void { this._compagnies.update(l => l.map(c => ({ ...c, pointages: {} }))); }
+
+  clearAll(): void {
+    this._compagnies.update(l => l.map(c => ({ ...c, pointages: {} })));
+    if (this._currentWeek) this._cache.set(this._currentWeek, this.snapshot());
+  }
+
+  clearCache(): void { this._cache.clear(); }
+
   isChecked(c: Compagnie, dk: string): boolean { return !!c.pointages?.[dk]; }
   count(c: Compagnie, days: WeekDay[]): number  { return days.filter(d => !!c.pointages?.[d.dateKey]).length; }
   total(days: WeekDay[]): number { return this._compagnies().reduce((s,c) => s + this.count(c,days), 0); }
@@ -123,7 +156,7 @@ export class PointageAdminService {
     this.http.get<{ pointages: Record<number, Record<string, boolean>> }>(
       `/api/pointage/admin?week=${weekKey}`
     ).subscribe({
-      next: d => this._compagnies.update(l => l.map(c => ({ ...c, pointages: d.pointages[c.id] ?? {} }))),
+      next:  d => this._compagnies.update(l => l.map(c => ({ ...c, pointages: d.pointages[c.id] ?? {} }))),
       error: () => this.syncFromEmployee()
     });
   }
@@ -137,12 +170,14 @@ export class PointageAdminService {
       ...c, pointages: { ...c.pointages, [dk]: !c.pointages?.[dk] }
     }));
   }
+
   copyFromEmployee(): void {
     this._compagnies.update(l => l.map(c => {
       const e = this._emp.compagnies().find(x => x.id === c.id);
       return e ? { ...c, pointages: { ...e.pointages } } : c;
     }));
   }
+
   clearAll(): void { this._compagnies.update(l => l.map(c => ({ ...c, pointages: {} }))); }
   isChecked(c: Compagnie, dk: string): boolean { return !!c.pointages?.[dk]; }
   count(c: Compagnie, days: WeekDay[]): number  { return days.filter(d => !!c.pointages?.[d.dateKey]).length; }
@@ -176,10 +211,10 @@ export class SaveStateService {
   });
 
   constructor(
-    private http:    HttpClient,
-    private _week:   WeekService,
-    private _ptEmp:  PointageEmployeeService,
-    private _ptAdm:  PointageAdminService,
+    private http:   HttpClient,
+    private _week:  WeekService,
+    private _ptEmp: PointageEmployeeService,
+    private _ptAdm: PointageAdminService,
   ) {}
 
   async save(): Promise<boolean> {
@@ -197,7 +232,6 @@ export class SaveStateService {
       this._saving.set(false); this._progress.set(0);
       return true;
     } catch {
-      // Fallback OK si pas d'API
       this._progress.set(100);
       await new Promise(r => setTimeout(r, 400));
       this._saving.set(false); this._progress.set(0); this._error.set(false);
