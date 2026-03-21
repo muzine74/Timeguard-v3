@@ -1,19 +1,28 @@
 <div class="dp">
+
   <div class="dp-label">Journée cible</div>
+
+  <div class="dp-sep"></div>
 
   <div class="dp-display">
     <div class="dp-dayname">{{ dayName }}</div>
     <div class="dp-full">{{ d.getDate() }} {{ monthName }} {{ d.getFullYear() }}</div>
   </div>
 
+  <div class="dp-sep"></div>
+
   <div class="dp-selects">
     <input class="dp-num" type="number"
            [value]="d.getDate()" min="1" max="31"
            (change)="setDay(+$any($event.target).value)" />
-    <select class="dp-select" [value]="d.getMonth()"
+
+    <select class="dp-select"
             (change)="setMonth(+$any($event.target).value)">
-      <option *ngFor="let m of months; let i = index" [value]="i">{{ m }}</option>
+      <option *ngFor="let m of months; let i = index"
+              [value]="i"
+              [selected]="i === d.getMonth()">{{ m }}</option>
     </select>
+
     <input class="dp-num dp-year" type="number"
            [value]="d.getFullYear()" min="2020" max="2040"
            (change)="setYear(+$any($event.target).value)" />
@@ -22,6 +31,7 @@
   <div class="dp-nav">
     <button class="dp-btn" (click)="prevWeek()">◀</button>
     <button class="dp-btn dp-today" (click)="today()">Aujourd'hui</button>
-    <button class="dp-btn" (click)="nextWeek()">▶</button>
+    <button class="dp-btn" (click)="nextWeek()" [disabled]="isCurrentWeek" [class.dp-disabled]="isCurrentWeek">▶</button>
   </div>
+
 </div>

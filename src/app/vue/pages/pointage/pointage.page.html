@@ -1,5 +1,5 @@
 <!-- Toast global -->
-<div class="toast" [class.toast-show]="saved()" [class.toast-error]="saveSvc.isError()">
+<div class="toast" [class.toast-show]="saved()" [class.toast-error]="isError()">
   {{ toast }}
 </div>
 
@@ -29,7 +29,11 @@
 
   <!-- Bloc 1 : Informations Employé + date picker intégré -->
   <!-- weekChange recharge les pointages depuis l'API -->
-  <app-employee-form (weekChange)="onWeekChange()"></app-employee-form>
+  <app-employee-form
+    [employee]="employee()"
+    (weekChange)="onWeekChange()"
+    (employeeChange)="onEmployeeChange($event)">
+  </app-employee-form>
 
   <!-- Bloc 2 : Statistiques dynamiques -->
   <app-stats-bar></app-stats-bar>

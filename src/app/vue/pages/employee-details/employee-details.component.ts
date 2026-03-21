@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, effect, Injector, Signal } from '@angular/core';
+import { Component, OnInit, signal, effect, Injector, Signal, isDevMode } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -16,7 +16,7 @@ import { LoadingSpinnerComponent } from '../../components/loading-spinner/loadin
   selector: 'app-employee-details',
   standalone: true,
   imports: [
-    CommonModule, FormsModule, RouterLink,
+    CommonModule, FormsModule,
     SectionHeaderComponent, StatsBarComponent, DatePickerComponent,
     PointageTableComponent, LoadingSpinnerComponent,
   ],
@@ -30,7 +30,7 @@ export class EmployeeDetailsComponent implements OnInit {
   stats         = signal<WorkStats | null>(null);
   loadingList   = signal(true);
   loadingDetail = signal(false);
-  selectedId    = signal<number | null>(null);
+  selectedId    = signal<string | null>(null);
   searchQuery   = signal('');
   selectedMonth = '';
 
@@ -42,6 +42,10 @@ export class EmployeeDetailsComponent implements OnInit {
   progress!: Signal<number>;
   saved = signal(false);
   toast = '';
+
+  private get _dev(): boolean { return isDevMode(); }
+  private log(...a: unknown[])  { if (this._dev) console.log('[EmployeeDetails]', ...a); }
+  private warn(...a: unknown[]) { if (this._dev) console.warn('[EmployeeDetails]', ...a); }
 
   constructor(
     public  auth:     AuthService,
@@ -59,75 +63,122 @@ export class EmployeeDetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.log('ngOnInit()');
     this.empSvc.loadList();
+
     effect(() => {
-      this.employees.set(this.empSvc.list());
-      this.loadingList.set(this.empSvc.loading());
+      const list = this.empSvc.list();
+      const loading = this.empSvc.loading();
+      this.employees.set(list);
+      this.loadingList.set(loading);
+      this.log(`liste employés: ${list.length} entrée(s), loading=${loading}`);
     }, { injector: this.injector, allowSignalWrites: true });
 
     const id = this.route.snapshot.paramMap.get('id');
+    this.log(`id depuis route: ${id ?? 'aucun'}`);
+
     if (id) {
-      this.selectEmployee(+id);
+      this.selectEmployee(id);
     } else {
       effect(() => {
         const list = this.empSvc.list();
-        if (list.length && !this.selectedId()) this.selectEmployee(list[0].id);
+        if (list.length && !this.selectedId()) {
+          this.log(`auto-sélection premier employé: ${list[0].employeeId}`);
+          this.selectEmployee(list[0].employeeId);
+        }
       }, { injector: this.injector, allowSignalWrites: true });
     }
   }
 
-  selectEmployee(id: number): void {
+  selectEmployee(id: string): void {
+    this.log(`selectEmployee(${id})`);
     this.selectedId.set(id);
     this.loadingDetail.set(true);
     this.router.navigate(['/employees', id]);
+
     this.empSvc.getOne(id).subscribe({
-      next: emp => { this.selected.set(emp); this.loadingDetail.set(false); },
-      error: () => {
-        const found = this.employees().find(e => e.id === id);
-        if (found) this.selected.set(found);
+      next: emp => {
+        this.selected.set(emp);
+        this.loadingDetail.set(false);
+        this.log(`✓ employé chargé: ${emp.employeeName}`, emp);
+      },
+      error: err => {
+        this.warn(`✕ getOne(${id}) échoué — status: ${err.status}`, err.error);
+        const found = this.employees().find(e => e.employeeId === id);
+        if (found) {
+          this.warn('  → fallback sur donnée locale:', found.employeeName);
+          this.selected.set(found);
+        }
         this.loadingDetail.set(false);
       }
     });
+
     this._loadPointage(id);
-    this.ptEmpSvc.load(this.weekSvc.weekKey());
-    setTimeout(() => { this.admSvc.syncFromEmployee(); this.admSvc.load(this.weekSvc.weekKey()); }, 60);
+    const week = this.weekSvc.weekKey();
+    this.log(`chargement pointage semaine: ${week}`);
+    this.ptEmpSvc.load(week);
+    setTimeout(() => { this.admSvc.syncFromEmployee(); this.admSvc.load(week); }, 60);
   }
 
-  private _loadPointage(id: number = this.selectedId()!): void {
+  private _loadPointage(id: string = this.selectedId()!): void {
+    this.log(`_loadPointage(${id}, month="${this.selectedMonth || 'tous'}")`);
+
     this.empSvc.getWorkDates(id, this.selectedMonth).subscribe({
-      next: d => this.workDates.set(d),
-      error: () => this.workDates.set(this._demoWorkDates(id))
+      next: d => {
+        this.workDates.set(d);
+        this.log(`✓ workDates: ${d.length} entrée(s)`, d);
+      },
+      error: err => {
+        this.warn(`✕ getWorkDates échoué — status: ${err.status}`);
+        const demo = this._demoWorkDates(id);
+        this.warn(`  → fallback démo: ${demo.length} entrées`);
+        this.workDates.set(demo);
+      }
     });
+
     this.empSvc.getStats(id, this.selectedMonth).subscribe({
-      next: s => this.stats.set(s),
-      error: () => this.stats.set({ totalDays:22, presentDays:19, absentDays:2, lateDays:1, totalHours:152, averageHours:8 })
+      next: s => {
+        this.stats.set(s);
+        this.log(`✓ stats:`, s);
+      },
+      error: err => {
+        this.warn(`✕ getStats échoué — status: ${err.status}`);
+        const demo = { totalDays:22, presentDays:19, absentDays:2, lateDays:1, totalHours:152, averageHours:8 };
+        this.warn('  → fallback démo stats:', demo);
+        this.stats.set(demo);
+      }
     });
   }
 
-  reloadPointage(): void { this._loadPointage(); }
+  reloadPointage(): void {
+    this.log(`reloadPointage() — mois: "${this.selectedMonth || 'tous'}"`);
+    this._loadPointage();
+  }
 
   onWeekChange(): void {
+    const week = this.weekSvc.weekKey();
+    this.log(`onWeekChange() → semaine: ${week}`);
     if (this.selectedId()) this._loadPointage();
-    this.ptEmpSvc.load(this.weekSvc.weekKey());
-    setTimeout(() => { this.admSvc.syncFromEmployee(); this.admSvc.load(this.weekSvc.weekKey()); }, 60);
+    this.ptEmpSvc.load(week);
+    setTimeout(() => { this.admSvc.syncFromEmployee(); this.admSvc.load(week); }, 60);
   }
 
-  // ── Recherche ──────────────────────────────────────────
   onSearch(event: Event): void {
-    this.searchQuery.set((event.target as HTMLInputElement).value);
+    const q = (event.target as HTMLInputElement).value;
+    this.searchQuery.set(q);
+    this.log(`recherche: "${q}" → ${this.filteredEmployees.length} résultat(s)`);
   }
 
   get filteredEmployees(): Employee[] {
     const q = this.searchQuery().toLowerCase();
     return q
-      ? this.employees().filter(e =>
-          `${e.firstName} ${e.lastName} ${e.department}`.toLowerCase().includes(q))
+      ? this.employees().filter(e => e.employeeName.toLowerCase().includes(q))
       : this.employees();
   }
 
-  // ── Helpers affichage ──────────────────────────────────
   initials(e: Employee): string {
-    return `${e.firstName[0] ?? '?'}${e.lastName[0] ?? '?'}`.toUpperCase();
+    const parts = e.employeeName.trim().split(' ');
+    return ((parts[0]?.[0] ?? '') + (parts[1]?.[0] ?? '')).toUpperCase() || '?';
   }
 
   statusLabel(s: WorkDate['status']): string {
@@ -138,17 +189,15 @@ export class EmployeeDetailsComponent implements OnInit {
     return { present:'badge-success', absent:'badge-danger', late:'badge-warning', 'half-day':'badge-info' }[s] ?? '';
   }
 
-  // ── Modal ──────────────────────────────────────────────
   openAddModal(): void {
+    this.log('openAddModal()');
     this.editingEntry.set(null);
-    this.modalForm.set({
-      date: new Date().toISOString().split('T')[0],
-      checkIn: '08:00', checkOut: '17:00', status: 'present'
-    });
+    this.modalForm.set({ date: new Date().toISOString().split('T')[0], checkIn:'08:00', checkOut:'17:00', status:'present' });
     this.showModal.set(true);
   }
 
   openEditModal(w: WorkDate): void {
+    this.log('openEditModal():', w);
     this.editingEntry.set(w);
     this.modalForm.set({ ...w });
     this.showModal.set(true);
@@ -156,47 +205,61 @@ export class EmployeeDetailsComponent implements OnInit {
 
   closeModal(): void { this.showModal.set(false); this.editingEntry.set(null); }
 
-  // Handlers dédiés — aucune expression lambda dans le HTML
-  onModalDate(event: Event):     void { this.modalForm.update(f => ({ ...f, date:     (event.target as HTMLInputElement).value })); }
-  onModalCheckIn(event: Event):  void { this.modalForm.update(f => ({ ...f, checkIn:  (event.target as HTMLInputElement).value })); }
-  onModalCheckOut(event: Event): void { this.modalForm.update(f => ({ ...f, checkOut: (event.target as HTMLInputElement).value })); }
-  onModalStatus(event: Event):   void { this.modalForm.update(f => ({ ...f, status:   (event.target as HTMLSelectElement).value as WorkDate['status'] })); }
-  onModalNote(event: Event):     void { this.modalForm.update(f => ({ ...f, note:     (event.target as HTMLInputElement).value })); }
+  onModalDate(e: Event):     void { this.modalForm.update(f => ({ ...f, date:     (e.target as HTMLInputElement).value })); }
+  onModalCheckIn(e: Event):  void { this.modalForm.update(f => ({ ...f, checkIn:  (e.target as HTMLInputElement).value })); }
+  onModalCheckOut(e: Event): void { this.modalForm.update(f => ({ ...f, checkOut: (e.target as HTMLInputElement).value })); }
+  onModalStatus(e: Event):   void { this.modalForm.update(f => ({ ...f, status:   (e.target as HTMLSelectElement).value as WorkDate['status'] })); }
+  onModalNote(e: Event):     void { this.modalForm.update(f => ({ ...f, note:     (e.target as HTMLInputElement).value })); }
 
   saveEntry(): void {
     const id = this.selectedId(); if (!id) return;
     const editing = this.editingEntry();
+    this.log(`saveEntry() — mode: ${editing ? 'update' : 'create'}`, this.modalForm());
+
     const obs = editing
       ? this.empSvc.updateWorkDate(id, editing.id, this.modalForm())
       : this.empSvc.addWorkDate(id, this.modalForm() as any);
+
     obs.subscribe({
-      next:  () => { this.closeModal(); this._loadPointage(); },
-      error: () => { this.closeModal(); this._loadPointage(); }
+      next: d => {
+        this.log('✓ saveEntry() réussi:', d);
+        this.closeModal();
+        this._loadPointage();
+      },
+      error: err => {
+        this.warn(`✕ saveEntry() échoué — status: ${err.status}`, err.error);
+        this.closeModal();
+        this._loadPointage();
+      }
     });
   }
 
   deleteEntry(wdId: number): void {
     const id = this.selectedId();
     if (!id || !confirm('Supprimer ce pointage ?')) return;
+    this.log(`deleteEntry(wdId=${wdId})`);
+
     this.empSvc.deleteWorkDate(id, wdId).subscribe({
-      next:  () => this._loadPointage(),
-      error: () => this._loadPointage()
+      next:  () => { this.log(`✓ deleteEntry(${wdId}) réussi`); this._loadPointage(); },
+      error: err => { this.warn(`✕ deleteEntry échoué — status: ${err.status}`); this._loadPointage(); }
     });
   }
 
   async save(): Promise<void> {
+    this.log('save() → saveSvc.save()');
     const ok = await this.saveSvc.save();
+    this.log(`save() résultat: ${ok ? '✓ succès' : '✕ échec'}`);
     this.toast = ok ? '✓ Sauvegardé avec succès' : '✕ Erreur lors de la sauvegarde';
     this.saved.set(true);
     setTimeout(() => this.saved.set(false), 3000);
   }
 
-  private _demoWorkDates(empId: number): WorkDate[] {
+  private _demoWorkDates(empId: string): WorkDate[] {
     const base = new Date(); base.setDate(1);
     return Array.from({ length: 5 }, (_, i) => {
       const d = new Date(base); d.setDate(i * 4 + 2);
       return {
-        id: i + 1, employeeId: empId,
+        id: i + 1, employeeId: 0,
         date: d.toISOString().split('T')[0],
         checkIn: '08:30', checkOut: '17:15', totalHours: 8.75,
         status: i === 2 ? 'late' : 'present',
