@@ -5,6 +5,7 @@ import { EmployeeFormComponent }  from '../../components/employee-form/employee-
 import { StatsBarComponent }      from '../../components/stats-bar/stats-bar.component';
 import { SectionHeaderComponent } from '../../components/section-header/section-header.component';
 import { PointageTableComponent } from '../../components/pointage-table/pointage-table.component';
+import { DatePickerComponent }     from '../../components/date-picker/date-picker.component';
 import { WeekService, PointageEmployeeService, PointageAdminService, SaveStateService } from '../../../state/pointage/pointage.service';
 import { PointageEmployeeDataService } from '../../../state/employees/Pointageemployeedata.service';
 import { AuthService } from '../../../state/auth/auth.service';
@@ -13,7 +14,14 @@ import { Employee } from '../../../models';
 @Component({
   selector: 'app-pointage-page',
   standalone: true,
-  imports: [CommonModule, EmployeeFormComponent, StatsBarComponent, SectionHeaderComponent, PointageTableComponent],
+  imports: [
+    CommonModule,
+    EmployeeFormComponent,
+    StatsBarComponent,
+    SectionHeaderComponent,
+    PointageTableComponent,
+    DatePickerComponent,
+  ],
   templateUrl: './pointage.page.html',
 })
 export class PointagePage implements OnInit {
@@ -52,12 +60,10 @@ export class PointagePage implements OnInit {
     this.log(`ID employé résolu: ${id}`);
     this.empData.loadById(id);
 
-    // Surveiller les changements de l'état empData
     effect(() => {
-      const emp   = this.empData.employee();
-      const load  = this.empData.loading();
-      const err   = this.empData.error();
-
+      const emp  = this.empData.employee();
+      const load = this.empData.loading();
+      const err  = this.empData.error();
       if (load) {
         this.log('empData: chargement en cours...');
       } else if (err) {
@@ -81,8 +87,6 @@ export class PointagePage implements OnInit {
     }, 50);
   }
 
-  // ── Résolution ID employé ─────────────────────────────
-  // Priorité : 1. query param  2. JWT  3. fallback démo
   private _resolveEmployeeId(): string {
     this.log('_resolveEmployeeId() — sources disponibles:');
     this.log('  query ?employeeId :', this.route.snapshot.queryParamMap.get('employeeId') ?? '(absent)');
