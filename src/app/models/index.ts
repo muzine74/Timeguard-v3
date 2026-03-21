@@ -1,25 +1,36 @@
 // ── Domaine Auth ──────────────────────────────────────────
 export interface User {
   username: string;
+  employeeId: string;
   role: 'ADMIN' | 'USER';
 }
 export interface LoginRequest  { username: string; password: string; }
-export interface LoginResponse { token: string; username: string; role: string; }
+export interface LoginResponse { token: string;EmployeeId: string, username: string; role: string; }
 
 // ── Domaine Employés ──────────────────────────────────────
 export interface Employee {
-  id:         number;
-  firstName:  string;
-  lastName:   string;
-  email:      string;
-  phone?:     string;
-  department: string;
-  position:   string;
-  status:     'active' | 'inactive';
-  hireDate:   string;
-  nas?:       string;
-  adresse?:   string;
-  note?:      string;
+  // ── Champs mappés depuis EmployeePoco ──
+  employeeId:   string;          // Guid
+  employeeName: string;          // EmployeeName
+  employeeMail: string;          // EmployeeMail
+  employeePhone?: string;        // EmployeePhone
+  employeeNote?:  string;        // EmployeeNote
+  nas?:           string;        // NAS (masqué)
+  // Adresse
+  employeeCivicNumber?: string;
+  employeeSuite?:       string;
+  employeeZipCode?:     string;
+  employeeCity?:        string;
+  employeeState?:       string;
+  employeeCountry?:     string;
+  employeeAdressNote?:  string;
+  // Compagnies liées
+  employeeCompagnies?:  EmployeeCompagnie[];
+}
+
+export interface EmployeeCompagnie {
+  compagnieId:   string;
+  compagnieName: string;
 }
 
 export interface WorkDate {
