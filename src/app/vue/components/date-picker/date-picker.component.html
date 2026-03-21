@@ -13,18 +13,19 @@
 
   <div class="dp-selects">
     <input class="dp-num" type="number"
-           [value]="d.getDate()" min="1" max="31"
+           [value]="d.getDate()" min="1" [max]="isCurrentWeek ? _currentWeekStart().getDate() : 31"
            (change)="setDay(+$any($event.target).value)" />
 
     <select class="dp-select"
-            (change)="setMonth(+$any($event.target).value)">
+            [(ngModel)]="currentMonth"
+            [disabled]="isCurrentWeek && currentMonth >= maxMonth">
       <option *ngFor="let m of months; let i = index"
               [value]="i"
-              [selected]="i === d.getMonth()">{{ m }}</option>
+              [disabled]="isMonthDisabled(i)">{{ m }}</option>
     </select>
 
     <input class="dp-num dp-year" type="number"
-           [value]="d.getFullYear()" min="2020" max="2040"
+           [value]="d.getFullYear()" min="2020" [max]="maxYear"
            (change)="setYear(+$any($event.target).value)" />
   </div>
 

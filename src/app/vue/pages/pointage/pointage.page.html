@@ -1,16 +1,10 @@
-<!-- Toast global -->
-<div class="toast" [class.toast-show]="saved()" [class.toast-error]="isError()">
-  {{ toast }}
-</div>
-
-<!-- Barre de progression pendant la sauvegarde -->
+<div class="toast" [class.toast-show]="saved()" [class.toast-error]="isError()">{{ toast }}</div>
 <div class="progress-bar" *ngIf="isSaving()">
   <div class="progress-fill" [style.width.%]="progress()"></div>
 </div>
 
 <main class="main">
 
-  <!-- En-tête de page -->
   <header class="page-hdr">
     <div>
       <h1 class="page-title">Pointage Employé</h1>
@@ -18,27 +12,23 @@
     </div>
     <div class="page-actions">
       <button class="btn btn-outline">↓ Exporter</button>
-      <button class="btn btn-primary"
-              [disabled]="isSaving()"
-              (click)="save()">
+      <button class="btn btn-primary" [disabled]="isSaving()" (click)="save()">
         <span *ngIf="!isSaving()">💾 Sauvegarder</span>
         <span *ngIf="isSaving()" class="spinner"></span>
       </button>
     </div>
   </header>
 
-  <!-- Bloc 1 : Informations Employé + date picker intégré -->
-  <!-- weekChange recharge les pointages depuis l'API -->
   <app-employee-form
     [employee]="employee()"
     (weekChange)="onWeekChange()"
     (employeeChange)="onEmployeeChange($event)">
   </app-employee-form>
 
-  <!-- Bloc 2 : Statistiques dynamiques -->
   <app-stats-bar></app-stats-bar>
 
-  <!-- Bloc 3 : Pointage Employé -->
+  <app-date-picker (weekChange)="onWeekChange()"></app-date-picker>
+
   <section class="section">
     <app-section-header
       mode="employee"
@@ -53,14 +43,12 @@
     <app-pointage-table mode="employee"></app-pointage-table>
   </section>
 
-  <!-- Bloc 4 : Pointage Admin -->
   <section class="section">
     <app-section-header
       mode="admin"
       icon="🛡"
       title="Pointage Validé par Admin"
       subtitle="Validation administrative des présences">
-      <!-- Badge divergences -->
       <span class="badge-div" *ngIf="admSvc.divergences() > 0">
         {{ admSvc.divergences() }} non validé{{ admSvc.divergences() > 1 ? 's' : '' }}
       </span>

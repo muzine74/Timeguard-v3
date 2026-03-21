@@ -8,7 +8,7 @@ import { AuthService } from 'src/app/state/auth/auth.service';
 @Component({
   selector: 'app-employee-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePickerComponent],
+  imports: [CommonModule, FormsModule],
   templateUrl: './employee-form.component.html',
   styleUrls:   ['./employee-form.component.scss'],
 })

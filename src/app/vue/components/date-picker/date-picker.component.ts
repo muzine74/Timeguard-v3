@@ -1,11 +1,12 @@
-import { Component, Output, EventEmitter, computed } from '@angular/core';
+import { Component, Output, EventEmitter, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { WeekService } from '../../../state/pointage/pointage.service';
 
 @Component({
   selector: 'app-date-picker',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './date-picker.component.html',
   styleUrls: ['./date-picker.component.scss'],
 })
@@ -16,6 +17,19 @@ export class DatePickerComponent {
             'Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
   days   = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
 
+  get currentMonth(): number { return this.d.getMonth(); }
+  set currentMonth(v: number) { this.setMonth(v); }
+
+  get maxMonth(): number { return this._currentWeekStart().getMonth(); }
+  get maxYear():  number { return this._currentWeekStart().getFullYear(); }
+
+  isMonthDisabled(month: number): boolean {
+    const d = this.d;
+    if (d.getFullYear() < this.maxYear) return false;
+    if (d.getFullYear() > this.maxYear) return true;
+    return month > this.maxMonth;
+  }
+
   constructor(public svc: WeekService) {}
 
   get d()         { return this.svc.anchor(); }
@@ -23,8 +37,8 @@ export class DatePickerComponent {
   get monthName() { return this.months[this.d.getMonth()]; }
   get weekLabel() { return this.svc.weekLabel(); }
 
-  // Lundi de la semaine courante (max autorisé)
-  private _currentWeekStart(): Date {
+  // Lundi de la semaine courante (max autorisé) — public pour le template
+  _currentWeekStart(): Date {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const day = today.getDay();
