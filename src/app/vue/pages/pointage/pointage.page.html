@@ -43,21 +43,4 @@
     <app-pointage-table mode="employee"></app-pointage-table>
   </section>
 
-  <section class="section">
-    <app-section-header
-      mode="admin"
-      icon="🛡"
-      title="Pointage Validé par Admin"
-      subtitle="Validation administrative des présences">
-      <span class="badge-div" *ngIf="admSvc.divergences() > 0">
-        {{ admSvc.divergences() }} non validé{{ admSvc.divergences() > 1 ? 's' : '' }}
-      </span>
-      <button class="btn btn-sm btn-ghost"
-              (click)="admSvc.copyFromEmployee()">Copier depuis employé</button>
-      <button class="btn btn-sm btn-danger"
-              (click)="admSvc.clearAll()">Réinitialiser</button>
-    </app-section-header>
-    <app-pointage-table mode="admin"></app-pointage-table>
-  </section>
-
 </main>

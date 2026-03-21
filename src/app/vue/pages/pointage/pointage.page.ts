@@ -5,8 +5,8 @@ import { EmployeeFormComponent }  from '../../components/employee-form/employee-
 import { StatsBarComponent }      from '../../components/stats-bar/stats-bar.component';
 import { SectionHeaderComponent } from '../../components/section-header/section-header.component';
 import { PointageTableComponent } from '../../components/pointage-table/pointage-table.component';
-import { DatePickerComponent }     from '../../components/date-picker/date-picker.component';
-import { WeekService, PointageEmployeeService, PointageAdminService, SaveStateService } from '../../../state/pointage/pointage.service';
+import { DatePickerComponent }    from '../../components/date-picker/date-picker.component';
+import { WeekService, PointageEmployeeService, SaveStateService } from '../../../state/pointage/pointage.service';
 import { PointageEmployeeDataService } from '../../../state/employees/Pointageemployeedata.service';
 import { AuthService } from '../../../state/auth/auth.service';
 import { Employee } from '../../../models';
@@ -43,7 +43,6 @@ export class PointagePage implements OnInit {
   constructor(
     public  weekSvc:  WeekService,
     public  ptEmpSvc: PointageEmployeeService,
-    public  admSvc:   PointageAdminService,
     public  saveSvc:  SaveStateService,
     public  empData:  PointageEmployeeDataService,
     private auth:     AuthService,
@@ -64,72 +63,45 @@ export class PointagePage implements OnInit {
       const emp  = this.empData.employee();
       const load = this.empData.loading();
       const err  = this.empData.error();
-      if (load) {
-        this.log('empData: chargement en cours...');
-      } else if (err) {
-        this.warn('empData: erreur →', err);
-      } else if (emp) {
-        this.log('empData: employé disponible →', emp.employeeName, `(${emp.employeeId})`);
-        this.log('empData: objet complet →', emp);
-      } else {
-        this.warn('empData: aucun employé chargé');
-      }
+      if (load)      { this.log('empData: chargement en cours...'); }
+      else if (err)  { this.warn('empData: erreur →', err); }
+      else if (emp)  { this.log('empData: employé →', emp.employeeName, `(${emp.employeeId})`); }
+      else           { this.warn('empData: aucun employé chargé'); }
     }, { injector: this.injector, allowSignalWrites: false });
 
     const week = this.weekSvc.weekKey();
     this.log(`semaine courante: ${week}`);
     this.ptEmpSvc.load(week);
-    setTimeout(() => {
-      this.admSvc.syncFromEmployee();
-      this.admSvc.load(week);
-      this.log(`compagnies emp: ${this.ptEmpSvc.compagnies().length}`);
-      this.log(`compagnies adm: ${this.admSvc.compagnies().length}`);
-    }, 50);
   }
 
   private _resolveEmployeeId(): string {
-    this.log('_resolveEmployeeId() — sources disponibles:');
-    this.log('  query ?employeeId :', this.route.snapshot.queryParamMap.get('employeeId') ?? '(absent)');
-    this.log('  JWT employeeId    :', this.auth.employeeId() ?? '(absent)');
-
     const fromQuery = this.route.snapshot.queryParamMap.get('employeeId');
-    if (fromQuery) {
-      this.log(`→ source: query param → ${fromQuery}`);
-      return fromQuery;
-    }
+    if (fromQuery) { this.log(`→ query param: ${fromQuery}`); return fromQuery; }
 
     const fromJwt = this.auth.employeeId();
-    if (fromJwt) {
-      this.log(`→ source: JWT → ${fromJwt}`);
-      return fromJwt;
-    }
+    if (fromJwt)  { this.log(`→ JWT: ${fromJwt}`); return fromJwt; }
 
     const fallback = '00000000-0000-0000-0000-000000000001';
-    this.warn(`→ source: fallback démo → ${fallback}`);
+    this.warn(`→ fallback démo: ${fallback}`);
     return fallback;
   }
 
   onWeekChange(): void {
     const week = this.weekSvc.weekKey();
-    this.log(`onWeekChange() → semaine: ${week}`);
+    this.log(`onWeekChange() → ${week}`);
     this.ptEmpSvc.load(week);
-    setTimeout(() => {
-      this.admSvc.syncFromEmployee();
-      this.admSvc.load(week);
-    }, 50);
   }
 
   onEmployeeChange(patch: Partial<Employee>): void {
-    this.log('onEmployeeChange() patch:', patch);
+    this.log('onEmployeeChange():', patch);
     this.empData.patch(patch);
   }
 
   async save(): Promise<void> {
-    this.log('save() → empData.save() + saveSvc.save()');
-    this.log('  employé courant:', this.empData.employee());
+    this.log('save()');
     this.empData.save();
     const ok = await this.saveSvc.save();
-    this.log(`save() résultat: ${ok ? '✓ succès' : '✕ échec'}`);
+    this.log(`save() → ${ok ? '✓' : '✕'}`);
     this.toast = ok ? '✓ Données sauvegardées' : '✕ Erreur lors de la sauvegarde';
     this.saved.set(true);
     setTimeout(() => this.saved.set(false), 3000);
