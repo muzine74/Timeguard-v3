@@ -8,7 +8,6 @@
   <aside class="sidebar">
     <div class="sidebar-hdr">
       <span class="sidebar-title">Employés</span>
-      <a routerLink="/employee-form" class="btn-add" *ngIf="auth.isAdmin()" title="Ajouter">+</a>
     </div>
     <div class="search-box">
       <span class="search-icon">🔍</span>
@@ -19,14 +18,14 @@
     <div class="emp-list" *ngIf="!loadingList(); else listSkeleton">
       <div *ngFor="let emp of filteredEmployees"
            class="emp-item"
-           [class.active]="emp.id === selectedId()"
-           (click)="selectEmployee(emp.id)">
-        <div class="emp-avatar" [class.inactive]="emp.status === 'inactive'">{{ initials(emp) }}</div>
+           [class.active]="emp.employeeId === selectedId()"
+           (click)="selectEmployee(emp.employeeId)">
+        <div class="emp-avatar">{{ initials(emp) }}</div>
         <div class="emp-meta">
-          <span class="emp-name">{{ emp.firstName }} {{ emp.lastName }}</span>
-          <span class="emp-dept">{{ emp.department }}</span>
+          <span class="emp-name">{{ emp.employeeName }}</span>
+          <span class="emp-dept">{{ emp.employeeMail }}</span>
         </div>
-        <span class="status-dot" [class.active-dot]="emp.status === 'active'"></span>
+        <span class="status-dot active-dot"></span>
       </div>
       <p class="empty-list" *ngIf="filteredEmployees.length === 0">Aucun résultat</p>
     </div>
@@ -44,16 +43,12 @@
       <div class="profile-hdr">
         <div class="profile-avatar">{{ initials(selected()!) }}</div>
         <div class="profile-info">
-          <h2 class="profile-name">{{ selected()!.firstName }} {{ selected()!.lastName }}</h2>
-          <p class="profile-pos">{{ selected()!.position }} · {{ selected()!.department }}</p>
-          <p class="profile-email">✉ {{ selected()!.email }}</p>
+          <h2 class="profile-name">{{ selected()!.employeeName }}</h2>
+          <p class="profile-pos">{{ selected()!.employeeCity }} · {{ selected()!.employeeState }}</p>
+          <p class="profile-email">✉ {{ selected()!.employeeMail }}</p>
         </div>
         <div class="profile-actions">
-          <span class="status-badge"
-                [class.active-badge]="selected()!.status === 'active'"
-                [class.inactive-badge]="selected()!.status === 'inactive'">
-            {{ selected()!.status === 'active' ? '● Actif' : '○ Inactif' }}
-          </span>
+          <span class="status-badge active-badge">● Actif</span>
           <button class="btn-save" (click)="save()" [disabled]="isSaving()">
             <span class="spinner" *ngIf="isSaving()"></span>
             <span *ngIf="!isSaving()">💾 Sauvegarder</span>
@@ -114,7 +109,7 @@
               <td class="td-date">{{ w.date | date:'dd/MM/yyyy' }}</td>
               <td>{{ w.checkIn }}</td>
               <td>{{ w.checkOut ?? '—' }}</td>
-              <td>{{ w.totalHours ? (w.totalHours | number:'1.0-1') + 'h' : '—' }}</td>
+              <td>{{ w.totalHours != null ? (w.totalHours | number:'1.0-1') + 'h' : '—' }}</td>
               <td><span class="status-pill" [ngClass]="statusClass(w.status)">{{ statusLabel(w.status) }}</span></td>
               <td class="td-note">{{ w.note || '—' }}</td>
               <td *ngIf="auth.isAdmin()" class="td-actions">
@@ -152,29 +147,21 @@
     <div class="modal-body">
       <div class="mfield">
         <label>Date</label>
-        <input type="date" class="minp"
-               [value]="modalForm().date"
-               (change)="onModalDate($event)" />
+        <input type="date" class="minp" [value]="modalForm().date" (change)="onModalDate($event)" />
       </div>
       <div class="mrow">
         <div class="mfield">
           <label>Arrivée</label>
-          <input type="time" class="minp"
-                 [value]="modalForm().checkIn"
-                 (change)="onModalCheckIn($event)" />
+          <input type="time" class="minp" [value]="modalForm().checkIn" (change)="onModalCheckIn($event)" />
         </div>
         <div class="mfield">
           <label>Départ</label>
-          <input type="time" class="minp"
-                 [value]="modalForm().checkOut ?? ''"
-                 (change)="onModalCheckOut($event)" />
+          <input type="time" class="minp" [value]="modalForm().checkOut ?? ''" (change)="onModalCheckOut($event)" />
         </div>
       </div>
       <div class="mfield">
         <label>Statut</label>
-        <select class="minp"
-                [value]="modalForm().status"
-                (change)="onModalStatus($event)">
+        <select class="minp" [value]="modalForm().status" (change)="onModalStatus($event)">
           <option value="present">Présent</option>
           <option value="absent">Absent</option>
           <option value="late">Retard</option>
@@ -184,8 +171,7 @@
       <div class="mfield">
         <label>Note</label>
         <input type="text" class="minp" placeholder="Optionnel..."
-               [value]="modalForm().note ?? ''"
-               (input)="onModalNote($event)" />
+               [value]="modalForm().note ?? ''" (input)="onModalNote($event)" />
       </div>
     </div>
     <div class="modal-footer">
