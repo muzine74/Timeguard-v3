@@ -71,7 +71,7 @@ export class PointagePage implements OnInit {
 
     const week = this.weekSvc.weekKey();
     this.log(`semaine courante: ${week}`);
-    this.ptEmpSvc.load(week);
+    this.ptEmpSvc.load(week, id);
   }
 
   private _resolveEmployeeId(): string {
@@ -88,8 +88,9 @@ export class PointagePage implements OnInit {
 
   onWeekChange(): void {
     const week = this.weekSvc.weekKey();
+    const id   = this.auth.employeeId() ?? undefined;
     this.log(`onWeekChange() → ${week}`);
-    this.ptEmpSvc.load(week);
+    this.ptEmpSvc.load(week, id);
   }
 
   onEmployeeChange(patch: Partial<Employee>): void {
