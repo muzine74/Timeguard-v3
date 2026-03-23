@@ -74,3 +74,20 @@ export interface SavePayload {
   pointagesEmployee: Record<number, Record<string, boolean>>;
   pointagesAdmin:    Record<number, Record<string, boolean>>;
 }
+
+
+// ── TimeLog (retour API pointage) ─────────────────────────────────────────────
+export type WorkType = 'Regular' | 'Overtime' | 'Holiday' | 'Sick' | 'Vacation';
+ 
+export interface TimeLogQueryResultDto {
+  employeeId:  string;   // Guid
+  companyId:   string;   // Guid
+  companyName: string;
+  note:        string;
+  timeLogId:   string;   // Guid
+  workDate:    string;   // DateOnly → "YYYY-MM-DD"
+  beginWork:   string | null;  // DateTime?
+  endWork:     string | null;
+  clientPrice: number;
+  workType:    WorkType;
+}
