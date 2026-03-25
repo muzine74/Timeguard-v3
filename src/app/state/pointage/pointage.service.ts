@@ -88,7 +88,7 @@ export class PointageEmployeeService {
 
     if (!employeeId) {
       this.warn('employeeId manquant → fallback démo');
-      //this._compagnies.set(this._demo());
+      this._compagnies.set(this._demo());
       return;
     }
 
@@ -113,7 +113,7 @@ export class PointageEmployeeService {
         this.warn(`  status:  ${err.status}`);
         this.warn(`  message: ${err.message}`);
         this.warn(`  body:   `, err.error);
-        // this._compagnies.set(this._demo());
+        this._compagnies.set(this._demo());
         this._loading.set(false);
       }
     });

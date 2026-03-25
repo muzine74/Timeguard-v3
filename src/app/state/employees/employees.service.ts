@@ -66,9 +66,24 @@ export class EmployeesService {
     this._loading.set(true);
     this._error.set(null);
 
-    this.http.get<EmployeePoco[]>('/api/employee').pipe(
-      tap(raw => this.log(`réponse brute (${raw.length} employés)`, raw)),
-      map(list => list.map(p => this._map(p))),
+    this.http.get<unknown>('/api/employee').pipe(
+      tap(raw => {
+        this.log('réponse brute type:', typeof raw);
+        this.log('réponse brute isArray:', Array.isArray(raw));
+        this.log('réponse brute valeur:', JSON.stringify(raw)?.slice(0, 300));
+      }),
+      map(raw => {
+        // Normaliser : accepte tableau direct OU objet enveloppé
+        const list: EmployeePoco[] = Array.isArray(raw)
+          ? raw as EmployeePoco[]
+          : Array.isArray((raw as any)?.data)    ? (raw as any).data
+          : Array.isArray((raw as any)?.result)   ? (raw as any).result
+          : Array.isArray((raw as any)?.employees) ? (raw as any).employees
+          : [];
+
+        this.log(`liste normalisée: ${list.length} élément(s)`);
+        return list.map(p => this._map(p));
+      }),
       tap(mapped => this.log('après _map()', mapped)),
     ).subscribe({
       next: d => {
