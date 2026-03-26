@@ -125,28 +125,28 @@ export class EmployeesService {
     this.log(`getWorkDates(${empId}, month=${month})`);
     let p = new HttpParams();
     if (month) p = p.set('month', month);
-    return this.http.get<WorkDate[]>(`/api/employee/${empId}/pointage`, { params: p }).pipe(
+    return this.http.get<WorkDate[]>(`/api/employee/${empId}`, { params: p }).pipe(
       tap(d => this.log(`getWorkDates() → ${d.length} entrée(s)`, d)),
     );
   }
 
   addWorkDate(empId: string, wd: Omit<WorkDate, 'id' | 'employeeId'>) {
     this.log(`addWorkDate(${empId})`, wd);
-    return this.http.post<WorkDate>(`/api/employee/${empId}/pointage`, wd).pipe(
+    return this.http.post<WorkDate>(`/api/employee/${empId}`, wd).pipe(
       tap(d => this.log('addWorkDate() → créé', d)),
     );
   }
 
   updateWorkDate(empId: string, wdId: number, patch: Partial<WorkDate>) {
     this.log(`updateWorkDate(${empId}, ${wdId})`, patch);
-    return this.http.put<WorkDate>(`/api/employee/${empId}/pointage/${wdId}`, patch).pipe(
+    return this.http.put<WorkDate>(`/api/employee/${empId}/${wdId}`, patch).pipe(
       tap(d => this.log('updateWorkDate() → mis à jour', d)),
     );
   }
 
   deleteWorkDate(empId: string, wdId: number) {
     this.log(`deleteWorkDate(${empId}, ${wdId})`);
-    return this.http.delete<void>(`/api/employee/${empId}/pointage/${wdId}`).pipe(
+    return this.http.delete<void>(`/api/employee/${empId}/${wdId}`).pipe(
       tap(() => this.log('deleteWorkDate() → supprimé')),
     );
   }
@@ -155,7 +155,7 @@ export class EmployeesService {
     this.log(`getStats(${empId}, month=${month})`);
     let p = new HttpParams();
     if (month) p = p.set('month', month);
-    return this.http.get<WorkStats>(`/api/employee/${empId}/stats`, { params: p }).pipe(
+    return this.http.get<WorkStats>(`/api/employee/${empId}`, { params: p }).pipe(
       tap(s => this.log('getStats() →', s)),
     );
   }

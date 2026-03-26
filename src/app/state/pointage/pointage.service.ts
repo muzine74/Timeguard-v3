@@ -64,7 +64,7 @@ export class PointageEmployeeService {
 
   constructor(private http: HttpClient) {}
 
-  load(weekKey: string, employeeId?: string): void {
+  load(weekKey: string, employeeId?: string, onLoaded?: () => void): void {
     this.log(`load(weekKey=${weekKey}, employeeId=${employeeId ?? 'undefined'})`);
 
     // Sauvegarder la semaine courante avant de changer
@@ -83,12 +83,14 @@ export class PointageEmployeeService {
         ...c, pointages: cached[c.id] ?? {}
       })));
       this.log(`compagnies restaurées: ${this._compagnies().length}`);
+      onLoaded?.();
       return;
     }
 
     if (!employeeId) {
       this.warn('employeeId manquant → fallback démo');
       this._compagnies.set(this._demo());
+      onLoaded?.();
       return;
     }
 
@@ -101,12 +103,22 @@ export class PointageEmployeeService {
         this.log(`✓ réponse: ${logs.length} timelog(s)`);
         this.log('timelogs bruts:', logs);
 
+        if (!logs || logs.length === 0) {
+          this.warn('réponse vide → liste compagnies vidée');
+          this._compagnies.set([]);
+          this._cache.set(weekKey, {});
+          this._loading.set(false);
+          onLoaded?.();
+          return;
+        }
+
         const compagnies = this._fromTimeLogs(logs);
         this.log(`compagnies générées: ${compagnies.length}`, compagnies);
 
         this._compagnies.set(compagnies);
         this._cache.set(weekKey, this.snapshot());
         this._loading.set(false);
+        onLoaded?.();
       },
       error: err => {
         this.warn(`✕ GET ${url} échoué`);
@@ -115,6 +127,7 @@ export class PointageEmployeeService {
         this.warn(`  body:   `, err.error);
         this._compagnies.set(this._demo());
         this._loading.set(false);
+        onLoaded?.();
       }
     });
   }
@@ -204,25 +217,42 @@ export class PointageAdminService {
     return n;
   });
 
-  load(weekKey: string): void {
-    this.log(`load(${weekKey})`);
-    this.http.get<{ pointages: Record<number, Record<string, boolean>> }>(
-      `/api/pointage/admin?week=${weekKey}`
-    ).subscribe({
-      next:  d => {
+  // Appelé après que ptEmpSvc.load() a terminé (via callback dans les pages)
+  load(weekKey: string, employeeId?: string, onLoaded?: () => void): void {
+    this.log(`load(weekKey=${weekKey}, employeeId=${employeeId ?? 'undefined'})`);
+
+    // Synchroniser immédiatement les compagnies depuis l'employé
+    this.syncFromEmployee();
+
+    if (!employeeId) {
+      this.warn('employeeId manquant → compagnies sans pointages admin');
+      return;
+    }
+
+    const url = `/api/pointage/${employeeId}/${weekKey}`;
+    this.log(`GET ${url}`);
+
+    this.http.get<{ pointages: Record<number, Record<string, boolean>> }>(url).subscribe({
+      next: d => {
         this.log('✓ admin pointages:', d);
-        this._compagnies.update(l => l.map(c => ({ ...c, pointages: d.pointages[c.id] ?? {} })));
+        if (!d || !d.pointages) {
+          this.warn('réponse admin vide ou null → pointages admin vides');
+          return;
+        }
+        this._compagnies.update(l => l.map(c => ({
+          ...c, pointages: d.pointages[c.id] ?? {}
+        })));
       },
       error: err => {
-        this.warn(`✕ load(${weekKey}) échoué (${err.status}) → syncFromEmployee`);
-        this.syncFromEmployee();
+        this.warn(`✕ GET ${url} échoué (${err.status}) → pointages admin vides`);
       }
     });
   }
 
   syncFromEmployee(): void {
-    this.log(`syncFromEmployee() — ${this._emp.compagnies().length} compagnie(s)`);
-    this._compagnies.set(this._emp.compagnies().map(c => ({ ...c, pointages: {} })));
+    const empComps = this._emp.compagnies();
+    this.log(`syncFromEmployee() — ${empComps.length} compagnie(s)`);
+    this._compagnies.set(empComps.map(c => ({ ...c, pointages: {} })));
   }
 
   toggle(compId: number, dk: string): void {

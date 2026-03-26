@@ -70,6 +70,7 @@ export class PointagePage implements OnInit {
     }, { injector: this.injector, allowSignalWrites: false });
 
     const week = this.weekSvc.weekKey();
+    this._lastWeek = week;
     this.log(`semaine courante: ${week}`);
     this.ptEmpSvc.load(week, id);
   }
@@ -86,10 +87,19 @@ export class PointagePage implements OnInit {
     return fallback;
   }
 
+  private _lastWeek = '';
+
   onWeekChange(): void {
     const week = this.weekSvc.weekKey();
     const id   = this.auth.employeeId() ?? undefined;
-    this.log(`onWeekChange() → ${week}`);
+
+    if (week === this._lastWeek) {
+      this.log(`onWeekChange() → même semaine (${week}), pas de rechargement`);
+      return;
+    }
+
+    this.log(`onWeekChange() → nouvelle semaine: ${this._lastWeek || '(init)'} → ${week}`);
+    this._lastWeek = week;
     this.ptEmpSvc.load(week, id);
   }
 
