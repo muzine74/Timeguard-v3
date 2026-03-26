@@ -43,6 +43,9 @@ export class EmployeeDetailsComponent implements OnInit {
   saved = signal(false);
   toast = '';
 
+  private _lastWeek     = '';
+  private _lastEmpId    = '';
+
   private get _dev(): boolean { return isDevMode(); }
   private log(...a: unknown[])  { if (this._dev) console.log('[EmployeeDetails]', ...a); }
   private warn(...a: unknown[]) { if (this._dev) console.warn('[EmployeeDetails]', ...a); }
@@ -67,11 +70,12 @@ export class EmployeeDetailsComponent implements OnInit {
     this.empSvc.loadList();
 
     effect(() => {
-      const list = this.empSvc.list();
+      const list    = this.empSvc.list();
       const loading = this.empSvc.loading();
       this.employees.set(list);
       this.loadingList.set(loading);
       this.log(`liste employés: ${list.length} entrée(s), loading=${loading}`);
+      if (list.length) this.log('  IDs:', list.map(e => e.employeeId));
     }, { injector: this.injector, allowSignalWrites: true });
 
     const id = this.route.snapshot.paramMap.get('id');
@@ -91,7 +95,15 @@ export class EmployeeDetailsComponent implements OnInit {
   }
 
   selectEmployee(id: string): void {
-    this.log(`selectEmployee(${id})`);
+    const prev = this._lastEmpId;
+    this.log(`selectEmployee(${id}) — précédent: ${prev || 'aucun'}`);
+
+    if (id === this._lastEmpId) {
+      this.log('  → même employé, pas de rechargement');
+      return;
+    }
+
+    this._lastEmpId = id;
     this.selectedId.set(id);
     this.loadingDetail.set(true);
     this.router.navigate(['/employees', id]);
@@ -100,13 +112,14 @@ export class EmployeeDetailsComponent implements OnInit {
       next: emp => {
         this.selected.set(emp);
         this.loadingDetail.set(false);
-        this.log(`✓ employé chargé: ${emp.employeeName}`, emp);
+        this.log(`✓ employé chargé: ${emp.employeeName} (${emp.employeeId})`);
+        this.log('  objet complet:', emp);
       },
       error: err => {
         this.warn(`✕ getOne(${id}) échoué — status: ${err.status}`, err.error);
         const found = this.employees().find(e => e.employeeId === id);
         if (found) {
-          this.warn('  → fallback sur donnée locale:', found.employeeName);
+          this.warn(`  → fallback local: ${found.employeeName}`);
           this.selected.set(found);
         }
         this.loadingDetail.set(false);
@@ -114,14 +127,21 @@ export class EmployeeDetailsComponent implements OnInit {
     });
 
     this._loadPointage(id);
+
     const week = this.weekSvc.weekKey();
-    this.log(`chargement pointage semaine: ${week}`);
-    this.ptEmpSvc.load(week);
-    setTimeout(() => { this.admSvc.syncFromEmployee(); this.admSvc.load(week); }, 60);
+    this._lastWeek = week;
+    this.log(`pointage → semaine: ${week}, employé: ${id}`);
+    this.log(`  cache vidé (changement d'employé)`);
+    this.ptEmpSvc.clearCache();
+    this.ptEmpSvc.load(week, id, () => {
+      this.log('onLoaded → admSvc.load()');
+      this.admSvc.load(week, id);
+    });
+    this.log(`  compagnies après load: ${this.ptEmpSvc.compagnies().length}`);
   }
 
   private _loadPointage(id: string = this.selectedId()!): void {
-    this.log(`_loadPointage(${id}, month="${this.selectedMonth || 'tous'}")`);
+    this.log(`_loadPointage(empId=${id}, month="${this.selectedMonth || 'tous'}")`);
 
     this.empSvc.getWorkDates(id, this.selectedMonth).subscribe({
       next: d => {
@@ -137,14 +157,10 @@ export class EmployeeDetailsComponent implements OnInit {
     });
 
     this.empSvc.getStats(id, this.selectedMonth).subscribe({
-      next: s => {
-        this.stats.set(s);
-        this.log(`✓ stats:`, s);
-      },
+      next: s  => { this.stats.set(s); this.log(`✓ stats:`, s); },
       error: err => {
         this.warn(`✕ getStats échoué — status: ${err.status}`);
         const demo = { totalDays:22, presentDays:19, absentDays:2, lateDays:1, totalHours:152, averageHours:8 };
-        this.warn('  → fallback démo stats:', demo);
         this.stats.set(demo);
       }
     });
@@ -157,10 +173,24 @@ export class EmployeeDetailsComponent implements OnInit {
 
   onWeekChange(): void {
     const week = this.weekSvc.weekKey();
-    this.log(`onWeekChange() → semaine: ${week}`);
-    if (this.selectedId()) this._loadPointage();
-    this.ptEmpSvc.load(week);
-    setTimeout(() => { this.admSvc.syncFromEmployee(); this.admSvc.load(week); }, 60);
+    const id   = this.selectedId();
+
+    this.log(`onWeekChange() — semaine: ${this._lastWeek || '(init)'} → ${week}, employé: ${id}`);
+
+    const weekChanged = week !== this._lastWeek;
+    this.log(`  changement de semaine: ${weekChanged}`);
+
+    if (id) this._loadPointage();
+
+    if (weekChanged) {
+      this._lastWeek = week;
+      this.log(`  → reload timelogs pour semaine ${week}`);
+      this.ptEmpSvc.load(week, id ?? undefined, () => {
+      this.admSvc.load(week, id ?? undefined);
+    });
+    } else {
+      this.log(`  → même semaine, pas de reload timelogs`);
+    }
   }
 
   onSearch(event: Event): void {
@@ -214,23 +244,15 @@ export class EmployeeDetailsComponent implements OnInit {
   saveEntry(): void {
     const id = this.selectedId(); if (!id) return;
     const editing = this.editingEntry();
-    this.log(`saveEntry() — mode: ${editing ? 'update' : 'create'}`, this.modalForm());
+    this.log(`saveEntry() — mode: ${editing ? 'update id='+editing.id : 'create'}`, this.modalForm());
 
     const obs = editing
       ? this.empSvc.updateWorkDate(id, editing.id, this.modalForm())
       : this.empSvc.addWorkDate(id, this.modalForm() as any);
 
     obs.subscribe({
-      next: d => {
-        this.log('✓ saveEntry() réussi:', d);
-        this.closeModal();
-        this._loadPointage();
-      },
-      error: err => {
-        this.warn(`✕ saveEntry() échoué — status: ${err.status}`, err.error);
-        this.closeModal();
-        this._loadPointage();
-      }
+      next: d  => { this.log('✓ saveEntry():', d); this.closeModal(); this._loadPointage(); },
+      error: err => { this.warn(`✕ saveEntry() — status: ${err.status}`, err.error); this.closeModal(); this._loadPointage(); }
     });
   }
 
@@ -238,17 +260,16 @@ export class EmployeeDetailsComponent implements OnInit {
     const id = this.selectedId();
     if (!id || !confirm('Supprimer ce pointage ?')) return;
     this.log(`deleteEntry(wdId=${wdId})`);
-
     this.empSvc.deleteWorkDate(id, wdId).subscribe({
-      next:  () => { this.log(`✓ deleteEntry(${wdId}) réussi`); this._loadPointage(); },
-      error: err => { this.warn(`✕ deleteEntry échoué — status: ${err.status}`); this._loadPointage(); }
+      next:  () => { this.log(`✓ deleted ${wdId}`); this._loadPointage(); },
+      error: err => { this.warn(`✕ deleteEntry — status: ${err.status}`); this._loadPointage(); }
     });
   }
 
   async save(): Promise<void> {
-    this.log('save() → saveSvc.save()');
+    this.log('save()');
     const ok = await this.saveSvc.save();
-    this.log(`save() résultat: ${ok ? '✓ succès' : '✕ échec'}`);
+    this.log(`save() → ${ok ? '✓' : '✕'}`);
     this.toast = ok ? '✓ Sauvegardé avec succès' : '✕ Erreur lors de la sauvegarde';
     this.saved.set(true);
     setTimeout(() => this.saved.set(false), 3000);
