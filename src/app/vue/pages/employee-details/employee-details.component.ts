@@ -5,7 +5,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService }          from '../../../state/auth/auth.service';
 import { EmployeesService }     from '../../../state/employees/employees.service';
 import { WeekService, PointageEmployeeService, PointageAdminService, SaveStateService } from '../../../state/pointage/pointage.service';
-import { Employee, WorkDate, WorkStats } from '../../../models';
+import { Employee, WorkDate, WorkStats,  } from '../../../models';
 import { SectionHeaderComponent }  from '../../components/section-header/section-header.component';
 import { StatsBarComponent }       from '../../components/stats-bar/stats-bar.component';
 import { DatePickerComponent }     from '../../components/date-picker/date-picker.component';

@@ -91,3 +91,55 @@ export interface TimeLogQueryResultDto {
   clientPrice: number;
   workType:    WorkType;
 }
+
+// ── Compagnie (formulaire création) ──────────────────────────────────────────
+export type FrequencePaiement  = 'Hebdomadaire' | 'Bi-hebdomadaire' | 'Mensuel';
+export type FrequenceTravail   = 'Hebdomadaire' | 'Bi-hebdomadaire';
+ 
+export interface JourPlanning {
+  actif:    boolean;
+  compagnie: string;
+  employe:   string;
+}
+ 
+export interface SemainePlanning {
+  lundi:    JourPlanning;
+  mardi:    JourPlanning;
+  mercredi: JourPlanning;
+  jeudi:    JourPlanning;
+  vendredi: JourPlanning;
+  samedi:   JourPlanning;
+  dimanche: JourPlanning;
+}
+ 
+export interface CompanyForm {
+  // Infos générales
+  companyName:   string;
+  companyCode:   string;
+  isActive:      boolean;
+  providerId:    string;
+  note:          string;
+  // Adresse
+  civicNumber:   string;
+  suite:         string;
+  city:          string;
+  state:         string;
+  country:       string;
+  zipCode:       string;
+  addressNote:   string;
+  // Contact
+  contactName:   string;
+  contactMail:   string;
+  contactPhone:  string;
+  contactNote:   string;
+  // Taxes
+  tps:           string;
+  tvq:           string;
+  // Fréquences
+  frequencePaiement: FrequencePaiement;
+  frequenceTravail:  FrequenceTravail;
+  // Planning semaine 1
+  semaine1: SemainePlanning;
+  // Planning semaine 2 (Bi-hebdomadaire)
+  semaine2: SemainePlanning;
+}
