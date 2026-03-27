@@ -23,6 +23,11 @@ export const routes: Routes = [
     loadComponent: () => import('./vue/pages/pointage/pointage.page').then(m => m.PointagePage)
   },
   {
+    path: 'newcompanies',
+    canActivate: [authGuard],
+    loadComponent: () => import('./vue/pages/company-form/company-form.component').then(m => m.CompanyFormComponent)
+  },
+  {
     path: '**',
     loadComponent: () => import('./vue/pages/not-found/not-found.component').then(m => m.NotFoundComponent)
   }

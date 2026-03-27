@@ -16,8 +16,9 @@ import { AuthService } from '../../../state/auth/auth.service';
       </div>
 
       <div class="nav-links">
-        <a class="nav-link" routerLink="/employees" routerLinkActive="active">Employés</a>
         <a class="nav-link" routerLink="/pointage"  routerLinkActive="active">Pointage</a>
+        <a class="nav-link" routerLink="/employees" routerLinkActive="active">Employés</a>
+        <a class="nav-link" routerLink="/newcompanies"  routerLinkActive="active">newcompanies</a>
         <a class="nav-link" *ngIf="auth.isAdmin()">Rapports</a>
         <a class="nav-link" *ngIf="auth.isAdmin()">Paramètres</a>
       </div>

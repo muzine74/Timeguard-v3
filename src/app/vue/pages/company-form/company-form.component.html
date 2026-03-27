@@ -1,0 +1,251 @@
+<div class="page-wrap">
+
+  <!-- Toast -->
+  <div class="toast" [class.toast-show]="saved()">✓ Compagnie créée avec succès</div>
+  <div class="toast toast-error" [class.toast-show]="error()">{{ error() }}</div>
+
+  <header class="page-hdr">
+    <div>
+      <h1 class="page-title">Nouvelle Compagnie</h1>
+      <p class="page-sub">Remplissez les informations pour créer une nouvelle compagnie</p>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-outline" (click)="cancel()">✕ Annuler</button>
+      <button class="btn btn-primary" [disabled]="saving()" (click)="submit()">
+        <span *ngIf="!saving()">✓ Ajouter</span>
+        <span *ngIf="saving()" class="spinner"></span>
+      </button>
+    </div>
+  </header>
+
+  <div class="form-layout">
+
+    <!-- ── Colonne gauche ── -->
+    <div class="col-left">
+
+      <!-- Infos générales -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-icon">🏢</span>
+          <div>
+            <div class="card-title">Informations générales</div>
+            <div class="card-sub">Identification de la compagnie</div>
+          </div>
+          <label class="toggle-wrap">
+            <input type="checkbox" [(ngModel)]="form.isActive">
+            <span class="toggle-lbl">Actif</span>
+          </label>
+        </div>
+        <div class="fields-grid">
+          <div class="field span-full">
+            <label>Nom de la compagnie *</label>
+            <input class="inp" [(ngModel)]="form.companyName" placeholder="Acme Construction inc." />
+          </div>
+          <div class="field">
+            <label>Code compagnie</label>
+            <input class="inp" [(ngModel)]="form.companyCode" placeholder="ACME-001" />
+          </div>
+          <div class="field">
+            <label>Fournisseur</label>
+            <input class="inp" [(ngModel)]="form.providerId" placeholder="9413-2776 Quebec Inc" />
+          </div>
+          <div class="field span-full">
+            <label>Note</label>
+            <textarea class="inp inp-ta" [(ngModel)]="form.note" rows="3" placeholder="Notes générales..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Adresse -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-icon">📍</span>
+          <div>
+            <div class="card-title">Adresse</div>
+            <div class="card-sub">Localisation de la compagnie</div>
+          </div>
+        </div>
+        <div class="fields-grid">
+          <div class="field">
+            <label>N° civique</label>
+            <input class="inp" [(ngModel)]="form.civicNumber" placeholder="123" />
+          </div>
+          <div class="field">
+            <label>Suite / Bureau</label>
+            <input class="inp" [(ngModel)]="form.suite" placeholder="App 2" />
+          </div>
+          <div class="field">
+            <label>Ville</label>
+            <input class="inp" [(ngModel)]="form.city" placeholder="Montréal" />
+          </div>
+          <div class="field">
+            <label>Province</label>
+            <input class="inp" [(ngModel)]="form.state" placeholder="QC" />
+          </div>
+          <div class="field">
+            <label>Code postal</label>
+            <input class="inp" [(ngModel)]="form.zipCode" placeholder="H1A 1A1" />
+          </div>
+          <div class="field">
+            <label>Pays</label>
+            <input class="inp" [(ngModel)]="form.country" placeholder="Canada" />
+          </div>
+          <div class="field span-full">
+            <label>Note d'adresse</label>
+            <input class="inp" [(ngModel)]="form.addressNote" placeholder="Instructions de livraison..." />
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-icon">👤</span>
+          <div>
+            <div class="card-title">Contact</div>
+            <div class="card-sub">Responsable de la compagnie</div>
+          </div>
+        </div>
+        <div class="fields-grid">
+          <div class="field span-full">
+            <label>Nom</label>
+            <input class="inp" [(ngModel)]="form.contactName" placeholder="Jean Tremblay" />
+          </div>
+          <div class="field">
+            <label>Courriel</label>
+            <input class="inp" type="email" [(ngModel)]="form.contactMail" placeholder="jean@acme.com" />
+          </div>
+          <div class="field">
+            <label>Téléphone</label>
+            <input class="inp" [(ngModel)]="form.contactPhone" placeholder="514-555-0001" />
+          </div>
+          <div class="field span-full">
+            <label>Note</label>
+            <textarea class="inp inp-ta" [(ngModel)]="form.contactNote" rows="2" placeholder="Notes contact..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Taxes -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-icon">🧾</span>
+          <div>
+            <div class="card-title">Taxes</div>
+            <div class="card-sub">Numéros de taxes applicables</div>
+          </div>
+        </div>
+        <div class="fields-grid">
+          <div class="field">
+            <label>TPS</label>
+            <input class="inp" [(ngModel)]="form.tps" placeholder="123456789 RT0001" />
+          </div>
+          <div class="field">
+            <label>TVQ</label>
+            <input class="inp" [(ngModel)]="form.tvq" placeholder="1234567890 TQ0001" />
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Colonne droite ── -->
+    <div class="col-right">
+
+      <!-- Fréquences -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-icon">📅</span>
+          <div>
+            <div class="card-title">Fréquence visite et paiement</div>
+            <div class="card-sub">Rythme de travail et facturation</div>
+          </div>
+        </div>
+        <div class="fields-grid">
+          <div class="field">
+            <label>Fréquence de paiement</label>
+            <select class="inp inp-sel" [(ngModel)]="form.frequencePaiement">
+              <option *ngFor="let f of freqPaiementOptions" [value]="f">{{ f }}</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Fréquence de travail</label>
+            <select class="inp inp-sel" [(ngModel)]="form.frequenceTravail" (change)="onFreqTravailChange()">
+              <option *ngFor="let f of freqTravailOptions" [value]="f">{{ f }}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Planning semaines -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-icon">📋</span>
+          <div>
+            <div class="card-title">Planning</div>
+            <div class="card-sub">Jours et tarifs par semaine</div>
+          </div>
+        </div>
+
+        <div class="semaines-wrap" [class.bi-weekly]="isBiWeekly">
+
+          <!-- Semaine 1 -->
+          <div class="semaine-block">
+            <div class="semaine-title">{{ isBiWeekly ? 'Semaine 1' : 'Planning hebdomadaire' }}</div>
+            <table class="planning-table">
+              <thead>
+                <tr>
+                  <th>Jour</th>
+                  <th></th>
+                  <th>Compagnie $</th>
+                  <th>Employé $</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let jour of jours; let i = index">
+                  <td class="jour-lbl">{{ joursLabels[i] }}</td>
+                  <td><input type="checkbox" [(ngModel)]="getJour(form.semaine1, jour).actif" /></td>
+                  <td><input class="inp-num" type="number" [(ngModel)]="getJour(form.semaine1, jour).compagnie"
+                             [disabled]="!getJour(form.semaine1, jour).actif"
+                             placeholder="0.00" step="0.01" /></td>
+                  <td><input class="inp-num" type="number" [(ngModel)]="getJour(form.semaine1, jour).employe"
+                             [disabled]="!getJour(form.semaine1, jour).actif"
+                             placeholder="0.00" step="0.01" /></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Semaine 2 (Bi-hebdomadaire uniquement) -->
+          <div class="semaine-block" *ngIf="isBiWeekly">
+            <div class="semaine-title">Semaine 2</div>
+            <table class="planning-table">
+              <thead>
+                <tr>
+                  <th>Jour</th>
+                  <th></th>
+                  <th>Compagnie $</th>
+                  <th>Employé $</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let jour of jours; let i = index">
+                  <td class="jour-lbl">{{ joursLabels[i] }}</td>
+                  <td><input type="checkbox" [(ngModel)]="getJour(form.semaine2, jour).actif" /></td>
+                  <td><input class="inp-num" type="number" [(ngModel)]="getJour(form.semaine2, jour).compagnie"
+                             [disabled]="!getJour(form.semaine2, jour).actif"
+                             placeholder="0.00" step="0.01" /></td>
+                  <td><input class="inp-num" type="number" [(ngModel)]="getJour(form.semaine2, jour).employe"
+                             [disabled]="!getJour(form.semaine2, jour).actif"
+                             placeholder="0.00" step="0.01" /></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
