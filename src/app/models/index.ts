@@ -1,11 +1,11 @@
 // ── Domaine Auth ──────────────────────────────────────────
 export interface User {
-  username: string;
-  employeeId: string;
-  role: 'ADMIN' | 'USER';
+  username:   string;
+  role:       'ADMIN' | 'USER';
+  employeeId: string;   // Guid — extrait du JWT
 }
 export interface LoginRequest  { username: string; password: string; }
-export interface LoginResponse { token: string;EmployeeId: string, username: string; role: string; }
+export interface LoginResponse { token: string; username: string; role: string; employeeId: string; }
 
 // ── Domaine Employés ──────────────────────────────────────
 export interface Employee {
@@ -75,10 +75,9 @@ export interface SavePayload {
   pointagesAdmin:    Record<number, Record<string, boolean>>;
 }
 
-
 // ── TimeLog (retour API pointage) ─────────────────────────────────────────────
 export type WorkType = 'Regular' | 'Overtime' | 'Holiday' | 'Sick' | 'Vacation';
- 
+
 export interface TimeLogQueryResultDto {
   employeeId:  string;   // Guid
   companyId:   string;   // Guid
@@ -95,20 +94,20 @@ export interface TimeLogQueryResultDto {
 // ── Compagnie (formulaire création) ──────────────────────────────────────────
 export type FrequencePaiement  = 'Hebdomadaire' | 'Bi-hebdomadaire' | 'Bi-mensuel' | 'Mensuel';
 export type FrequenceTravail   = 'Hebdomadaire' | 'Bi-hebdomadaire' | 'Bi-mensuel' | 'Mensuel';
- 
+
 export interface JourMensuel {
   jour:      number;
   actif:     boolean;
   compagnie: string;
   employe:   string;
 }
- 
+
 export interface JourPlanning {
   actif:    boolean;
   compagnie: string;
   employe:   string;
 }
- 
+
 export interface SemainePlanning {
   lundi:    JourPlanning;
   mardi:    JourPlanning;
@@ -118,7 +117,7 @@ export interface SemainePlanning {
   samedi:   JourPlanning;
   dimanche: JourPlanning;
 }
- 
+
 export interface CompanyForm {
   // Infos générales
   companyName:   string;
@@ -153,4 +152,3 @@ export interface CompanyForm {
   // Planning semaine 2 (Bi-hebdomadaire)
   semaine2: SemainePlanning;
 }
- 
