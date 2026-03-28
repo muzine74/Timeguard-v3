@@ -25,7 +25,7 @@ export class AuthService {
         localStorage.setItem(TOKEN_KEY, res.token);
 
         // Décoder le JWT pour extraire employeeId si absent de la réponse
-        const empId = res.EmployeeId ?? this._decodeEmployeeId(res.token);
+        const empId = res.employeeId ?? this._decodeEmployeeId(res.token);
 
         const u: User = {
           username:   res.username,
