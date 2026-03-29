@@ -131,7 +131,7 @@
         </div>
       </div>
 
-      <!-- ── Bi-mensuel (1 → 15) ── -->
+      <!-- ── Bi-mensuel ── -->
       <div class="card" *ngIf="modeBiMensuel">
         <div class="card-header">
           <span class="card-icon">📋</span>
@@ -140,35 +140,30 @@
         <ng-container *ngTemplateOutlet="tplBiMensuel; context:{ jours: form.joursBiMensuel }"></ng-container>
       </div>
 
-      <!-- ── Mensuel — date picker ── -->
+      <!-- ── Mensuel — stepper ── -->
       <div class="card" *ngIf="modeMensuel">
         <div class="card-header">
           <span class="card-icon">📋</span>
-          <div><div class="card-title">Planning — Mensuel</div><div class="card-sub">Ajoutez les jours de travail</div></div>
+          <div><div class="card-title">Planning — Mensuel</div><div class="card-sub">Jours de travail</div></div>
+          <button class="btn-add-jour" (click)="addJourMensuel()">+ Jour</button>
         </div>
-        <div class="mensuel-picker-wrap">
 
-          <!-- En-tête colonnes -->
-          <div class="mensuel-header">
-            <span class="mh-jour">Jour</span>
-            <span class="mh-actif">Actif</span>
-            <span class="mh-cie">Cie $</span>
-            <span class="mh-emp">Emp $</span>
-            <span class="mh-action"></span>
-          </div>
-
-          <!-- Ligne d'ajout -->
-          <div class="mensuel-row mensuel-add-row">
+        <div class="mensuel-wrap">
+          <div class="mensuel-row" *ngFor="let j of form.joursMensuel; let i = index">
             <div class="jour-stepper">
-              <button class="step-btn" (click)="stepJour(-1)">◀</button>
-              <span class="step-val">{{ jourSelectionne }}</span>
-              <button class="step-btn" (click)="stepJour(1)">▶</button>
+              <button class="step-btn" (click)="stepJourLigne(i, -1)">◀</button>
+              <div class="step-val">{{ j.jour }}</div>
+              <button class="step-btn" (click)="stepJourLigne(i, 1)">▶</button>
             </div>
-            <input type="checkbox" [(ngModel)]="newJourActif" />
+            <input type="checkbox" [(ngModel)]="j.actif" />
             <input class="inp-num" type="number" min="0" step="0.01"
-                   [(ngModel)]="tarifCompagnie" placeholder="0.00" />
+                   [(ngModel)]="j.compagnie" [disabled]="!j.actif" placeholder="Cie $" />
             <input class="inp-num" type="number" min="0" step="0.01"
-                   [(ngModel)]="tarifEmploye" placeholder="0.00" />
+                   [(ngModel)]="j.employe" [disabled]="!j.actif" placeholder="Emp $" />
+            <button class="btn-remove" (click)="removeJourMensuel(i)">✕</button>
+          </div>
+          <div class="mensuel-empty" *ngIf="form.joursMensuel.length === 0">
+            Cliquez sur "+ Jour" pour ajouter un jour
           </div>
         </div>
       </div>
@@ -180,27 +175,23 @@
 <!-- ── Template : tableau semaine ── -->
 <ng-template #tplSemaine let-s="s">
   <table class="planning-table">
-    <thead>
-      <tr><th>Jour</th><th></th><th>Compagnie $</th><th>Employé $</th></tr>
-    </thead>
+    <thead><tr><th>Jour</th><th></th><th>Compagnie $</th><th>Employé $</th></tr></thead>
     <tbody>
       <tr *ngFor="let jour of jours; let i = index">
         <td class="jour-lbl">{{ joursLabels[i] }}</td>
         <td><input type="checkbox" [(ngModel)]="getJour(s, jour).actif" /></td>
         <td><input class="inp-num" type="number" min="0" step="0.01"
                    [(ngModel)]="getJour(s, jour).compagnie"
-                   [disabled]="!getJour(s, jour).actif"
-                   placeholder="0.00" /></td>
+                   [disabled]="!getJour(s, jour).actif" placeholder="0.00" /></td>
         <td><input class="inp-num" type="number" min="0" step="0.01"
                    [(ngModel)]="getJour(s, jour).employe"
-                   [disabled]="!getJour(s, jour).actif"
-                   placeholder="0.00" /></td>
+                   [disabled]="!getJour(s, jour).actif" placeholder="0.00" /></td>
       </tr>
     </tbody>
   </table>
 </ng-template>
 
-<!-- ── Template : bi-mensuel 2 colonnes (1-7 | 8-15) ── -->
+<!-- ── Template : bi-mensuel 2 colonnes ── -->
 <ng-template #tplBiMensuel let-jours="jours">
   <div class="bi-mensuel-wrap">
     <div class="bi-mensuel-col">
