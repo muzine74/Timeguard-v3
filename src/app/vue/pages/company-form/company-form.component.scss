@@ -281,3 +281,60 @@
   padding: 20px; text-align: center;
   border: 1px dashed var(--border); border-radius: 8px;
 }
+// ── Mensuel stepper rows ─────────────────────────────────
+.mensuel-wrap {
+  padding: 12px 18px;
+  display: flex; flex-direction: column; gap: 5px;
+}
+
+.mensuel-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 10px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--surface2);
+  transition: border-color .15s;
+  &:hover { border-color: rgba(201,162,39,.3); }
+  input[type="checkbox"] { width: 14px; height: 14px; accent-color: var(--accent); flex-shrink: 0; }
+}
+
+.jour-stepper { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+
+.step-btn {
+  background: none; border: 1px solid var(--border); border-radius: 5px;
+  color: var(--muted); font-size: 10px; padding: 3px 7px; cursor: pointer; line-height: 1;
+  transition: all .15s;
+  &:hover { border-color: var(--accent); color: var(--accent); }
+}
+
+.step-val {
+  font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 700;
+  color: var(--accent); min-width: 26px; text-align: center;
+}
+
+.btn-add-jour {
+  margin-left: auto; padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: 700;
+  border: 1px solid rgba(201,162,39,.4); background: rgba(201,162,39,.1);
+  color: var(--accent); cursor: pointer; font-family: inherit; flex-shrink: 0;
+  &:hover { background: rgba(201,162,39,.2); }
+}
+
+.btn-remove {
+  background: none; border: none; color: var(--muted); font-size: 13px;
+  padding: 2px 6px; border-radius: 4px; cursor: pointer; margin-left: auto;
+  &:hover { color: var(--danger); }
+}
+
+.mensuel-empty {
+  font-size: 12px; color: var(--muted); font-style: italic;
+  padding: 18px; text-align: center;
+  border: 1px dashed var(--border); border-radius: 8px;
+}
+
+// ── Bi-mensuel 2 colonnes ────────────────────────────────
+.bi-mensuel-wrap {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+  @media (max-width: 800px) { grid-template-columns: 1fr; }
+}
+.bi-mensuel-col {
+  padding: 14px 18px;
+  & + & { border-left: 1px solid var(--border); }
+}
