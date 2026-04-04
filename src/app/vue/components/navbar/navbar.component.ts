@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../state/auth/auth.service';
@@ -6,6 +6,7 @@ import { AuthService } from '../../../state/auth/auth.service';
 @Component({
   selector: 'app-navbar',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, RouterLink, RouterLinkActive],
   template: `
     <nav class="navbar">
@@ -16,11 +17,72 @@ import { AuthService } from '../../../state/auth/auth.service';
       </div>
 
       <div class="nav-links">
-        <a class="nav-link" routerLink="/pointage"  routerLinkActive="active">Pointage</a>
-        <a class="nav-link" routerLink="/employees" routerLinkActive="active">Employés</a>
-        <a class="nav-link" routerLink="/newcompanies"  routerLinkActive="active">newcompanies</a>
-        <a class="nav-link" *ngIf="auth.isAdmin()">Rapports</a>
-        <a class="nav-link" *ngIf="auth.isAdmin()">Paramètres</a>
+
+        <!-- ── USER : feuille de temps uniquement ── -->
+        <ng-container *ngIf="auth.isUser()">
+          <a class="nav-link" routerLink="/pointage" routerLinkActive="active">
+            Feuille de temps
+          </a>
+        </ng-container>
+
+        <!-- ── ADMIN : tout sauf feuille de temps ── -->
+        <ng-container *ngIf="auth.isAdmin()">
+
+          <!-- Dropdown Employés -->
+          <div class="nav-dropdown">
+            <button class="nav-link dropdown-btn">
+              Employés <span class="dropdown-arrow">▾</span>
+            </button>
+            <div class="dropdown-panel">
+              <a class="dropdown-item" routerLink="/employees"        routerLinkActive="active">
+                <span class="di-icon">☰</span> Liste des employés
+              </a>
+              <a class="dropdown-item" routerLink="/employees/new"    routerLinkActive="active">
+                <span class="di-icon">＋</span> Nouvel employé
+              </a>
+              <a class="dropdown-item" routerLink="/employees/edit"   routerLinkActive="active">
+                <span class="di-icon">✎</span> Modifier employé
+              </a>
+              <a class="dropdown-item" routerLink="/employees/assign" routerLinkActive="active">
+                <span class="di-icon">⇄</span> Assigner à une compagnie
+              </a>
+            </div>
+          </div>
+
+          <!-- Dropdown Compagnies -->
+          <div class="nav-dropdown">
+            <button class="nav-link dropdown-btn">
+              Compagnies <span class="dropdown-arrow">▾</span>
+            </button>
+            <div class="dropdown-panel">
+              <a class="dropdown-item" routerLink="/companies/new"    routerLinkActive="active">
+                <span class="di-icon">＋</span> Nouvelle compagnie
+              </a>
+              <a class="dropdown-item" routerLink="/companies/edit"   routerLinkActive="active">
+                <span class="di-icon">✎</span> Modifier compagnie
+              </a>
+              <a class="dropdown-item" routerLink="/companies/assign" routerLinkActive="active">
+                <span class="di-icon">⇄</span> Assigner compagnies
+              </a>
+            </div>
+          </div>
+
+          <!-- Dropdown Factures -->
+          <div class="nav-dropdown">
+            <button class="nav-link dropdown-btn">
+              Factures <span class="dropdown-arrow">▾</span>
+            </button>
+            <div class="dropdown-panel">
+              <a class="dropdown-item" routerLink="/invoices/new" routerLinkActive="active">
+                <span class="di-icon">＋</span> Nouvelle facture
+              </a>
+              <a class="dropdown-item" routerLink="/invoices"     routerLinkActive="active">
+                <span class="di-icon">☰</span> Gérer les factures
+              </a>
+            </div>
+          </div>
+
+        </ng-container>
       </div>
 
       <div class="nav-right">
@@ -34,8 +96,28 @@ import { AuthService } from '../../../state/auth/auth.service';
     </nav>
 
     <div class="mobile-menu" *ngIf="open()">
-      <a class="mobile-link" routerLink="/employees" routerLinkActive="active" (click)="closeMenu()">Employés</a>
-      <a class="mobile-link" routerLink="/pointage"  routerLinkActive="active" (click)="closeMenu()">Pointage</a>
+
+      <!-- USER -->
+      <ng-container *ngIf="auth.isUser()">
+        <a class="mobile-link" routerLink="/pointage" routerLinkActive="active" (click)="closeMenu()">Feuille de temps</a>
+      </ng-container>
+
+      <!-- ADMIN -->
+      <ng-container *ngIf="auth.isAdmin()">
+        <div class="mobile-section-label">Employés</div>
+        <a class="mobile-link mobile-sub" routerLink="/employees"        routerLinkActive="active" (click)="closeMenu()">Liste des employés</a>
+        <a class="mobile-link mobile-sub" routerLink="/employees/new"    routerLinkActive="active" (click)="closeMenu()">Nouvel employé</a>
+        <a class="mobile-link mobile-sub" routerLink="/employees/edit"   routerLinkActive="active" (click)="closeMenu()">Modifier employé</a>
+        <a class="mobile-link mobile-sub" routerLink="/employees/assign" routerLinkActive="active" (click)="closeMenu()">Assigner à une compagnie</a>
+        <div class="mobile-section-label">Compagnies</div>
+        <a class="mobile-link mobile-sub" routerLink="/companies/new"    routerLinkActive="active" (click)="closeMenu()">Nouvelle compagnie</a>
+        <a class="mobile-link mobile-sub" routerLink="/companies/edit"   routerLinkActive="active" (click)="closeMenu()">Modifier compagnie</a>
+        <a class="mobile-link mobile-sub" routerLink="/companies/assign" routerLinkActive="active" (click)="closeMenu()">Assigner compagnies</a>
+        <div class="mobile-section-label">Factures</div>
+        <a class="mobile-link mobile-sub" routerLink="/invoices/new" routerLinkActive="active" (click)="closeMenu()">Nouvelle facture</a>
+        <a class="mobile-link mobile-sub" routerLink="/invoices"     routerLinkActive="active" (click)="closeMenu()">Gérer les factures</a>
+      </ng-container>
+
       <div class="mobile-footer">
         <span class="badge badge-admin" *ngIf="auth.isAdmin()">ADMIN</span>
         <button class="btn-logout-mob" (click)="auth.logout()">Déconnexion</button>

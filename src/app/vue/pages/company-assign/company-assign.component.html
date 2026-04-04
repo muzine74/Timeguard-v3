@@ -1,0 +1,109 @@
+<div class="page-wrap">
+
+  <div class="toast" [class.toast-show]="saved()">✓ Modifications sauvegardées</div>
+  <div class="toast toast-error" [class.toast-show]="error()">{{ error() }}</div>
+
+  <header class="page-hdr">
+    <div>
+      <h1 class="page-title">Assigner des compagnies</h1>
+      <p class="page-sub">Sélectionnez un employé, puis cochez les compagnies à lui assigner</p>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-primary"
+              [disabled]="!selected() || !hasChanges() || saving() || loadingAssigned()"
+              (click)="save()">
+        <span *ngIf="!saving()">✓ Sauvegarder</span>
+        <span *ngIf="saving()" class="spinner"></span>
+      </button>
+    </div>
+  </header>
+
+  <div class="assign-layout">
+
+    <!-- ── Panneau Employés ── -->
+    <div class="emp-panel">
+      <div class="panel-hdr">
+        <span class="panel-icon">👤</span>
+        <div>
+          <div class="panel-title">Employés</div>
+          <div class="panel-sub">{{ employees().length }} employé(s)</div>
+        </div>
+      </div>
+
+      <div class="emp-search">
+        <input class="inp" placeholder="Rechercher un employé…"
+               [ngModel]="empSearch()"
+               (ngModelChange)="empSearch.set($event)" />
+      </div>
+
+      <div class="emp-list">
+        <div class="emp-loading" *ngIf="empLoading()">Chargement…</div>
+
+        <button class="emp-row"
+                *ngFor="let e of filteredEmps()"
+                [class.emp-selected]="selected()?.employeeId === e.employeeId"
+                (click)="select(e)">
+          <div class="emp-avatar">{{ initials(e.employeeName) }}</div>
+          <div class="emp-info">
+            <div class="emp-name">{{ e.employeeName }}</div>
+            <div class="emp-meta">{{ (e.employeeCompagnies?.length ?? 0) }} compagnie(s)</div>
+          </div>
+          <span class="emp-check" *ngIf="selected()?.employeeId === e.employeeId">✓</span>
+        </button>
+
+        <div class="emp-empty" *ngIf="!empLoading() && filteredEmps().length === 0">
+          Aucun résultat
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Panneau Compagnies ── -->
+    <div class="co-panel">
+      <div class="panel-hdr">
+        <span class="panel-icon">🏢</span>
+        <div>
+          <div class="panel-title">Compagnies</div>
+          <div class="panel-sub" *ngIf="selected()">
+            {{ assigned().size }} assignée(s) sur {{ companies().length }}
+          </div>
+          <div class="panel-sub" *ngIf="!selected()">Sélectionnez un employé</div>
+        </div>
+        <span class="unsaved-badge" *ngIf="hasChanges()">● Non sauvegardé</span>
+      </div>
+
+      <!-- État vide : aucun employé sélectionné -->
+      <div class="co-placeholder" *ngIf="!selected()">
+        <div class="co-placeholder-arrow">←</div>
+        <div class="co-placeholder-txt">Sélectionnez un employé pour gérer ses compagnies</div>
+      </div>
+
+      <!-- Chargement des compagnies assignées -->
+      <div class="co-loading" *ngIf="selected() && loadingAssigned()">
+        <div class="co-spinner"></div>
+        <span>Chargement des assignations…</span>
+      </div>
+
+      <!-- Grille des compagnies -->
+      <div class="co-grid" *ngIf="selected() && !loadingAssigned()">
+        <label class="co-card" *ngFor="let c of sortedCompanies()" [class.co-active]="isAssigned(c.companyId)">
+          <div class="co-card-body">
+            <div class="co-name">{{ c.companyName }}</div>
+            <span class="co-status" [class.co-status-on]="c.isActive">
+              {{ c.isActive ? 'Actif' : 'Inactif' }}
+            </span>
+          </div>
+          <div class="co-toggle-wrap">
+            <input type="checkbox"
+                   [checked]="isAssigned(c.companyId)"
+                   (change)="toggle(c.companyId)" />
+          </div>
+        </label>
+
+        <div class="co-empty" *ngIf="companies().length === 0">
+          Aucune compagnie disponible
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

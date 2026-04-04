@@ -1,11 +1,12 @@
-import { Component, Output, EventEmitter, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import { Component, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { WeekService } from '../../../state/pointage/pointage.service';
+import { WeekService } from '../../../state/pointage/week.service';
 
 @Component({
   selector: 'app-date-picker',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule],
   templateUrl: './date-picker.component.html',
   styleUrls: ['./date-picker.component.scss'],

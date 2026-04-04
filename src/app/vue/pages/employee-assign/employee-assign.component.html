@@ -1,0 +1,98 @@
+<div class="page-layout">
+
+  <!-- ── Sidebar compagnies ── -->
+  <aside class="sidebar">
+    <div class="sidebar-hdr">
+      <div class="sidebar-title">Compagnies</div>
+      <input class="sidebar-search" [(ngModel)]="coSearch" placeholder="Rechercher..." />
+    </div>
+
+    <div class="sidebar-loading" *ngIf="coLoading()">
+      <div class="mini-spinner"></div>
+    </div>
+
+    <div class="sidebar-list" *ngIf="!coLoading()">
+      <div *ngFor="let c of filteredCompanies"
+           class="sidebar-item"
+           [class.active]="selectedCo()?.companyId === c.companyId"
+           (click)="selectCompany(c)">
+        <div class="sidebar-avatar co-avatar">🏢</div>
+        <div class="sidebar-info">
+          <div class="sidebar-name">{{ c.companyName }}</div>
+          <span class="sidebar-badge" [class.badge-active]="c.isActive">
+            {{ c.isActive ? 'Actif' : 'Inactif' }}
+          </span>
+        </div>
+      </div>
+      <div class="sidebar-empty" *ngIf="filteredCompanies.length === 0">
+        Aucune compagnie
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Panneau employés ── -->
+  <div class="form-area">
+
+    <div class="toast" [class.toast-show]="saved()">✓ Modifications sauvegardées</div>
+    <div class="toast toast-error" [class.toast-show]="error()">{{ error() }}</div>
+
+    <!-- Aucune sélection -->
+    <div class="no-selection" *ngIf="!selectedCo()">
+      <div class="no-sel-icon">👥</div>
+      <div class="no-sel-txt">Sélectionnez une compagnie pour gérer ses employés</div>
+    </div>
+
+    <!-- Compagnie sélectionnée -->
+    <ng-container *ngIf="selectedCo()">
+
+      <header class="page-hdr">
+        <div>
+          <h1 class="page-title">{{ selectedCo()!.companyName }}</h1>
+          <p class="page-sub">
+            {{ assigned().size }} employé(s) assigné(s) sur {{ allEmployees().length }}
+            <span class="unsaved-badge" *ngIf="hasChanges()"> — ● Non sauvegardé</span>
+          </p>
+        </div>
+        <div class="page-actions">
+          <input class="inp-search" [(ngModel)]="empSearch" placeholder="Rechercher un employé..." />
+          <button class="btn btn-primary"
+                  [disabled]="!hasChanges() || saving() || loadingAssigned()"
+                  (click)="save()">
+            <span *ngIf="!saving()">✓ Sauvegarder</span>
+            <span *ngIf="saving()" class="spinner"></span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Chargement -->
+      <div class="form-loading" *ngIf="loadingAssigned()">
+        <div class="loading-spinner"></div>
+        <div class="loading-txt">Chargement des assignations...</div>
+      </div>
+
+      <!-- Grille employés -->
+      <div class="emp-grid" *ngIf="!loadingAssigned()">
+        <label class="emp-card"
+               *ngFor="let e of sortedEmployees()"
+               [class.emp-active]="isAssigned(e.employeeId)">
+          <div class="emp-avatar">{{ initials(e.employeeName) }}</div>
+          <div class="emp-info">
+            <div class="emp-name">{{ e.employeeName }}</div>
+            <div class="emp-meta">{{ e.employeeMail }}</div>
+            <div class="emp-meta" *ngIf="e.employeePhone">{{ e.employeePhone }}</div>
+          </div>
+          <div class="emp-toggle">
+            <input type="checkbox"
+                   [checked]="isAssigned(e.employeeId)"
+                   (change)="toggle(e.employeeId)" />
+          </div>
+        </label>
+
+        <div class="emp-empty" *ngIf="sortedEmployees().length === 0">
+          Aucun employé disponible
+        </div>
+      </div>
+
+    </ng-container>
+  </div>
+</div>

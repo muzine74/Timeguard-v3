@@ -1,4 +1,4 @@
-import { Component, signal, isDevMode } from '@angular/core';
+import { Component, signal, isDevMode, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -7,6 +7,7 @@ import { AuthService } from '../../../state/auth/auth.service';
 @Component({
   selector: 'app-login',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
@@ -43,8 +44,9 @@ export class LoginComponent {
         this.log('  employeeId: ', this.auth.employeeId());
         this.log('  role:       ', this.auth.user()?.role);
         this.log('  token JWT:  ', localStorage.getItem('tg_token'));
-        this.log('→ navigation vers /pointage');
-        this.router.navigate(['/pointage']);
+        const dest = this.auth.isAdmin() ? '/employees' : '/pointage';
+        this.log(`→ navigation vers ${dest}`);
+        this.router.navigate([dest]);
       },
       error: err => {
         this.loading.set(false);

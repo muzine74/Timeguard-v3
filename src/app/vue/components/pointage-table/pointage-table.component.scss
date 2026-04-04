@@ -109,5 +109,18 @@ td { padding: 10px 8px; vertical-align: middle; }
     &:hover { background: #ff6b6b; }
   }
 
+  &.chk-locked {
+    cursor: not-allowed; opacity: .55;
+    border-color: rgba(255,255,255,.12);
+    &.chk-on {
+      background: rgba(201,162,39,.35); border-color: rgba(201,162,39,.35);
+      box-shadow: none; color: #000;
+      &:hover { background: rgba(201,162,39,.35); }
+    }
+    &:hover { border-color: rgba(255,255,255,.12); background: var(--surface2); }
+  }
+
   @media (max-width: 1023px) { width: 22px; height: 22px; font-size: 11px; }
 }
+
+.td-locked { cursor: not-allowed; }

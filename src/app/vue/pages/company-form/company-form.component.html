@@ -54,19 +54,6 @@
 
       <div class="card">
         <div class="card-header">
-          <span class="card-icon">👤</span>
-          <div><div class="card-title">Contact</div><div class="card-sub">Responsable</div></div>
-        </div>
-        <div class="fields-grid">
-          <div class="field span-full"><label>Nom</label><input class="inp" [(ngModel)]="form.contactName" /></div>
-          <div class="field"><label>Courriel</label><input class="inp" type="email" [(ngModel)]="form.contactMail" /></div>
-          <div class="field"><label>Téléphone</label><input class="inp" [(ngModel)]="form.contactPhone" /></div>
-          <div class="field span-full"><label>Note</label><textarea class="inp inp-ta" [(ngModel)]="form.contactNote" rows="2"></textarea></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
           <span class="card-icon">🧾</span>
           <div><div class="card-title">Taxes</div><div class="card-sub">Numéros applicables</div></div>
         </div>
@@ -83,6 +70,19 @@
 
       <div class="card">
         <div class="card-header">
+          <span class="card-icon">👤</span>
+          <div><div class="card-title">Contact</div><div class="card-sub">Responsable</div></div>
+        </div>
+        <div class="fields-grid">
+          <div class="field span-full"><label>Nom</label><input class="inp" [(ngModel)]="form.contactName" /></div>
+          <div class="field"><label>Courriel</label><input class="inp" type="email" [(ngModel)]="form.contactMail" /></div>
+          <div class="field"><label>Téléphone</label><input class="inp" [(ngModel)]="form.contactPhone" /></div>
+          <div class="field span-full"><label>Note</label><textarea class="inp inp-ta" [(ngModel)]="form.contactNote" rows="2"></textarea></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
           <span class="card-icon">📅</span>
           <div><div class="card-title">Fréquences</div><div class="card-sub">Paiement et travail</div></div>
         </div>
@@ -90,13 +90,13 @@
           <div class="field">
             <label>Fréquence de paiement</label>
             <select class="inp inp-sel" [(ngModel)]="form.frequencePaiement">
-              <option *ngFor="let f of freqPaiementOptions" [value]="f">{{ f }}</option>
+              <option *ngFor="let f of freqOptions" [value]="f.value">{{ f.label }}</option>
             </select>
           </div>
           <div class="field">
             <label>Fréquence de travail</label>
             <select class="inp inp-sel" [(ngModel)]="form.frequenceTravail" (change)="onFreqTravailChange()">
-              <option *ngFor="let f of freqTravailOptions" [value]="f">{{ f }}</option>
+              <option *ngFor="let f of freqOptions" [value]="f.value">{{ f.label }}</option>
             </select>
           </div>
         </div>
@@ -147,7 +147,6 @@
           <div><div class="card-title">Planning — Mensuel</div><div class="card-sub">Jours de travail</div></div>
           <button class="btn-add-jour" (click)="addJourMensuel()">+ Jour</button>
         </div>
-
         <div class="mensuel-wrap">
           <div class="mensuel-row" *ngFor="let j of form.joursMensuel; let i = index">
             <div class="jour-stepper">

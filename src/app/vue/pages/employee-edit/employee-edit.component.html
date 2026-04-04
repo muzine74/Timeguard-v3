@@ -1,0 +1,149 @@
+<div class="page-layout">
+
+  <!-- ── Sidebar employés ── -->
+  <aside class="sidebar">
+    <div class="sidebar-hdr">
+      <div class="sidebar-title">Employés</div>
+      <input class="sidebar-search" [(ngModel)]="searchQuery" placeholder="Rechercher..." />
+    </div>
+
+    <div class="sidebar-loading" *ngIf="empLoading()">
+      <div class="mini-spinner"></div>
+    </div>
+
+    <div class="sidebar-list" *ngIf="!empLoading()">
+      <div *ngFor="let e of filteredEmployees"
+           class="sidebar-item"
+           [class.active]="e.employeeId === employeeId()"
+           (click)="selectEmployee(e.employeeId)">
+        <div class="sidebar-avatar">{{ initials(e.employeeName) }}</div>
+        <div class="sidebar-info">
+          <div class="sidebar-name">{{ e.employeeName }}</div>
+          <div class="sidebar-meta">{{ e.employeeMail }}</div>
+        </div>
+      </div>
+      <div class="sidebar-empty" *ngIf="filteredEmployees.length === 0">
+        Aucun employé
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Zone formulaire ── -->
+  <div class="form-area">
+
+    <div class="toast" [class.toast-show]="saved()">✓ Employé mis à jour</div>
+    <div class="toast toast-error" [class.toast-show]="error()">{{ error() }}</div>
+
+    <!-- Aucune sélection -->
+    <div class="no-selection" *ngIf="!employeeId() && !loadingForm()">
+      <div class="no-sel-icon">👤</div>
+      <div class="no-sel-txt">Sélectionnez un employé dans la liste</div>
+    </div>
+
+    <!-- Chargement formulaire -->
+    <div class="form-loading" *ngIf="loadingForm()">
+      <div class="loading-spinner"></div>
+      <div class="loading-txt">Chargement...</div>
+    </div>
+
+    <!-- Formulaire principal -->
+    <div class="page-wrap" *ngIf="employeeId() && !loadingForm()">
+
+      <header class="page-hdr">
+        <div>
+          <h1 class="page-title">{{ form.employeeName || 'Modifier l\'employé' }}</h1>
+          <p class="page-sub">Modifiez et enregistrez les informations</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-outline" (click)="cancel()">✕ Annuler</button>
+          <button class="btn btn-primary" [disabled]="saving()" (click)="submit()">
+            <span *ngIf="!saving()">✓ Enregistrer</span>
+            <span *ngIf="saving()" class="spinner"></span>
+          </button>
+        </div>
+      </header>
+
+      <div class="form-layout">
+
+        <!-- Col gauche -->
+        <div class="col-left">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-icon">👤</span>
+              <div>
+                <div class="card-title">Informations générales</div>
+                <div class="card-sub">Identification</div>
+              </div>
+            </div>
+            <div class="fields-grid">
+              <div class="field span-full">
+                <label>Nom complet *</label>
+                <input class="inp" [(ngModel)]="form.employeeName" placeholder="Sophie Martin" />
+              </div>
+              <div class="field">
+                <label>NAS</label>
+                <input class="inp" [(ngModel)]="form.nas" placeholder="123 456 789" />
+              </div>
+              <div class="field">
+                <label>Courriel</label>
+                <input class="inp" type="email" [(ngModel)]="form.employeeMail" />
+              </div>
+              <div class="field">
+                <label>Téléphone</label>
+                <input class="inp" [(ngModel)]="form.employeePhone" />
+              </div>
+              <div class="field span-full">
+                <label>Note</label>
+                <textarea class="inp inp-ta" [(ngModel)]="form.employeeNote" rows="3"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Col droite -->
+        <div class="col-right">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-icon">📍</span>
+              <div>
+                <div class="card-title">Adresse</div>
+                <div class="card-sub">Localisation</div>
+              </div>
+            </div>
+            <div class="fields-grid">
+              <div class="field">
+                <label>N° civique</label>
+                <input class="inp" [(ngModel)]="form.employeeCivicNumber" />
+              </div>
+              <div class="field">
+                <label>Suite / App</label>
+                <input class="inp" [(ngModel)]="form.employeeSuite" />
+              </div>
+              <div class="field">
+                <label>Ville</label>
+                <input class="inp" [(ngModel)]="form.employeeCity" />
+              </div>
+              <div class="field">
+                <label>Province</label>
+                <input class="inp" [(ngModel)]="form.employeeState" />
+              </div>
+              <div class="field">
+                <label>Code postal</label>
+                <input class="inp" [(ngModel)]="form.employeeZipCode" />
+              </div>
+              <div class="field">
+                <label>Pays</label>
+                <input class="inp" [(ngModel)]="form.employeeCountry" />
+              </div>
+              <div class="field span-full">
+                <label>Note adresse</label>
+                <input class="inp" [(ngModel)]="form.employeeAdressNote" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

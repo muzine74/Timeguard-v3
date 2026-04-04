@@ -1,0 +1,299 @@
+<div class="page-layout">
+
+  <!-- ── Sidebar compagnies ── -->
+  <aside class="sidebar">
+    <div class="sidebar-hdr">
+      <div class="sidebar-title">Compagnies</div>
+      <input class="sidebar-search" [(ngModel)]="searchQuery" placeholder="Rechercher..." />
+    </div>
+
+    <div class="sidebar-loading" *ngIf="loadingList()">
+      <div class="mini-spinner"></div>
+    </div>
+
+    <div class="sidebar-list" *ngIf="!loadingList()">
+      <div *ngFor="let c of filteredCompanies"
+           class="sidebar-item"
+           [class.active]="c.companyId === companyId()"
+           (click)="selectCompany(c.companyId)">
+        <div class="sidebar-avatar">{{ initials(c.companyName) }}</div>
+        <div class="sidebar-info">
+          <div class="sidebar-name">{{ c.companyName }}</div>
+          <span class="sidebar-badge" [class.badge-active]="c.isActive">
+            {{ c.isActive ? 'Actif' : 'Inactif' }}
+          </span>
+        </div>
+      </div>
+      <div class="sidebar-empty" *ngIf="filteredCompanies.length === 0">
+        Aucune compagnie
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Formulaire ── -->
+  <div class="form-area">
+
+    <div class="toast" [class.toast-show]="saved()">✓ Compagnie mise à jour</div>
+    <div class="toast toast-error" [class.toast-show]="error()">{{ error() }}</div>
+
+    <!-- Aucune sélection -->
+    <div class="no-selection" *ngIf="!companyId() && !loadingForm()">
+      <div class="no-sel-icon">🏢</div>
+      <div class="no-sel-txt">Sélectionnez une compagnie dans la liste</div>
+    </div>
+
+    <!-- Chargement formulaire -->
+    <div class="form-loading" *ngIf="loadingForm()">
+      <div class="loading-spinner"></div>
+      <div class="loading-txt">Chargement...</div>
+    </div>
+
+    <!-- Formulaire principal -->
+    <div class="page-wrap" *ngIf="companyId() && !loadingForm()">
+
+      <header class="page-hdr">
+        <div>
+          <h1 class="page-title">{{ form.companyName || 'Modifier la compagnie' }}</h1>
+          <p class="page-sub">Modifiez et enregistrez les informations</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-outline" (click)="cancel()">✕ Annuler</button>
+          <button class="btn btn-primary" [disabled]="saving()" (click)="submit()">
+            <span *ngIf="!saving()">✓ Enregistrer</span>
+            <span *ngIf="saving()" class="spinner"></span>
+          </button>
+        </div>
+      </header>
+
+      <div class="form-layout">
+
+        <!-- Col gauche -->
+        <div class="col-left">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-icon">🏢</span>
+              <div><div class="card-title">Informations générales</div><div class="card-sub">Identification</div></div>
+              <label class="toggle-wrap"><input type="checkbox" [(ngModel)]="form.isActive"><span class="toggle-lbl">Actif</span></label>
+            </div>
+            <div class="fields-grid">
+              <div class="field span-full"><label>Nom *</label><input class="inp" [(ngModel)]="form.companyName" placeholder="Acme Construction inc." /></div>
+              <div class="field"><label>Code</label><input class="inp" [(ngModel)]="form.companyCode" placeholder="ACME-001" /></div>
+              <div class="field"><label>Fournisseur</label><input class="inp" [(ngModel)]="form.providerId" /></div>
+              <div class="field span-full"><label>Note</label><textarea class="inp inp-ta" [(ngModel)]="form.note" rows="3"></textarea></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <span class="card-icon">📍</span>
+              <div><div class="card-title">Adresse</div><div class="card-sub">Localisation</div></div>
+            </div>
+            <div class="fields-grid">
+              <div class="field"><label>N° civique</label><input class="inp" [(ngModel)]="form.civicNumber" /></div>
+              <div class="field"><label>Suite</label><input class="inp" [(ngModel)]="form.suite" /></div>
+              <div class="field"><label>Ville</label><input class="inp" [(ngModel)]="form.city" /></div>
+              <div class="field"><label>Province</label><input class="inp" [(ngModel)]="form.state" /></div>
+              <div class="field"><label>Code postal</label><input class="inp" [(ngModel)]="form.zipCode" /></div>
+              <div class="field"><label>Pays</label><input class="inp" [(ngModel)]="form.country" /></div>
+              <div class="field span-full"><label>Note adresse</label><input class="inp" [(ngModel)]="form.addressNote" /></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <span class="card-icon">🧾</span>
+              <div><div class="card-title">Taxes</div><div class="card-sub">Numéros applicables</div></div>
+            </div>
+            <div class="fields-grid">
+              <div class="field"><label>TPS</label><input class="inp" [(ngModel)]="form.tps" /></div>
+              <div class="field"><label>TVQ</label><input class="inp" [(ngModel)]="form.tvq" /></div>
+            </div>
+          </div>
+
+          <!-- ── Employés associés ── -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-icon">👥</span>
+              <div>
+                <div class="card-title">Employés associés</div>
+                <div class="card-sub">{{ companyEmployees().length }} employé(s)</div>
+              </div>
+            </div>
+
+            <div class="emp-list-wrap">
+              <!-- Chargement -->
+              <div class="emp-loading" *ngIf="empLoading()">
+                <div class="mini-spinner"></div>
+              </div>
+
+              <!-- Liste -->
+              <ng-container *ngIf="!empLoading()">
+                <div class="emp-row" *ngFor="let e of companyEmployees()">
+                  <div class="emp-avatar">{{ initials(e.employeeName) }}</div>
+                  <div class="emp-info">
+                    <div class="emp-name">{{ e.employeeName }}</div>
+                    <div class="emp-meta">{{ e.employeeMail }}</div>
+                    <div class="emp-meta" *ngIf="e.employeePhone">{{ e.employeePhone }}</div>
+                  </div>
+                </div>
+
+                <div class="emp-empty" *ngIf="companyEmployees().length === 0">
+                  Aucun employé assigné à cette compagnie
+                </div>
+              </ng-container>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Col droite -->
+        <div class="col-right">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-icon">👤</span>
+              <div><div class="card-title">Contact</div><div class="card-sub">Responsable</div></div>
+            </div>
+            <div class="fields-grid">
+              <div class="field span-full"><label>Nom</label><input class="inp" [(ngModel)]="form.contactName" /></div>
+              <div class="field"><label>Courriel</label><input class="inp" type="email" [(ngModel)]="form.contactMail" /></div>
+              <div class="field"><label>Téléphone</label><input class="inp" [(ngModel)]="form.contactPhone" /></div>
+              <div class="field span-full"><label>Note</label><textarea class="inp inp-ta" [(ngModel)]="form.contactNote" rows="2"></textarea></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <span class="card-icon">📅</span>
+              <div><div class="card-title">Fréquences</div><div class="card-sub">Paiement et travail</div></div>
+            </div>
+            <div class="fields-grid">
+              <div class="field">
+                <label>Fréquence de paiement</label>
+                <select class="inp inp-sel" [(ngModel)]="form.frequencePaiement">
+                  <option *ngFor="let f of freqOptions" [value]="f.value">{{ f.label }}</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Fréquence de travail</label>
+                <select class="inp inp-sel" [(ngModel)]="form.frequenceTravail" (change)="onFreqTravailChange()">
+                  <option *ngFor="let f of freqOptions" [value]="f.value">{{ f.label }}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hebdomadaire -->
+          <div class="card" *ngIf="modeHebdo">
+            <div class="card-header">
+              <span class="card-icon">📋</span>
+              <div><div class="card-title">Planning — Hebdomadaire</div><div class="card-sub">Une semaine type</div></div>
+            </div>
+            <div class="semaine-wrap">
+              <ng-container *ngTemplateOutlet="tplSemaine; context:{ s: form.semaine1 }"></ng-container>
+            </div>
+          </div>
+
+          <!-- Bi-hebdomadaire -->
+          <div class="card" *ngIf="modeBiHebdo">
+            <div class="card-header">
+              <span class="card-icon">📋</span>
+              <div><div class="card-title">Planning — Bi-hebdomadaire</div><div class="card-sub">Deux semaines alternées</div></div>
+            </div>
+            <div class="bi-hebdo-wrap">
+              <div class="semaine-col">
+                <div class="semaine-title">Semaine 1</div>
+                <ng-container *ngTemplateOutlet="tplSemaine; context:{ s: form.semaine1 }"></ng-container>
+              </div>
+              <div class="semaine-col">
+                <div class="semaine-title">Semaine 2</div>
+                <ng-container *ngTemplateOutlet="tplSemaine; context:{ s: form.semaine2 }"></ng-container>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bi-mensuel -->
+          <div class="card" *ngIf="modeBiMensuel">
+            <div class="card-header">
+              <span class="card-icon">📋</span>
+              <div><div class="card-title">Planning — Bi-mensuel</div><div class="card-sub">Jours 1 à 15</div></div>
+            </div>
+            <ng-container *ngTemplateOutlet="tplBiMensuel; context:{ jours: form.joursBiMensuel }"></ng-container>
+          </div>
+
+          <!-- Mensuel -->
+          <div class="card" *ngIf="modeMensuel">
+            <div class="card-header">
+              <span class="card-icon">📋</span>
+              <div><div class="card-title">Planning — Mensuel</div><div class="card-sub">Jours de travail</div></div>
+              <button class="btn-add-jour" (click)="addJourMensuel()">+ Jour</button>
+            </div>
+            <div class="mensuel-wrap">
+              <div class="mensuel-row" *ngFor="let j of form.joursMensuel; let i = index">
+                <div class="jour-stepper">
+                  <button class="step-btn" (click)="stepJourLigne(i, -1)">◀</button>
+                  <div class="step-val">{{ j.jour }}</div>
+                  <button class="step-btn" (click)="stepJourLigne(i, 1)">▶</button>
+                </div>
+                <input type="checkbox" [(ngModel)]="j.actif" />
+                <input class="inp-num" type="number" min="0" step="0.01" [(ngModel)]="j.compagnie" [disabled]="!j.actif" placeholder="Cie $" />
+                <input class="inp-num" type="number" min="0" step="0.01" [(ngModel)]="j.employe"   [disabled]="!j.actif" placeholder="Emp $" />
+                <button class="btn-remove" (click)="removeJourMensuel(i)">✕</button>
+              </div>
+              <div class="mensuel-empty" *ngIf="form.joursMensuel.length === 0">
+                Cliquez sur "+ Jour" pour ajouter un jour
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Templates -->
+<ng-template #tplSemaine let-s="s">
+  <table class="planning-table">
+    <thead><tr><th>Jour</th><th></th><th>Compagnie $</th><th>Employé $</th></tr></thead>
+    <tbody>
+      <tr *ngFor="let jour of jours; let i = index">
+        <td class="jour-lbl">{{ joursLabels[i] }}</td>
+        <td><input type="checkbox" [(ngModel)]="getJour(s, jour).actif" /></td>
+        <td><input class="inp-num" type="number" min="0" step="0.01" [(ngModel)]="getJour(s, jour).compagnie" [disabled]="!getJour(s, jour).actif" placeholder="0.00" /></td>
+        <td><input class="inp-num" type="number" min="0" step="0.01" [(ngModel)]="getJour(s, jour).employe"   [disabled]="!getJour(s, jour).actif" placeholder="0.00" /></td>
+      </tr>
+    </tbody>
+  </table>
+</ng-template>
+
+<ng-template #tplBiMensuel let-jours="jours">
+  <div class="bi-mensuel-wrap">
+    <div class="bi-mensuel-col">
+      <div class="semaine-title">Jours 1 — 8</div>
+      <table class="planning-table">
+        <thead><tr><th>Jour</th><th></th><th>Cie $</th><th>Emp $</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let j of jours.slice(0,8)">
+            <td class="jour-num">{{ j.jour }}</td>
+            <td><input type="checkbox" [(ngModel)]="j.actif" /></td>
+            <td><input class="inp-num" type="number" min="0" step="0.01" [(ngModel)]="j.compagnie" [disabled]="!j.actif" placeholder="0.00" /></td>
+            <td><input class="inp-num" type="number" min="0" step="0.01" [(ngModel)]="j.employe"    [disabled]="!j.actif" placeholder="0.00" /></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="bi-mensuel-col">
+      <div class="semaine-title">Jours 9 — 15</div>
+      <table class="planning-table">
+        <thead><tr><th>Jour</th><th></th><th>Cie $</th><th>Emp $</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let j of jours.slice(8,15)">
+            <td class="jour-num">{{ j.jour }}</td>
+            <td><input type="checkbox" [(ngModel)]="j.actif" /></td>
+            <td><input class="inp-num" type="number" min="0" step="0.01" [(ngModel)]="j.compagnie" [disabled]="!j.actif" placeholder="0.00" /></td>
+            <td><input class="inp-num" type="number" min="0" step="0.01" [(ngModel)]="j.employe"    [disabled]="!j.actif" placeholder="0.00" /></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</ng-template>

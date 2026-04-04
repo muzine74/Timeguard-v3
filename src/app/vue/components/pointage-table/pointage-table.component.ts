@@ -1,19 +1,21 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { WeekService }             from '../../../state/pointage/pointage.service';
-import { PointageEmployeeService } from '../../../state/pointage/pointage.service';
-import { PointageAdminService }    from '../../../state/pointage/pointage.service';
+import { WeekService }             from '../../../state/pointage/week.service';
+import { PointageEmployeeService } from '../../../state/pointage/pointage-employee.service';
+import { PointageAdminService }    from '../../../state/pointage/pointage-admin.service';
 import { Compagnie, WeekDay }      from '../../../models/index';
 
 @Component({
   selector: 'app-pointage-table',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
   templateUrl: './pointage-table.component.html',
   styleUrls:   ['./pointage-table.component.scss'],
 })
 export class PointageTableComponent {
-  @Input() mode: 'employee' | 'admin' = 'employee';
+  @Input() mode:   'employee' | 'admin' = 'employee';
+  @Input() locked: boolean              = false;
 
   constructor(
     public weekSvc:  WeekService,
@@ -30,6 +32,9 @@ export class PointageTableComponent {
   get weekDays(): WeekDay[] { return this.weekSvc.weekDays(); }
   get isAdmin(): boolean    { return this.mode === 'admin'; }
 
+  /** Vrai si la cellule est cliquable */
+  get canEdit(): boolean { return this.isAdmin || !this.locked; }
+
   isChecked(c: Compagnie, dk: string): boolean {
     return this.isAdmin
       ? this.admSvc.isChecked(c, dk)
@@ -38,6 +43,7 @@ export class PointageTableComponent {
 
   toggle(c: Compagnie, dk: string, e: Event): void {
     e.stopPropagation();
+    if (!this.canEdit) return;
     this.isAdmin
       ? this.admSvc.toggle(c.id, dk)
       : this.ptEmpSvc.toggle(c.id, dk);

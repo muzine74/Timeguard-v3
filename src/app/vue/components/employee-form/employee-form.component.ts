@@ -1,13 +1,13 @@
-import { Component, Input, Output, EventEmitter, signal, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DatePickerComponent } from '../date-picker/date-picker.component';
 import { Employee } from '../../../models';
-import { AuthService } from 'src/app/state/auth/auth.service';
+import { AuthService } from '../../../state/auth/auth.service';
 
 @Component({
   selector: 'app-employee-form',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule],
   templateUrl: './employee-form.component.html',
   styleUrls:   ['./employee-form.component.scss'],

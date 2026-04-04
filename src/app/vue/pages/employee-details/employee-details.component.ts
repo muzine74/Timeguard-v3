@@ -1,11 +1,14 @@
-import { Component, OnInit, signal, effect, Injector, Signal, isDevMode } from '@angular/core';
+import { Component, OnInit, signal, effect, Injector, Signal, isDevMode, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { AuthService }          from '../../../state/auth/auth.service';
-import { EmployeesService }     from '../../../state/employees/employees.service';
-import { WeekService, PointageEmployeeService, PointageAdminService, SaveStateService } from '../../../state/pointage/pointage.service';
-import { Employee, WorkDate, WorkStats,  } from '../../../models';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService }             from '../../../state/auth/auth.service';
+import { EmployeesService }        from '../../../state/employees/employees.service';
+import { WeekService }             from '../../../state/pointage/week.service';
+import { PointageEmployeeService } from '../../../state/pointage/pointage-employee.service';
+import { PointageAdminService }    from '../../../state/pointage/pointage-admin.service';
+import { SaveStateService }        from '../../../state/pointage/save-state.service';
+import { Employee, WorkDate, WorkStats } from '../../../models';
 import { SectionHeaderComponent }  from '../../components/section-header/section-header.component';
 import { StatsBarComponent }       from '../../components/stats-bar/stats-bar.component';
 import { DatePickerComponent }     from '../../components/date-picker/date-picker.component';
@@ -15,6 +18,7 @@ import { LoadingSpinnerComponent } from '../../components/loading-spinner/loadin
 @Component({
   selector: 'app-employee-details',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule, FormsModule,
     SectionHeaderComponent, StatsBarComponent, DatePickerComponent,
@@ -38,8 +42,12 @@ export class EmployeeDetailsComponent implements OnInit {
   editingEntry = signal<WorkDate | null>(null);
   modalForm    = signal<Partial<WorkDate>>({});
 
-  isSaving!: Signal<boolean>;
-  progress!: Signal<number>;
+  isSaving!:  Signal<boolean>;
+  progress!:  Signal<number>;
+  isLocked!:  Signal<boolean>;
+  lockedAt!:  Signal<string | null>;
+  validating = signal(false);
+  hasSaved   = signal(false); // true après un save réussi — déverrouille le bouton Valider
   saved = signal(false);
   toast = '';
 
@@ -63,6 +71,8 @@ export class EmployeeDetailsComponent implements OnInit {
   ) {
     this.isSaving = saveSvc.isSaving;
     this.progress = saveSvc.progress;
+    this.isLocked = saveSvc.isLocked;
+    this.lockedAt = saveSvc.lockedAt;
   }
 
   ngOnInit(): void {
@@ -105,6 +115,7 @@ export class EmployeeDetailsComponent implements OnInit {
 
     this._lastEmpId = id;
     this.selectedId.set(id);
+    this.hasSaved.set(false);
     this.loadingDetail.set(true);
     this.router.navigate(['/employees', id]);
 
@@ -133,6 +144,7 @@ export class EmployeeDetailsComponent implements OnInit {
     this.log(`pointage → semaine: ${week}, employé: ${id}`);
     this.log(`  cache vidé (changement d'employé)`);
     this.ptEmpSvc.clearCache();
+    this.saveSvc.loadStatus(id, week);
     this.ptEmpSvc.load(week, id, () => {
       this.log('onLoaded → admSvc.load()');
       this.admSvc.load(week, id);
@@ -150,9 +162,7 @@ export class EmployeeDetailsComponent implements OnInit {
       },
       error: err => {
         this.warn(`✕ getWorkDates échoué — status: ${err.status}`);
-        const demo = this._demoWorkDates(id);
-        this.warn(`  → fallback démo: ${demo.length} entrées`);
-        this.workDates.set(demo);
+        this.workDates.set([]);
       }
     });
 
@@ -160,8 +170,7 @@ export class EmployeeDetailsComponent implements OnInit {
       next: s  => { this.stats.set(s); this.log(`✓ stats:`, s); },
       error: err => {
         this.warn(`✕ getStats échoué — status: ${err.status}`);
-        const demo = { totalDays:22, presentDays:19, absentDays:2, lateDays:1, totalHours:152, averageHours:8 };
-        this.stats.set(demo);
+        this.stats.set(null);
       }
     });
   }
@@ -184,10 +193,12 @@ export class EmployeeDetailsComponent implements OnInit {
 
     if (weekChanged) {
       this._lastWeek = week;
+      this.hasSaved.set(false);
       this.log(`  → reload timelogs pour semaine ${week}`);
+      if (id) this.saveSvc.loadStatus(id, week);
       this.ptEmpSvc.load(week, id ?? undefined, () => {
-      this.admSvc.load(week, id ?? undefined);
-    });
+        this.admSvc.load(week, id ?? undefined);
+      });
     } else {
       this.log(`  → même semaine, pas de reload timelogs`);
     }
@@ -207,7 +218,7 @@ export class EmployeeDetailsComponent implements OnInit {
   }
 
   initials(e: Employee): string {
-    const parts = e.employeeName.trim().split(' ');
+    const parts = (e.employeeName ?? '').trim().split(' ');
     return ((parts[0]?.[0] ?? '') + (parts[1]?.[0] ?? '')).toUpperCase() || '?';
   }
 
@@ -268,24 +279,65 @@ export class EmployeeDetailsComponent implements OnInit {
 
   async save(): Promise<void> {
     this.log('save()');
+    const empId = this.selectedId();
+    if (empId) this.ptEmpSvc.setEmployeeId(empId);
     const ok = await this.saveSvc.save();
     this.log(`save() → ${ok ? '✓' : '✕'}`);
+    if (ok) this.hasSaved.set(true);
     this.toast = ok ? '✓ Sauvegardé avec succès' : '✕ Erreur lors de la sauvegarde';
     this.saved.set(true);
     setTimeout(() => this.saved.set(false), 3000);
   }
 
-  private _demoWorkDates(empId: string): WorkDate[] {
-    const base = new Date(); base.setDate(1);
-    return Array.from({ length: 5 }, (_, i) => {
-      const d = new Date(base); d.setDate(i * 4 + 2);
-      return {
-        id: i + 1, employeeId: 0,
-        date: d.toISOString().split('T')[0],
-        checkIn: '08:30', checkOut: '17:15', totalHours: 8.75,
-        status: i === 2 ? 'late' : 'present',
-        note: i === 2 ? 'Retard exceptionnel' : undefined
-      } as WorkDate;
+  unvalidateWeek(): void {
+    const empId = this.selectedId();
+    const week  = this.weekSvc.weekKey();
+    if (!empId) return;
+
+    this.validating.set(true);
+    this.saveSvc.unvalidateWeek(empId, week).subscribe({
+      next: () => {
+        this.saveSvc.loadStatus(empId, week);
+        this.hasSaved.set(false); // doit re-sauvegarder avant de re-valider
+        this.ptEmpSvc.clearCache();
+        this.ptEmpSvc.load(week, empId, () => this.admSvc.load(week, empId));
+        this.toast = '🔓 Validation annulée.';
+        this.saved.set(true);
+        this.validating.set(false);
+        setTimeout(() => this.saved.set(false), 4000);
+      },
+      error: (err: any) => {
+        this.toast = err?.error?.message ?? '✕ Erreur lors de l\'annulation.';
+        this.saved.set(true);
+        this.validating.set(false);
+        setTimeout(() => this.saved.set(false), 4000);
+      },
     });
   }
+
+  validateWeek(): void {
+    const empId   = this.selectedId();
+    const week    = this.weekSvc.weekKey();
+    const adminId = this.auth.employeeId() ?? '';
+    if (!empId || !adminId) return;
+
+    this.validating.set(true);
+    this.saveSvc.validateWeek(empId, week, adminId).subscribe({
+      next: () => {
+        this.saveSvc.loadStatus(empId, week);
+        this.hasSaved.set(false); // Sauvegarder désactivé après validation
+        this.toast = '✓ Semaine validée — pointage verrouillé.';
+        this.saved.set(true);
+        this.validating.set(false);
+        setTimeout(() => this.saved.set(false), 4000);
+      },
+      error: (err: any) => {
+        this.toast = err?.error?.message ?? '✕ Erreur lors de la validation.';
+        this.saved.set(true);
+        this.validating.set(false);
+        setTimeout(() => this.saved.set(false), 4000);
+      },
+    });
+  }
+
 }

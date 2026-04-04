@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SaveStateService } from '../../../state/pointage/pointage.service';
+import { SaveStateService } from '../../../state/pointage/save-state.service';
 
 @Component({
   selector: 'app-stats-bar',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
   template: `
     <div class="stats">

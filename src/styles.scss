@@ -63,7 +63,22 @@ input, select, textarea { font-family: inherit; }
     font-size: 11px; padding: 5px 10px;
     &:hover { background: rgba(224,82,82,.2); }
   }
+  &-validate {
+    background: rgba(30,200,100,.1); color: #4ecb80; border-color: rgba(30,200,100,.3);
+    &:hover:not(:disabled) { background: rgba(30,200,100,.2); }
+    &:disabled { opacity: .5; cursor: not-allowed; }
+  }
 }
+
+/* ── Bannière semaine verrouillée ── */
+.lock-banner {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 20px;
+  background: rgba(201,162,39,.07); border-bottom: 1px solid rgba(201,162,39,.2);
+  font-size: 13px; font-weight: 600; color: var(--accent);
+}
+.lock-icon { font-size: 15px; }
+.lock-txt  { flex: 1; }
 
 /* ── Toast ── */
 .toast {

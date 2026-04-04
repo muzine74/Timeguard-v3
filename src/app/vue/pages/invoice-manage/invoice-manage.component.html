@@ -1,0 +1,283 @@
+<div class="page-wrap">
+
+  <!-- Toasts -->
+  <div class="toast toast-success" [class.toast-show]="success()">{{ success() }}</div>
+  <div class="toast toast-error"   [class.toast-show]="error()">{{ error() }}</div>
+
+  <!-- En-tête -->
+  <header class="page-hdr">
+    <div>
+      <h1 class="page-title">Gestion des factures</h1>
+      <p class="page-sub">{{ bills().length }} facture(s) trouvée(s)</p>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-primary" (click)="navigateGenerate()">+ Nouvelle facture</button>
+    </div>
+  </header>
+
+  <!-- Filtres -->
+  <div class="filters-bar">
+    <input class="inp inp-search" [(ngModel)]="search" placeholder="Rechercher par compagnie, numéro, montant..." (keyup.enter)="loadBills()" />
+
+    <label class="filter-chk"><input type="checkbox" [(ngModel)]="onlyNotSent" (change)="loadBills()" /> Non envoyées</label>
+    <label class="filter-chk"><input type="checkbox" [(ngModel)]="onlySent"    (change)="loadBills()" /> Envoyées</label>
+    <label class="filter-chk"><input type="checkbox" [(ngModel)]="onlyPaid"    (change)="loadBills()" /> Payées</label>
+    <label class="filter-chk"><input type="checkbox" [(ngModel)]="onlyUnpaid"  (change)="loadBills()" /> Impayées</label>
+
+    <div class="filter-dates">
+      <input class="inp inp-date" type="date" [(ngModel)]="dateFrom" (change)="loadBills()" />
+      <span class="date-sep">→</span>
+      <input class="inp inp-date" type="date" [(ngModel)]="dateTo"   (change)="loadBills()" />
+    </div>
+
+    <button class="btn btn-outline btn-sm" (click)="loadBills()">🔍 Filtrer</button>
+  </div>
+
+  <!-- Chargement -->
+  <div class="loading-wrap" *ngIf="loading()">
+    <div class="loading-spinner"></div>
+    <span>Chargement des factures...</span>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap" *ngIf="!loading()">
+    <table class="bills-table">
+      <thead>
+        <tr>
+          <th>N° Facture</th>
+          <th>Compagnie</th>
+          <th>Période</th>
+          <th>Date</th>
+          <th class="col-right">Total TTC</th>
+          <th class="col-center">Statut envoi</th>
+          <th class="col-center">Paiement</th>
+          <th class="col-actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let b of bills()" (click)="openDetail(b)" class="bill-row">
+          <td class="bill-number">{{ b.billNumber }}</td>
+          <td>{{ b.companyName }}</td>
+          <td>{{ b.period }}</td>
+          <td>{{ b.billedDate | date:'dd/MM/yyyy' }}</td>
+          <td class="col-right bill-amount">{{ b.totalWithTax | number:'1.2-2' }} $</td>
+          <td class="col-center" (click)="$event.stopPropagation()">
+            <!-- Non envoyée → cliquable pour marquer envoyée -->
+            <button class="badge-btn badge-not-sent" *ngIf="!b.isSent"
+                    title="Cliquer pour marquer comme envoyée"
+                    (click)="openSend(b, $event)">
+              ⏳ Non envoyée
+            </button>
+            <!-- Envoyée → badge statique -->
+            <span class="badge badge-sent" *ngIf="b.isSent">✓ Envoyée</span>
+          </td>
+          <td class="col-center">
+            <button class="badge-btn" [class.badge-paid]="b.isPaid" [class.badge-unpaid]="!b.isPaid"
+                    (click)="togglePaid(b, $event)">
+              {{ b.isPaid ? '✓ Payée' : '◎ Impayée' }}
+            </button>
+          </td>
+          <td class="col-actions" (click)="$event.stopPropagation()">
+            <!-- Facture non envoyée → Supprimer -->
+            <button class="act-btn act-delete" *ngIf="!b.isSent"
+                    title="Supprimer"
+                    (click)="openDelete(b, $event)">🗑</button>
+            <!-- Facture envoyée → Avoir -->
+            <button class="act-btn act-avoir" *ngIf="b.isSent"
+                    title="Créer un avoir"
+                    (click)="openAvoir(b, $event)">📋 Avoir</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="empty-state" *ngIf="bills().length === 0">
+      <div class="empty-icon">🧾</div>
+      <div class="empty-txt">Aucune facture trouvée</div>
+      <button class="btn btn-primary" (click)="navigateGenerate()">Créer la première facture</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     MODAL DÉTAIL
+     ══════════════════════════════════ -->
+<div class="modal-backdrop" *ngIf="modalMode() === 'detail'" (click)="closeModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-hdr">
+      <div class="modal-title">Détail — {{ selectedBill()?.billNumber }}</div>
+      <button class="modal-close" (click)="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="loading-wrap" *ngIf="loadingDetail()"><div class="loading-spinner"></div></div>
+      <ng-container *ngIf="!loadingDetail() && detailBill()">
+        <div class="detail-meta">
+          <div class="detail-row"><span>Compagnie</span><strong>{{ detailBill()!.companyName }}</strong></div>
+          <div class="detail-row"><span>Période</span><strong>{{ detailBill()!.period }}</strong></div>
+          <div class="detail-row"><span>Date</span><strong>{{ detailBill()!.billedDate | date:'dd/MM/yyyy' }}</strong></div>
+          <div class="detail-row"><span>Visites</span><strong>{{ detailBill()!.numberOfVisits }}</strong></div>
+          <div class="detail-row" *ngIf="detailBill()!.note"><span>Note</span><strong>{{ detailBill()!.note }}</strong></div>
+        </div>
+        <table class="detail-table">
+          <thead><tr><th>Description</th><th class="col-center">Qté</th><th class="col-right">Prix unit.</th><th class="col-right">Sous-total</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let l of detailBill()!.lines">
+              <td>{{ l.description }}</td>
+              <td class="col-center">{{ l.quantity }}</td>
+              <td class="col-right">{{ l.unitPrice | number:'1.2-2' }} $</td>
+              <td class="col-right">{{ l.subTotal | number:'1.2-2' }} $</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="detail-totals">
+          <div class="detail-total-row"><span>Sous-total</span><strong>{{ detailBill()!.totalBeforeTax | number:'1.2-2' }} $</strong></div>
+          <div class="detail-total-row"><span>TPS (5 %)</span><strong>{{ detailBill()!.tps | number:'1.2-2' }} $</strong></div>
+          <div class="detail-total-row"><span>TVQ (9,975 %)</span><strong>{{ detailBill()!.tvq | number:'1.2-2' }} $</strong></div>
+          <div class="detail-total-row detail-ttc"><span>TOTAL TTC</span><strong>{{ detailBill()!.totalWithTax | number:'1.2-2' }} $</strong></div>
+        </div>
+      </ng-container>
+    </div>
+    <div class="modal-footer">
+
+      <!-- ── État normal ── -->
+      <ng-container *ngIf="detailAction === null">
+        <button class="btn btn-outline" (click)="closeModal()">Fermer</button>
+        <button class="btn act-send-btn"   *ngIf="!selectedBill()?.isSent" (click)="requestDetailSend()">📤 Marquer envoyée</button>
+        <button class="btn act-delete-btn" *ngIf="!selectedBill()?.isSent" (click)="requestDetailDelete()">🗑 Supprimer</button>
+        <button class="btn act-avoir-btn"  *ngIf="selectedBill()?.isSent"  (click)="openAvoir(selectedBill()!, $event)">📋 Créer un avoir</button>
+      </ng-container>
+
+      <!-- ── Confirmation envoi ── -->
+      <ng-container *ngIf="detailAction === 'send'">
+        <span class="confirm-inline-txt">Marquer cette facture comme envoyée ? Action irréversible.</span>
+        <button class="btn btn-outline" [disabled]="acting()" (click)="cancelDetailAction()">Annuler</button>
+        <button class="btn act-send-btn" [disabled]="acting()" (click)="confirmDetailSend()">
+          <span *ngIf="!acting()">📤 Confirmer l'envoi</span>
+          <span *ngIf="acting()" class="spinner"></span>
+        </button>
+      </ng-container>
+
+      <!-- ── Confirmation suppression ── -->
+      <ng-container *ngIf="detailAction === 'delete'">
+        <span class="confirm-inline-txt confirm-inline-danger">Supprimer définitivement cette facture ?</span>
+        <button class="btn btn-outline" [disabled]="acting()" (click)="cancelDetailAction()">Annuler</button>
+        <button class="btn btn-danger" [disabled]="acting()" (click)="confirmDetailDelete()">
+          <span *ngIf="!acting()">🗑 Confirmer la suppression</span>
+          <span *ngIf="acting()" class="spinner"></span>
+        </button>
+      </ng-container>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     MODAL CONFIRMATION ENVOI
+     ══════════════════════════════════ -->
+<div class="modal-backdrop" *ngIf="modalMode() === 'send'" (click)="closeModal()">
+  <div class="modal modal-sm" (click)="$event.stopPropagation()">
+    <div class="modal-hdr">
+      <div class="modal-title">Confirmer l'envoi</div>
+      <button class="modal-close" (click)="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="confirm-icon">📤</div>
+      <p class="confirm-txt">
+        Marquer la facture <strong>{{ selectedBill()?.billNumber }}</strong>
+        de <strong>{{ selectedBill()?.companyName }}</strong> comme <strong>envoyée</strong> ?
+      </p>
+      <p class="confirm-warn">Cette action est irréversible. La facture ne pourra plus être supprimée.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" (click)="closeModal()">Annuler</button>
+      <button class="btn btn-primary" [disabled]="acting()" (click)="confirmSend()">
+        <span *ngIf="!acting()">📤 Confirmer l'envoi</span>
+        <span *ngIf="acting()" class="spinner"></span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     MODAL SUPPRESSION
+     ══════════════════════════════════ -->
+<div class="modal-backdrop" *ngIf="modalMode() === 'delete'" (click)="closeModal()">
+  <div class="modal modal-sm" (click)="$event.stopPropagation()">
+    <div class="modal-hdr">
+      <div class="modal-title">Supprimer la facture</div>
+      <button class="modal-close" (click)="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="confirm-icon">🗑</div>
+      <p class="confirm-txt">
+        Voulez-vous supprimer la facture <strong>{{ selectedBill()?.billNumber }}</strong>
+        de <strong>{{ selectedBill()?.companyName }}</strong> ?
+      </p>
+      <p class="confirm-warn">Cette action est irréversible.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" (click)="closeModal()">Annuler</button>
+      <button class="btn btn-danger" [disabled]="acting()" (click)="confirmDelete()">
+        <span *ngIf="!acting()">🗑 Supprimer</span>
+        <span *ngIf="acting()" class="spinner"></span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     MODAL AVOIR
+     ══════════════════════════════════ -->
+<div class="modal-backdrop" *ngIf="modalMode() === 'avoir'" (click)="closeModal()">
+  <div class="modal modal-lg" (click)="$event.stopPropagation()">
+    <div class="modal-hdr">
+      <div>
+        <div class="modal-title">Créer un avoir</div>
+        <div class="modal-sub">Réf. {{ selectedBill()?.billNumber }} — {{ selectedBill()?.companyName }}</div>
+      </div>
+      <button class="modal-close" (click)="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="loading-wrap" *ngIf="loadingDetail()"><div class="loading-spinner"></div></div>
+      <ng-container *ngIf="!loadingDetail()">
+        <!-- Lignes -->
+        <table class="detail-table">
+          <thead>
+            <tr><th>Description</th><th>Qté</th><th>Prix unit.</th><th>Sous-total</th><th></th></tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let l of aLines; let i = index">
+              <td><input class="inp" [(ngModel)]="l.description" placeholder="Description..." /></td>
+              <td><input class="inp inp-num" type="number" min="1" [(ngModel)]="l.quantity" (ngModelChange)="recalcALine(i)" /></td>
+              <td><input class="inp inp-num" type="number" min="0" step="0.01" [(ngModel)]="l.unitPrice" (ngModelChange)="recalcALine(i)" /></td>
+              <td class="col-right">{{ l.subTotal | number:'1.2-2' }} $</td>
+              <td><button class="btn-rm" (click)="removeALine(i)" [disabled]="aLines.length === 1">✕</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <button class="btn btn-outline btn-sm" (click)="addALine()" style="margin-top:8px">+ Ligne</button>
+
+        <!-- Totaux avoir -->
+        <div class="detail-totals">
+          <div class="detail-total-row"><span>Sous-total</span><strong>{{ aSubtotal | number:'1.2-2' }} $</strong></div>
+          <div class="detail-total-row"><span>TPS (5 %)</span><strong>{{ aTps | number:'1.2-2' }} $</strong></div>
+          <div class="detail-total-row"><span>TVQ (9,975 %)</span><strong>{{ aTvq | number:'1.2-2' }} $</strong></div>
+          <div class="detail-total-row detail-ttc"><span>TOTAL AVOIR</span><strong>{{ aTtc | number:'1.2-2' }} $</strong></div>
+        </div>
+
+        <!-- Note -->
+        <div class="field" style="margin-top:14px">
+          <label>Note de l'avoir</label>
+          <input class="inp" [(ngModel)]="aNote" placeholder="Raison de la correction..." />
+        </div>
+      </ng-container>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" (click)="closeModal()">Annuler</button>
+      <button class="btn btn-primary" [disabled]="acting() || loadingDetail()" (click)="confirmAvoir()">
+        <span *ngIf="!acting()">📋 Créer l'avoir</span>
+        <span *ngIf="acting()" class="spinner"></span>
+      </button>
+    </div>
+  </div>
+</div>
