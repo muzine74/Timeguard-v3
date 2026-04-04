@@ -1,0 +1,104 @@
+<div class="page-wrap">
+
+  <div class="toast" [class.toast-show]="saved()">✓ Employé créé avec succès</div>
+  <div class="toast toast-error" [class.toast-show]="error()">{{ error() }}</div>
+
+  <header class="page-hdr">
+    <div>
+      <h1 class="page-title">Nouvel employé</h1>
+      <p class="page-sub">Remplissez les informations pour créer un nouvel employé</p>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-outline" (click)="cancel()">✕ Annuler</button>
+      <button class="btn btn-primary" [disabled]="saving()" (click)="submit()">
+        <span *ngIf="!saving()">✓ Ajouter</span>
+        <span *ngIf="saving()" class="spinner"></span>
+      </button>
+    </div>
+  </header>
+
+  <div class="form-layout">
+
+    <!-- ── Col gauche ── -->
+    <div class="col-left">
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-icon">👤</span>
+          <div>
+            <div class="card-title">Informations générales</div>
+            <div class="card-sub">Identification de l'employé</div>
+          </div>
+        </div>
+        <div class="fields-grid">
+          <div class="field span-full">
+            <label>Nom complet *</label>
+            <input class="inp" [(ngModel)]="form.employeeName" placeholder="Sophie Martin" />
+          </div>
+          <div class="field">
+            <label>NAS</label>
+            <input class="inp" [(ngModel)]="form.nas" placeholder="123 456 789" />
+          </div>
+          <div class="field">
+            <label>Courriel</label>
+            <input class="inp" type="email" [(ngModel)]="form.employeeMail" placeholder="sophie@exemple.com" />
+          </div>
+          <div class="field">
+            <label>Téléphone</label>
+            <input class="inp" [(ngModel)]="form.employeePhone" placeholder="514-555-0001" />
+          </div>
+          <div class="field span-full">
+            <label>Note</label>
+            <textarea class="inp inp-ta" [(ngModel)]="form.employeeNote" rows="3" placeholder="Informations supplémentaires..."></textarea>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Col droite ── -->
+    <div class="col-right">
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-icon">📍</span>
+          <div>
+            <div class="card-title">Adresse</div>
+            <div class="card-sub">Localisation</div>
+          </div>
+        </div>
+        <div class="fields-grid">
+          <div class="field">
+            <label>N° civique</label>
+            <input class="inp" [(ngModel)]="form.employeeCivicNumber" placeholder="123" />
+          </div>
+          <div class="field">
+            <label>Suite / App</label>
+            <input class="inp" [(ngModel)]="form.employeeSuite" placeholder="App 2" />
+          </div>
+          <div class="field">
+            <label>Ville</label>
+            <input class="inp" [(ngModel)]="form.employeeCity" placeholder="Montréal" />
+          </div>
+          <div class="field">
+            <label>Province</label>
+            <input class="inp" [(ngModel)]="form.employeeState" />
+          </div>
+          <div class="field">
+            <label>Code postal</label>
+            <input class="inp" [(ngModel)]="form.employeeZipCode" placeholder="H1A 1A1" />
+          </div>
+          <div class="field">
+            <label>Pays</label>
+            <input class="inp" [(ngModel)]="form.employeeCountry" />
+          </div>
+          <div class="field span-full">
+            <label>Note adresse</label>
+            <input class="inp" [(ngModel)]="form.employeeAdressNote" placeholder="Porte bleue, 2e étage..." />
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

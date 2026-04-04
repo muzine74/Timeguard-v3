@@ -1,0 +1,181 @@
+<div class="page-layout no-print">
+
+  <!-- ── Sidebar compagnies ── -->
+  <aside class="sidebar no-print">
+    <div class="sidebar-hdr">
+      <div class="sidebar-title">Compagnies actives</div>
+      <input class="sidebar-search" [(ngModel)]="coSearch" placeholder="Rechercher..." />
+    </div>
+    <div class="sidebar-loading" *ngIf="coLoading()"><div class="mini-spinner"></div></div>
+    <div class="sidebar-list" *ngIf="!coLoading()">
+      <div *ngFor="let c of filteredCompanies"
+           class="sidebar-item"
+           [class.active]="selectedCo()?.companyId === c.companyId"
+           (click)="selectCompany(c)">
+        <div class="sidebar-avatar">{{ initials(c.companyName) }}</div>
+        <div class="sidebar-info">
+          <div class="sidebar-name">{{ c.companyName }}</div>
+          <div class="sidebar-meta">{{ c.companyId | slice:0:8 }}...</div>
+        </div>
+      </div>
+      <div class="sidebar-empty" *ngIf="filteredCompanies.length === 0">Aucune compagnie</div>
+    </div>
+  </aside>
+
+  <!-- ── Zone principale ── -->
+  <div class="main-area">
+
+    <!-- Toasts -->
+    <div class="toast" [class.toast-show]="saved()">✓ Facture enregistrée avec succès</div>
+    <div class="toast toast-sent" [class.toast-show]="sent()">✓ Facture enregistrée et marquée envoyée</div>
+    <div class="toast toast-error" [class.toast-show]="error()">{{ error() }}</div>
+
+    <!-- Aucune sélection -->
+    <div class="no-selection" *ngIf="!selectedCo()">
+      <div class="no-sel-icon">🧾</div>
+      <div class="no-sel-txt">Sélectionnez une compagnie pour créer une facture</div>
+    </div>
+
+    <!-- Formulaire + aperçu -->
+    <ng-container *ngIf="selectedCo()">
+
+      <!-- ── En-tête actions ── -->
+      <div class="action-bar no-print">
+        <div>
+          <h1 class="page-title">Nouvelle facture — {{ selectedCo()!.companyName }}</h1>
+          <p class="page-sub">Période {{ period }}</p>
+        </div>
+        <div class="action-btns">
+          <button class="btn btn-outline" (click)="printPreview()">🖨 Aperçu PDF</button>
+          <button class="btn btn-secondary" [disabled]="saving()" (click)="save()">
+            <span *ngIf="!saving()">💾 Enregistrer</span>
+            <span *ngIf="saving()" class="spinner"></span>
+          </button>
+          <button class="btn btn-primary" [disabled]="saving()" (click)="saveAndSend()">
+            <span *ngIf="!saving()">📤 Enregistrer et envoyer</span>
+            <span *ngIf="saving()" class="spinner"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ── Paramètres de la facture ── -->
+      <div class="params-card no-print">
+        <div class="params-grid">
+          <div class="field">
+            <label>Période (AAAA-MM)</label>
+            <input class="inp" [(ngModel)]="period" placeholder="2025-04" />
+          </div>
+          <div class="field">
+            <label>Date de facturation</label>
+            <input class="inp" type="date" [(ngModel)]="billedDate" />
+          </div>
+          <div class="field">
+            <label>Nombre de visites</label>
+            <input class="inp" type="number" min="0" [(ngModel)]="numberOfVisits" />
+          </div>
+          <div class="field span-full">
+            <label>Note</label>
+            <input class="inp" [(ngModel)]="note" placeholder="Informations supplémentaires..." />
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════
+           APERÇU FACTURE (visible à l'écran + à l'impression)
+           ══════════════════════════════════════════════════════ -->
+      <div class="invoice-preview">
+
+        <!-- En-tête facture -->
+        <div class="inv-header">
+          <div class="inv-brand">
+            <div class="inv-logo">TG</div>
+            <div>
+              <div class="inv-company-name">TimeGuard</div>
+              <div class="inv-company-sub">Services de gestion du temps</div>
+            </div>
+          </div>
+          <div class="inv-meta">
+            <div class="inv-title">FACTURE</div>
+            <div class="inv-meta-line"><span>Numéro :</span> <strong>À la sauvegarde</strong></div>
+            <div class="inv-meta-line"><span>Période :</span> <strong>{{ period }}</strong></div>
+            <div class="inv-meta-line"><span>Date :</span> <strong>{{ billedDate | date:'dd/MM/yyyy' }}</strong></div>
+          </div>
+        </div>
+
+        <!-- Client -->
+        <div class="inv-client">
+          <div class="inv-section-lbl">FACTURÉ À</div>
+          <div class="inv-client-name">{{ selectedCo()!.companyName }}</div>
+          <div class="inv-client-meta" *ngIf="numberOfVisits > 0">{{ numberOfVisits }} visite(s)</div>
+        </div>
+
+        <!-- Lignes -->
+        <table class="inv-table">
+          <thead>
+            <tr>
+              <th class="col-desc">Description</th>
+              <th class="col-qty">Qté</th>
+              <th class="col-price">Prix unit.</th>
+              <th class="col-total">Sous-total</th>
+              <th class="col-action no-print"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let l of lines; let i = index">
+              <td>
+                <input class="inv-inp no-print" [(ngModel)]="l.description" placeholder="Description du service..." />
+                <span class="print-only">{{ l.description }}</span>
+              </td>
+              <td>
+                <input class="inv-inp inv-inp-num no-print" type="number" min="1" [(ngModel)]="l.quantity" (ngModelChange)="recalcLine(i)" />
+                <span class="print-only">{{ l.quantity }}</span>
+              </td>
+              <td>
+                <input class="inv-inp inv-inp-num no-print" type="number" min="0" step="0.01" [(ngModel)]="l.unitPrice" (ngModelChange)="recalcLine(i)" />
+                <span class="print-only">{{ l.unitPrice | number:'1.2-2' }} $</span>
+              </td>
+              <td class="col-total-val">{{ l.subTotal | number:'1.2-2' }} $</td>
+              <td class="col-action no-print">
+                <button class="btn-rm" (click)="removeLine(i)" [disabled]="lines.length === 1">✕</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Bouton ajouter ligne -->
+        <div class="inv-add-line no-print">
+          <button class="btn btn-outline btn-sm" (click)="addLine()">+ Ajouter une ligne</button>
+        </div>
+
+        <!-- Totaux -->
+        <div class="inv-totals">
+          <div class="inv-total-row">
+            <span>Sous-total</span>
+            <strong>{{ subtotal | number:'1.2-2' }} $</strong>
+          </div>
+          <div class="inv-total-row">
+            <span>TPS (5 %)</span>
+            <strong>{{ tpsAmount | number:'1.2-2' }} $</strong>
+          </div>
+          <div class="inv-total-row">
+            <span>TVQ (9,975 %)</span>
+            <strong>{{ tvqAmount | number:'1.2-2' }} $</strong>
+          </div>
+          <div class="inv-total-row inv-total-ttc">
+            <span>TOTAL</span>
+            <strong>{{ totalTtc | number:'1.2-2' }} $</strong>
+          </div>
+        </div>
+
+        <!-- Note -->
+        <div class="inv-note" *ngIf="note">
+          <div class="inv-note-lbl">Note</div>
+          <div class="inv-note-txt">{{ note }}</div>
+        </div>
+
+        <div class="inv-footer">Merci pour votre confiance — TimeGuard</div>
+      </div>
+
+    </ng-container>
+  </div>
+</div>

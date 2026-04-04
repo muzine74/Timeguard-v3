@@ -3,6 +3,15 @@
   <div class="progress-fill" [style.width.%]="progress()"></div>
 </div>
 
+<!-- Bannière semaine verrouillée (visible employé ET admin) -->
+<div class="lock-banner" *ngIf="isLocked()">
+  <span class="lock-icon">🔒</span>
+  <span class="lock-txt">
+    Semaine validée par l'admin
+    <ng-container *ngIf="lockedAt()"> — le {{ lockedAt()! | date:'dd/MM/yyyy à HH:mm' }}</ng-container>
+  </span>
+</div>
+
 <main class="main">
 
   <header class="page-hdr">
@@ -12,7 +21,28 @@
     </div>
     <div class="page-actions">
       <button class="btn btn-outline">↓ Exporter</button>
-      <button class="btn btn-primary" [disabled]="isSaving()" (click)="save()">
+
+      <!-- Valider : visible admin, semaine non verrouillée, activé après save -->
+      <button class="btn btn-validate"
+              *ngIf="auth.isAdmin() && !isLocked()"
+              [disabled]="validating() || !hasSaved()"
+              (click)="validateWeek()">
+        <span *ngIf="!validating()">✅ Valider la semaine</span>
+        <span *ngIf="validating()" class="spinner"></span>
+      </button>
+      <!-- Annuler validation : visible admin, semaine verrouillée -->
+      <button class="btn btn-danger-sm"
+              *ngIf="auth.isAdmin() && isLocked()"
+              [disabled]="validating()"
+              (click)="unvalidateWeek()">
+        <span *ngIf="!validating()">🔓 Annuler la validation</span>
+        <span *ngIf="validating()" class="spinner"></span>
+      </button>
+
+      <!-- Sauvegarder : désactivé si semaine verrouillée -->
+      <button class="btn btn-primary"
+              [disabled]="isSaving() || isLocked()"
+              (click)="save()">
         <span *ngIf="!isSaving()">💾 Sauvegarder</span>
         <span *ngIf="isSaving()" class="spinner"></span>
       </button>
@@ -35,12 +65,15 @@
       icon="👤"
       title="Pointage Employé"
       subtitle="Cochez les jours de présence par compagnie">
-      <button class="btn btn-sm btn-ghost"
-              (click)="ptEmpSvc.selectAll(weekSvc.weekDays())">Tout ✓</button>
-      <button class="btn btn-sm btn-ghost"
-              (click)="ptEmpSvc.clearAll()">Effacer</button>
+      <!-- Boutons tout/effacer masqués si verrouillé en mode employé -->
+      <ng-container *ngIf="auth.isAdmin() || !isLocked()">
+        <button class="btn btn-sm btn-ghost"
+                (click)="ptEmpSvc.selectAll(weekSvc.weekDays())">Tout ✓</button>
+        <button class="btn btn-sm btn-ghost"
+                (click)="ptEmpSvc.clearAll()">Effacer</button>
+      </ng-container>
     </app-section-header>
-    <app-pointage-table mode="employee"></app-pointage-table>
+    <app-pointage-table mode="employee" [locked]="isLocked()"></app-pointage-table>
   </section>
 
 </main>

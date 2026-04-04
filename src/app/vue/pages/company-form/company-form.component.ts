@@ -1,16 +1,14 @@
-import { Component, signal, isDevMode } from '@angular/core';
+import { Component, signal, isDevMode, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CompanyService } from  '../../../state/compagny/Company.service';
-import { CompanyForm, FrequencePaiement, FrequenceTravail, SemainePlanning, JourMensuel } from '../../../models';
-
-
-
+import { CompanyForm, FreqOption, SemainePlanning, JourMensuel } from '../../../models';
 
 @Component({
   selector: 'app-company-form',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule],
   templateUrl: './company-form.component.html',
   styleUrls: ['./company-form.component.scss'],
@@ -22,8 +20,12 @@ export class CompanyFormComponent {
   // Délègue au service
   saving = this.companySvc.saving;
 
-  freqPaiementOptions: FrequencePaiement[] = ['Hebdomadaire','Bi-hebdomadaire','Bi-mensuel','Mensuel'];
-  freqTravailOptions:  FrequenceTravail[]  = ['Hebdomadaire','Bi-hebdomadaire','Bi-mensuel','Mensuel'];
+  freqOptions: FreqOption[] = [
+    { value: 'hebdomadaire',   label: 'Hebdomadaire' },
+    { value: 'biHebdomadaire', label: 'Bi-hebdomadaire' },
+    { value: 'biMensuel',      label: 'Bi-mensuel' },
+    { value: 'mensuel',        label: 'Mensuel' },
+  ];
   jours       = ['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'] as const;
   joursLabels = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
 
@@ -37,29 +39,29 @@ export class CompanyFormComponent {
     zipCode: '', addressNote: '',
     contactName: '', contactMail: '', contactPhone: '', contactNote: '',
     tps: '', tvq: '',
-    frequencePaiement: 'Hebdomadaire',
-    frequenceTravail:  'Hebdomadaire',
+    frequencePaiement: 'hebdomadaire',
+    frequenceTravail:  'hebdomadaire',
     semaine1:        this._emptySemaine(),
     semaine2:        this._emptySemaine(),
     joursBiMensuel:  this._makeJours(15),
     joursMensuel:    [],
   };
 
-  get modeHebdo():     boolean { return this.form.frequenceTravail === 'Hebdomadaire'; }
-  get modeBiHebdo():   boolean { return this.form.frequenceTravail === 'Bi-hebdomadaire'; }
-  get modeBiMensuel(): boolean { return this.form.frequenceTravail === 'Bi-mensuel'; }
-  get modeMensuel():   boolean { return this.form.frequenceTravail === 'Mensuel'; }
+  get modeHebdo():     boolean { return this.form.frequenceTravail === 'hebdomadaire'; }
+  get modeBiHebdo():   boolean { return this.form.frequenceTravail === 'biHebdomadaire'; }
+  get modeBiMensuel(): boolean { return this.form.frequenceTravail === 'biMensuel'; }
+  get modeMensuel():   boolean { return this.form.frequenceTravail === 'mensuel'; }
 
   constructor(private companySvc: CompanyService, private router: Router) {}
 
   private _emptySemaine(): SemainePlanning {
-    const j = () => ({ actif: false, compagnie: '', employe: '' });
+    const j = () => ({ actif: false, compagnie: 0, employe: 0 });
     return { lundi:j(), mardi:j(), mercredi:j(), jeudi:j(), vendredi:j(), samedi:j(), dimanche:j() };
   }
 
   private _makeJours(count: number): JourMensuel[] {
     return Array.from({ length: count }, (_, i) => ({
-      jour: i + 1, actif: false, compagnie: '', employe: ''
+      jour: i + 1, actif: false, compagnie: 0, employe: 0
     }));
   }
 
@@ -109,7 +111,7 @@ export class CompanyFormComponent {
   addJourMensuel(): void {
     const used = new Set(this.form.joursMensuel.map(j => j.jour));
     const next = Array.from({length:31},(_,i)=>i+1).find(n => !used.has(n)) ?? 1;
-    this.form.joursMensuel.push({ jour: next, actif: true, compagnie: '', employe: '' });
+    this.form.joursMensuel.push({ jour: next, actif: true, compagnie: 0, employe: 0 });
     this.form.joursMensuel.sort((a, b) => a.jour - b.jour);
     this.log(`jour ${next} ajouté`);
   }

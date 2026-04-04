@@ -3,6 +3,14 @@
   <div class="progress-fill" [style.width.%]="progress()"></div>
 </div>
 
+<div class="lock-banner" *ngIf="isLocked()">
+  <span class="lock-icon">🔒</span>
+  <span class="lock-txt">
+    Semaine validée par l'admin
+    <ng-container *ngIf="lockedAt()"> — le {{ lockedAt()! | date:'dd/MM/yyyy à HH:mm' }}</ng-container>
+  </span>
+</div>
+
 <div class="page-layout">
 
   <aside class="sidebar">
@@ -49,7 +57,8 @@
         </div>
         <div class="profile-actions">
           <span class="status-badge active-badge">● Actif</span>
-          <button class="btn-save" (click)="save()" [disabled]="isSaving()">
+          <button class="btn-save" (click)="save()"
+                [disabled]="isSaving() || (auth.isAdmin() && isLocked())">
             <span class="spinner" *ngIf="isSaving()"></span>
             <span *ngIf="!isSaving()">💾 Sauvegarder</span>
           </button>
@@ -63,22 +72,26 @@
       <app-section-header mode="employee" icon="👤"
         title="Pointage Employé" subtitle="Présences hebdomadaires par compagnie">
         <app-date-picker (weekChange)="onWeekChange()"></app-date-picker>
-        <button class="btn-ghost" (click)="ptEmpSvc.selectAll(weekSvc.weekDays())">Tout ✓</button>
-        <button class="btn-ghost" (click)="ptEmpSvc.clearAll()">Effacer</button>
+        <ng-container *ngIf="auth.isAdmin() || !isLocked()">
+          <button class="btn-ghost" (click)="ptEmpSvc.selectAll(weekSvc.weekDays())">Tout ✓</button>
+          <button class="btn-ghost" (click)="ptEmpSvc.clearAll()">Effacer</button>
+        </ng-container>
+        <button class="btn btn-validate"
+                *ngIf="auth.isAdmin() && !isLocked()"
+                [disabled]="validating() || !hasSaved()"
+                (click)="validateWeek()">
+          <span *ngIf="!validating()">✅ Valider la semaine</span>
+          <span *ngIf="validating()" class="spinner"></span>
+        </button>
+        <button class="btn btn-danger-sm"
+                *ngIf="auth.isAdmin() && isLocked()"
+                [disabled]="validating()"
+                (click)="unvalidateWeek()">
+          <span *ngIf="!validating()">🔓 Annuler la validation</span>
+          <span *ngIf="validating()" class="spinner"></span>
+        </button>
       </app-section-header>
-      <app-pointage-table mode="employee"></app-pointage-table>
-    </section>
-
-    <section class="section">
-      <app-section-header mode="admin" icon="🛡"
-        title="Validé par Admin" subtitle="Validation administrative">
-        <span class="badge-div" *ngIf="admSvc.divergences() > 0">
-          {{ admSvc.divergences() }} non validé{{ admSvc.divergences() > 1 ? 's' : '' }}
-        </span>
-        <button class="btn-ghost" (click)="admSvc.copyFromEmployee()">Copier depuis employé</button>
-        <button class="btn-danger-sm" (click)="admSvc.clearAll()">Réinitialiser</button>
-      </app-section-header>
-      <app-pointage-table mode="admin"></app-pointage-table>
+      <app-pointage-table mode="employee" [locked]="isLocked()"></app-pointage-table>
     </section>
 
     <section class="section" *ngIf="!loadingDetail()">

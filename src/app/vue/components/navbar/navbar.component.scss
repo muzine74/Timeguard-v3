@@ -28,12 +28,86 @@
   @media (max-width: 1023px) { display: none; }
 
   .nav-link {
+    display: flex; align-items: center; gap: 6px;
     padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 500;
     cursor: pointer; color: var(--muted); transition: all .18s;
     &:hover  { color: var(--text); background: var(--surface2); }
     &.active { color: var(--accent); background: rgba(201,162,39,.1); }
   }
 }
+
+.nav-badge-role {
+  font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px;
+  padding: 2px 6px; border-radius: 20px;
+  background: rgba(59,130,246,.12); color: #60a5fa;
+  border: 1px solid rgba(59,130,246,.25);
+  &.nav-badge-admin {
+    background: rgba(224,82,82,.1); color: #f87171;
+    border-color: rgba(224,82,82,.25);
+  }
+}
+
+// ── Dropdown Compagnies ──────────────────────────────────
+.nav-dropdown {
+  position: relative;
+
+  &:hover .dropdown-panel,
+  &:focus-within .dropdown-panel { opacity: 1; pointer-events: all; transform: translateY(0); }
+
+  // Bouton actif quand un sous-item est actif
+  &:has(.dropdown-item.active) .dropdown-btn {
+    color: var(--accent); background: rgba(201,162,39,.1);
+  }
+}
+
+.dropdown-btn {
+  display: flex; align-items: center; gap: 5px;
+  padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 500;
+  background: none; border: none; font-family: inherit;
+  cursor: pointer; color: var(--muted); transition: all .18s;
+  &:hover { color: var(--text); background: var(--surface2); }
+}
+
+.dropdown-arrow {
+  font-size: 9px; margin-top: 1px; opacity: .7;
+  transition: transform .18s;
+  .nav-dropdown:hover & { transform: rotate(180deg); }
+}
+
+.dropdown-panel {
+  position: absolute; top: calc(100% + 8px); left: 0;
+  min-width: 210px;
+  background: rgba(10,13,26,.98);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 6px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.5);
+  opacity: 0; pointer-events: none;
+  transform: translateY(-8px);
+  transition: opacity .18s, transform .18s;
+  z-index: 300;
+}
+
+.dropdown-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 8px;
+  font-size: 13px; font-weight: 500; color: var(--muted);
+  cursor: pointer; transition: all .15s; text-decoration: none;
+  &:hover { color: var(--text); background: var(--surface2); }
+  &.active { color: var(--accent); background: rgba(201,162,39,.1); }
+}
+
+.di-icon {
+  font-size: 13px; width: 18px; text-align: center;
+  color: var(--accent); opacity: .7; flex-shrink: 0;
+}
+
+// ── Mobile : section Compagnies ──────────────────────────
+.mobile-section-label {
+  font-size: 9px; font-weight: 700; color: var(--accent);
+  text-transform: uppercase; letter-spacing: 1.2px;
+  padding: 10px 16px 4px; opacity: .7;
+}
+.mobile-sub { padding-left: 28px !important; font-size: 13px !important; }
 
 .nav-right {
   display: flex; align-items: center; gap: 8px;

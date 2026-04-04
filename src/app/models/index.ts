@@ -2,21 +2,19 @@
 export interface User {
   username:   string;
   role:       'ADMIN' | 'USER';
-  employeeId: string;   // Guid — extrait du JWT
+  employeeId: string;
 }
 export interface LoginRequest  { username: string; password: string; }
 export interface LoginResponse { token: string; username: string; role: string; employeeId: string; }
 
 // ── Domaine Employés ──────────────────────────────────────
 export interface Employee {
-  // ── Champs mappés depuis EmployeePoco ──
-  employeeId:   string;          // Guid
-  employeeName: string;          // EmployeeName
-  employeeMail: string;          // EmployeeMail
-  employeePhone?: string;        // EmployeePhone
-  employeeNote?:  string;        // EmployeeNote
-  nas?:           string;        // NAS (masqué)
-  // Adresse
+  employeeId:           string;
+  employeeName:         string;
+  employeeMail:         string;
+  employeePhone?:       string;
+  employeeNote?:        string;
+  nas?:                 string;
   employeeCivicNumber?: string;
   employeeSuite?:       string;
   employeeZipCode?:     string;
@@ -24,7 +22,6 @@ export interface Employee {
   employeeState?:       string;
   employeeCountry?:     string;
   employeeAdressNote?:  string;
-  // Compagnies liées
   employeeCompagnies?:  EmployeeCompagnie[];
 }
 
@@ -33,6 +30,9 @@ export interface EmployeeCompagnie {
   compagnieName: string;
 }
 
+// ── WorkDate / WorkStats (utilisés dans employee-details) ─
+export type WorkDateStatus = 'present' | 'absent' | 'late' | 'half-day';
+
 export interface WorkDate {
   id:         number;
   employeeId: number;
@@ -40,7 +40,7 @@ export interface WorkDate {
   checkIn:    string;
   checkOut:   string | null;
   totalHours: number | null;
-  status:     'present' | 'absent' | 'late' | 'half-day';
+  status:     WorkDateStatus;
   note?:      string;
 }
 
@@ -55,9 +55,10 @@ export interface WorkStats {
 
 // ── Domaine Pointage ──────────────────────────────────────
 export interface Compagnie {
-  id:        number;
-  nom:       string;
-  selected?: boolean;
+  id:         number;    // compteur local UI
+  companyId:  string;    // Guid réel
+  nom:        string;
+  selected?:  boolean;
   pointages?: Record<string, boolean>;
 }
 
@@ -69,43 +70,49 @@ export interface WeekDay {
   isWeekend:  boolean;
 }
 
+// Arch #7 : pointagesAdmin supprimé — ignoré par l'API
 export interface SavePayload {
+  employeeId:        string;
   week:              string;
-  pointagesEmployee: Record<number, Record<string, boolean>>;
-  pointagesAdmin:    Record<number, Record<string, boolean>>;
+  pointagesEmployee: Record<string, Record<string, boolean>>;
 }
 
-// ── TimeLog (retour API pointage) ─────────────────────────────────────────────
+// ── TimeLog (retour API pointage) ─────────────────────────
 export type WorkType = 'Regular' | 'Overtime' | 'Holiday' | 'Sick' | 'Vacation';
 
 export interface TimeLogQueryResultDto {
-  employeeId:  string;   // Guid
-  companyId:   string;   // Guid
+  employeeId:  string;
+  companyId:   string;
   companyName: string;
   note:        string;
-  timeLogId:   string;   // Guid
-  workDate:    string;   // DateOnly → "YYYY-MM-DD"
-  beginWork:   string | null;  // DateTime?
+  timeLogId:   string;
+  workDate:    string;
+  beginWork:   string | null;
   endWork:     string | null;
   clientPrice: number;
   workType:    WorkType;
 }
 
-// ── Compagnie (formulaire création) ──────────────────────────────────────────
-export type FrequencePaiement  = 'Hebdomadaire' | 'Bi-hebdomadaire' | 'Bi-mensuel' | 'Mensuel';
-export type FrequenceTravail   = 'Hebdomadaire' | 'Bi-hebdomadaire' | 'Bi-mensuel' | 'Mensuel';
+// ── Compagnie (formulaire création) ──────────────────────
+export type FrequencePaiement = 'hebdomadaire' | 'biHebdomadaire' | 'biMensuel' | 'mensuel';
+export type FrequenceTravail  = 'hebdomadaire' | 'biHebdomadaire' | 'biMensuel' | 'mensuel';
+
+export interface FreqOption {
+  value: FrequenceTravail;
+  label: string;
+}
 
 export interface JourMensuel {
   jour:      number;
   actif:     boolean;
-  compagnie: string;
-  employe:   string;
+  compagnie: number;
+  employe:   number;
 }
 
 export interface JourPlanning {
-  actif:    boolean;
-  compagnie: string;
-  employe:   string;
+  actif:     boolean;
+  compagnie: number;
+  employe:   number;
 }
 
 export interface SemainePlanning {
@@ -118,37 +125,45 @@ export interface SemainePlanning {
   dimanche: JourPlanning;
 }
 
+// ── Employé (formulaire création / édition) ───────────────
+export interface EmployeeForm {
+  employeeName:        string;
+  employeeMail:        string;
+  employeePhone:       string;
+  employeeNote:        string;
+  nas:                 string;
+  employeeCivicNumber: string;
+  employeeSuite:       string;
+  employeeZipCode:     string;
+  employeeCity:        string;
+  employeeState:       string;
+  employeeCountry:     string;
+  employeeAdressNote:  string;
+}
+
 export interface CompanyForm {
-  // Infos générales
-  companyName:   string;
-  companyCode:   string;
-  isActive:      boolean;
-  providerId:    string;
-  note:          string;
-  // Adresse
-  civicNumber:   string;
-  suite:         string;
-  city:          string;
-  state:         string;
-  country:       string;
-  zipCode:       string;
-  addressNote:   string;
-  // Contact
-  contactName:   string;
-  contactMail:   string;
-  contactPhone:  string;
-  contactNote:   string;
-  // Taxes
-  tps:           string;
-  tvq:           string;
-  // Fréquences
-  frequencePaiement: FrequencePaiement;
-  frequenceTravail:  FrequenceTravail;
-  // Planning mensuel — jours sélectionnés (1-31)
-  joursBiMensuel: JourMensuel[];  // jours 1-15
-  joursMensuel:   JourMensuel[];  // jours 1-31
-  // Planning semaine 1
-  semaine1: SemainePlanning;
-  // Planning semaine 2 (Bi-hebdomadaire)
-  semaine2: SemainePlanning;
+  companyName:        string;
+  companyCode:        string;
+  isActive:           boolean;
+  providerId:         string;
+  note:               string;
+  civicNumber:        string;
+  suite:              string;
+  city:               string;
+  state:              string;
+  country:            string;
+  zipCode:            string;
+  addressNote:        string;
+  contactName:        string;
+  contactMail:        string;
+  contactPhone:       string;
+  contactNote:        string;
+  tps:                string;
+  tvq:                string;
+  frequencePaiement:  FrequencePaiement;
+  frequenceTravail:   FrequenceTravail;
+  joursBiMensuel:     JourMensuel[];
+  joursMensuel:       JourMensuel[];
+  semaine1:           SemainePlanning;
+  semaine2:           SemainePlanning;
 }
