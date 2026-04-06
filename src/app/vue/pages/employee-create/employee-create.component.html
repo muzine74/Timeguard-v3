@@ -1,104 +1,145 @@
 <div class="page-wrap">
 
-  <div class="toast" [class.toast-show]="saved()">✓ Employé créé avec succès</div>
   <div class="toast toast-error" [class.toast-show]="error()">{{ error() }}</div>
 
   <header class="page-hdr">
     <div>
       <h1 class="page-title">Nouvel employé</h1>
-      <p class="page-sub">Remplissez les informations pour créer un nouvel employé</p>
+      <p class="page-sub" *ngIf="!createdId()">Remplissez les informations pour créer un nouvel employé</p>
+      <p class="page-sub" *ngIf="createdId()" style="color:var(--success)">
+        ✓ Employé créé — ajoutez des documents puis cliquez sur Terminer
+      </p>
     </div>
     <div class="page-actions">
-      <button class="btn btn-outline" (click)="cancel()">✕ Annuler</button>
-      <button class="btn btn-primary" [disabled]="saving()" (click)="submit()">
+      <button *ngIf="!createdId()" class="btn btn-outline" (click)="cancel()">✕ Annuler</button>
+      <button *ngIf="!createdId()" class="btn btn-primary" [disabled]="saving()" (click)="submit()">
         <span *ngIf="!saving()">✓ Ajouter</span>
         <span *ngIf="saving()" class="spinner"></span>
       </button>
+      <button *ngIf="createdId()" class="btn btn-primary" (click)="done()">Terminer →</button>
     </div>
   </header>
 
-  <div class="form-layout">
+  <!-- ── Formulaire (désactivé après création) ── -->
+  <fieldset [disabled]="!!createdId()" style="border:none;padding:0;margin:0">
+    <div class="form-layout">
 
-    <!-- ── Col gauche ── -->
-    <div class="col-left">
-
-      <div class="card">
-        <div class="card-header">
-          <span class="card-icon">👤</span>
-          <div>
-            <div class="card-title">Informations générales</div>
-            <div class="card-sub">Identification de l'employé</div>
+      <div class="col-left">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-icon">👤</span>
+            <div>
+              <div class="card-title">Informations générales</div>
+              <div class="card-sub">Identification de l'employé</div>
+            </div>
+          </div>
+          <div class="fields-grid">
+            <div class="field span-full">
+              <label>Nom complet *</label>
+              <input class="inp" [(ngModel)]="form.employeeName" placeholder="Sophie Martin" />
+            </div>
+            <div class="field">
+              <label>NAS</label>
+              <input class="inp" [(ngModel)]="form.nas" placeholder="123 456 789" />
+            </div>
+            <div class="field">
+              <label>Courriel</label>
+              <input class="inp" type="email" [(ngModel)]="form.employeeMail" placeholder="sophie@exemple.com" />
+            </div>
+            <div class="field">
+              <label>Téléphone</label>
+              <input class="inp" [(ngModel)]="form.employeePhone" placeholder="514-555-0001" />
+            </div>
+            <div class="field span-full">
+              <label>Note</label>
+              <textarea class="inp inp-ta" [(ngModel)]="form.employeeNote" rows="3"></textarea>
+            </div>
           </div>
         </div>
-        <div class="fields-grid">
-          <div class="field span-full">
-            <label>Nom complet *</label>
-            <input class="inp" [(ngModel)]="form.employeeName" placeholder="Sophie Martin" />
+      </div>
+
+      <div class="col-right">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-icon">📍</span>
+            <div>
+              <div class="card-title">Adresse</div>
+              <div class="card-sub">Localisation</div>
+            </div>
           </div>
-          <div class="field">
-            <label>NAS</label>
-            <input class="inp" [(ngModel)]="form.nas" placeholder="123 456 789" />
-          </div>
-          <div class="field">
-            <label>Courriel</label>
-            <input class="inp" type="email" [(ngModel)]="form.employeeMail" placeholder="sophie@exemple.com" />
-          </div>
-          <div class="field">
-            <label>Téléphone</label>
-            <input class="inp" [(ngModel)]="form.employeePhone" placeholder="514-555-0001" />
-          </div>
-          <div class="field span-full">
-            <label>Note</label>
-            <textarea class="inp inp-ta" [(ngModel)]="form.employeeNote" rows="3" placeholder="Informations supplémentaires..."></textarea>
+          <div class="fields-grid">
+            <div class="field">
+              <label>N° civique</label>
+              <input class="inp" [(ngModel)]="form.employeeCivicNumber" placeholder="123" />
+            </div>
+            <div class="field">
+              <label>Suite / App</label>
+              <input class="inp" [(ngModel)]="form.employeeSuite" placeholder="App 2" />
+            </div>
+            <div class="field">
+              <label>Ville</label>
+              <input class="inp" [(ngModel)]="form.employeeCity" placeholder="Montréal" />
+            </div>
+            <div class="field">
+              <label>Province</label>
+              <input class="inp" [(ngModel)]="form.employeeState" />
+            </div>
+            <div class="field">
+              <label>Code postal</label>
+              <input class="inp" [(ngModel)]="form.employeeZipCode" placeholder="H1A 1A1" />
+            </div>
+            <div class="field">
+              <label>Pays</label>
+              <input class="inp" [(ngModel)]="form.employeeCountry" />
+            </div>
+            <div class="field span-full">
+              <label>Note adresse</label>
+              <input class="inp" [(ngModel)]="form.employeeAdressNote" placeholder="Porte bleue, 2e étage..." />
+            </div>
           </div>
         </div>
       </div>
 
     </div>
+  </fieldset>
 
-    <!-- ── Col droite ── -->
-    <div class="col-right">
-
-      <div class="card">
-        <div class="card-header">
-          <span class="card-icon">📍</span>
-          <div>
-            <div class="card-title">Adresse</div>
-            <div class="card-sub">Localisation</div>
-          </div>
-        </div>
-        <div class="fields-grid">
-          <div class="field">
-            <label>N° civique</label>
-            <input class="inp" [(ngModel)]="form.employeeCivicNumber" placeholder="123" />
-          </div>
-          <div class="field">
-            <label>Suite / App</label>
-            <input class="inp" [(ngModel)]="form.employeeSuite" placeholder="App 2" />
-          </div>
-          <div class="field">
-            <label>Ville</label>
-            <input class="inp" [(ngModel)]="form.employeeCity" placeholder="Montréal" />
-          </div>
-          <div class="field">
-            <label>Province</label>
-            <input class="inp" [(ngModel)]="form.employeeState" />
-          </div>
-          <div class="field">
-            <label>Code postal</label>
-            <input class="inp" [(ngModel)]="form.employeeZipCode" placeholder="H1A 1A1" />
-          </div>
-          <div class="field">
-            <label>Pays</label>
-            <input class="inp" [(ngModel)]="form.employeeCountry" />
-          </div>
-          <div class="field span-full">
-            <label>Note adresse</label>
-            <input class="inp" [(ngModel)]="form.employeeAdressNote" placeholder="Porte bleue, 2e étage..." />
-          </div>
-        </div>
+  <!-- ── Section Documents (visible après création) ── -->
+  <div class="card" [hidden]="!createdId()" style="margin-top:1.5rem">
+    <div class="card-header">
+      <span class="card-icon">📎</span>
+      <div>
+        <div class="card-title">Documents</div>
+        <div class="card-sub">Fichiers attachés à l'employé</div>
       </div>
-
+      <label class="btn btn-outline" style="margin-left:auto;cursor:pointer">
+        <span *ngIf="!fileUploading()">+ Ajouter</span>
+        <span *ngIf="fileUploading()" class="spinner"></span>
+        <input type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+               (change)="onFileSelected($event)" style="display:none" />
+      </label>
     </div>
+
+    <div class="toast toast-error" [class.toast-show]="fileError()">{{ fileError() }}</div>
+
+    <div *ngIf="files().length === 0" style="padding:1rem;color:var(--text-muted);font-size:.875rem">
+      Aucun document
+    </div>
+
+    <ul *ngIf="files().length > 0" style="list-style:none;padding:0;margin:0">
+      <li *ngFor="let f of files()"
+          style="display:flex;align-items:center;gap:.75rem;padding:.6rem 1rem;border-top:1px solid var(--border)">
+        <span (click)="openFile(f.id)"
+              style="flex:1;font-size:.9rem;color:var(--primary);cursor:pointer"
+              title="Ouvrir {{ f.originalName }}">
+          📄 {{ f.originalName }}
+        </span>
+        <span style="font-size:.75rem;color:var(--text-muted);white-space:nowrap">
+          {{ f.uploadedAt | date:'dd/MM/yyyy' }}
+        </span>
+        <button class="btn btn-outline" style="padding:.25rem .6rem;font-size:.8rem;color:#e53935"
+                (click)="removeFile(f.id)" title="Supprimer">✕</button>
+      </li>
+    </ul>
   </div>
+
 </div>

@@ -225,6 +225,31 @@
   span, strong { color: var(--accent); }
 }
 
+// Coordonnées de paiement dans le détail
+.payment-info-val { white-space: pre-wrap; line-height: 1.6; font-weight: 400; }
+
+// Fichier joint
+.file-section {
+  margin-top: 18px; padding: 14px 16px; border-radius: 10px;
+  background: var(--surface2); border: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 8px;
+}
+.file-section-lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--muted); letter-spacing: .4px; }
+.file-current { display: flex; align-items: center; gap: 8px; }
+.file-icon { font-size: 16px; }
+.file-link {
+  font-size: 13px; color: var(--accent); text-decoration: none;
+  &:hover { text-decoration: underline; }
+}
+.file-none { font-size: 12px; color: var(--muted); font-style: italic; }
+.file-upload-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 600;
+  background: rgba(201,162,39,.1); border: 1px solid rgba(201,162,39,.3); color: var(--accent);
+  cursor: pointer; width: fit-content; transition: background .15s;
+  &:hover { background: rgba(201,162,39,.2); }
+}
+
 // Confirm modal
 .confirm-icon { font-size: 40px; text-align: center; margin-bottom: 12px; }
 .confirm-txt  { font-size: 14px; text-align: center; margin-bottom: 8px; }

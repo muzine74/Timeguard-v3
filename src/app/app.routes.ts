@@ -27,6 +27,11 @@ export const routes: Routes = [
     loadComponent: () => import('./vue/pages/employee-details/employee-details.component').then(m => m.EmployeeDetailsComponent)
   },
   {
+    path: 'employees/validation',
+    canActivate: [adminGuard],
+    loadComponent: () => import('./vue/pages/employee-validation/employee-validation.component').then(m => m.EmployeeValidationComponent)
+  },
+  {
     path: 'employees/new',
     canActivate: [adminGuard],
     loadComponent: () => import('./vue/pages/employee-create/employee-create.component').then(m => m.EmployeeCreateComponent)
@@ -79,6 +84,11 @@ export const routes: Routes = [
     path: 'invoices/new',
     canActivate: [adminGuard],
     loadComponent: () => import('./vue/pages/invoice-generate/invoice-generate.component').then(m => m.InvoiceGenerateComponent)
+  },
+  {
+    path: 'invoices/from-timesheets',
+    canActivate: [adminGuard],
+    loadComponent: () => import('./vue/pages/invoice-from-timesheets/invoice-from-timesheets.component').then(m => m.InvoiceFromTimesheetsComponent)
   },
   {
     path: 'invoices',

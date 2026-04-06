@@ -3,7 +3,7 @@
   <!-- ── Sidebar employés ── -->
   <aside class="sidebar">
     <div class="sidebar-hdr">
-      <div class="sidebar-title">Employés</div>
+      <div class="sidebar-title">Profil Employé</div>
       <input class="sidebar-search" [(ngModel)]="searchQuery" placeholder="Rechercher..." />
       <div class="filter-tabs">
         <button class="ftab" [class.ftab-active]="activeFilter==='active'"   (click)="activeFilter='active'">Actif</button>
@@ -33,87 +33,77 @@
     </div>
   </aside>
 
-  <!-- ── Zone formulaire ── -->
-  <div class="form-area">
-
-    <div class="toast" [class.toast-show]="saved()">✓ Employé mis à jour</div>
-    <div class="toast toast-error" [class.toast-show]="error()">{{ error() }}</div>
+  <!-- ── Zone contenu ── -->
+  <div class="content-area">
 
     <!-- Aucune sélection -->
-    <div class="no-selection" *ngIf="!employeeId() && !loadingForm()">
+    <div class="no-selection" *ngIf="!employeeId() && !loadingDetail()">
       <div class="no-sel-icon">👤</div>
       <div class="no-sel-txt">Sélectionnez un employé dans la liste</div>
     </div>
 
-    <!-- Chargement formulaire -->
-    <div class="form-loading" *ngIf="loadingForm()">
+    <!-- Chargement -->
+    <div class="form-loading" *ngIf="loadingDetail()">
       <div class="loading-spinner"></div>
       <div class="loading-txt">Chargement...</div>
     </div>
 
-    <!-- Formulaire principal -->
-    <div class="page-wrap" *ngIf="employeeId() && !loadingForm()">
+    <!-- Fiche + Documents -->
+    <div class="page-wrap" *ngIf="employeeId() && !loadingDetail() && selected()">
 
       <header class="page-hdr">
         <div>
-          <h1 class="page-title">{{ form.employeeName || 'Modifier l\'employé' }}</h1>
-          <p class="page-sub">Modifiez et enregistrez les informations</p>
-        </div>
-        <div class="page-actions">
-          <button class="btn btn-outline" (click)="cancel()">✕ Annuler</button>
-          <button class="btn"
-                  [class.btn-danger-sm]="isActive()"
-                  [class.btn-activate]="!isActive()"
-                  [disabled]="togglingActive()"
-                  (click)="toggleActive()">
-            <span class="spinner" *ngIf="togglingActive()"></span>
-            <span *ngIf="!togglingActive()">{{ isActive() ? '⛔ Désactiver' : '✅ Activer' }}</span>
-          </button>
-          <button class="btn btn-primary" [disabled]="saving()" (click)="submit()">
-            <span *ngIf="!saving()">✓ Enregistrer</span>
-            <span *ngIf="saving()" class="spinner"></span>
-          </button>
+          <h1 class="page-title">{{ selected()!.employeeName }}</h1>
+          <p class="page-sub">Profil employé — lecture seule</p>
         </div>
       </header>
 
       <div class="form-layout">
 
-        <!-- Col gauche -->
+        <!-- Col gauche : infos générales -->
         <div class="col-left">
           <div class="card">
             <div class="card-header">
               <span class="card-icon">👤</span>
               <div>
                 <div class="card-title">Informations générales</div>
-                <div class="card-sub">Identification</div>
+                <div class="card-sub">Identification de l'employé</div>
               </div>
             </div>
             <div class="fields-grid">
               <div class="field span-full">
-                <label>Nom complet *</label>
-                <input class="inp" [(ngModel)]="form.employeeName" placeholder="Sophie Martin" />
+                <label>Statut</label>
+                <div class="status-badge-wrap">
+                  <span class="status-badge" [class.status-active]="isActive()" [class.status-inactive]="!isActive()">
+                    {{ isActive() ? '● Actif' : '● Inactif' }}
+                  </span>
+                </div>
+              </div>
+              <div class="field span-full">
+                <label>Nom complet</label>
+                <div class="info-val">{{ selected()!.employeeName || '—' }}</div>
               </div>
               <div class="field">
                 <label>NAS</label>
-                <input class="inp" [(ngModel)]="form.nas" placeholder="123 456 789" />
+                <div class="info-val">{{ selected()!.nas || '—' }}</div>
               </div>
               <div class="field">
                 <label>Courriel</label>
-                <input class="inp" type="email" [(ngModel)]="form.employeeMail" />
+                <div class="info-val">{{ selected()!.employeeMail || '—' }}</div>
               </div>
               <div class="field">
                 <label>Téléphone</label>
-                <input class="inp" [(ngModel)]="form.employeePhone" />
+                <div class="info-val">{{ selected()!.employeePhone || '—' }}</div>
               </div>
               <div class="field span-full">
                 <label>Note</label>
-                <textarea class="inp inp-ta" [(ngModel)]="form.employeeNote" rows="3"></textarea>
+                <div class="info-val info-val-ta">{{ selected()!.employeeNote || '—' }}</div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Col droite -->
+        <!-- Col droite : adresse -->
         <div class="col-right">
           <div class="card">
             <div class="card-header">
@@ -126,31 +116,31 @@
             <div class="fields-grid">
               <div class="field">
                 <label>N° civique</label>
-                <input class="inp" [(ngModel)]="form.employeeCivicNumber" />
+                <div class="info-val">{{ selected()!.employeeCivicNumber || '—' }}</div>
               </div>
               <div class="field">
                 <label>Suite / App</label>
-                <input class="inp" [(ngModel)]="form.employeeSuite" />
+                <div class="info-val">{{ selected()!.employeeSuite || '—' }}</div>
               </div>
               <div class="field">
                 <label>Ville</label>
-                <input class="inp" [(ngModel)]="form.employeeCity" />
+                <div class="info-val">{{ selected()!.employeeCity || '—' }}</div>
               </div>
               <div class="field">
                 <label>Province</label>
-                <input class="inp" [(ngModel)]="form.employeeState" />
+                <div class="info-val">{{ selected()!.employeeState || '—' }}</div>
               </div>
               <div class="field">
                 <label>Code postal</label>
-                <input class="inp" [(ngModel)]="form.employeeZipCode" />
+                <div class="info-val">{{ selected()!.employeeZipCode || '—' }}</div>
               </div>
               <div class="field">
                 <label>Pays</label>
-                <input class="inp" [(ngModel)]="form.employeeCountry" />
+                <div class="info-val">{{ selected()!.employeeCountry || '—' }}</div>
               </div>
               <div class="field span-full">
                 <label>Note adresse</label>
-                <input class="inp" [(ngModel)]="form.employeeAdressNote" />
+                <div class="info-val">{{ selected()!.employeeAdressNote || '—' }}</div>
               </div>
             </div>
           </div>
@@ -158,7 +148,7 @@
 
       </div>
 
-      <!-- Section fichiers -->
+      <!-- Section Documents -->
       <div class="card" style="margin-top:1.5rem">
         <div class="card-header">
           <span class="card-icon">📎</span>
@@ -184,8 +174,8 @@
           <li *ngFor="let f of files()"
               style="display:flex;align-items:center;gap:.75rem;padding:.6rem 1rem;border-top:1px solid var(--border)">
             <span (click)="openFile(f.id)"
-               style="flex:1;font-size:.9rem;text-decoration:none;color:var(--primary);cursor:pointer"
-               title="Ouvrir {{ f.originalName }}">
+                  style="flex:1;font-size:.9rem;color:var(--primary);cursor:pointer"
+                  title="Ouvrir {{ f.originalName }}">
               📄 {{ f.originalName }}
             </span>
             <span style="font-size:.75rem;color:var(--text-muted);white-space:nowrap">
@@ -199,4 +189,5 @@
 
     </div>
   </div>
+
 </div>

@@ -73,6 +73,8 @@
           </td>
           <td class="col-center">
             <button class="badge-btn" [class.badge-paid]="b.isPaid" [class.badge-unpaid]="!b.isPaid"
+                    [disabled]="!b.isSent"
+                    [title]="!b.isSent ? 'La facture doit être envoyée avant de pouvoir être marquée payée' : ''"
                     (click)="togglePaid(b, $event)">
               {{ b.isPaid ? '✓ Payée' : '◎ Impayée' }}
             </button>
@@ -117,6 +119,28 @@
           <div class="detail-row"><span>Date</span><strong>{{ detailBill()!.billedDate | date:'dd/MM/yyyy' }}</strong></div>
           <div class="detail-row"><span>Visites</span><strong>{{ detailBill()!.numberOfVisits }}</strong></div>
           <div class="detail-row" *ngIf="detailBill()!.note"><span>Note</span><strong>{{ detailBill()!.note }}</strong></div>
+          <div class="detail-row" *ngIf="detailBill()!.paymentInfo">
+            <span>Paiement</span>
+            <strong class="payment-info-val">{{ detailBill()!.paymentInfo }}</strong>
+          </div>
+        </div>
+
+        <!-- Fichier joint -->
+        <div class="file-section">
+          <div class="file-section-lbl">Fichier joint</div>
+          <div class="file-current" *ngIf="detailBill()!.filePath">
+            <span class="file-icon">📎</span>
+            <a class="file-link" [href]="invoiceSvc.downloadFileUrl(detailBill()!.billIdentifier)" target="_blank">
+              {{ detailBill()!.filePath }}
+            </a>
+          </div>
+          <div class="file-none" *ngIf="!detailBill()!.filePath">Aucun fichier attaché</div>
+          <label class="file-upload-btn">
+            <input type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                   (change)="onFileSelected($event)" style="display:none" />
+            <span *ngIf="!uploadingFile()">{{ detailBill()!.filePath ? '🔄 Remplacer' : '📁 Joindre un fichier' }}</span>
+            <span *ngIf="uploadingFile()" class="spinner"></span>
+          </label>
         </div>
         <table class="detail-table">
           <thead><tr><th>Description</th><th class="col-center">Qté</th><th class="col-right">Prix unit.</th><th class="col-right">Sous-total</th></tr></thead>

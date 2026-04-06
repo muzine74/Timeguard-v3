@@ -7,6 +7,13 @@ export interface User {
 export interface LoginRequest  { username: string; password: string; }
 export interface LoginResponse { token: string; username: string; role: string; employeeId: string; }
 
+// ── Fichiers employé ──────────────────────────────────────
+export interface EmployeeFile {
+  id:           string;
+  originalName: string;
+  uploadedAt:   string;
+}
+
 // ── Domaine Employés ──────────────────────────────────────
 export interface Employee {
   employeeId:           string;
@@ -15,6 +22,7 @@ export interface Employee {
   employeePhone?:       string;
   employeeNote?:        string;
   nas?:                 string;
+  isActive:             boolean;
   employeeCivicNumber?: string;
   employeeSuite?:       string;
   employeeZipCode?:     string;
