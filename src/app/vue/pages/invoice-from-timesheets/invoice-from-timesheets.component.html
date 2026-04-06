@@ -1,0 +1,143 @@
+<div class="page-wrap">
+
+  <!-- Toasts -->
+  <div class="toast toast-success" [class.toast-show]="success()">{{ success() }}</div>
+  <div class="toast toast-error"   [class.toast-show]="error()">{{ error() }}</div>
+
+  <!-- En-tête + contrôles -->
+  <header class="page-hdr">
+    <div>
+      <h1 class="page-title">Facturation par pointages</h1>
+      <p class="page-sub">Générez des factures à partir des heures validées par l'administrateur</p>
+    </div>
+    <div class="hdr-right">
+      <div class="period-wrap">
+        <label class="period-label">Période</label>
+        <input class="inp inp-month" type="month" [(ngModel)]="period" (change)="load()" />
+      </div>
+      <button class="btn btn-generate"
+              [disabled]="noneChecked || generating()"
+              (click)="generateSelected()">
+        <span *ngIf="!generating()">
+          ⚡ Générer {{ checkedRows.length > 0 ? checkedRows.length + ' facture(s)' : 'les factures' }}
+        </span>
+        <span *ngIf="generating()" class="spinner"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Chargement -->
+  <div class="loading-wrap" *ngIf="loading()">
+    <div class="loading-spinner"></div>
+    <span>Chargement des données...</span>
+  </div>
+
+  <ng-container *ngIf="!loading()">
+
+    <!-- ══ TABLEAU ÉLIGIBLES ══════════════════════════════════ -->
+    <section class="section">
+      <div class="section-hdr section-hdr-eligible">
+        <span class="section-dot dot-eligible"></span>
+        <span class="section-title">Compagnies éligibles</span>
+        <span class="section-count">{{ rows.length }}</span>
+        <span class="section-hint">Toutes les semaines ont été validées</span>
+      </div>
+
+      <div class="table-wrap" *ngIf="rows.length > 0">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th class="col-chk">
+                <input type="checkbox"
+                       [checked]="allChecked"
+                       [indeterminate]="!allChecked && !noneChecked"
+                       (change)="toggleAll($any($event.target).checked)" />
+              </th>
+              <th>Compagnie</th>
+              <th class="col-num">Visites</th>
+              <th class="col-num">Prix / visite</th>
+              <th class="col-num">Sous-total</th>
+              <th class="col-num">TPS (5 %)</th>
+              <th class="col-num">TVQ (9,975 %)</th>
+              <th class="col-num">Total TTC</th>
+              <th class="col-status">Résultat</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let r of rows"
+                [class.row-checked]="r.checked"
+                [class.row-ok]="r.genResult?.ok === true"
+                [class.row-err]="r.genResult?.ok === false">
+              <td class="col-chk">
+                <input type="checkbox" [(ngModel)]="r.checked" [disabled]="generating()" />
+              </td>
+              <td class="co-name">
+                {{ r.companyName }}
+                <span class="co-code" *ngIf="r.companyCode">{{ r.companyCode }}</span>
+              </td>
+              <td class="col-num">{{ r.totalVisits }}</td>
+              <td class="col-num">{{ r.pricePerVisit | number:'1.2-2' }} $</td>
+              <td class="col-num">{{ r.totalAmount  | number:'1.2-2' }} $</td>
+              <td class="col-num">{{ r.tps          | number:'1.2-2' }} $</td>
+              <td class="col-num">{{ r.tvq          | number:'1.2-2' }} $</td>
+              <td class="col-num col-ttc">{{ r.totalWithTax | number:'1.2-2' }} $</td>
+              <td class="col-status">
+                <span *ngIf="r.genResult" class="result-badge"
+                      [class.result-ok]="r.genResult.ok"
+                      [class.result-err]="!r.genResult.ok">
+                  {{ r.genResult.label }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="empty-state" *ngIf="rows.length === 0">
+        <div class="empty-icon">🕐</div>
+        <div class="empty-txt">Aucune compagnie éligible pour cette période</div>
+      </div>
+    </section>
+
+    <!-- ══ TABLEAU EN ATTENTE ════════════════════════════════ -->
+    <section class="section" *ngIf="pending.length > 0">
+      <div class="section-hdr section-hdr-pending">
+        <span class="section-dot dot-pending"></span>
+        <span class="section-title">En attente de validation</span>
+        <span class="section-count count-pending">{{ pending.length }}</span>
+        <span class="section-hint">Facturation bloquée — des semaines ne sont pas encore validées</span>
+      </div>
+
+      <div class="table-wrap">
+        <table class="data-table table-pending">
+          <thead>
+            <tr>
+              <th class="col-chk"></th>
+              <th>Compagnie</th>
+              <th class="col-num">Visites</th>
+              <th class="col-num">Montant brut</th>
+              <th>Semaines non validées</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let co of pending" class="row-pending">
+              <td class="col-chk">
+                <span class="lock-icon" title="Facturation bloquée">🔒</span>
+              </td>
+              <td class="co-name">
+                {{ co.companyName }}
+                <span class="co-code" *ngIf="co.companyCode">{{ co.companyCode }}</span>
+              </td>
+              <td class="col-num">{{ co.totalVisits }}</td>
+              <td class="col-num">{{ co.totalAmount | number:'1.2-2' }} $</td>
+              <td>
+                <span class="week-chip" *ngFor="let w of co.pendingWeeks">{{ w }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </ng-container>
+</div>

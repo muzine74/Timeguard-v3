@@ -44,6 +44,22 @@ export class SaveStateService {
     private _ptAdm: PointageAdminService,
   ) {}
 
+  getWeekStatuses(weekKey: string) {
+    return this.http.get<{ employeeId: string; isLocked: boolean }[]>(
+      `/api/pointage/status?week=${weekKey}`
+    );
+  }
+
+  getAllValidatedStatuses() {
+    return this.http.get<{ employeeId: string; allValidated: boolean }[]>('/api/pointage/statuses');
+  }
+
+  getEmployeeWeekHistory(employeeId: string) {
+    return this.http.get<{ weekStart: string; isLocked: boolean }[]>(
+      `/api/pointage/${employeeId}/weeks`
+    );
+  }
+
   loadStatus(employeeId: string, weekKey: string): void {
     if (!employeeId) return;
     this.http.get<PointageStatus>(`/api/pointage/${employeeId}/${weekKey}/status`).subscribe({

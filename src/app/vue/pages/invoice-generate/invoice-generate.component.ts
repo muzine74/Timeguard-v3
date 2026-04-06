@@ -1,7 +1,7 @@
-import { Component, OnInit, signal, computed, isDevMode, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, signal, isDevMode, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { CompanyService, CompanySummary } from '../../../state/compagny/Company.service';
 import { InvoiceService, BillLine, BillCreatePayload } from '../../../state/invoice/invoice.service';
 
@@ -40,6 +40,7 @@ export class InvoiceGenerateComponent implements OnInit {
   billedDate    = new Date().toISOString().split('T')[0];
   numberOfVisits = 0;
   note          = '';
+  paymentInfo   = '';
   lines: BillLine[] = [];
 
   // ── Totaux calculés ───────────────────────────────────
@@ -58,13 +59,27 @@ export class InvoiceGenerateComponent implements OnInit {
     private companySvc:  CompanyService,
     private invoiceSvc:  InvoiceService,
     private router:      Router,
+    private route:       ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
+    const params = this.route.snapshot.queryParamMap;
+    const preCompanyId = params.get('companyId');
+    const prePeriod    = params.get('period');
+    const preVisits    = params.get('visits');
+
+    if (prePeriod)  this.period         = prePeriod;
+    if (preVisits)  this.numberOfVisits = parseInt(preVisits, 10) || 0;
+
     this.companySvc.getAll().subscribe({
       next: list => {
-        this.companies.set(list.filter(c => c.isActive));
+        const active = list.filter(c => c.isActive);
+        this.companies.set(active);
         this.coLoading.set(false);
+        if (preCompanyId) {
+          const match = active.find(c => c.companyId === preCompanyId);
+          if (match) this.selectCompany(match);
+        }
       },
       error: () => this.coLoading.set(false),
     });
@@ -107,6 +122,7 @@ export class InvoiceGenerateComponent implements OnInit {
       tvq:            this.tvqAmount,
       totalWithTax:   this.totalTtc,
       note:           this.note,
+      paymentInfo:    this.paymentInfo,
       lines:          this.lines,
     };
   }

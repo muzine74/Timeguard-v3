@@ -8,7 +8,7 @@ import { WeekService }             from '../../../state/pointage/week.service';
 import { PointageEmployeeService } from '../../../state/pointage/pointage-employee.service';
 import { PointageAdminService }    from '../../../state/pointage/pointage-admin.service';
 import { SaveStateService }        from '../../../state/pointage/save-state.service';
-import { Employee, WorkDate, WorkStats } from '../../../models';
+import { Employee } from '../../../models';
 import { SectionHeaderComponent }  from '../../components/section-header/section-header.component';
 import { StatsBarComponent }       from '../../components/stats-bar/stats-bar.component';
 import { DatePickerComponent }     from '../../components/date-picker/date-picker.component';
@@ -30,32 +30,26 @@ import { LoadingSpinnerComponent } from '../../components/loading-spinner/loadin
 export class EmployeeDetailsComponent implements OnInit {
   employees     = signal<Employee[]>([]);
   selected      = signal<Employee | null>(null);
-  workDates     = signal<WorkDate[]>([]);
-  stats         = signal<WorkStats | null>(null);
   loadingList   = signal(true);
   loadingDetail = signal(false);
   selectedId    = signal<string | null>(null);
   searchQuery   = signal('');
-  selectedMonth = '';
 
-  showModal    = signal(false);
-  editingEntry = signal<WorkDate | null>(null);
-  modalForm    = signal<Partial<WorkDate>>({});
+  isSaving!: Signal<boolean>;
+  progress!: Signal<number>;
+  isLocked!: Signal<boolean>;
+  lockedAt!: Signal<string | null>;
+  validating   = signal(false);
+  hasSaved     = signal(false);
+  saved        = signal(false);
+  toast        = '';
+  allValidated = signal<Map<string, boolean>>(new Map());
+  weekHistory  = signal<{ weekStart: string; isLocked: boolean }[]>([]);
 
-  isSaving!:  Signal<boolean>;
-  progress!:  Signal<number>;
-  isLocked!:  Signal<boolean>;
-  lockedAt!:  Signal<string | null>;
-  validating = signal(false);
-  hasSaved   = signal(false); // true après un save réussi — déverrouille le bouton Valider
-  saved = signal(false);
-  toast = '';
-
-  private _lastWeek     = '';
-  private _lastEmpId    = '';
+  private _lastWeek  = '';
+  private _lastEmpId = '';
 
   private get _dev(): boolean { return isDevMode(); }
-  private log(...a: unknown[])  { if (this._dev) console.log('[EmployeeDetails]', ...a); }
   private warn(...a: unknown[]) { if (this._dev) console.warn('[EmployeeDetails]', ...a); }
 
   constructor(
@@ -76,7 +70,6 @@ export class EmployeeDetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.log('ngOnInit()');
     this.empSvc.loadList();
 
     effect(() => {
@@ -84,35 +77,22 @@ export class EmployeeDetailsComponent implements OnInit {
       const loading = this.empSvc.loading();
       this.employees.set(list);
       this.loadingList.set(loading);
-      this.log(`liste employés: ${list.length} entrée(s), loading=${loading}`);
-      if (list.length) this.log('  IDs:', list.map(e => e.employeeId));
+      if (list.length) this._loadWeekStatuses();
     }, { injector: this.injector, allowSignalWrites: true });
 
     const id = this.route.snapshot.paramMap.get('id');
-    this.log(`id depuis route: ${id ?? 'aucun'}`);
-
     if (id) {
       this.selectEmployee(id);
     } else {
       effect(() => {
         const list = this.empSvc.list();
-        if (list.length && !this.selectedId()) {
-          this.log(`auto-sélection premier employé: ${list[0].employeeId}`);
-          this.selectEmployee(list[0].employeeId);
-        }
+        if (list.length && !this.selectedId()) this.selectEmployee(list[0].employeeId);
       }, { injector: this.injector, allowSignalWrites: true });
     }
   }
 
   selectEmployee(id: string): void {
-    const prev = this._lastEmpId;
-    this.log(`selectEmployee(${id}) — précédent: ${prev || 'aucun'}`);
-
-    if (id === this._lastEmpId) {
-      this.log('  → même employé, pas de rechargement');
-      return;
-    }
-
+    if (id === this._lastEmpId) return;
     this._lastEmpId = id;
     this.selectedId.set(id);
     this.hasSaved.set(false);
@@ -123,98 +103,62 @@ export class EmployeeDetailsComponent implements OnInit {
       next: emp => {
         this.selected.set(emp);
         this.loadingDetail.set(false);
-        this.log(`✓ employé chargé: ${emp.employeeName} (${emp.employeeId})`);
-        this.log('  objet complet:', emp);
+        this._loadWeekHistory(id);
       },
       error: err => {
-        this.warn(`✕ getOne(${id}) échoué — status: ${err.status}`, err.error);
+        this.warn(`✕ getOne(${id}) — status: ${err.status}`);
         const found = this.employees().find(e => e.employeeId === id);
-        if (found) {
-          this.warn(`  → fallback local: ${found.employeeName}`);
-          this.selected.set(found);
-        }
+        if (found) this.selected.set(found);
         this.loadingDetail.set(false);
       }
     });
 
-    this._loadPointage(id);
-
     const week = this.weekSvc.weekKey();
     this._lastWeek = week;
-    this.log(`pointage → semaine: ${week}, employé: ${id}`);
-    this.log(`  cache vidé (changement d'employé)`);
     this.ptEmpSvc.clearCache();
     this.saveSvc.loadStatus(id, week);
-    this.ptEmpSvc.load(week, id, () => {
-      this.log('onLoaded → admSvc.load()');
-      this.admSvc.load(week, id);
-    });
-    this.log(`  compagnies après load: ${this.ptEmpSvc.compagnies().length}`);
-  }
-
-  private _loadPointage(id: string = this.selectedId()!): void {
-    this.log(`_loadPointage(empId=${id}, month="${this.selectedMonth || 'tous'}")`);
-
-    this.empSvc.getWorkDates(id, this.selectedMonth).subscribe({
-      next: d => {
-        this.workDates.set(d);
-        this.log(`✓ workDates: ${d.length} entrée(s)`, d);
-      },
-      error: err => {
-        this.warn(`✕ getWorkDates échoué — status: ${err.status}`);
-        this.workDates.set([]);
-      }
-    });
-
-    this.empSvc.getStats(id, this.selectedMonth).subscribe({
-      next: s  => { this.stats.set(s); this.log(`✓ stats:`, s); },
-      error: err => {
-        this.warn(`✕ getStats échoué — status: ${err.status}`);
-        this.stats.set(null);
-      }
-    });
-  }
-
-  reloadPointage(): void {
-    this.log(`reloadPointage() — mois: "${this.selectedMonth || 'tous'}"`);
-    this._loadPointage();
+    this.ptEmpSvc.load(week, id, () => this.admSvc.load(week, id));
   }
 
   onWeekChange(): void {
     const week = this.weekSvc.weekKey();
     const id   = this.selectedId();
-
-    this.log(`onWeekChange() — semaine: ${this._lastWeek || '(init)'} → ${week}, employé: ${id}`);
-
     const weekChanged = week !== this._lastWeek;
-    this.log(`  changement de semaine: ${weekChanged}`);
-
-    if (id) this._loadPointage();
 
     if (weekChanged) {
       this._lastWeek = week;
       this.hasSaved.set(false);
-      this.log(`  → reload timelogs pour semaine ${week}`);
       if (id) this.saveSvc.loadStatus(id, week);
-      this.ptEmpSvc.load(week, id ?? undefined, () => {
-        this.admSvc.load(week, id ?? undefined);
-      });
-    } else {
-      this.log(`  → même semaine, pas de reload timelogs`);
+      this._loadWeekStatuses();
+      this.ptEmpSvc.load(week, id ?? undefined, () => this.admSvc.load(week, id ?? undefined));
     }
   }
 
   onSearch(event: Event): void {
-    const q = (event.target as HTMLInputElement).value;
-    this.searchQuery.set(q);
-    this.log(`recherche: "${q}" → ${this.filteredEmployees.length} résultat(s)`);
+    this.searchQuery.set((event.target as HTMLInputElement).value);
   }
 
   get filteredEmployees(): Employee[] {
-    const q = this.searchQuery().toLowerCase();
-    return q
+    const q      = this.searchQuery().toLowerCase();
+    const status = this.allValidated();
+    const list   = q
       ? this.employees().filter(e => e.employeeName.toLowerCase().includes(q))
       : this.employees();
+    return [...list].sort((a, b) => {
+      const aOk = status.get(a.employeeId.toLowerCase()) ?? false;
+      const bOk = status.get(b.employeeId.toLowerCase()) ?? false;
+      if (aOk !== bOk) return aOk ? 1 : -1;
+      return a.employeeName.localeCompare(b.employeeName);
+    });
+  }
+
+  isAllValidated$(empId: string): boolean {
+    return this.allValidated().get(empId.toLowerCase()) ?? false;
+  }
+
+  goToWeek(weekStart: string): void {
+    this.weekSvc.setDate(new Date(weekStart + 'T00:00:00'));
+    this.onWeekChange();
   }
 
   initials(e: Employee): string {
@@ -222,67 +166,10 @@ export class EmployeeDetailsComponent implements OnInit {
     return ((parts[0]?.[0] ?? '') + (parts[1]?.[0] ?? '')).toUpperCase() || '?';
   }
 
-  statusLabel(s: WorkDate['status']): string {
-    return { present:'Présent', absent:'Absent', late:'Retard', 'half-day':'Mi-journée' }[s];
-  }
-
-  statusClass(s: string): string {
-    return { present:'badge-success', absent:'badge-danger', late:'badge-warning', 'half-day':'badge-info' }[s] ?? '';
-  }
-
-  openAddModal(): void {
-    this.log('openAddModal()');
-    this.editingEntry.set(null);
-    this.modalForm.set({ date: new Date().toISOString().split('T')[0], checkIn:'08:00', checkOut:'17:00', status:'present' });
-    this.showModal.set(true);
-  }
-
-  openEditModal(w: WorkDate): void {
-    this.log('openEditModal():', w);
-    this.editingEntry.set(w);
-    this.modalForm.set({ ...w });
-    this.showModal.set(true);
-  }
-
-  closeModal(): void { this.showModal.set(false); this.editingEntry.set(null); }
-
-  onModalDate(e: Event):     void { this.modalForm.update(f => ({ ...f, date:     (e.target as HTMLInputElement).value })); }
-  onModalCheckIn(e: Event):  void { this.modalForm.update(f => ({ ...f, checkIn:  (e.target as HTMLInputElement).value })); }
-  onModalCheckOut(e: Event): void { this.modalForm.update(f => ({ ...f, checkOut: (e.target as HTMLInputElement).value })); }
-  onModalStatus(e: Event):   void { this.modalForm.update(f => ({ ...f, status:   (e.target as HTMLSelectElement).value as WorkDate['status'] })); }
-  onModalNote(e: Event):     void { this.modalForm.update(f => ({ ...f, note:     (e.target as HTMLInputElement).value })); }
-
-  saveEntry(): void {
-    const id = this.selectedId(); if (!id) return;
-    const editing = this.editingEntry();
-    this.log(`saveEntry() — mode: ${editing ? 'update id='+editing.id : 'create'}`, this.modalForm());
-
-    const obs = editing
-      ? this.empSvc.updateWorkDate(id, editing.id, this.modalForm())
-      : this.empSvc.addWorkDate(id, this.modalForm() as any);
-
-    obs.subscribe({
-      next: d  => { this.log('✓ saveEntry():', d); this.closeModal(); this._loadPointage(); },
-      error: err => { this.warn(`✕ saveEntry() — status: ${err.status}`, err.error); this.closeModal(); this._loadPointage(); }
-    });
-  }
-
-  deleteEntry(wdId: number): void {
-    const id = this.selectedId();
-    if (!id || !confirm('Supprimer ce pointage ?')) return;
-    this.log(`deleteEntry(wdId=${wdId})`);
-    this.empSvc.deleteWorkDate(id, wdId).subscribe({
-      next:  () => { this.log(`✓ deleted ${wdId}`); this._loadPointage(); },
-      error: err => { this.warn(`✕ deleteEntry — status: ${err.status}`); this._loadPointage(); }
-    });
-  }
-
   async save(): Promise<void> {
-    this.log('save()');
     const empId = this.selectedId();
     if (empId) this.ptEmpSvc.setEmployeeId(empId);
     const ok = await this.saveSvc.save();
-    this.log(`save() → ${ok ? '✓' : '✕'}`);
     if (ok) this.hasSaved.set(true);
     this.toast = ok ? '✓ Sauvegardé avec succès' : '✕ Erreur lors de la sauvegarde';
     this.saved.set(true);
@@ -298,7 +185,9 @@ export class EmployeeDetailsComponent implements OnInit {
     this.saveSvc.unvalidateWeek(empId, week).subscribe({
       next: () => {
         this.saveSvc.loadStatus(empId, week);
-        this.hasSaved.set(false); // doit re-sauvegarder avant de re-valider
+        this._loadWeekStatuses();
+        this._loadWeekHistory(empId);
+        this.hasSaved.set(false);
         this.ptEmpSvc.clearCache();
         this.ptEmpSvc.load(week, empId, () => this.admSvc.load(week, empId));
         this.toast = '🔓 Validation annulée.';
@@ -325,7 +214,9 @@ export class EmployeeDetailsComponent implements OnInit {
     this.saveSvc.validateWeek(empId, week, adminId).subscribe({
       next: () => {
         this.saveSvc.loadStatus(empId, week);
-        this.hasSaved.set(false); // Sauvegarder désactivé après validation
+        this._loadWeekStatuses();
+        this._loadWeekHistory(empId);
+        this.hasSaved.set(false);
         this.toast = '✓ Semaine validée — pointage verrouillé.';
         this.saved.set(true);
         this.validating.set(false);
@@ -340,4 +231,21 @@ export class EmployeeDetailsComponent implements OnInit {
     });
   }
 
+  private _loadWeekStatuses(): void {
+    this.saveSvc.getAllValidatedStatuses().subscribe({
+      next: items => {
+        const map = new Map<string, boolean>();
+        items.forEach(i => map.set(i.employeeId.toLowerCase(), i.allValidated));
+        this.allValidated.set(map);
+      },
+      error: () => {},
+    });
+  }
+
+  private _loadWeekHistory(empId: string): void {
+    this.saveSvc.getEmployeeWeekHistory(empId).subscribe({
+      next: list => this.weekHistory.set(list),
+      error: ()  => this.weekHistory.set([]),
+    });
+  }
 }

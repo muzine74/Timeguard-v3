@@ -1,7 +1,7 @@
 import { Injectable, signal, isDevMode } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { map, tap } from 'rxjs';
-import { Employee, EmployeeForm } from '../../models';
+import { Employee, EmployeeFile, EmployeeForm } from '../../models';
 
 @Injectable({ providedIn: 'root' })
 export class EmployeesService {
@@ -35,6 +35,7 @@ export class EmployeesService {
       employeeId:          raw['employeeId']      ?? raw['EmployeeId']      ?? '',
       employeeName:        raw['name']            ?? raw['employeeName']    ?? raw['EmployeeName']    ?? '',
       employeeMail:        raw['mail']            ?? raw['employeeMail']    ?? raw['EmployeeMail']    ?? '',
+      isActive:            raw['isActive']        ?? raw['IsActive']        ?? true,
       employeePhone:       raw['phone']           ?? raw['employeePhone']   ?? raw['EmployeePhone']   ?? '',
       employeeNote:        raw['note']            ?? raw['employeeNote']    ?? raw['EmployeeNote']    ?? '',
       nas:                 raw['nas']             ?? raw['NAS']             ?? '',
@@ -138,6 +139,13 @@ export class EmployeesService {
     );
   }
 
+  setActive(id: string, isActive: boolean) {
+    this.log(`setActive(${id}, ${isActive}) → PATCH /api/employee/${id}/active`);
+    return this.http.patch<{ employeeId: string; isActive: boolean }>(
+      `/api/employee/${id}/active`, { isActive }
+    );
+  }
+
   // ── Compagnies assignées ───────────────────────────────
   assignCompany(employeeId: string, companyId: string) {
     this.log(`assignCompany(${employeeId}, ${companyId})`);
@@ -147,6 +155,30 @@ export class EmployeesService {
   unassignCompany(employeeId: string, companyId: string) {
     this.log(`unassignCompany(${employeeId}, ${companyId})`);
     return this.http.delete<void>(`/api/employee/${employeeId}/companies/${companyId}`);
+  }
+
+  // ── Fichiers ──────────────────────────────────────────
+  getFiles(employeeId: string) {
+    return this.http.get<EmployeeFile[]>(`/api/employee/${employeeId}/files`);
+  }
+
+  uploadFile(employeeId: string, file: File) {
+    const form = new FormData();
+    form.append('file', file);
+    return this.http.post<{ message: string; originalName: string }>(
+      `/api/employee/${employeeId}/files`, form
+    );
+  }
+
+  deleteFile(employeeId: string, fileId: string) {
+    return this.http.delete<void>(`/api/employee/${employeeId}/files/${fileId}`);
+  }
+
+  downloadFile(employeeId: string, fileId: string) {
+    return this.http.get(
+      `/api/employee/${employeeId}/files/${fileId}/download`,
+      { responseType: 'blob', observe: 'response' }
+    );
   }
 
   // ── WorkDates ─────────────────────────────────────────

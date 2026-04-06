@@ -34,16 +34,19 @@ import { AuthService } from '../../../state/auth/auth.service';
               Employés <span class="dropdown-arrow">▾</span>
             </button>
             <div class="dropdown-panel">
-              <a class="dropdown-item" routerLink="/employees"        routerLinkActive="active">
-                <span class="di-icon">☰</span> Liste des employés
+              <a class="dropdown-item" routerLink="/employees"            routerLinkActive="active">
+                <span class="di-icon">☰</span> Validation Pointage
               </a>
-              <a class="dropdown-item" routerLink="/employees/new"    routerLinkActive="active">
+              <a class="dropdown-item" routerLink="/employees/validation" routerLinkActive="active">
+                <span class="di-icon">✅</span> Profil Employé
+              </a>
+              <a class="dropdown-item" routerLink="/employees/new"        routerLinkActive="active">
                 <span class="di-icon">＋</span> Nouvel employé
               </a>
-              <a class="dropdown-item" routerLink="/employees/edit"   routerLinkActive="active">
+              <a class="dropdown-item" routerLink="/employees/edit"       routerLinkActive="active">
                 <span class="di-icon">✎</span> Modifier employé
               </a>
-              <a class="dropdown-item" routerLink="/employees/assign" routerLinkActive="active">
+              <a class="dropdown-item" routerLink="/employees/assign"     routerLinkActive="active">
                 <span class="di-icon">⇄</span> Assigner à une compagnie
               </a>
             </div>
@@ -73,10 +76,13 @@ import { AuthService } from '../../../state/auth/auth.service';
               Factures <span class="dropdown-arrow">▾</span>
             </button>
             <div class="dropdown-panel">
-              <a class="dropdown-item" routerLink="/invoices/new" routerLinkActive="active">
+              <a class="dropdown-item" routerLink="/invoices/new"             routerLinkActive="active">
                 <span class="di-icon">＋</span> Nouvelle facture
               </a>
-              <a class="dropdown-item" routerLink="/invoices"     routerLinkActive="active">
+              <a class="dropdown-item" routerLink="/invoices/from-timesheets" routerLinkActive="active">
+                <span class="di-icon">🕐</span> Facturer par pointages
+              </a>
+              <a class="dropdown-item" routerLink="/invoices"                 routerLinkActive="active">
                 <span class="di-icon">☰</span> Gérer les factures
               </a>
             </div>
@@ -105,17 +111,19 @@ import { AuthService } from '../../../state/auth/auth.service';
       <!-- ADMIN -->
       <ng-container *ngIf="auth.isAdmin()">
         <div class="mobile-section-label">Employés</div>
-        <a class="mobile-link mobile-sub" routerLink="/employees"        routerLinkActive="active" (click)="closeMenu()">Liste des employés</a>
-        <a class="mobile-link mobile-sub" routerLink="/employees/new"    routerLinkActive="active" (click)="closeMenu()">Nouvel employé</a>
-        <a class="mobile-link mobile-sub" routerLink="/employees/edit"   routerLinkActive="active" (click)="closeMenu()">Modifier employé</a>
-        <a class="mobile-link mobile-sub" routerLink="/employees/assign" routerLinkActive="active" (click)="closeMenu()">Assigner à une compagnie</a>
+        <a class="mobile-link mobile-sub" routerLink="/employees"            routerLinkActive="active" (click)="closeMenu()">Validation Pointage</a>
+        <a class="mobile-link mobile-sub" routerLink="/employees/validation" routerLinkActive="active" (click)="closeMenu()">Profil Employé</a>
+        <a class="mobile-link mobile-sub" routerLink="/employees/new"        routerLinkActive="active" (click)="closeMenu()">Nouvel employé</a>
+        <a class="mobile-link mobile-sub" routerLink="/employees/edit"       routerLinkActive="active" (click)="closeMenu()">Modifier employé</a>
+        <a class="mobile-link mobile-sub" routerLink="/employees/assign"     routerLinkActive="active" (click)="closeMenu()">Assigner à une compagnie</a>
         <div class="mobile-section-label">Compagnies</div>
         <a class="mobile-link mobile-sub" routerLink="/companies/new"    routerLinkActive="active" (click)="closeMenu()">Nouvelle compagnie</a>
         <a class="mobile-link mobile-sub" routerLink="/companies/edit"   routerLinkActive="active" (click)="closeMenu()">Modifier compagnie</a>
         <a class="mobile-link mobile-sub" routerLink="/companies/assign" routerLinkActive="active" (click)="closeMenu()">Assigner compagnies</a>
         <div class="mobile-section-label">Factures</div>
-        <a class="mobile-link mobile-sub" routerLink="/invoices/new" routerLinkActive="active" (click)="closeMenu()">Nouvelle facture</a>
-        <a class="mobile-link mobile-sub" routerLink="/invoices"     routerLinkActive="active" (click)="closeMenu()">Gérer les factures</a>
+        <a class="mobile-link mobile-sub" routerLink="/invoices/new"             routerLinkActive="active" (click)="closeMenu()">Nouvelle facture</a>
+        <a class="mobile-link mobile-sub" routerLink="/invoices/from-timesheets" routerLinkActive="active" (click)="closeMenu()">Facturer par pointages</a>
+        <a class="mobile-link mobile-sub" routerLink="/invoices"                 routerLinkActive="active" (click)="closeMenu()">Gérer les factures</a>
       </ng-container>
 
       <div class="mobile-footer">

@@ -77,6 +77,11 @@
             <label>Note</label>
             <input class="inp" [(ngModel)]="note" placeholder="Informations supplémentaires..." />
           </div>
+          <div class="field span-full">
+            <label>Coordonnées de paiement</label>
+            <textarea class="inp inp-textarea" [(ngModel)]="paymentInfo" rows="3"
+              placeholder="Ex: Virement bancaire — Transit: 00123  Institution: 815  Compte: 1234567&#10;Chèque à l'ordre de : TimeGuard Inc."></textarea>
+          </div>
         </div>
       </div>
 
@@ -171,6 +176,12 @@
         <div class="inv-note" *ngIf="note">
           <div class="inv-note-lbl">Note</div>
           <div class="inv-note-txt">{{ note }}</div>
+        </div>
+
+        <!-- Coordonnées de paiement -->
+        <div class="inv-payment" *ngIf="paymentInfo">
+          <div class="inv-payment-lbl">Coordonnées de paiement</div>
+          <div class="inv-payment-txt">{{ paymentInfo }}</div>
         </div>
 
         <div class="inv-footer">Merci pour votre confiance — TimeGuard</div>

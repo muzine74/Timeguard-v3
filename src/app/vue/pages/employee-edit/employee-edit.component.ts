@@ -1,9 +1,9 @@
-import { Component, OnInit, signal, isDevMode, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, signal, isDevMode, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { EmployeesService } from '../../../state/employees/employees.service';
-import { Employee, EmployeeForm } from '../../../models';
+import { Employee, EmployeeFile, EmployeeForm } from '../../../models';
 
 @Component({
   selector: 'app-employee-edit',
@@ -14,21 +14,35 @@ import { Employee, EmployeeForm } from '../../../models';
   styleUrls: ['./employee-edit.component.scss'],
 })
 export class EmployeeEditComponent implements OnInit {
-  saved       = signal(false);
-  error       = signal('');
-  saving      = signal(false);
-  loadingForm = signal(false);
+  saved          = signal(false);
+  error          = signal('');
+  saving         = signal(false);
+  loadingForm    = signal(false);
+  isActive       = signal(true);
+  togglingActive = signal(false);
+
+  // Fichiers
+  files        = signal<EmployeeFile[]>([]);
+  fileUploading = signal(false);
+  fileError    = signal('');
 
   // Liste depuis le service
   empLoading = this.empSvc.loading;
 
-  employeeId  = signal('');
-  searchQuery = '';
+  employeeId   = signal('');
+  searchQuery  = '';
+  activeFilter: 'all' | 'active' | 'inactive' = 'active';
 
   get filteredEmployees(): Employee[] {
-    const q = this.searchQuery.toLowerCase();
+    const q    = this.searchQuery.toLowerCase();
     const list = this.empSvc.list();
-    return q ? list.filter(e => e.employeeName.toLowerCase().includes(q)) : list;
+    return list.filter(e => {
+      const matchSearch = !q || e.employeeName.toLowerCase().includes(q);
+      const matchStatus = this.activeFilter === 'all'
+        || (this.activeFilter === 'active'   &&  e.isActive)
+        || (this.activeFilter === 'inactive' && !e.isActive);
+      return matchSearch && matchStatus;
+    });
   }
 
   form: EmployeeForm = this._emptyForm();
@@ -41,6 +55,7 @@ export class EmployeeEditComponent implements OnInit {
     private empSvc: EmployeesService,
     private router: Router,
     private route:  ActivatedRoute,
+    private cdr:    ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -60,8 +75,11 @@ export class EmployeeEditComponent implements OnInit {
     this.empSvc.getOne(id).subscribe({
       next: emp => {
         this.form = this._fromEmployee(emp);
+        this.isActive.set(emp.isActive);
         this.loadingForm.set(false);
         this.log('✓ formulaire rempli:', emp.employeeName);
+        this.cdr.markForCheck();
+        this._loadFiles(id);
       },
       error: err => {
         this.warn(`✕ getOne(${id}) échoué (${err.status})`);
@@ -100,7 +118,79 @@ export class EmployeeEditComponent implements OnInit {
     return ((p[0]?.[0] ?? '') + (p[1]?.[0] ?? '')).toUpperCase() || '?';
   }
 
+  toggleActive(): void {
+    if (!this.employeeId()) return;
+    const newState = !this.isActive();
+    this.togglingActive.set(true);
+    this.empSvc.setActive(this.employeeId(), newState).subscribe({
+      next: () => {
+        this.isActive.set(newState);
+        this.togglingActive.set(false);
+        this.empSvc.loadList();
+        this.cdr.markForCheck();
+      },
+      error: err => {
+        this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.togglingActive.set(false);
+      },
+    });
+  }
+
   cancel(): void { this.router.navigate(['/employees']); }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file  = input.files?.[0];
+    if (!file || !this.employeeId()) return;
+
+    this.fileError.set('');
+    this.fileUploading.set(true);
+    this.empSvc.uploadFile(this.employeeId(), file).subscribe({
+      next: () => {
+        this.fileUploading.set(false);
+        this._loadFiles(this.employeeId());
+        input.value = '';
+      },
+      error: err => {
+        this.fileError.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.fileUploading.set(false);
+        input.value = '';
+      },
+    });
+  }
+
+  removeFile(fileId: string): void {
+    if (!this.employeeId()) return;
+    this.empSvc.deleteFile(this.employeeId(), fileId).subscribe({
+      next: () => this._loadFiles(this.employeeId()),
+      error: err => this.fileError.set(err?.error?.message ?? `Erreur HTTP ${err.status}`),
+    });
+  }
+
+  openFile(fileId: string): void {
+    this.empSvc.downloadFile(this.employeeId(), fileId).subscribe({
+      next: res => {
+        const blob = res.body!;
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement('a');
+        a.href     = url;
+        a.target   = '_blank';
+        a.rel      = 'noopener';
+        // Ouvre dans un nouvel onglet ; si le navigateur ne peut pas afficher
+        // le type (ex: .doc), déclenche un téléchargement à la place
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 10000);
+      },
+      error: err => this.fileError.set(err?.error?.message ?? `Erreur HTTP ${err.status}`),
+    });
+  }
+
+  private _loadFiles(id: string): void {
+    this.empSvc.getFiles(id).subscribe({
+      next: list => { this.files.set(list); this.cdr.markForCheck(); },
+      error: ()  => {},
+    });
+  }
 
   private _fromEmployee(e: Employee): EmployeeForm {
     return {

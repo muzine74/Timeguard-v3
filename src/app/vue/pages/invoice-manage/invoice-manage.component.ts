@@ -37,6 +37,7 @@ export class InvoiceManageComponent implements OnInit {
   detailBill    = signal<BillDetail | null>(null);
   loadingDetail = signal(false);
   acting        = signal(false);
+  uploadingFile = signal(false);
 
   // Formulaire avoir
   aNote = '';
@@ -47,7 +48,7 @@ export class InvoiceManageComponent implements OnInit {
   get aTvq(): number      { return +(this.aSubtotal * 0.09975).toFixed(2); }
   get aTtc(): number      { return +(this.aSubtotal + this.aTps + this.aTvq).toFixed(2); }
 
-  constructor(private invoiceSvc: InvoiceService, private router: Router) {}
+  constructor(public invoiceSvc: InvoiceService, private router: Router) {}
 
   ngOnInit(): void { this.loadBills(); }
 
@@ -244,6 +245,7 @@ export class InvoiceManageComponent implements OnInit {
       tvq:            this.aTvq,
       totalWithTax:   this.aTtc,
       note:           this.aNote,
+      paymentInfo:    '',
       lines:          this.aLines,
     };
 
@@ -272,6 +274,31 @@ export class InvoiceManageComponent implements OnInit {
       },
       error: err => this.error.set(err?.error?.message ?? `HTTP ${err.status}`),
     });
+  }
+
+  // ── Upload fichier joint ──────────────────────────────
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    const bill = this.detailBill();
+    if (!file || !bill) return;
+
+    this.uploadingFile.set(true);
+    this.invoiceSvc.uploadFile(bill.billIdentifier, file).subscribe({
+      next: res => {
+        // Met à jour le filePath affiché sans recharger toute la liste
+        const updated = { ...bill, filePath: res.fileName };
+        this.detailBill.set(updated as any);
+        this.success.set('Fichier joint avec succès.');
+        this.uploadingFile.set(false);
+        setTimeout(() => this.success.set(''), 3000);
+      },
+      error: err => {
+        this.error.set(err?.error?.message ?? `Erreur upload ${err.status}`);
+        this.uploadingFile.set(false);
+      },
+    });
+    input.value = '';
   }
 
   closeModal(): void { this.modalMode.set(null); this.selectedBill.set(null); this.detailBill.set(null); this.acting.set(false); this.detailAction = null; this.detailTab = 'detail'; }

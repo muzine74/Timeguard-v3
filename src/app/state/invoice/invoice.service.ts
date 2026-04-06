@@ -26,11 +26,13 @@ export interface BillSummary {
   isSent:         boolean;
   isPaid:         boolean;
   note:           string;
+  filePath:       string;
 }
 
 export interface BillDetail extends BillSummary {
   numberOfVisits: number;
   companyPrice:   number;
+  paymentInfo:    string;
   lines:          BillLine[];
 }
 
@@ -46,6 +48,7 @@ export interface BillCreatePayload {
   tvq:            number;
   totalWithTax:   number;
   note:           string;
+  paymentInfo:    string;
   lines:          BillLine[];
 }
 
@@ -57,6 +60,21 @@ export interface BillFilter {
   onlyUnpaid?:  boolean;
   dateFrom?:    string;
   dateTo?:      string;
+}
+
+export interface BillableCompanyItem {
+  companyId:    string;
+  companyName:  string;
+  companyCode:  string;
+  totalVisits:  number;
+  totalAmount:  number;
+  /** Semaines (lundi yyyy-MM-dd) dont le pointage n'est pas encore validé. */
+  pendingWeeks: string[];
+}
+
+export interface BillableCompanies {
+  eligible: BillableCompanyItem[];
+  pending:  BillableCompanyItem[];
 }
 
 // ── Service ───────────────────────────────────────────────────────────────────
@@ -186,6 +204,23 @@ export class InvoiceService {
         error: err => { this.warn(`✕ POST /api/bills/${id}/avoir`, err); this._error.set(err?.error?.message ?? `HTTP ${err.status}`); this._saving.set(false); },
       }),
     );
+  }
+
+  // ── Fichier joint ─────────────────────────────────────────────────────
+  uploadFile(id: number, file: File) {
+    const form = new FormData();
+    form.append('file', file);
+    return this.http.post<{ fileName: string; message: string }>(`/api/bills/${id}/upload`, form);
+  }
+
+  downloadFileUrl(id: number): string {
+    return `/api/bills/${id}/file`;
+  }
+
+  // ── Compagnies facturables ─────────────────────────────────────────────
+  getEligible(period: string) {
+    this.log(`getEligible(${period})`);
+    return this.http.get<BillableCompanies>('/api/bills/eligible', { params: { period } });
   }
 
   reset() { this._error.set(null); }
