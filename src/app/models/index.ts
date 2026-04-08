@@ -1,7 +1,7 @@
 // ── Domaine Auth ──────────────────────────────────────────
 export interface User {
   username:   string;
-  role:       'ADMIN' | 'USER';
+  role:       'ADMIN' | 'USER' | 'SUPERADMIN';
   employeeId: string;
 }
 export interface LoginRequest  { username: string; password: string; }
@@ -147,6 +147,38 @@ export interface EmployeeForm {
   employeeState:       string;
   employeeCountry:     string;
   employeeAdressNote:  string;
+}
+
+// ── Historique tarifs ─────────────────────────────────
+export interface PricingChangeItem {
+  oldPrice:  number | null;  // null = premier override
+  newPrice:  number;
+  changedAt: string;         // ISO date
+  isCurrent: boolean;
+}
+
+export interface DayPricingHistory {
+  calendarId:   string;
+  day:          string;
+  defaultPrice: number;
+  changes:      PricingChangeItem[];
+}
+
+// ── Tarifs employé (override) ──────────────────────────
+export interface EmployeePricingEntry {
+  calendarId:   string;
+  day:          string;
+  defaultPrice: number;
+  customPrice:  number | null;
+}
+
+export interface PricingOverride {
+  calendarId: string;
+  price:      number | null;
+}
+
+export interface SavePricingPayload {
+  overrides: PricingOverride[];
 }
 
 export interface CompanyForm {

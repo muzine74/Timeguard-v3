@@ -117,6 +117,7 @@ export class EmployeeDetailsComponent implements OnInit {
     this._lastWeek = week;
     this.ptEmpSvc.clearCache();
     this.saveSvc.loadStatus(id, week);
+    this.saveSvc.loadEarnings(id, week);
     this.ptEmpSvc.load(week, id, () => this.admSvc.load(week, id));
   }
 
@@ -129,6 +130,7 @@ export class EmployeeDetailsComponent implements OnInit {
       this._lastWeek = week;
       this.hasSaved.set(false);
       if (id) this.saveSvc.loadStatus(id, week);
+      if (id) this.saveSvc.loadEarnings(id, week);
       this._loadWeekStatuses();
       this.ptEmpSvc.load(week, id ?? undefined, () => this.admSvc.load(week, id ?? undefined));
     }
@@ -185,6 +187,7 @@ export class EmployeeDetailsComponent implements OnInit {
     this.saveSvc.unvalidateWeek(empId, week).subscribe({
       next: () => {
         this.saveSvc.loadStatus(empId, week);
+        this.saveSvc.loadEarnings(empId, week);
         this._loadWeekStatuses();
         this._loadWeekHistory(empId);
         this.hasSaved.set(false);
@@ -214,6 +217,7 @@ export class EmployeeDetailsComponent implements OnInit {
     this.saveSvc.validateWeek(empId, week, adminId).subscribe({
       next: () => {
         this.saveSvc.loadStatus(empId, week);
+        this.saveSvc.loadEarnings(empId, week);
         this._loadWeekStatuses();
         this._loadWeekHistory(empId);
         this.hasSaved.set(false);

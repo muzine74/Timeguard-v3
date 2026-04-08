@@ -1,0 +1,220 @@
+<div class="page-wrap">
+
+  <!-- Toast -->
+  <div class="toast" [class.toast-show]="toast()">{{ toast() }}</div>
+
+  <!-- Header -->
+  <div class="page-hdr">
+    <div>
+      <div class="page-title">Groupes &amp; permissions</div>
+      <div class="page-sub">Créez des groupes, définissez leurs accès et assignez des employés.</div>
+    </div>
+    <button class="btn btn-outline btn-sm" (click)="openPermPanel()">⚙ Gérer les permissions</button>
+  </div>
+
+  <div class="groups-layout">
+
+    <!-- ── Sidebar : liste des groupes ──────────────────────────────── -->
+    <aside class="groups-sidebar">
+      <div class="sidebar-hdr">
+        <span class="sidebar-title">Groupes</span>
+        <button class="btn btn-primary btn-sm" (click)="newGroup()">＋ Nouveau</button>
+      </div>
+
+      <div class="loading-wrap" *ngIf="loading()">
+        <div class="loading-spinner"></div> Chargement…
+      </div>
+
+      <ng-container *ngIf="!loading()">
+        <div
+          *ngFor="let g of groups(); trackBy: trackById"
+          class="group-card"
+          [class.group-card-active]="selectedId() === g.groupId"
+          (click)="selectGroup(g.groupId)"
+        >
+          <div class="gc-name">{{ g.name }}</div>
+          <div class="gc-desc" *ngIf="g.description">{{ g.description }}</div>
+          <div class="gc-meta">
+            <span class="gc-badge">{{ g.permissions.length }} perm.</span>
+            <span class="gc-badge gc-badge-emp">{{ g.employeeCount }} emp.</span>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="groups().length === 0">
+          <div class="empty-icon">🔐</div>
+          <div class="empty-txt">Aucun groupe créé</div>
+        </div>
+      </ng-container>
+    </aside>
+
+    <!-- ── Panneau groupe ─────────────────────────────────────────────── -->
+    <section class="groups-detail" *ngIf="showPanel()">
+
+      <div class="detail-hdr">
+        <div>
+          <div class="detail-title">{{ panelTitle() || 'Nouveau groupe' }}</div>
+          <div class="detail-sub">{{ isNew() ? 'Remplissez les informations ci-dessous' : 'Modifier le groupe' }}</div>
+        </div>
+        <button class="btn btn-outline btn-sm" (click)="closePanel()">✕ Fermer</button>
+      </div>
+
+      <div class="detail-body">
+
+        <!-- Informations -->
+        <div class="form-section">
+          <div class="section-title">Informations</div>
+          <div class="field">
+            <label>Nom du groupe <span class="req">*</span></label>
+            <input class="inp" [value]="formName()" (input)="formName.set($any($event.target).value)" placeholder="Ex : Superviseurs" />
+          </div>
+          <div class="field" style="margin-top:10px">
+            <label>Description</label>
+            <textarea class="inp inp-ta" rows="2" [value]="formDesc()" (input)="formDesc.set($any($event.target).value)" placeholder="Optionnel"></textarea>
+          </div>
+        </div>
+
+        <!-- Permissions -->
+        <div class="form-section">
+          <div class="section-title">Permissions</div>
+          <div class="perm-empty" *ngIf="permissions().length === 0">
+            Aucune permission définie. <a class="perm-link" (click)="openPermPanel()">Gérer les permissions →</a>
+          </div>
+          <div class="perm-grid" *ngIf="permissions().length > 0">
+            <div class="perm-module" *ngFor="let mod of permModules">
+              <div class="perm-mod-hdr">
+                <label class="perm-check-lbl mod-check">
+                  <input type="checkbox"
+                    [checked]="moduleAllOn(mod)"
+                    [indeterminate]="moduleSomeOn(mod)"
+                    (change)="toggleModule(mod)" />
+                  <span class="mod-name">{{ mod.label }}</span>
+                </label>
+              </div>
+              <div class="perm-items">
+                <label class="perm-check-lbl" *ngFor="let p of mod.perms">
+                  <input type="checkbox" [checked]="hasPerm(p.key)" (change)="togglePerm(p.key)" />
+                  <span>{{ p.label }}</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Employés -->
+        <div class="form-section">
+          <div class="section-title">
+            Employés assignés
+            <span class="section-count">{{ formEmpIds().length }}</span>
+          </div>
+          <input class="inp inp-search" placeholder="Rechercher un employé…"
+            [value]="empSearch()" (input)="empSearch.set($any($event.target).value)" />
+          <div class="emp-list">
+            <label class="emp-row" *ngFor="let e of filteredEmployees()">
+              <input type="checkbox" [checked]="hasEmp(e.employeeId)" (change)="toggleEmp(e.employeeId)" />
+              <span class="emp-name">{{ e.employeeName }}</span>
+              <span class="emp-badge" *ngIf="hasEmp(e.employeeId)">✓</span>
+            </label>
+            <div class="empty-txt" *ngIf="filteredEmployees().length === 0">Aucun employé trouvé</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="error-bar" *ngIf="error()">{{ error() }}</div>
+
+      <div class="detail-footer">
+        <ng-container *ngIf="!confirmDelete(); else deleteConfirm">
+          <button *ngIf="!isNew()" class="btn btn-danger btn-sm" (click)="askDelete()" [disabled]="saving() || deleting()">Supprimer</button>
+          <div style="flex:1"></div>
+          <button class="btn btn-outline btn-sm" (click)="closePanel()" [disabled]="saving()">Annuler</button>
+          <button class="btn btn-primary" (click)="save()" [disabled]="saving()">
+            <span *ngIf="saving()" class="spinner"></span>
+            {{ saving() ? 'Enregistrement…' : 'Enregistrer' }}
+          </button>
+        </ng-container>
+        <ng-template #deleteConfirm>
+          <span class="confirm-txt">Supprimer ce groupe définitivement ?</span>
+          <button class="btn btn-outline btn-sm" (click)="cancelDelete()" [disabled]="deleting()">Annuler</button>
+          <button class="btn btn-danger" (click)="confirmDel()" [disabled]="deleting()">
+            <span *ngIf="deleting()" class="spinner"></span>
+            {{ deleting() ? 'Suppression…' : 'Confirmer' }}
+          </button>
+        </ng-template>
+      </div>
+
+    </section>
+
+    <!-- ── Panneau gestion permissions ───────────────────────────────── -->
+    <section class="groups-detail perm-panel" *ngIf="showPermPanel()">
+
+      <div class="detail-hdr">
+        <div>
+          <div class="detail-title">Gestion des permissions</div>
+          <div class="detail-sub">Définissez les permissions disponibles pour les groupes</div>
+        </div>
+        <button class="btn btn-outline btn-sm" (click)="closePermPanel()">✕ Fermer</button>
+      </div>
+
+      <div class="detail-body">
+
+        <!-- Ajouter une permission -->
+        <div class="form-section">
+          <div class="section-title">Ajouter une permission</div>
+          <div class="perm-form-grid">
+            <div class="field">
+              <label>Module</label>
+              <input class="inp" [value]="newPermModule()" (input)="newPermModule.set($any($event.target).value)" placeholder="Ex : Employés" />
+            </div>
+            <div class="field">
+              <label>Clé <span class="req">*</span></label>
+              <input class="inp" [value]="newPermKey()" (input)="newPermKey.set($any($event.target).value)" placeholder="Ex : employees.export" />
+            </div>
+            <div class="field">
+              <label>Libellé <span class="req">*</span></label>
+              <input class="inp" [value]="newPermLabel()" (input)="newPermLabel.set($any($event.target).value)" placeholder="Ex : Exporter" />
+            </div>
+          </div>
+          <div class="error-bar" *ngIf="permError()" style="margin-top:8px">{{ permError() }}</div>
+          <button class="btn btn-primary btn-sm" style="margin-top:12px" (click)="addPermission()" [disabled]="permSaving()">
+            <span *ngIf="permSaving()" class="spinner"></span>
+            {{ permSaving() ? 'Ajout…' : '＋ Ajouter' }}
+          </button>
+        </div>
+
+        <!-- Liste des permissions existantes -->
+        <div class="form-section">
+          <div class="section-title">Permissions existantes <span class="section-count">{{ permissions().length }}</span></div>
+          <div class="perm-list">
+            <div class="perm-list-group" *ngFor="let mod of permModules">
+              <div class="perm-list-mod">{{ mod.label }}</div>
+              <div class="perm-list-row" *ngFor="let p of mod.perms; trackBy: trackPermId">
+                <span class="perm-key">{{ p.key }}</span>
+                <span class="perm-lbl">{{ p.label }}</span>
+                <ng-container *ngIf="confirmPermId() !== p.permissionId; else confirmDel">
+                  <button class="btn-rm" (click)="askDeletePerm(p.permissionId)" title="Supprimer">✕</button>
+                </ng-container>
+                <ng-template #confirmDel>
+                  <div class="perm-confirm">
+                    <span>Supprimer ?</span>
+                    <button class="btn btn-outline btn-sm" (click)="cancelDeletePerm()">Non</button>
+                    <button class="btn btn-danger btn-sm" (click)="confirmDeletePerm()">Oui</button>
+                  </div>
+                </ng-template>
+              </div>
+            </div>
+            <div class="empty-txt" *ngIf="permissions().length === 0">Aucune permission définie</div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ── État vide ─────────────────────────────────────────────────── -->
+    <div class="panel-empty" *ngIf="!showPanel() && !showPermPanel()">
+      <div class="empty-icon">🔐</div>
+      <div class="empty-txt">Sélectionnez un groupe ou créez-en un nouveau</div>
+    </div>
+
+  </div>
+</div>

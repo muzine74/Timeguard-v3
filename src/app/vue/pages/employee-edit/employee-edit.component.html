@@ -91,19 +91,35 @@
             <div class="fields-grid">
               <div class="field span-full">
                 <label>Nom complet *</label>
-                <input class="inp" [(ngModel)]="form.employeeName" placeholder="Sophie Martin" />
+                <input class="inp" [(ngModel)]="form.employeeName"
+                       [class.inp-error]="fieldErrors()['employeeName']"
+                       placeholder="Sophie Martin" />
+                <span class="field-err" *ngIf="fieldErrors()['employeeName']">
+                  {{ fieldErrors()['employeeName'] }}
+                </span>
               </div>
               <div class="field">
                 <label>NAS</label>
-                <input class="inp" [(ngModel)]="form.nas" placeholder="123 456 789" />
+                <input class="inp" [(ngModel)]="form.nas"
+                       [class.inp-error]="fieldErrors()['nas']"
+                       placeholder="123 456 789" />
+                <span class="field-err" *ngIf="fieldErrors()['nas']">{{ fieldErrors()['nas'] }}</span>
               </div>
               <div class="field">
                 <label>Courriel</label>
-                <input class="inp" type="email" [(ngModel)]="form.employeeMail" />
+                <input class="inp" type="email" [(ngModel)]="form.employeeMail"
+                       [class.inp-error]="fieldErrors()['employeeMail']" />
+                <span class="field-err" *ngIf="fieldErrors()['employeeMail']">
+                  {{ fieldErrors()['employeeMail'] }}
+                </span>
               </div>
               <div class="field">
                 <label>Téléphone</label>
-                <input class="inp" [(ngModel)]="form.employeePhone" />
+                <input class="inp" [(ngModel)]="form.employeePhone"
+                       [class.inp-error]="fieldErrors()['employeePhone']" />
+                <span class="field-err" *ngIf="fieldErrors()['employeePhone']">
+                  {{ fieldErrors()['employeePhone'] }}
+                </span>
               </div>
               <div class="field span-full">
                 <label>Note</label>

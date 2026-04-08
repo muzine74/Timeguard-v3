@@ -13,8 +13,12 @@ export class AuthService {
 
   readonly user       = this._user.asReadonly();
   readonly loggedIn   = computed(() => !!this._user());
-  readonly isAdmin    = computed(() => this._user()?.role === 'ADMIN');
-  readonly isUser    = computed(() => this._user()?.role === 'USER');
+  readonly isAdmin      = computed(() => {
+    const r = this._user()?.role;
+    return r === 'ADMIN' || r === 'SUPERADMIN';
+  });
+  readonly isSuperAdmin = computed(() => this._user()?.role === 'SUPERADMIN');
+  readonly isUser       = computed(() => this._user()?.role === 'USER');
   readonly employeeId = computed(() => this._user()?.employeeId ?? null);
 
   constructor(private http: HttpClient, private router: Router) {}

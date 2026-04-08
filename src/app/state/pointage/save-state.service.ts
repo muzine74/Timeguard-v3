@@ -6,8 +6,11 @@ import { WeekService } from './week.service';
 import { PointageEmployeeService } from './pointage-employee.service';
 import { PointageAdminService } from './pointage-admin.service';
 
-export interface DashStats    { emp: number; adm: number; companies: number; days: number; }
+export interface DashStats    { emp: number; adm: number; companies: number; days: number; weekTotal: number; }
 export interface PointageStatus { isLocked: boolean; validatedAt?: string; validatedById?: string; }
+
+export interface CompanyEarnings { companyId: string; companyName: string; visits: number; subtotal: number; }
+export interface WeekEarnings    { totalGain: number; isLocked: boolean; validatedAt?: string; companies: CompanyEarnings[]; }
 
 @Injectable({ providedIn: 'root' })
 export class SaveStateService {
@@ -16,11 +19,13 @@ export class SaveStateService {
   private _progress = signal(0);
   private _locked   = signal(false);
   private _lockedAt = signal<string | null>(null);
+  private _earnings = signal<WeekEarnings | null>(null);
 
-  readonly isSaving = this._saving.asReadonly();
-  readonly progress = this._progress.asReadonly();
-  readonly isLocked = this._locked.asReadonly();
-  readonly lockedAt = this._lockedAt.asReadonly();
+  readonly isSaving  = this._saving.asReadonly();
+  readonly progress  = this._progress.asReadonly();
+  readonly isLocked  = this._locked.asReadonly();
+  readonly lockedAt  = this._lockedAt.asReadonly();
+  readonly earnings  = this._earnings.asReadonly();
   isError(): boolean { return this._error(); }
 
   private get _dev() { return isDevMode(); }
@@ -34,6 +39,7 @@ export class SaveStateService {
       adm:       this._ptAdm.total(days),
       companies: this._ptEmp.compagnies().length,
       days:      days.length,
+      weekTotal: this._earnings()?.totalGain ?? 0,
     };
   });
 
@@ -58,6 +64,15 @@ export class SaveStateService {
     return this.http.get<{ weekStart: string; isLocked: boolean }[]>(
       `/api/pointage/${employeeId}/weeks`
     );
+  }
+
+  loadEarnings(employeeId: string, weekKey: string): void {
+    if (!employeeId) return;
+    this._earnings.set(null);
+    this.http.get<WeekEarnings>(`/api/pointage/${employeeId}/${weekKey}/earnings`).subscribe({
+      next:  e  => this._earnings.set(e),
+      error: () => this._earnings.set(null),
+    });
   }
 
   loadStatus(employeeId: string, weekKey: string): void {
@@ -96,6 +111,7 @@ export class SaveStateService {
       this._progress.set(40);
       await lastValueFrom(this.http.post('/api/save', payload));
       this._ptEmp.clearCache();
+      this.loadEarnings(payload.employeeId, payload.week);
       this._progress.set(100);
       await new Promise(r => setTimeout(r, 400));
       this._saving.set(false); this._progress.set(0);

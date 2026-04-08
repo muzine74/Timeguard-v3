@@ -14,9 +14,10 @@ import { EmployeeFile, EmployeeForm } from '../../../models';
   styleUrls: ['./employee-create.component.scss'],
 })
 export class EmployeeCreateComponent {
-  saved  = signal(false);
-  error  = signal('');
-  saving = signal(false);
+  saved       = signal(false);
+  error       = signal('');
+  saving      = signal(false);
+  fieldErrors = signal<Record<string, string>>({});
 
   // État post-création
   createdId     = signal('');
@@ -37,26 +38,71 @@ export class EmployeeCreateComponent {
   ) {}
 
   submit(): void {
-    if (!this.form.employeeName.trim()) {
-      this.error.set('Le nom est requis.');
-      return;
-    }
+    if (!this._validate()) return;
+
     this.error.set('');
     this.saving.set(true);
 
     this.empSvc.create(this.form).subscribe({
       next: res => {
         this.log('✓ créé:', res.employeeId);
+        this.fieldErrors.set({});
         this.saving.set(false);
         this.createdId.set(res.employeeId);
         this.cdr.detectChanges();
       },
       error: err => {
         this.warn('✕ create échoué:', err);
-        this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
         this.saving.set(false);
+        this._applyServerErrors(err);
       },
     });
+  }
+
+  // ── Validation client-side ────────────────────────────────────────────────
+  private _validate(): boolean {
+    const errs: Record<string, string> = {};
+
+    if (!this.form.employeeName.trim())
+      errs['employeeName'] = 'Le nom est requis.';
+
+    const mail = this.form.employeeMail?.trim();
+    if (mail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail))
+      errs['employeeMail'] = 'Format courriel invalide.';
+
+    const phone = this.form.employeePhone?.trim();
+    if (phone && !/^[\d\s\-\+\(\)\.]{7,20}$/.test(phone))
+      errs['employeePhone'] = 'Format téléphone invalide.';
+
+    this.fieldErrors.set(errs);
+    if (Object.keys(errs).length > 0) {
+      this.error.set('Veuillez corriger les champs en erreur.');
+      return false;
+    }
+    this.error.set('');
+    return true;
+  }
+
+  // ── Parse ValidationProblemDetails (serveur) ──────────────────────────────
+  private _applyServerErrors(err: any): void {
+    const serverErrors = err?.error?.errors as Record<string, string[]> | undefined;
+    if (serverErrors && Object.keys(serverErrors).length > 0) {
+      const keyMap: Record<string, string> = {
+        EmployeeName:  'employeeName',
+        EmployeeMail:  'employeeMail',
+        EmployeePhone: 'employeePhone',
+        NAS:           'nas',
+      };
+      const mapped: Record<string, string> = {};
+      for (const [k, msgs] of Object.entries(serverErrors)) {
+        const local = keyMap[k] ?? (k.charAt(0).toLowerCase() + k.slice(1));
+        mapped[local] = msgs[0];
+      }
+      this.fieldErrors.set(mapped);
+      this.error.set('Veuillez corriger les champs en erreur.');
+    } else {
+      this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+    }
   }
 
   onFileSelected(event: Event): void {

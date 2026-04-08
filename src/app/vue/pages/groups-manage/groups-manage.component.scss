@@ -1,0 +1,205 @@
+.page-wrap { padding: 24px; max-width: 1400px; margin: 0 auto; }
+
+// ── Toast ────────────────────────────────────────────────────────────────
+.toast {
+  position: fixed; top: 18px; right: 24px; z-index: 200;
+  padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 600;
+  opacity: 0; pointer-events: none; transition: opacity .3s;
+  background: rgba(30,200,100,.15); border: 1px solid rgba(30,200,100,.35); color: #4ecb80;
+  &.toast-show { opacity: 1; }
+}
+
+// ── Header ───────────────────────────────────────────────────────────────
+.page-hdr    { margin-bottom: 20px; }
+.page-title  { font-size: 20px; font-weight: 700; }
+.page-sub    { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+// ── Layout ───────────────────────────────────────────────────────────────
+.groups-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+// ── Sidebar ──────────────────────────────────────────────────────────────
+.groups-sidebar {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; overflow: hidden; min-height: 300px;
+}
+
+.sidebar-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px; border-bottom: 1px solid var(--border);
+  background: rgba(201,162,39,.04);
+}
+.sidebar-title { font-size: 13px; font-weight: 700; }
+
+.group-card {
+  padding: 12px 16px; border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: background .12s;
+  &:last-child { border-bottom: none; }
+  &:hover { background: rgba(201,162,39,.04); }
+  &.group-card-active { background: rgba(201,162,39,.1); border-left: 3px solid var(--accent); padding-left: 13px; }
+}
+.gc-name  { font-size: 13px; font-weight: 700; }
+.gc-desc  { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.gc-meta  { display: flex; gap: 6px; margin-top: 6px; }
+.gc-badge {
+  display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px;
+  border-radius: 20px; background: rgba(201,162,39,.12); color: var(--accent);
+  &.gc-badge-emp { background: rgba(59,130,246,.1); color: #60a5fa; }
+}
+
+// ── Detail panel ─────────────────────────────────────────────────────────
+.groups-detail {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; display: flex; flex-direction: column; overflow: hidden;
+}
+
+.detail-hdr {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+  background: rgba(201,162,39,.04);
+}
+.detail-title { font-size: 15px; font-weight: 700; }
+.detail-sub   { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+.detail-body { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+
+// ── Sections du formulaire ────────────────────────────────────────────────
+.form-section {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px;
+}
+.section-title {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .5px; color: var(--muted); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-count {
+  background: rgba(201,162,39,.15); color: var(--accent);
+  font-size: 11px; padding: 1px 7px; border-radius: 20px;
+}
+
+// ── Champs ────────────────────────────────────────────────────────────────
+.field       { display: flex; flex-direction: column; gap: 5px; }
+.field label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+.req         { color: var(--danger); }
+
+.inp {
+  width: 100%; box-sizing: border-box;
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text); padding: 7px 10px; border-radius: 8px;
+  font-family: inherit; font-size: 13px; outline: none;
+  &:focus { border-color: var(--accent); }
+  &::placeholder { color: var(--muted); font-style: italic; font-size: 12px; }
+}
+.inp-ta     { resize: vertical; min-height: 56px; }
+.inp-search { margin-bottom: 10px; }
+
+// ── Grille permissions ────────────────────────────────────────────────────
+.perm-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.perm-module {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; overflow: hidden;
+}
+.perm-mod-hdr {
+  padding: 8px 12px;
+  background: rgba(201,162,39,.06);
+  border-bottom: 1px solid var(--border);
+}
+.mod-name   { font-size: 12px; font-weight: 700; }
+.perm-items { padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; }
+
+.perm-check-lbl {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; cursor: pointer; color: var(--text);
+  input { accent-color: var(--accent); cursor: pointer; }
+  &.mod-check { font-weight: 700; }
+}
+
+// ── Liste employés ────────────────────────────────────────────────────────
+.emp-list {
+  max-height: 260px; overflow-y: auto;
+  border: 1px solid var(--border); border-radius: 8px;
+  background: var(--surface);
+}
+.emp-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; cursor: pointer;
+  border-bottom: 1px solid var(--border); transition: background .1s;
+  &:last-child { border-bottom: none; }
+  &:hover { background: rgba(201,162,39,.04); }
+  input { accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
+}
+.emp-name  { flex: 1; font-size: 13px; }
+.emp-badge { font-size: 11px; color: #4ecb80; font-weight: 700; }
+
+// ── Barre d'erreur ────────────────────────────────────────────────────────
+.error-bar {
+  margin: 0 20px 0; padding: 8px 12px; border-radius: 8px; font-size: 12px;
+  background: rgba(224,82,82,.1); border: 1px solid rgba(224,82,82,.3); color: var(--danger);
+}
+
+// ── Footer ────────────────────────────────────────────────────────────────
+.detail-footer {
+  display: flex; align-items: center; gap: 8px;
+  padding: 14px 20px; border-top: 1px solid var(--border);
+}
+.confirm-txt { flex: 1; font-size: 12px; color: var(--danger); font-weight: 600; }
+
+// ── Panel vide ────────────────────────────────────────────────────────────
+.panel-empty {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 14px; padding: 80px 40px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+}
+
+// ── Loading ───────────────────────────────────────────────────────────────
+.loading-wrap {
+  display: flex; align-items: center; gap: 10px; padding: 30px;
+  justify-content: center; font-size: 13px; color: var(--muted);
+}
+.loading-spinner {
+  width: 20px; height: 20px;
+  border: 2px solid rgba(201,162,39,.2); border-top-color: var(--accent);
+  border-radius: 50%; animation: spin .7s linear infinite;
+}
+
+// ── Spinner inline ────────────────────────────────────────────────────────
+.spinner {
+  display: inline-block; width: 13px; height: 13px;
+  border: 2px solid rgba(201,162,39,.3); border-top-color: var(--accent);
+  border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle; margin-right: 4px;
+}
+
+// ── Boutons ───────────────────────────────────────────────────────────────
+.btn {
+  padding: 9px 18px; border-radius: 9px; font-size: 13px; font-weight: 600;
+  border: 1px solid var(--border); cursor: pointer; font-family: inherit; transition: all .18s;
+}
+.btn-sm      { padding: 6px 12px; font-size: 12px; }
+.btn-outline { background: transparent; color: var(--text); &:hover { background: var(--surface2); } }
+.btn-primary {
+  background: rgba(201,162,39,.15); border-color: rgba(201,162,39,.4); color: var(--accent);
+  &:hover:not(:disabled) { background: rgba(201,162,39,.25); }
+  &:disabled { opacity: .45; cursor: not-allowed; }
+}
+.btn-danger {
+  background: rgba(224,82,82,.1); border-color: rgba(224,82,82,.4); color: var(--danger);
+  &:hover:not(:disabled) { background: rgba(224,82,82,.22); }
+  &:disabled { opacity: .45; cursor: not-allowed; }
+}
+
+// ── Empty state partagé ───────────────────────────────────────────────────
+.empty-state { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 40px; }
+.empty-icon  { font-size: 40px; opacity: .3; }
+.empty-txt   { font-size: 13px; color: var(--muted); }
+
+@keyframes spin { to { transform: rotate(360deg); } }

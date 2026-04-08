@@ -136,9 +136,8 @@ export class InvoiceGenerateComponent implements OnInit {
     this.invoiceSvc.create(this._buildPayload()).subscribe({
       next: res => {
         this.log('✓ facture créée:', res);
-        this.saved.set(true);
         this.saving.set(false);
-        setTimeout(() => this.saved.set(false), 4000);
+        this.router.navigate(['/invoices']);
       },
       error: err => {
         this.warn('✕ create:', err);
@@ -159,10 +158,9 @@ export class InvoiceGenerateComponent implements OnInit {
       next: res => {
         this.invoiceSvc.markSent(res.billIdentifier).subscribe({
           next: () => {
-            this.sent.set(true);
-            this.saving.set(false);
             this.log('✓ créée + envoyée:', res);
-            setTimeout(() => this.sent.set(false), 4000);
+            this.saving.set(false);
+            this.router.navigate(['/invoices']);
           },
           error: err => {
             this.warn('✕ markSent:', err);

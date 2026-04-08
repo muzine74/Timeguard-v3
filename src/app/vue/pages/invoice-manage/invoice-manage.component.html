@@ -128,13 +128,30 @@
         <!-- Fichier joint -->
         <div class="file-section">
           <div class="file-section-lbl">Fichier joint</div>
-          <div class="file-current" *ngIf="detailBill()!.filePath">
-            <span class="file-icon">📎</span>
-            <a class="file-link" [href]="invoiceSvc.downloadFileUrl(detailBill()!.billIdentifier)" target="_blank">
-              {{ detailBill()!.filePath }}
-            </a>
-          </div>
-          <div class="file-none" *ngIf="!detailBill()!.filePath">Aucun fichier attaché</div>
+
+          <ng-container *ngIf="detailBill()!.filePath; else noFile">
+            <div class="file-current">
+              <span class="file-icon">📎</span>
+              <span class="file-name">{{ detailBill()!.filePath }}</span>
+            </div>
+
+            <!-- Aperçu inline PDF / image -->
+            <div class="file-preview-wrap" *ngIf="previewUrl() || previewLoading()">
+              <div class="file-preview-loading" *ngIf="previewLoading()">
+                <span class="spinner"></span> Chargement aperçu…
+              </div>
+              <iframe *ngIf="previewUrl() && !previewLoading()"
+                      [src]="previewUrl()"
+                      class="file-preview-frame"
+                      frameborder="0">
+              </iframe>
+            </div>
+          </ng-container>
+
+          <ng-template #noFile>
+            <div class="file-none">Aucun fichier attaché</div>
+          </ng-template>
+
           <label class="file-upload-btn">
             <input type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
                    (change)="onFileSelected($event)" style="display:none" />
