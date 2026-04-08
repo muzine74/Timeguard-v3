@@ -49,6 +49,12 @@ import { AuthService } from '../../../state/auth/auth.service';
               <a class="dropdown-item" routerLink="/employees/assign"     routerLinkActive="active">
                 <span class="di-icon">⇄</span> Assigner à une compagnie
               </a>
+              <a class="dropdown-item" routerLink="/employees/pricing"      routerLinkActive="active">
+                <span class="di-icon">$</span> Tarifs employés
+              </a>
+              <a class="dropdown-item" routerLink="/employees/credentials" routerLinkActive="active">
+                <span class="di-icon">🔑</span> Identifiants
+              </a>
             </div>
           </div>
 
@@ -88,6 +94,11 @@ import { AuthService } from '../../../state/auth/auth.service';
             </div>
           </div>
 
+          <!-- Groupes -->
+          <a class="nav-link" routerLink="/groups" routerLinkActive="active">
+            🔐 Groupes
+          </a>
+
         </ng-container>
       </div>
 
@@ -95,7 +106,8 @@ import { AuthService } from '../../../state/auth/auth.service';
         <span class="badge badge-online">● En ligne</span>
         <div class="avatar">{{ initials() }}</div>
         <span class="nav-username">{{ auth.user()?.username }}</span>
-        <span class="badge badge-admin" *ngIf="auth.isAdmin()">ADMIN</span>
+        <span class="badge badge-super" *ngIf="auth.isSuperAdmin()">SUPERADMIN</span>
+        <span class="badge badge-admin" *ngIf="auth.isAdmin() && !auth.isSuperAdmin()">ADMIN</span>
         <button class="btn-logout" (click)="auth.logout()">✕</button>
         <button class="hamburger" (click)="toggleMenu()">{{ open() ? '✕' : '☰' }}</button>
       </div>
@@ -116,6 +128,8 @@ import { AuthService } from '../../../state/auth/auth.service';
         <a class="mobile-link mobile-sub" routerLink="/employees/new"        routerLinkActive="active" (click)="closeMenu()">Nouvel employé</a>
         <a class="mobile-link mobile-sub" routerLink="/employees/edit"       routerLinkActive="active" (click)="closeMenu()">Modifier employé</a>
         <a class="mobile-link mobile-sub" routerLink="/employees/assign"     routerLinkActive="active" (click)="closeMenu()">Assigner à une compagnie</a>
+        <a class="mobile-link mobile-sub" routerLink="/employees/pricing"      routerLinkActive="active" (click)="closeMenu()">Tarifs employés</a>
+        <a class="mobile-link mobile-sub" routerLink="/employees/credentials" routerLinkActive="active" (click)="closeMenu()">🔑 Identifiants</a>
         <div class="mobile-section-label">Compagnies</div>
         <a class="mobile-link mobile-sub" routerLink="/companies/new"    routerLinkActive="active" (click)="closeMenu()">Nouvelle compagnie</a>
         <a class="mobile-link mobile-sub" routerLink="/companies/edit"   routerLinkActive="active" (click)="closeMenu()">Modifier compagnie</a>
@@ -124,10 +138,13 @@ import { AuthService } from '../../../state/auth/auth.service';
         <a class="mobile-link mobile-sub" routerLink="/invoices/new"             routerLinkActive="active" (click)="closeMenu()">Nouvelle facture</a>
         <a class="mobile-link mobile-sub" routerLink="/invoices/from-timesheets" routerLinkActive="active" (click)="closeMenu()">Facturer par pointages</a>
         <a class="mobile-link mobile-sub" routerLink="/invoices"                 routerLinkActive="active" (click)="closeMenu()">Gérer les factures</a>
+        <div class="mobile-section-label">Administration</div>
+        <a class="mobile-link mobile-sub" routerLink="/groups" routerLinkActive="active" (click)="closeMenu()">🔐 Groupes &amp; permissions</a>
       </ng-container>
 
       <div class="mobile-footer">
-        <span class="badge badge-admin" *ngIf="auth.isAdmin()">ADMIN</span>
+        <span class="badge badge-super" *ngIf="auth.isSuperAdmin()">SUPERADMIN</span>
+        <span class="badge badge-admin" *ngIf="auth.isAdmin() && !auth.isSuperAdmin()">ADMIN</span>
         <button class="btn-logout-mob" (click)="auth.logout()">Déconnexion</button>
       </div>
     </div>

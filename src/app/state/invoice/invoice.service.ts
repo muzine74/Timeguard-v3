@@ -213,8 +213,8 @@ export class InvoiceService {
     return this.http.post<{ fileName: string; message: string }>(`/api/bills/${id}/upload`, form);
   }
 
-  downloadFileUrl(id: number): string {
-    return `/api/bills/${id}/file`;
+  downloadFile(id: number) {
+    return this.http.get(`/api/bills/${id}/file`, { responseType: 'blob' as const });
   }
 
   // ── Compagnies facturables ─────────────────────────────────────────────

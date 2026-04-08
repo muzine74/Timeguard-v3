@@ -92,6 +92,7 @@ export class PointagePage implements OnInit {
     this._lastWeek = week;
     this.ptEmpSvc.load(week, id, () => this.ptAdmSvc.load(week, id));
     this.saveSvc.loadStatus(id, week);
+    this.saveSvc.loadEarnings(id, week);
   }
 
   private _resolveEmployeeId(): string {
@@ -119,6 +120,7 @@ export class PointagePage implements OnInit {
     this.hasSaved.set(false);
     this.ptEmpSvc.load(week, id, () => this.ptAdmSvc.load(week, id));
     this.saveSvc.loadStatus(id, week);
+    this.saveSvc.loadEarnings(id, week);
   }
 
   onEmployeeChange(patch: Partial<Employee>): void {
@@ -154,6 +156,7 @@ export class PointagePage implements OnInit {
       .subscribe({
         next: () => {
           this.saveSvc.loadStatus(empId, week);
+          this.saveSvc.loadEarnings(empId, week);
           this.hasSaved.set(false);
           this.ptEmpSvc.clearCache();
           this.ptEmpSvc.load(week, empId, () => this.ptAdmSvc.load(week, empId));
@@ -182,6 +185,7 @@ export class PointagePage implements OnInit {
       .subscribe({
         next: () => {
           this.saveSvc.loadStatus(empId, week);
+          this.saveSvc.loadEarnings(empId, week);
           this.hasSaved.set(false);
           this.toast = '✓ Semaine validée — pointage verrouillé.';
           this.saved.set(true);

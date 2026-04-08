@@ -1,0 +1,230 @@
+<div class="page-layout">
+
+  <!-- ── Sidebar employés ── -->
+  <aside class="sidebar">
+    <div class="sidebar-hdr">
+      <div class="sidebar-title">Employés</div>
+      <input class="sidebar-search" [(ngModel)]="empSearch" placeholder="Rechercher..." />
+      <label class="inactive-toggle">
+        <input type="checkbox" [checked]="showInactive()" (change)="toggleInactive()" />
+        Inclure inactifs
+      </label>
+    </div>
+
+    <div class="sidebar-loading" *ngIf="empLoading()">
+      <div class="mini-spinner"></div>
+    </div>
+
+    <div class="sidebar-list" *ngIf="!empLoading()">
+      <div *ngFor="let e of filteredEmployees()"
+           class="sidebar-item"
+           [class.active]="selectedEmployee()?.employeeId === e.employeeId"
+           [class.inactive]="!e.isActive"
+           (click)="selectEmployee(e)">
+        <div class="sidebar-avatar">{{ initials(e.employeeName) }}</div>
+        <div class="sidebar-info">
+          <div class="sidebar-name">{{ e.employeeName }}</div>
+          <span class="sidebar-badge" [class.badge-active]="e.isActive">
+            {{ e.isActive ? 'Actif' : 'Inactif' }}
+          </span>
+        </div>
+      </div>
+      <div class="sidebar-empty" *ngIf="filteredEmployees().length === 0">
+        Aucun employé
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Panneau principal ── -->
+  <div class="form-area">
+
+    <div class="toast" [class.toast-show]="saved()">✓ Tarifs sauvegardés</div>
+    <div class="toast toast-error" [class.toast-show]="error()">{{ error() }}</div>
+
+    <!-- Aucune sélection -->
+    <div class="no-selection" *ngIf="!selectedEmployee() && !loadingEmployee()">
+      <div class="no-sel-icon">💰</div>
+      <div class="no-sel-txt">Sélectionnez un employé pour gérer ses tarifs</div>
+    </div>
+
+    <!-- Chargement employé -->
+    <div class="form-loading" *ngIf="loadingEmployee()">
+      <div class="loading-spinner"></div>
+      <div class="loading-txt">Chargement...</div>
+    </div>
+
+    <!-- Employé sélectionné -->
+    <ng-container *ngIf="selectedEmployee() && !loadingEmployee()">
+
+      <header class="page-hdr">
+        <div>
+          <h1 class="page-title">{{ selectedEmployee()!.employeeName }}</h1>
+          <p class="page-sub">Tarifs personnalisés par compagnie assignée</p>
+        </div>
+        <div class="page-actions" *ngIf="selectedCompany()">
+          <span class="unsaved-badge" *ngIf="hasChanges()">● Non sauvegardé</span>
+          <button class="btn btn-ghost"
+                  (click)="toggleHistory()"
+                  [class.btn-history-active]="showHistory()">
+            {{ showHistory() ? '▲ Masquer' : '↷ Historique' }}
+          </button>
+          <ng-container *ngIf="rows().length > 0">
+            <button class="btn btn-ghost" (click)="resetAll()" [disabled]="saving()">
+              Réinitialiser
+            </button>
+            <button class="btn btn-primary"
+                    [disabled]="!hasChanges() || saving()"
+                    (click)="save()">
+              <span *ngIf="!saving()">✓ Sauvegarder</span>
+              <span *ngIf="saving()" class="spinner"></span>
+            </button>
+          </ng-container>
+        </div>
+      </header>
+
+      <!-- Aucune compagnie assignée -->
+      <div class="no-selection" *ngIf="companies().length === 0">
+        <div class="no-sel-icon">🏢</div>
+        <div class="no-sel-txt">Aucune compagnie assignée à cet employé</div>
+      </div>
+
+      <!-- Sélecteur de compagnie -->
+      <div class="company-tabs" *ngIf="companies().length > 0">
+        <button *ngFor="let co of companies()"
+                class="co-tab"
+                [class.active]="selectedCompany()?.compagnieId === co.compagnieId"
+                (click)="selectCompany(co)">
+          {{ co.compagnieName }}
+        </button>
+      </div>
+
+      <!-- Invite à choisir une compagnie -->
+      <div class="no-selection" *ngIf="companies().length > 0 && !selectedCompany()">
+        <div class="no-sel-icon">👆</div>
+        <div class="no-sel-txt">Sélectionnez une compagnie ci-dessus</div>
+      </div>
+
+      <!-- Chargement tarifs -->
+      <div class="form-loading" *ngIf="loading()">
+        <div class="loading-spinner"></div>
+        <div class="loading-txt">Chargement des tarifs...</div>
+      </div>
+
+      <!-- Tableau des tarifs -->
+      <ng-container *ngIf="selectedCompany() && !loading()">
+
+        <div class="no-days" *ngIf="rows().length === 0">
+          Aucun jour de travail actif défini pour cette compagnie.
+        </div>
+
+        <div class="pricing-card" *ngIf="rows().length > 0">
+          <div class="pricing-legend">
+            Seuls les jours autorisés par le calendrier de la compagnie sont modifiables.
+            Laissez le champ vide pour utiliser le tarif par défaut.
+          </div>
+
+          <table class="pricing-table">
+            <thead>
+              <tr>
+                <th class="col-day">Jour</th>
+                <th class="col-default">Tarif compagnie</th>
+                <th class="col-custom">Votre tarif</th>
+                <th class="col-status">Statut</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of rows(); trackBy: trackById"
+                  [class.row-override]="row.currentPrice !== null"
+                  [class.row-dirty]="row.currentPrice !== row.originalPrice">
+                <td class="col-day">
+                  <span class="day-label">{{ row.day }}</span>
+                </td>
+                <td class="col-default">
+                  <span class="price-default">{{ row.defaultPrice | number:'1.2-2' }} $</span>
+                </td>
+                <td class="col-custom">
+                  <input
+                    class="price-input"
+                    [class.input-error]="row.isInvalid"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    [placeholder]="row.defaultPrice | number:'1.2-2'"
+                    [value]="row.currentPrice ?? ''"
+                    (input)="updatePrice(row.calendarId, $any($event.target).value)"
+                  />
+                </td>
+                <td class="col-status">
+                  <span class="status-chip status-override" *ngIf="row.currentPrice !== null">
+                    Override
+                  </span>
+                  <span class="status-chip status-default" *ngIf="row.currentPrice === null">
+                    Défaut
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </ng-container>
+
+      <!-- ── Panneau historique ── -->
+      <div class="history-panel" *ngIf="showHistory()">
+
+        <div class="history-hdr">
+          <span class="history-title">Historique des changements de tarif</span>
+          <span class="history-sub">{{ selectedCompany()?.compagnieName }}</span>
+        </div>
+
+        <div class="history-loading" *ngIf="historyLoading()">
+          <div class="loading-spinner"></div>
+        </div>
+
+        <div class="history-error" *ngIf="historyError()">{{ historyError() }}</div>
+
+        <div class="history-empty"
+             *ngIf="!historyLoading() && !historyError() && history().length === 0">
+          Aucun changement enregistré pour cette compagnie.
+        </div>
+
+        <div class="history-days" *ngIf="!historyLoading() && history().length > 0">
+
+          <div class="history-day" *ngFor="let day of history()">
+            <div class="history-day-hdr">
+              <span class="history-day-label">{{ day.day }}</span>
+              <span class="history-day-default">Défaut compagnie : {{ day.defaultPrice | number:'1.2-2' }} $</span>
+            </div>
+
+            <div class="history-timeline">
+              <div class="timeline-item"
+                   *ngFor="let ch of day.changes; let first = first"
+                   [class.current]="ch.isCurrent">
+
+                <div class="tl-dot" [class.tl-dot-current]="ch.isCurrent"></div>
+
+                <div class="tl-content">
+                  <div class="tl-transition">
+                    <ng-container *ngIf="ch.oldPrice !== null">
+                      <span class="tl-old">{{ ch.oldPrice | number:'1.2-2' }} $</span>
+                      <span class="tl-arrow">→</span>
+                    </ng-container>
+                    <span class="tl-new" [class.tl-new-current]="ch.isCurrent">
+                      {{ ch.newPrice | number:'1.2-2' }} $
+                    </span>
+                    <span class="tl-badge-current" *ngIf="ch.isCurrent">Actuel</span>
+                    <span class="tl-badge-first"   *ngIf="ch.oldPrice === null">Premier tarif</span>
+                  </div>
+                  <div class="tl-date">{{ ch.changedAt | date:'dd/MM/yyyy à HH:mm' }}</div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </ng-container>
+  </div>
+</div>

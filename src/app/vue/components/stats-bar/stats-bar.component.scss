@@ -1,7 +1,8 @@
 .stats {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 14px;
+  @media (max-width: 900px) { grid-template-columns: repeat(3,1fr); gap: 10px; }
   @media (max-width: 639px) { grid-template-columns: repeat(2,1fr); gap: 10px; }
 }
 
@@ -33,3 +34,42 @@
 .s2 { .val { color: var(--accent2); } .bar { background: var(--accent2); } &:hover { border-color: var(--accent2); } }
 .s3 { .val { color: var(--warning); } .bar { background: var(--warning); } &:hover { border-color: var(--warning); } }
 .s4 { .val { color: var(--success); } .bar { background: var(--success); } &:hover { border-color: var(--success); } }
+.s5 {
+  .val  { color: var(--success); font-size: 26px; letter-spacing: -1px; }
+  .bar  { background: var(--success); }
+  &:hover { border-color: var(--success); }
+  &.locked { border-color: rgba(59,170,110,.4); background: rgba(59,170,110,.04); }
+}
+.earn-loading { font-size: 20px; color: var(--muted); }
+.lbl-locked   { color: var(--success); font-weight: 700; }
+
+// ── Détail par compagnie ──────────────────────────────────
+.earn-detail {
+  margin-top: 10px;
+  border: 1px solid var(--border); border-radius: 10px;
+  overflow: hidden; background: var(--surface);
+}
+.earn-toggle {
+  width: 100%; padding: 8px 14px; background: transparent;
+  border: none; cursor: pointer; font-family: inherit;
+  font-size: 11px; font-weight: 700; color: var(--muted);
+  text-align: left; text-transform: uppercase; letter-spacing: .5px;
+  transition: background .15s;
+  &:hover { background: rgba(201,162,39,.04); color: var(--text); }
+}
+.earn-rows { border-top: 1px solid var(--border); }
+.earn-row {
+  display: grid; grid-template-columns: 1fr auto auto;
+  align-items: center; gap: 14px;
+  padding: 8px 14px; border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  &:last-child { border-bottom: none; }
+}
+.earn-co     { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.earn-visits { color: var(--muted); font-size: 11px; white-space: nowrap; }
+.earn-sub    { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--success); white-space: nowrap; }
+.earn-total  {
+  background: rgba(59,170,110,.05);
+  .earn-co  { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .4px; }
+  .earn-sub { font-size: 14px; }
+}

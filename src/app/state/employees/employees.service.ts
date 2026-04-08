@@ -118,10 +118,11 @@ export class EmployeesService {
     this.log(`updateFull(${id}) → PUT /api/employee/${id}`);
     this._loading.set(true);
     this._error.set(null);
+    const n = (v: string | null | undefined) => (v?.trim() === '' ? null : v);
     return this.http.put<{ employeeId: string; message: string }>(`/api/employee/${id}`, {
       employeeName:        form.employeeName,
-      employeeMail:        form.employeeMail,
-      employeePhone:       form.employeePhone,
+      employeeMail:        n(form.employeeMail),
+      employeePhone:       n(form.employeePhone),
       employeeNote:        form.employeeNote,
       nas:                 form.nas,
       employeeCivicNumber: form.employeeCivicNumber,

@@ -2,6 +2,7 @@ import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { InvoiceService, BillSummary, BillDetail, BillLine, BillFilter, BillCreatePayload } from '../../../state/invoice/invoice.service';
 
 type ModalMode = 'delete' | 'avoir' | 'detail' | 'send' | null;
@@ -37,7 +38,10 @@ export class InvoiceManageComponent implements OnInit {
   detailBill    = signal<BillDetail | null>(null);
   loadingDetail = signal(false);
   acting        = signal(false);
-  uploadingFile = signal(false);
+  uploadingFile  = signal(false);
+  previewUrl     = signal<SafeResourceUrl | null>(null);
+  previewLoading = signal(false);
+  private _previewBlobUrl = '';
 
   // Formulaire avoir
   aNote = '';
@@ -48,7 +52,11 @@ export class InvoiceManageComponent implements OnInit {
   get aTvq(): number      { return +(this.aSubtotal * 0.09975).toFixed(2); }
   get aTtc(): number      { return +(this.aSubtotal + this.aTps + this.aTvq).toFixed(2); }
 
-  constructor(public invoiceSvc: InvoiceService, private router: Router) {}
+  constructor(
+    public  invoiceSvc: InvoiceService,
+    private router:     Router,
+    private sanitizer:  DomSanitizer,
+  ) {}
 
   ngOnInit(): void { this.loadBills(); }
 
@@ -77,9 +85,14 @@ export class InvoiceManageComponent implements OnInit {
     this.selectedBill.set(bill);
     this.modalMode.set('detail');
     this.loadingDetail.set(true);
+    this.previewUrl.set(null);
     this.invoiceSvc.getById(bill.billIdentifier).subscribe({
-      next: d    => { this.detailBill.set(d); this.loadingDetail.set(false); },
-      error: ()  =>   this.loadingDetail.set(false),
+      next: d => {
+        this.detailBill.set(d);
+        this.loadingDetail.set(false);
+        if (d.filePath) this._loadPreview(bill.billIdentifier, d.filePath);
+      },
+      error: () => this.loadingDetail.set(false),
     });
   }
 
@@ -301,7 +314,33 @@ export class InvoiceManageComponent implements OnInit {
     input.value = '';
   }
 
-  closeModal(): void { this.modalMode.set(null); this.selectedBill.set(null); this.detailBill.set(null); this.acting.set(false); this.detailAction = null; this.detailTab = 'detail'; }
+  closeModal(): void {
+    if (this._previewBlobUrl) { URL.revokeObjectURL(this._previewBlobUrl); this._previewBlobUrl = ''; }
+    this.previewUrl.set(null);
+    this.modalMode.set(null);
+    this.selectedBill.set(null);
+    this.detailBill.set(null);
+    this.acting.set(false);
+    this.detailAction = null;
+    this.detailTab = 'detail';
+  }
+
+  // ── Aperçu fichier (blob via HttpClient → JWT inclus) ─
+  private _loadPreview(id: number, filePath: string): void {
+    const ext = filePath.split('.').pop()?.toLowerCase() ?? '';
+    if (!['pdf', 'jpg', 'jpeg', 'png'].includes(ext)) return; // non-prévisualisable
+
+    this.previewLoading.set(true);
+    this.invoiceSvc.downloadFile(id).subscribe({
+      next: blob => {
+        if (this._previewBlobUrl) URL.revokeObjectURL(this._previewBlobUrl);
+        this._previewBlobUrl = URL.createObjectURL(blob);
+        this.previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(this._previewBlobUrl));
+        this.previewLoading.set(false);
+      },
+      error: () => this.previewLoading.set(false),
+    });
+  }
 
   navigateGenerate(): void { this.router.navigate(['/invoices/new']); }
 }

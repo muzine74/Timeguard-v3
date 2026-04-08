@@ -113,6 +113,7 @@
   display: flex; align-items: center; gap: 8px;
   .badge-online,
   .badge-admin,
+  .badge-super,
   .nav-username { @media (max-width: 639px) { display: none; } }
 }
 
@@ -129,6 +130,7 @@
   padding: 3px 9px; border-radius: 20px; font-size: 10px; font-weight: 700;
   letter-spacing: .6px; text-transform: uppercase;
   &-admin  { background: rgba(224,82,82,.12); color: var(--danger); border: 1px solid rgba(224,82,82,.3); }
+  &-super  { background: rgba(139,92,246,.15); color: #a78bfa; border: 1px solid rgba(139,92,246,.35); }
   &-online { background: rgba(59,170,110,.12); color: var(--success); border: 1px solid rgba(59,170,110,.3); font-size: 9px; }
 }
 

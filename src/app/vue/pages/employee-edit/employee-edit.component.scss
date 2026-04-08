@@ -141,8 +141,14 @@
   font-family: inherit; font-size: 13px; outline: none; transition: border-color .18s;
   &:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(201,162,39,.1); }
   &::placeholder { color: var(--muted); font-style: italic; font-size: 12px; }
+  &.inp-error {
+    border-color: var(--danger);
+    background: rgba(224,82,82,.04);
+    &:focus { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(224,82,82,.15); }
+  }
 }
 .inp-ta { resize: vertical; min-height: 80px; }
+.field-err { font-size: 11px; color: var(--danger); margin-top: 1px; }
 
 .btn {
   padding: 9px 18px; border-radius: 9px; font-size: 13px; font-weight: 600;

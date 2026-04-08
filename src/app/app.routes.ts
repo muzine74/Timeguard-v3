@@ -47,6 +47,11 @@ export const routes: Routes = [
     loadComponent: () => import('./vue/pages/employee-assign/employee-assign.component').then(m => m.EmployeeAssignComponent)
   },
   {
+    path: 'employees/pricing',
+    canActivate: [adminGuard],
+    loadComponent: () => import('./vue/pages/employee-pricing/employee-pricing.component').then(m => m.EmployeePricingComponent)
+  },
+  {
     path: 'employees/:id',
     canActivate: [adminGuard],
     loadComponent: () => import('./vue/pages/employee-details/employee-details.component').then(m => m.EmployeeDetailsComponent)
@@ -94,6 +99,20 @@ export const routes: Routes = [
     path: 'invoices',
     canActivate: [adminGuard],
     loadComponent: () => import('./vue/pages/invoice-manage/invoice-manage.component').then(m => m.InvoiceManageComponent)
+  },
+
+  // ── Credentials — ADMIN uniquement ──────────────────────────────────────
+  {
+    path: 'employees/credentials',
+    canActivate: [adminGuard],
+    loadComponent: () => import('./vue/pages/employee-credentials/employee-credentials.component').then(m => m.EmployeeCredentialsComponent)
+  },
+
+  // ── Groupes — ADMIN uniquement ──────────────────────────────────────────
+  {
+    path: 'groups',
+    canActivate: [adminGuard],
+    loadComponent: () => import('./vue/pages/groups-manage/groups-manage.component').then(m => m.GroupsManageComponent)
   },
 
   { path: '**', loadComponent: () => import('./vue/pages/not-found/not-found.component').then(m => m.NotFoundComponent) }
