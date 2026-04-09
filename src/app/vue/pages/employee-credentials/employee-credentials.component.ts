@@ -28,7 +28,6 @@ export class EmployeeCredentialsComponent implements OnInit {
   formEmpId   = signal('');
   formUser    = signal('');
   formPass    = signal('');
-  formRole    = signal<'USER' | 'ADMIN'>('USER');
   showPass    = signal(false);
 
   // ── Réinitialisation mot de passe ─────────────────────────────────────
@@ -83,7 +82,6 @@ export class EmployeeCredentialsComponent implements OnInit {
     this.formEmpId.set('');
     this.formUser.set('');
     this.formPass.set('');
-    this.formRole.set('USER');
     this.showPass.set(false);
     this.error.set('');
   }
@@ -101,7 +99,6 @@ export class EmployeeCredentialsComponent implements OnInit {
       employeeId: this.formEmpId(),
       username:   this.formUser().trim(),
       password:   this.formPass(),
-      role:       this.formRole(),
     }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.saving.set(false);

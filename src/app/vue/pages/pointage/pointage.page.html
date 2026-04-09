@@ -24,7 +24,7 @@
 
       <!-- Valider : visible admin, semaine non verrouillée, activé après save -->
       <button class="btn btn-validate"
-              *ngIf="auth.isAdmin() && !isLocked()"
+              *ngIf="auth.canManage() && !isLocked()"
               [disabled]="validating() || !hasSaved()"
               (click)="validateWeek()">
         <span *ngIf="!validating()">✅ Valider la semaine</span>
@@ -32,7 +32,7 @@
       </button>
       <!-- Annuler validation : visible admin, semaine verrouillée -->
       <button class="btn btn-danger-sm"
-              *ngIf="auth.isAdmin() && isLocked()"
+              *ngIf="auth.canManage() && isLocked()"
               [disabled]="validating()"
               (click)="unvalidateWeek()">
         <span *ngIf="!validating()">🔓 Annuler la validation</span>
@@ -66,7 +66,7 @@
       title="Pointage Employé"
       subtitle="Cochez les jours de présence par compagnie">
       <!-- Boutons tout/effacer masqués si verrouillé en mode employé -->
-      <ng-container *ngIf="auth.isAdmin() || !isLocked()">
+      <ng-container *ngIf="auth.canManage() || !isLocked()">
         <button class="btn btn-sm btn-ghost"
                 (click)="ptEmpSvc.selectAll(weekSvc.weekDays())">Tout ✓</button>
         <button class="btn btn-sm btn-ghost"

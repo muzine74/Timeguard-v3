@@ -1,0 +1,201 @@
+<div class="page-wrap">
+
+  <!-- Toasts -->
+  <div class="toast toast-success" [class.toast-show]="success()">{{ success() }}</div>
+  <div class="toast toast-error"   [class.toast-show]="error()">{{ error() }}</div>
+
+  <!-- En-tête -->
+  <header class="page-hdr">
+    <div>
+      <h1 class="page-title">Configuration</h1>
+      <p class="page-sub">Paramètres globaux de l'application</p>
+    </div>
+    <div class="page-actions" *ngIf="!loading()">
+      <button class="btn btn-outline" (click)="cancel()" [disabled]="saving()">Annuler</button>
+      <button class="btn btn-primary" (click)="requestSave()" [disabled]="saving()">
+        <span *ngIf="!saving()">Enregistrer</span>
+        <span *ngIf="saving()" class="spinner"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Chargement -->
+  <div class="loading-wrap" *ngIf="loading()">
+    <div class="loading-spinner"></div>
+    <span>Chargement...</span>
+  </div>
+
+  <div class="cfg-grid" *ngIf="!loading()">
+
+    <!-- ══ Compagnie ══════════════════════════════════════════════════════ -->
+    <section class="cfg-card">
+      <div class="cfg-card-hdr">Compagnie</div>
+      <div class="cfg-card-body">
+        <div class="field">
+          <label>Logo (chemin ou URL)</label>
+          <input class="inp" [(ngModel)]="form.logoPath" placeholder="/assets/logo.png" />
+        </div>
+        <div class="field">
+          <label>Nom</label>
+          <input class="inp" [(ngModel)]="form.companyName" placeholder="Rammsis Cleaning..." />
+        </div>
+        <div class="field field-full">
+          <label>Adresse</label>
+          <input class="inp" [(ngModel)]="form.companyAddress" placeholder="123 rue Principale, Montréal, QC" />
+        </div>
+        <div class="field">
+          <label>Téléphone</label>
+          <input class="inp" [(ngModel)]="form.companyPhone" placeholder="514-555-0000" />
+        </div>
+        <div class="field">
+          <label>Courriel</label>
+          <input class="inp" [(ngModel)]="form.companyEmail" placeholder="info@compagnie.com" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ Courriel (SMTP) ════════════════════════════════════════════════ -->
+    <section class="cfg-card">
+      <div class="cfg-card-hdr">Courriel (SMTP)</div>
+      <div class="cfg-card-body">
+        <div class="field">
+          <label>Serveur</label>
+          <input class="inp" [(ngModel)]="form.smtpServer" placeholder="smtp.gmail.com" />
+        </div>
+        <div class="field">
+          <label>Port</label>
+          <input class="inp" type="number" [(ngModel)]="form.smtpPort" placeholder="587" />
+        </div>
+        <div class="field">
+          <label>Utilisateur</label>
+          <input class="inp" [(ngModel)]="form.smtpUser" placeholder="user@domaine.com" />
+        </div>
+        <div class="field">
+          <label>Mot de passe</label>
+          <input class="inp" type="password" [(ngModel)]="form.smtpPassword" placeholder="••••••••" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ Taxes ══════════════════════════════════════════════════════════ -->
+    <section class="cfg-card">
+      <div class="cfg-card-hdr">Taxes</div>
+      <div class="cfg-card-body">
+        <div class="field">
+          <label>N° TPS</label>
+          <input class="inp" [(ngModel)]="form.tpsNumber" placeholder="123456789 RT0001" />
+        </div>
+        <div class="field">
+          <label>N° TVQ</label>
+          <input class="inp" [(ngModel)]="form.tvqNumber" placeholder="1234567890 TQ0001" />
+        </div>
+        <div class="field">
+          <label>Taux TPS (%)</label>
+          <input class="inp" type="number" step="0.001" [(ngModel)]="form.tpsRate" />
+        </div>
+        <div class="field">
+          <label>Taux TVQ (%)</label>
+          <input class="inp" type="number" step="0.001" [(ngModel)]="form.tvqRate" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ Coordonnées bancaires ══════════════════════════════════════════ -->
+    <section class="cfg-card">
+      <div class="cfg-card-hdr">Coordonnées bancaires</div>
+      <div class="cfg-card-body">
+        <div class="field field-full">
+          <label>Coordonnées de paiement</label>
+          <textarea class="inp inp-textarea" rows="4" [(ngModel)]="form.bankCoordinates"
+                    placeholder="Banque : ...\nTransit : ...\nFolio : ..."></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ Contact ════════════════════════════════════════════════════════ -->
+    <section class="cfg-card">
+      <div class="cfg-card-hdr">Contact</div>
+      <div class="cfg-card-body">
+        <div class="field">
+          <label>Nom</label>
+          <input class="inp" [(ngModel)]="form.contactName" placeholder="Jean Dupont" />
+        </div>
+        <div class="field">
+          <label>Téléphone</label>
+          <input class="inp" [(ngModel)]="form.contactPhone" placeholder="514-555-0000" />
+        </div>
+        <div class="field">
+          <label>Courriel</label>
+          <input class="inp" [(ngModel)]="form.contactEmail" placeholder="contact@compagnie.com" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ Application ════════════════════════════════════════════════════ -->
+    <section class="cfg-card">
+      <div class="cfg-card-hdr">Application</div>
+      <div class="cfg-card-body">
+        <div class="field">
+          <label>Version</label>
+          <input class="inp" [(ngModel)]="form.appVersion" placeholder="2.0.0" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ Fournisseur ════════════════════════════════════════════════════ -->
+    <section class="cfg-card cfg-card-full">
+      <div class="cfg-card-hdr">Fournisseur</div>
+      <div class="cfg-card-body">
+        <table class="provider-table">
+          <thead>
+            <tr>
+              <th>Nom</th>
+              <th>Courriel</th>
+              <th>Téléphone</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input class="inp inp-table" [(ngModel)]="provider.name"  placeholder="Nom fournisseur" /></td>
+              <td><input class="inp inp-table" [(ngModel)]="provider.mail"  placeholder="email@four.com" /></td>
+              <td><input class="inp inp-table" [(ngModel)]="provider.phone" placeholder="514-555-0000" /></td>
+              <td><input class="inp inp-table" [(ngModel)]="provider.notes" placeholder="Notes..." /></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </div><!-- /cfg-grid -->
+</div>
+
+<!-- ══════════════════════════════════
+     MODAL CONFIRMATION (diff)
+     ══════════════════════════════════ -->
+<div class="modal-backdrop" *ngIf="showDiff()" (click)="cancelDiff()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-hdr">
+      <div class="modal-title">Confirmer les modifications</div>
+      <button class="modal-close" (click)="cancelDiff()">✕</button>
+    </div>
+    <div class="modal-body">
+      <table class="diff-table">
+        <thead>
+          <tr><th>Champ</th><th>Ancienne valeur</th><th>Nouvelle valeur</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let d of diff">
+            <td class="diff-label">{{ d.label }}</td>
+            <td class="diff-old">{{ d.old }}</td>
+            <td class="diff-new">{{ d.new }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" (click)="cancelDiff()">Annuler</button>
+      <button class="btn btn-primary" (click)="confirmSave()">Enregistrer</button>
+    </div>
+  </div>
+</div>

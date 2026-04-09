@@ -1,12 +1,10 @@
-import { Component, OnInit, signal, isDevMode, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, signal, isDevMode, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CompanyService, CompanySummary } from '../../../state/compagny/Company.service';
 import { InvoiceService, BillLine, BillCreatePayload } from '../../../state/invoice/invoice.service';
-
-const TPS_RATE = 0.05;
-const TVQ_RATE = 0.09975;
+import { ConfigService } from '../../../state/config/config.service';
 
 @Component({
   selector: 'app-invoice-generate',
@@ -17,10 +15,12 @@ const TVQ_RATE = 0.09975;
   styleUrls: ['./invoice-generate.component.scss'],
 })
 export class InvoiceGenerateComponent implements OnInit {
-  saved   = signal(false);
-  sent    = signal(false);
-  error   = signal('');
-  saving  = signal(false);
+  saved      = signal(false);
+  sent       = signal(false);
+  error      = signal('');
+  saving     = signal(false);
+  editId     = signal<number | null>(null);   // null = création, number = édition
+  editNumber = signal('');                     // numéro affiché en mode édition
 
   // ── Compagnies ────────────────────────────────────────
   companies    = signal<CompanySummary[]>([]);
@@ -47,8 +47,19 @@ export class InvoiceGenerateComponent implements OnInit {
   get subtotal(): number {
     return this.lines.reduce((s, l) => s + l.subTotal, 0);
   }
-  get tpsAmount(): number  { return +(this.subtotal * TPS_RATE).toFixed(2); }
-  get tvqAmount(): number  { return +(this.subtotal * TVQ_RATE).toFixed(2); }
+  private _tpsRate = 0.05;
+  private _tvqRate = 0.09975;
+
+  // Config fournisseur
+  providerName    = '';
+  providerAddress = '';
+  providerPhone   = '';
+  providerEmail   = '';
+  tpsLabel        = 'TPS (5 %)';
+  tvqLabel        = 'TVQ (9,975 %)';
+
+  get tpsAmount(): number  { return +(this.subtotal * this._tpsRate).toFixed(2); }
+  get tvqAmount(): number  { return +(this.subtotal * this._tvqRate).toFixed(2); }
   get totalTtc(): number   { return +(this.subtotal + this.tpsAmount + this.tvqAmount).toFixed(2); }
 
   private get _dev() { return isDevMode(); }
@@ -58,32 +69,71 @@ export class InvoiceGenerateComponent implements OnInit {
   constructor(
     private companySvc:  CompanyService,
     private invoiceSvc:  InvoiceService,
+    private configSvc:   ConfigService,
     private router:      Router,
     private route:       ActivatedRoute,
+    private cdr:         ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
-    const params = this.route.snapshot.queryParamMap;
+    this.configSvc.get().subscribe({
+      next: data => {
+        const c = data.config;
+        if (c.tpsRate) this._tpsRate = c.tpsRate / 100;
+        if (c.tvqRate) this._tvqRate = c.tvqRate / 100;
+        this.providerName    = c.companyName    ?? '';
+        this.providerAddress = c.companyAddress ?? '';
+        this.providerPhone   = c.companyPhone   ?? '';
+        this.providerEmail   = c.companyEmail   ?? '';
+        this.tpsLabel = c.tpsRate ? `TPS (${c.tpsRate} %)` : 'TPS (5 %)';
+        this.tvqLabel = c.tvqRate ? `TVQ (${c.tvqRate} %)` : 'TVQ (9,975 %)';
+        this.cdr.markForCheck();
+      },
+    });
+    const params       = this.route.snapshot.queryParamMap;
     const preCompanyId = params.get('companyId');
     const prePeriod    = params.get('period');
     const preVisits    = params.get('visits');
+    const editIdStr    = params.get('edit');
 
-    if (prePeriod)  this.period         = prePeriod;
-    if (preVisits)  this.numberOfVisits = parseInt(preVisits, 10) || 0;
+    if (prePeriod) this.period         = prePeriod;
+    if (preVisits) this.numberOfVisits = parseInt(preVisits, 10) || 0;
 
     this.companySvc.getAll().subscribe({
       next: list => {
         const active = list.filter(c => c.isActive);
         this.companies.set(active);
         this.coLoading.set(false);
-        if (preCompanyId) {
-          const match = active.find(c => c.companyId === preCompanyId);
-          if (match) this.selectCompany(match);
+
+        if (editIdStr) {
+          // Mode édition — charger la facture existante
+          const id = parseInt(editIdStr, 10);
+          this.editId.set(id);
+          this.invoiceSvc.getById(id).subscribe({
+            next: d => {
+              this.editNumber.set(d.billNumber);
+              this.period         = d.period;
+              this.billedDate     = d.billedDate.split('T')[0];
+              this.numberOfVisits = d.numberOfVisits;
+              this.note           = d.note ?? '';
+              this.paymentInfo    = d.paymentInfo ?? '';
+              this.lines          = d.lines.map(l => ({ ...l, id: crypto.randomUUID() }));
+              if (this.lines.length === 0) this.addLine();
+              const match = active.find(c => c.companyId === d.companyCode || c.companyName === d.companyName);
+              if (match) this.selectCompany(match);
+            },
+            error: () => { this.error.set('Impossible de charger la facture.'); this.addLine(); },
+          });
+        } else {
+          if (preCompanyId) {
+            const match = active.find(c => c.companyId === preCompanyId);
+            if (match) this.selectCompany(match);
+          }
+          this.addLine();
         }
       },
       error: () => this.coLoading.set(false),
     });
-    this.addLine();
   }
 
   selectCompany(co: CompanySummary): void {
@@ -133,14 +183,20 @@ export class InvoiceGenerateComponent implements OnInit {
 
     this.error.set('');
     this.saving.set(true);
-    this.invoiceSvc.create(this._buildPayload()).subscribe({
+    const id = this.editId();
+
+    const obs = id
+      ? this.invoiceSvc.update(id, this._buildPayload())
+      : this.invoiceSvc.create(this._buildPayload());
+
+    obs.subscribe({
       next: res => {
-        this.log('✓ facture créée:', res);
+        this.log(id ? '✓ facture mise à jour' : '✓ facture créée:', res);
         this.saving.set(false);
         this.router.navigate(['/invoices']);
       },
       error: err => {
-        this.warn('✕ create:', err);
+        this.warn('✕ save:', err);
         this.error.set(this.invoiceSvc.error() ?? `Erreur HTTP ${err.status}`);
         this.saving.set(false);
       },

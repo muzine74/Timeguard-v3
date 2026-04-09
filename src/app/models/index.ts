@@ -1,11 +1,11 @@
 // ── Domaine Auth ──────────────────────────────────────────
 export interface User {
-  username:   string;
-  role:       'ADMIN' | 'USER' | 'SUPERADMIN';
-  employeeId: string;
+  username:    string;
+  permissions: string[];
+  employeeId:  string;
 }
 export interface LoginRequest  { username: string; password: string; }
-export interface LoginResponse { token: string; username: string; role: string; employeeId: string; }
+export interface LoginResponse { token: string; username: string; permissions: string[]; employeeId: string; }
 
 // ── Fichiers employé ──────────────────────────────────────
 export interface EmployeeFile {

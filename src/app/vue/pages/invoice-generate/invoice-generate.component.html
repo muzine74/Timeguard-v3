@@ -93,10 +93,11 @@
         <!-- En-tête facture -->
         <div class="inv-header">
           <div class="inv-brand">
-            <div class="inv-logo">TG</div>
             <div>
-              <div class="inv-company-name">TimeGuard</div>
-              <div class="inv-company-sub">Services de gestion du temps</div>
+              <div class="inv-company-name">{{ providerName || 'Fournisseur' }}</div>
+              <div class="inv-company-sub" *ngIf="providerAddress">{{ providerAddress }}</div>
+              <div class="inv-company-sub" *ngIf="providerPhone">{{ providerPhone }}</div>
+              <div class="inv-company-sub" *ngIf="providerEmail">{{ providerEmail }}</div>
             </div>
           </div>
           <div class="inv-meta">
@@ -159,11 +160,11 @@
             <strong>{{ subtotal | number:'1.2-2' }} $</strong>
           </div>
           <div class="inv-total-row">
-            <span>TPS (5 %)</span>
+            <span>{{ tpsLabel }}</span>
             <strong>{{ tpsAmount | number:'1.2-2' }} $</strong>
           </div>
           <div class="inv-total-row">
-            <span>TVQ (9,975 %)</span>
+            <span>{{ tvqLabel }}</span>
             <strong>{{ tvqAmount | number:'1.2-2' }} $</strong>
           </div>
           <div class="inv-total-row inv-total-ttc">
@@ -184,7 +185,7 @@
           <div class="inv-payment-txt">{{ paymentInfo }}</div>
         </div>
 
-        <div class="inv-footer">Merci pour votre confiance — TimeGuard</div>
+        <div class="inv-footer">Merci pour votre confiance — {{ providerName || 'TimeGuard' }}</div>
       </div>
 
     </ng-container>

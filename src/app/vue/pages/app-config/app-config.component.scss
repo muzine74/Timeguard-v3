@@ -1,0 +1,136 @@
+.page-wrap { padding: 24px; max-width: 1200px; margin: 0 auto; }
+
+// ── Toasts ───────────────────────────────────────────────────────────────────
+.toast {
+  position: fixed; top: 18px; right: 24px; z-index: 200;
+  padding: 10px 18px; border-radius: 10px;
+  font-size: 13px; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity .3s;
+  &.toast-show    { opacity: 1; }
+  &.toast-success { background: rgba(30,200,100,.15); border: 1px solid rgba(30,200,100,.35); color: #4ecb80; }
+  &.toast-error   { background: rgba(224,82,82,.12);  border: 1px solid rgba(224,82,82,.3);   color: var(--danger); }
+}
+
+// ── Header ───────────────────────────────────────────────────────────────────
+.page-hdr   { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.page-title { font-size: 20px; font-weight: 700; }
+.page-sub   { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.page-actions { display: flex; gap: 8px; }
+
+// ── Loading ──────────────────────────────────────────────────────────────────
+.loading-wrap {
+  display: flex; align-items: center; gap: 12px;
+  padding: 60px; justify-content: center; color: var(--muted); font-size: 13px;
+}
+.loading-spinner {
+  width: 24px; height: 24px;
+  border: 3px solid rgba(201,162,39,.2); border-top-color: var(--accent);
+  border-radius: 50%; animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+// ── Grille de cartes ─────────────────────────────────────────────────────────
+.cfg-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 18px;
+}
+
+// ── Carte ────────────────────────────────────────────────────────────────────
+.cfg-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden;
+
+  &.cfg-card-full { grid-column: 1 / -1; }
+}
+.cfg-card-hdr {
+  padding: 12px 18px;
+  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--muted); border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+.cfg-card-body {
+  padding: 16px 18px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+}
+
+// ── Champs ───────────────────────────────────────────────────────────────────
+.field {
+  display: flex; flex-direction: column; gap: 5px;
+  &.field-full { grid-column: 1 / -1; }
+
+  label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+}
+.inp {
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text); padding: 8px 11px; border-radius: 8px;
+  font-family: inherit; font-size: 13px; outline: none; width: 100%; box-sizing: border-box;
+  &:focus { border-color: var(--accent); }
+  &::placeholder { color: var(--muted); font-style: italic; font-size: 12px; }
+}
+.inp-textarea { resize: vertical; min-height: 80px; }
+
+// ── Table fournisseur ────────────────────────────────────────────────────────
+.provider-table {
+  width: 100%; border-collapse: collapse;
+
+  th {
+    text-align: left; padding: 8px 10px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+    color: var(--muted); border-bottom: 1px solid var(--border);
+  }
+  td { padding: 8px 6px; }
+}
+.inp-table {
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text); padding: 6px 10px; border-radius: 6px;
+  font-family: inherit; font-size: 13px; outline: none; width: 100%; box-sizing: border-box;
+  &:focus { border-color: var(--accent); }
+  &::placeholder { color: var(--muted); font-style: italic; font-size: 12px; }
+}
+
+// ── Boutons ──────────────────────────────────────────────────────────────────
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer;
+  font-size: 13px; font-weight: 600; font-family: inherit; transition: opacity .15s;
+  &:disabled { opacity: .5; cursor: not-allowed; }
+  &.btn-primary { background: var(--accent); color: #000; }
+  &.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+}
+.spinner {
+  width: 14px; height: 14px;
+  border: 2px solid rgba(0,0,0,.2); border-top-color: #000;
+  border-radius: 50%; animation: spin .7s linear infinite; display: inline-block;
+}
+
+// ── Modal ────────────────────────────────────────────────────────────────────
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,.55);
+  display: flex; align-items: center; justify-content: center; z-index: 100;
+}
+.modal {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+  width: min(700px, 95vw); max-height: 80vh; display: flex; flex-direction: column;
+}
+.modal-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+}
+.modal-title  { font-size: 15px; font-weight: 700; }
+.modal-close  { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 18px; }
+.modal-body   { padding: 20px; overflow-y: auto; flex: 1; }
+.modal-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+
+// ── Table diff ───────────────────────────────────────────────────────────────
+.diff-table {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+
+  th {
+    text-align: left; padding: 8px 10px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+    color: var(--muted); border-bottom: 1px solid var(--border);
+  }
+  td { padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+}
+.diff-label { font-weight: 600; color: var(--text); white-space: nowrap; }
+.diff-old   { color: var(--danger); font-size: 12px; word-break: break-all; }
+.diff-new   { color: #4ecb80;       font-size: 12px; word-break: break-all; }

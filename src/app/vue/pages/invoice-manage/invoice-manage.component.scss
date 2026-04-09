@@ -146,6 +146,10 @@
   &:disabled { opacity: .45; cursor: not-allowed; }
 }
 .act-delete-btn { @extend .btn-danger; }
+.act-edit-btn {
+  background: rgba(100,100,100,.08); border-color: rgba(100,100,100,.3); color: var(--text);
+  &:hover { background: rgba(100,100,100,.18); }
+}
 .act-avoir-btn {
   background: rgba(59,130,246,.1); border-color: rgba(59,130,246,.3); color: #60a5fa;
   &:hover { background: rgba(59,130,246,.2); }
@@ -244,24 +248,22 @@
 .file-name { font-size: 13px; color: var(--text); }
 .file-none  { font-size: 12px; color: var(--muted); font-style: italic; }
 
-.file-preview-wrap {
-  border-radius: 8px; overflow: hidden;
-  border: 1px solid var(--border); background: #fff;
-  min-height: 120px; display: flex; align-items: center; justify-content: center;
-}
-.file-preview-loading {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 12px; color: var(--muted); padding: 24px;
-}
-.file-preview-frame {
-  width: 100%; height: 520px; border: none; display: block;
-}
+
 .file-upload-btn {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 600;
   background: rgba(201,162,39,.1); border: 1px solid rgba(201,162,39,.3); color: var(--accent);
   cursor: pointer; width: fit-content; transition: background .15s;
   &:hover { background: rgba(201,162,39,.2); }
+}
+
+// Formulaire avoir
+.avoir-params {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;
+}
+.avoir-span-full { grid-column: 1 / -1; }
+.inp-textarea {
+  resize: vertical; min-height: 60px; font-family: inherit;
 }
 
 // Confirm modal
