@@ -8,7 +8,7 @@
   <header class="page-hdr">
     <div>
       <h1 class="page-title">Gestion des factures</h1>
-      <p class="page-sub">{{ bills().length }} facture(s) trouvée(s)</p>
+      <p class="page-sub">{{ rootNodes().length }} facture(s) — {{ bills().length - rootNodes().length }} avoir(s) — page {{ currentPage() }}/{{ totalPages() }}</p>
     </div>
     <div class="page-actions">
       <button class="btn btn-primary" (click)="navigateGenerate()">+ Nouvelle facture</button>
@@ -31,6 +31,17 @@
     </div>
 
     <button class="btn btn-outline btn-sm" (click)="loadBills()">🔍 Filtrer</button>
+
+    <div class="page-size-wrap">
+      <span class="page-size-lbl">Afficher</span>
+      <select class="page-size-sel" [ngModel]="pageSize()" (ngModelChange)="setPageSize($event)">
+        <option [value]="25">25</option>
+        <option [value]="50">50</option>
+        <option [value]="75">75</option>
+        <option [value]="100">100</option>
+      </select>
+      <span class="page-size-lbl">/ page</span>
+    </div>
   </div>
 
   <!-- Chargement -->
@@ -55,49 +66,81 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let b of bills()" (click)="openDetail(b)" class="bill-row">
-          <td class="bill-number">{{ b.billNumber }}</td>
-          <td>{{ b.companyName }}</td>
-          <td>{{ b.period }}</td>
-          <td>{{ b.billedDate | date:'dd/MM/yyyy' }}</td>
-          <td class="col-right bill-amount">{{ b.totalWithTax | number:'1.2-2' }} $</td>
+        <tr *ngFor="let row of flatRows()"
+            (click)="openDetail(row.node.data)"
+            class="bill-row"
+            [class.avoir-row]="row.node.data.parentBillIdentifier !== null"
+            [class.depth-1]="row.depth === 1"
+            [class.depth-2]="row.depth >= 2">
+          <td class="bill-number"
+              [class.in-avoir-tree]="isInAvoirTree(row.node.data.billIdentifier, row.node.data.parentBillIdentifier)">
+            <!-- Bouton expand/collapse si l'entrée a des enfants -->
+            <button class="expand-btn" *ngIf="row.node.children.length > 0"
+                    (click)="toggleExpand(row.node.data.billIdentifier, $event)">
+              {{ expandedIds().has(row.node.data.billIdentifier) ? '▼' : '▶' }}
+            </button>
+            <span class="expand-spacer" *ngIf="row.node.children.length === 0 && row.depth > 0"></span>
+            <span [style.padding-left.px]="row.depth * 20">{{ row.node.data.billNumber }}</span>
+          </td>
+          <td>{{ row.node.data.companyName }}</td>
+          <td>{{ row.node.data.period }}</td>
+          <td>{{ row.node.data.billedDate | date:'dd/MM/yyyy' }}</td>
+          <td class="col-right bill-amount">{{ row.node.data.totalWithTax | number:'1.2-2' }} $</td>
           <td class="col-center" (click)="$event.stopPropagation()">
-            <!-- Non envoyée → cliquable pour marquer envoyée -->
-            <button class="badge-btn badge-not-sent" *ngIf="!b.isSent"
+            <button class="badge-btn badge-not-sent" *ngIf="!row.node.data.isSent"
                     title="Cliquer pour marquer comme envoyée"
-                    (click)="openSend(b, $event)">
+                    (click)="openSend(row.node.data, $event)">
               ⏳ Non envoyée
             </button>
-            <!-- Envoyée → badge statique avec date + montant au survol -->
-            <span class="badge badge-sent" *ngIf="b.isSent" [title]="sentTitle(b)">
+            <span class="badge badge-sent" *ngIf="row.node.data.isSent" [title]="sentTitle(row.node.data)">
               ✓ Envoyée
             </span>
           </td>
           <td class="col-center">
-            <button class="badge-btn" [class.badge-paid]="b.isPaid" [class.badge-unpaid]="!b.isPaid"
-                    [disabled]="!b.isSent"
-                    [title]="paidTitle(b)"
-                    (click)="togglePaid(b, $event)">
-              {{ b.isPaid ? '✓ Payée' : '◎ Impayée' }}
+            <button class="badge-btn"
+                    [class.badge-paid]="row.node.data.isPaid"
+                    [class.badge-unpaid]="!row.node.data.isPaid"
+                    [disabled]="!row.node.data.isSent"
+                    [title]="paidTitle(row.node.data)"
+                    (click)="togglePaid(row.node.data, $event)">
+              {{ row.node.data.isPaid ? '✓ Payée' : '◎ Impayée' }}
             </button>
           </td>
           <td class="col-actions" (click)="$event.stopPropagation()">
-            <button class="act-btn act-delete" *ngIf="!b.isSent"
+            <button class="act-btn act-delete" *ngIf="!row.node.data.isSent"
                     title="Supprimer"
-                    (click)="openDelete(b, $event)">🗑</button>
+                    (click)="openDelete(row.node.data, $event)">🗑</button>
             <button class="act-btn act-avoir"
-                    [disabled]="!b.isSent"
-                    [title]="b.isSent ? 'Créer un avoir' : 'La facture doit être envoyée'"
-                    (click)="openAvoir(b, $event)">📋 Avoir</button>
+                    [disabled]="!row.node.data.isSent"
+                    [title]="row.node.data.isSent ? 'Créer un avoir' : 'La facture doit être envoyée'"
+                    (click)="openAvoir(row.node.data, $event)">📋 Avoir</button>
           </td>
         </tr>
       </tbody>
     </table>
 
-    <div class="empty-state" *ngIf="bills().length === 0">
+    <div class="empty-state" *ngIf="rootNodes().length === 0">
       <div class="empty-icon">🧾</div>
       <div class="empty-txt">Aucune facture trouvée</div>
       <button class="btn btn-primary" (click)="navigateGenerate()">Créer la première facture</button>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" *ngIf="totalPages() > 1">
+      <button class="pg-btn" [disabled]="currentPage() === 1" (click)="goToPage(1)">«</button>
+      <button class="pg-btn" [disabled]="currentPage() === 1" (click)="goToPage(currentPage() - 1)">‹</button>
+
+      <ng-container *ngFor="let p of pageRange()">
+        <button class="pg-btn" *ngIf="p !== -1"
+                [class.pg-active]="p === currentPage()"
+                (click)="goToPage(p)">{{ p }}</button>
+        <span class="pg-ellipsis" *ngIf="p === -1">…</span>
+      </ng-container>
+
+      <button class="pg-btn" [disabled]="currentPage() === totalPages()" (click)="goToPage(currentPage() + 1)">›</button>
+      <button class="pg-btn" [disabled]="currentPage() === totalPages()" (click)="goToPage(totalPages())">»</button>
+
+      <span class="pg-info">{{ (currentPage() - 1) * pageSize() + 1 }}–{{ pageEnd() }} sur {{ rootNodes().length }}</span>
     </div>
   </div>
 </div>

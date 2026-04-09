@@ -79,7 +79,8 @@
   cursor: pointer; transition: background .12s;
   &:hover td { background: rgba(201,162,39,.04); }
 }
-.bill-number { font-weight: 700; color: var(--accent); }
+.bill-number { font-weight: 700; color: var(--text); }
+.bill-number.in-avoir-tree { color: var(--accent); }
 .bill-amount { font-weight: 700; }
 
 .col-right   { text-align: right; }
@@ -290,3 +291,73 @@
 .field label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+// ── Sélecteur de taille de page ──────────────────────────
+.page-size-wrap {
+  display: flex; align-items: center; gap: 6px; margin-left: auto;
+}
+.page-size-lbl {
+  font-size: 12px; color: var(--muted);
+}
+.page-size-sel {
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text); border-radius: 6px; padding: 5px 8px;
+  font-size: 12px; cursor: pointer; outline: none;
+  &:focus { border-color: var(--accent); }
+}
+
+// ── Pagination ────────────────────────────────────────────
+.pagination {
+  display: flex; align-items: center; gap: 4px;
+  padding: 14px 16px; justify-content: center;
+  border-top: 1px solid var(--border);
+}
+.pg-btn {
+  min-width: 32px; height: 32px; padding: 0 8px;
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text); border-radius: 6px; font-size: 12px;
+  cursor: pointer; transition: background .12s, border-color .12s;
+  &:hover:not(:disabled) { background: rgba(201,162,39,.1); border-color: var(--accent); color: var(--accent); }
+  &:disabled { opacity: .35; cursor: default; }
+  &.pg-active { background: var(--accent); border-color: var(--accent); color: #1a1a2e; font-weight: 700; }
+}
+.pg-ellipsis { color: var(--muted); font-size: 13px; padding: 0 2px; }
+.pg-info {
+  margin-left: 12px; font-size: 11px; color: var(--muted); white-space: nowrap;
+}
+
+// ── Arborescence factures / avoirs ────────────────────────
+.avoir-row td {
+  background: rgba(201, 162, 39, 0.04);
+  font-size: 12px;
+  color: var(--muted);
+}
+.avoir-row:hover td {
+  background: rgba(201, 162, 39, 0.09) !important;
+}
+.avoir-row .bill-number {
+  font-style: italic;   // couleur gérée par .in-avoir-tree
+}
+.avoir-row .bill-amount {
+  color: var(--muted);
+}
+
+// Bouton expand/collapse (▶ / ▼)
+.expand-btn {
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 9px;
+  padding: 0 5px 0 0;
+  vertical-align: middle;
+  line-height: 1;
+  opacity: .8;
+  &:hover { opacity: 1; }
+}
+
+// Espace réservé pour aligner les avoirs sans enfants avec ceux qui en ont
+.expand-spacer {
+  display: inline-block;
+  width: 14px;
+}

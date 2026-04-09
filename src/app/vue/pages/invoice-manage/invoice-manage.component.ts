@@ -1,10 +1,20 @@
-import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { InvoiceService, BillSummary, BillDetail, BillLine, BillFilter, BillCreatePayload } from '../../../state/invoice/invoice.service';
 
 type ModalMode = 'delete' | 'avoir' | 'detail' | 'send' | null;
+
+interface BillTreeNode {
+  data:     BillSummary;
+  children: BillTreeNode[];
+}
+
+interface FlatRow {
+  node:  BillTreeNode;
+  depth: number;
+}
 
 @Component({
   selector: 'app-invoice-manage',
@@ -21,6 +31,103 @@ export class InvoiceManageComponent implements OnInit {
   loading  = this.invoiceSvc.loading;
   error    = signal('');
   success  = signal('');
+
+  // ── Arborescence factures + avoirs ────────────────────────────────────────
+  expandedIds = signal(new Set<number>());
+
+  private _nodeMap = computed(() => {
+    const map = new Map<number, BillTreeNode>();
+    for (const b of this.bills()) {
+      map.set(b.billIdentifier, { data: b, children: [] });
+    }
+    for (const node of map.values()) {
+      const pid = node.data.parentBillIdentifier;
+      if (pid !== null && pid !== undefined && map.has(pid)) {
+        map.get(pid)!.children.push(node);
+      }
+    }
+    return map;
+  });
+
+  rootNodes = computed(() =>
+    [...this._nodeMap().values()].filter(n => !n.data.parentBillIdentifier)
+  );
+
+  // ── Pagination ────────────────────────────────────────────────────────────
+  pageSize    = signal(25);
+  currentPage = signal(1);
+  totalPages  = computed(() => Math.max(1, Math.ceil(this.rootNodes().length / this.pageSize())));
+
+  paginatedRootNodes = computed(() => {
+    const page = Math.min(this.currentPage(), this.totalPages());
+    const size = this.pageSize();
+    return this.rootNodes().slice((page - 1) * size, page * size);
+  });
+
+  flatRows = computed((): FlatRow[] => {
+    const rows: FlatRow[] = [];
+    const expanded = this.expandedIds();
+    const push = (nodes: BillTreeNode[], depth: number) => {
+      for (const n of nodes) {
+        rows.push({ node: n, depth });
+        if (n.children.length > 0 && expanded.has(n.data.billIdentifier)) {
+          push(n.children, depth + 1);
+        }
+      }
+    };
+    push(this.paginatedRootNodes(), 0);
+    return rows;
+  });
+
+  setPageSize(size: number): void {
+    this.pageSize.set(size);
+    this.currentPage.set(1);
+  }
+
+  goToPage(p: number): void {
+    const clamped = Math.max(1, Math.min(p, this.totalPages()));
+    this.currentPage.set(clamped);
+  }
+
+  pageEnd(): number {
+    return Math.min(this.currentPage() * this.pageSize(), this.rootNodes().length);
+  }
+
+  // Génère les numéros de pages à afficher avec ellipses (-1)
+  pageRange(): number[] {
+    const total = this.totalPages();
+    const cur   = this.currentPage();
+    if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+    const pages: number[] = [1];
+    if (cur > 3)          pages.push(-1);
+    for (let p = Math.max(2, cur - 1); p <= Math.min(total - 1, cur + 1); p++) pages.push(p);
+    if (cur < total - 2)  pages.push(-1);
+    pages.push(total);
+    return pages;
+  }
+
+  toggleExpand(id: number, e: Event): void {
+    e.stopPropagation();
+    this.expandedIds.update(s => {
+      const next = new Set(s);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }
+
+  // IDs de toutes les factures qui ont au moins un avoir direct
+  private _avoirParentIds = computed(() => {
+    const set = new Set<number>();
+    for (const b of this.bills()) {
+      if (b.parentBillIdentifier != null) set.add(b.parentBillIdentifier);
+    }
+    return set;
+  });
+
+  // Vrai si la facture appartient à un arbre qui contient au moins un avoir
+  isInAvoirTree(id: number, parentId: number | null): boolean {
+    return parentId !== null || this._avoirParentIds().has(id);
+  }
 
   // ── Filtres ───────────────────────────────────────────
   search      = '';
@@ -62,6 +169,7 @@ export class InvoiceManageComponent implements OnInit {
   // ── Chargement ────────────────────────────────────────
   loadBills(): void {
     this.error.set('');
+    this.currentPage.set(1);
 
     const filter: BillFilter = {
       search:      this.search      || undefined,
