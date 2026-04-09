@@ -27,8 +27,9 @@ export interface BillSummary {
   sentDate:       string | null;
   isPaid:         boolean;
   paidDate:       string | null;
-  note:           string;
-  filePath:       string;
+  note:                string;
+  filePath:            string;
+  parentBillIdentifier: number | null;
 }
 
 export interface BillDetail extends BillSummary {
