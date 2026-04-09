@@ -6,14 +6,13 @@ export interface CredentialResponse {
   username:     string;
   employeeId:   string;
   employeeName: string;
-  role:         string;
+  groups:       string[];
 }
 
 export interface CredentialCreatePayload {
   employeeId: string;
   username:   string;
   password:   string;
-  role:       string;
 }
 
 @Injectable({ providedIn: 'root' })

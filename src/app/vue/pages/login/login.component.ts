@@ -42,9 +42,17 @@ export class LoginComponent {
         this.log('✓ login réussi');
         this.log('  user:       ', this.auth.user());
         this.log('  employeeId: ', this.auth.employeeId());
-        this.log('  role:       ', this.auth.user()?.role);
+        this.log('  permissions:', this.auth.user()?.permissions);
         this.log('  token JWT:  ', localStorage.getItem('tg_token'));
-        const dest = this.auth.isAdmin() ? '/employees' : '/pointage';
+
+        if (!this.auth.loggedInWithAccess()) {
+          this.warn('✕ aucune permission assignée');
+          this.auth.logout();
+          this.error.set('Aucune permission assignée. Contactez un administrateur.');
+          return;
+        }
+
+        const dest = this.auth.canManage() ? '/employees' : '/pointage';
         this.log(`→ navigation vers ${dest}`);
         this.router.navigate([dest]);
       },

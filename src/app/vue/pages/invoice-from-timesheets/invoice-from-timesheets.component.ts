@@ -2,9 +2,7 @@ import { Component, OnInit, signal, ChangeDetectionStrategy, ChangeDetectorRef }
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { InvoiceService, BillableCompanies, BillableCompanyItem, BillCreatePayload } from '../../../state/invoice/invoice.service';
-
-const TPS_RATE = 0.05;
-const TVQ_RATE = 0.09975;
+import { ConfigService } from '../../../state/config/config.service';
 
 export interface EligibleRow extends BillableCompanyItem {
   checked:      boolean;
@@ -39,12 +37,25 @@ export class InvoiceFromTimesheetsComponent implements OnInit {
   get noneChecked(): boolean { return this.rows.every(r => !r.checked); }
   get checkedRows(): EligibleRow[] { return this.rows.filter(r => r.checked); }
 
+  private _tpsRate = 0.05;
+  private _tvqRate = 0.09975;
+
   constructor(
     private invoiceSvc: InvoiceService,
+    private configSvc:  ConfigService,
     private cdr:        ChangeDetectorRef,
   ) {}
 
-  ngOnInit(): void { this.load(); }
+  ngOnInit(): void {
+    this.configSvc.get().subscribe({
+      next: data => {
+        if (data.config.tpsRate) this._tpsRate = data.config.tpsRate / 100;
+        if (data.config.tvqRate) this._tvqRate = data.config.tvqRate / 100;
+        this.cdr.markForCheck();
+      },
+    });
+    this.load();
+  }
 
   load(): void {
     if (!this.period) return;
@@ -145,8 +156,8 @@ export class InvoiceFromTimesheetsComponent implements OnInit {
   }
 
   private _toRow(co: BillableCompanyItem): EligibleRow {
-    const tps          = +(co.totalAmount * TPS_RATE).toFixed(2);
-    const tvq          = +(co.totalAmount * TVQ_RATE).toFixed(2);
+    const tps          = +(co.totalAmount * this._tpsRate).toFixed(2);
+    const tvq          = +(co.totalAmount * this._tvqRate).toFixed(2);
     const totalWithTax = +(co.totalAmount + tps + tvq).toFixed(2);
     const pricePerVisit = co.totalVisits > 0
       ? +(co.totalAmount / co.totalVisits).toFixed(2)

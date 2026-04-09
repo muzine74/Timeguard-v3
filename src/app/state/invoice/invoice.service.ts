@@ -24,7 +24,9 @@ export interface BillSummary {
   tvq:            number;
   totalWithTax:   number;
   isSent:         boolean;
+  sentDate:       string | null;
   isPaid:         boolean;
+  paidDate:       string | null;
   note:           string;
   filePath:       string;
 }

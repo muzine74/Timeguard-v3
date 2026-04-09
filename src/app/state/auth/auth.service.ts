@@ -1,6 +1,5 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
 import { tap } from 'rxjs';
 import { User, LoginRequest, LoginResponse } from '../../models';
 
@@ -13,15 +12,24 @@ export class AuthService {
 
   readonly user       = this._user.asReadonly();
   readonly loggedIn   = computed(() => !!this._user());
-  readonly isAdmin      = computed(() => {
-    const r = this._user()?.role;
-    return r === 'ADMIN' || r === 'SUPERADMIN';
-  });
-  readonly isSuperAdmin = computed(() => this._user()?.role === 'SUPERADMIN');
-  readonly isUser       = computed(() => this._user()?.role === 'USER');
+
+  private readonly _permSet = computed(() => new Set(this._user()?.permissions ?? []));
+
+  hasPerm(key: string): boolean { return this._permSet().has(key); }
+
+  // Accès aux pages de gestion (au moins une permission de gestion)
+  readonly canManage = computed(() =>
+    ['employees.view','companies.view','invoices.view','pointage.validate','groups.manage']
+      .some(p => this._permSet().has(p))
+  );
+  // Accès à la feuille de temps uniquement
+  readonly canPointage = computed(() => this._permSet().has('pointage.view'));
+
+  readonly loggedInWithAccess = computed(() => this.loggedIn() && (this.canManage() || this.canPointage()));
+
   readonly employeeId = computed(() => this._user()?.employeeId ?? null);
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient) {}
 
   login(req: LoginRequest) {
     return this.http.post<LoginResponse>('/api/auth/login', req).pipe(
@@ -32,9 +40,9 @@ export class AuthService {
         const empId = res.employeeId ?? this._decodeEmployeeId(res.token);
 
         const u: User = {
-          username:   res.username,
-          role:       res.role as User['role'],
-          employeeId: empId,
+          username:    res.username,
+          permissions: res.permissions ?? [],
+          employeeId:  empId,
         };
         localStorage.setItem(USER_KEY, JSON.stringify(u));
         this._user.set(u);
@@ -46,7 +54,6 @@ export class AuthService {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
     this._user.set(null);
-    this.router.navigate(['/login']);
   }
 
   token(): string | null { return localStorage.getItem(TOKEN_KEY); }

@@ -6,7 +6,7 @@
       <div class="form-sub">Identifiants, coordonnées et adresse</div>
     </div>
     <div class="form-actions">
-      <ng-container *ngIf="auth.isAdmin()">
+      <ng-container *ngIf="auth.canManage()">
         <button *ngIf="editMode()" class="btn-cancel" (click)="cancelEdit()">✕ Annuler</button>
         <button class="btn-edit" [class.active]="editMode()" (click)="toggleEdit()">
           {{ editMode() ? '✓ Terminer' : '✏ Modifier' }}

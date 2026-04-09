@@ -68,25 +68,26 @@
                     (click)="openSend(b, $event)">
               ⏳ Non envoyée
             </button>
-            <!-- Envoyée → badge statique -->
-            <span class="badge badge-sent" *ngIf="b.isSent">✓ Envoyée</span>
+            <!-- Envoyée → badge statique avec date + montant au survol -->
+            <span class="badge badge-sent" *ngIf="b.isSent" [title]="sentTitle(b)">
+              ✓ Envoyée
+            </span>
           </td>
           <td class="col-center">
             <button class="badge-btn" [class.badge-paid]="b.isPaid" [class.badge-unpaid]="!b.isPaid"
                     [disabled]="!b.isSent"
-                    [title]="!b.isSent ? 'La facture doit être envoyée avant de pouvoir être marquée payée' : ''"
+                    [title]="paidTitle(b)"
                     (click)="togglePaid(b, $event)">
               {{ b.isPaid ? '✓ Payée' : '◎ Impayée' }}
             </button>
           </td>
           <td class="col-actions" (click)="$event.stopPropagation()">
-            <!-- Facture non envoyée → Supprimer -->
             <button class="act-btn act-delete" *ngIf="!b.isSent"
                     title="Supprimer"
                     (click)="openDelete(b, $event)">🗑</button>
-            <!-- Facture envoyée → Avoir -->
-            <button class="act-btn act-avoir" *ngIf="b.isSent"
-                    title="Créer un avoir"
+            <button class="act-btn act-avoir"
+                    [disabled]="!b.isSent"
+                    [title]="b.isSent ? 'Créer un avoir' : 'La facture doit être envoyée'"
                     (click)="openAvoir(b, $event)">📋 Avoir</button>
           </td>
         </tr>
@@ -112,11 +113,21 @@
     </div>
     <div class="modal-body">
       <div class="loading-wrap" *ngIf="loadingDetail()"><div class="loading-spinner"></div></div>
+      <div class="empty-state" *ngIf="!loadingDetail() && !detailBill()">
+        <div class="empty-icon">⚠️</div>
+        <div class="empty-txt">Impossible de charger cette facture.</div>
+      </div>
       <ng-container *ngIf="!loadingDetail() && detailBill()">
         <div class="detail-meta">
           <div class="detail-row"><span>Compagnie</span><strong>{{ detailBill()!.companyName }}</strong></div>
           <div class="detail-row"><span>Période</span><strong>{{ detailBill()!.period }}</strong></div>
           <div class="detail-row"><span>Date</span><strong>{{ detailBill()!.billedDate | date:'dd/MM/yyyy' }}</strong></div>
+          <div class="detail-row" *ngIf="detailBill()!.sentDate">
+            <span>Date d'envoi</span><strong>{{ detailBill()!.sentDate | date:'dd/MM/yyyy' }}</strong>
+          </div>
+          <div class="detail-row" *ngIf="detailBill()!.paidDate">
+            <span>Date de paiement</span><strong>{{ detailBill()!.paidDate | date:'dd/MM/yyyy' }}</strong>
+          </div>
           <div class="detail-row"><span>Visites</span><strong>{{ detailBill()!.numberOfVisits }}</strong></div>
           <div class="detail-row" *ngIf="detailBill()!.note"><span>Note</span><strong>{{ detailBill()!.note }}</strong></div>
           <div class="detail-row" *ngIf="detailBill()!.paymentInfo">
@@ -125,40 +136,6 @@
           </div>
         </div>
 
-        <!-- Fichier joint -->
-        <div class="file-section">
-          <div class="file-section-lbl">Fichier joint</div>
-
-          <ng-container *ngIf="detailBill()!.filePath; else noFile">
-            <div class="file-current">
-              <span class="file-icon">📎</span>
-              <span class="file-name">{{ detailBill()!.filePath }}</span>
-            </div>
-
-            <!-- Aperçu inline PDF / image -->
-            <div class="file-preview-wrap" *ngIf="previewUrl() || previewLoading()">
-              <div class="file-preview-loading" *ngIf="previewLoading()">
-                <span class="spinner"></span> Chargement aperçu…
-              </div>
-              <iframe *ngIf="previewUrl() && !previewLoading()"
-                      [src]="previewUrl()"
-                      class="file-preview-frame"
-                      frameborder="0">
-              </iframe>
-            </div>
-          </ng-container>
-
-          <ng-template #noFile>
-            <div class="file-none">Aucun fichier attaché</div>
-          </ng-template>
-
-          <label class="file-upload-btn">
-            <input type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                   (change)="onFileSelected($event)" style="display:none" />
-            <span *ngIf="!uploadingFile()">{{ detailBill()!.filePath ? '🔄 Remplacer' : '📁 Joindre un fichier' }}</span>
-            <span *ngIf="uploadingFile()" class="spinner"></span>
-          </label>
-        </div>
         <table class="detail-table">
           <thead><tr><th>Description</th><th class="col-center">Qté</th><th class="col-right">Prix unit.</th><th class="col-right">Sous-total</th></tr></thead>
           <tbody>
@@ -176,6 +153,24 @@
           <div class="detail-total-row"><span>TVQ (9,975 %)</span><strong>{{ detailBill()!.tvq | number:'1.2-2' }} $</strong></div>
           <div class="detail-total-row detail-ttc"><span>TOTAL TTC</span><strong>{{ detailBill()!.totalWithTax | number:'1.2-2' }} $</strong></div>
         </div>
+
+        <!-- Fichier joint — uniquement pour les factures envoyées -->
+        <div class="file-section" *ngIf="selectedBill()?.isSent" style="margin-top:18px">
+          <div class="file-section-lbl">Fichier joint</div>
+
+          <ng-container *ngIf="detailBill()!.filePath; else noFile">
+            <div class="file-current">
+              <span class="file-icon">📎</span>
+              <span class="file-name">{{ detailBill()!.filePath }}</span>
+              <button class="btn btn-outline btn-sm" style="margin-left:8px"
+                      (click)="downloadPdf(selectedBill()!)">⬇ Télécharger</button>
+            </div>
+          </ng-container>
+
+          <ng-template #noFile>
+            <div class="file-none">Aucun fichier attaché</div>
+          </ng-template>
+        </div>
       </ng-container>
     </div>
     <div class="modal-footer">
@@ -183,9 +178,13 @@
       <!-- ── État normal ── -->
       <ng-container *ngIf="detailAction === null">
         <button class="btn btn-outline" (click)="closeModal()">Fermer</button>
-        <button class="btn act-send-btn"   *ngIf="!selectedBill()?.isSent" (click)="requestDetailSend()">📤 Marquer envoyée</button>
-        <button class="btn act-delete-btn" *ngIf="!selectedBill()?.isSent" (click)="requestDetailDelete()">🗑 Supprimer</button>
-        <button class="btn act-avoir-btn"  *ngIf="selectedBill()?.isSent"  (click)="openAvoir(selectedBill()!, $event)">📋 Créer un avoir</button>
+        <!-- Non envoyée : Modifier + Supprimer -->
+        <ng-container *ngIf="!selectedBill()?.isSent">
+          <button class="btn act-edit-btn" (click)="navigateEdit(selectedBill()!)">✎ Modifier</button>
+          <button class="btn act-delete-btn" (click)="requestDetailDelete()">🗑 Supprimer</button>
+        </ng-container>
+        <!-- Envoyée : Avoir -->
+        <button class="btn act-avoir-btn" *ngIf="selectedBill()?.isSent" (click)="openAvoir(selectedBill()!, $event)">📋 Avoir</button>
       </ng-container>
 
       <!-- ── Confirmation envoi ── -->
@@ -281,8 +280,33 @@
     <div class="modal-body">
       <div class="loading-wrap" *ngIf="loadingDetail()"><div class="loading-spinner"></div></div>
       <ng-container *ngIf="!loadingDetail()">
+
+        <!-- Paramètres -->
+        <div class="avoir-params">
+          <div class="field">
+            <label>Période (AAAA-MM)</label>
+            <input class="inp" [(ngModel)]="aPeriod" placeholder="2025-04" />
+          </div>
+          <div class="field">
+            <label>Date de facturation</label>
+            <input class="inp" type="date" [(ngModel)]="aBilledDate" />
+          </div>
+          <div class="field">
+            <label>Nombre de visites</label>
+            <input class="inp" type="number" min="0" [(ngModel)]="aNumberOfVisits" />
+          </div>
+          <div class="field avoir-span-full">
+            <label>Note</label>
+            <input class="inp" [(ngModel)]="aNote" placeholder="Raison de l'avoir..." />
+          </div>
+          <div class="field avoir-span-full">
+            <label>Coordonnées de paiement</label>
+            <textarea class="inp inp-textarea" [(ngModel)]="aPaymentInfo" rows="2"></textarea>
+          </div>
+        </div>
+
         <!-- Lignes -->
-        <table class="detail-table">
+        <table class="detail-table" style="margin-top:16px">
           <thead>
             <tr><th>Description</th><th>Qté</th><th>Prix unit.</th><th>Sous-total</th><th></th></tr>
           </thead>
@@ -290,7 +314,7 @@
             <tr *ngFor="let l of aLines; let i = index">
               <td><input class="inp" [(ngModel)]="l.description" placeholder="Description..." /></td>
               <td><input class="inp inp-num" type="number" min="1" [(ngModel)]="l.quantity" (ngModelChange)="recalcALine(i)" /></td>
-              <td><input class="inp inp-num" type="number" min="0" step="0.01" [(ngModel)]="l.unitPrice" (ngModelChange)="recalcALine(i)" /></td>
+              <td><input class="inp inp-num" type="number" step="0.01" [(ngModel)]="l.unitPrice" (ngModelChange)="recalcALine(i)" /></td>
               <td class="col-right">{{ l.subTotal | number:'1.2-2' }} $</td>
               <td><button class="btn-rm" (click)="removeALine(i)" [disabled]="aLines.length === 1">✕</button></td>
             </tr>
@@ -298,25 +322,20 @@
         </table>
         <button class="btn btn-outline btn-sm" (click)="addALine()" style="margin-top:8px">+ Ligne</button>
 
-        <!-- Totaux avoir -->
-        <div class="detail-totals">
+        <!-- Totaux -->
+        <div class="detail-totals" style="margin-top:14px">
           <div class="detail-total-row"><span>Sous-total</span><strong>{{ aSubtotal | number:'1.2-2' }} $</strong></div>
           <div class="detail-total-row"><span>TPS (5 %)</span><strong>{{ aTps | number:'1.2-2' }} $</strong></div>
           <div class="detail-total-row"><span>TVQ (9,975 %)</span><strong>{{ aTvq | number:'1.2-2' }} $</strong></div>
           <div class="detail-total-row detail-ttc"><span>TOTAL AVOIR</span><strong>{{ aTtc | number:'1.2-2' }} $</strong></div>
         </div>
 
-        <!-- Note -->
-        <div class="field" style="margin-top:14px">
-          <label>Note de l'avoir</label>
-          <input class="inp" [(ngModel)]="aNote" placeholder="Raison de la correction..." />
-        </div>
       </ng-container>
     </div>
     <div class="modal-footer">
       <button class="btn btn-outline" (click)="closeModal()">Annuler</button>
       <button class="btn btn-primary" [disabled]="acting() || loadingDetail()" (click)="confirmAvoir()">
-        <span *ngIf="!acting()">📋 Créer l'avoir</span>
+        <span *ngIf="!acting()">💾 Enregistrer</span>
         <span *ngIf="acting()" class="spinner"></span>
       </button>
     </div>

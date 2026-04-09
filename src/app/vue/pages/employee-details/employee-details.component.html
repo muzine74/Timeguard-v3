@@ -59,7 +59,7 @@
         <div class="profile-actions">
           <span class="status-badge active-badge">● Actif</span>
           <button class="btn-save" (click)="save()"
-                [disabled]="isSaving() || (auth.isAdmin() && isLocked())">
+                [disabled]="isSaving() || (auth.canManage() && isLocked())">
             <span class="spinner" *ngIf="isSaving()"></span>
             <span *ngIf="!isSaving()">💾 Sauvegarder</span>
           </button>
@@ -73,19 +73,19 @@
       <app-section-header mode="employee" icon="👤"
         title="Pointage Employé" subtitle="Présences hebdomadaires par compagnie">
         <app-date-picker (weekChange)="onWeekChange()"></app-date-picker>
-        <ng-container *ngIf="auth.isAdmin() || !isLocked()">
+        <ng-container *ngIf="auth.canManage() || !isLocked()">
           <button class="btn-ghost" (click)="ptEmpSvc.selectAll(weekSvc.weekDays())">Tout ✓</button>
           <button class="btn-ghost" (click)="ptEmpSvc.clearAll()">Effacer</button>
         </ng-container>
         <button class="btn btn-validate"
-                *ngIf="auth.isAdmin() && !isLocked()"
+                *ngIf="auth.canManage() && !isLocked()"
                 [disabled]="validating() || !hasSaved()"
                 (click)="validateWeek()">
           <span *ngIf="!validating()">✅ Valider la semaine</span>
           <span *ngIf="validating()" class="spinner"></span>
         </button>
         <button class="btn btn-danger-sm"
-                *ngIf="auth.isAdmin() && isLocked()"
+                *ngIf="auth.canManage() && isLocked()"
                 [disabled]="validating()"
                 (click)="unvalidateWeek()">
           <span *ngIf="!validating()">🔓 Annuler la validation</span>
