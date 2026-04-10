@@ -53,7 +53,7 @@ export const routes: Routes = [
   },
   {
     path: 'employees/credentials',
-    canActivate: [permGuard('employees.edit')],
+    canActivate: [permGuard('credentials.manage')],
     loadComponent: () => import('./vue/pages/employee-credentials/employee-credentials.component').then(m => m.EmployeeCredentialsComponent)
   },
   {

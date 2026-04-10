@@ -95,7 +95,7 @@ import { AuthService } from '../../../state/auth/auth.service';
               <a class="dropdown-item" routerLink="/groups"                routerLinkActive="active" *ngIf="auth.hasPerm('groups.manage')">
                 <span class="di-icon">🔐</span> Groupes
               </a>
-              <a class="dropdown-item" routerLink="/employees/credentials" routerLinkActive="active" *ngIf="auth.hasPerm('employees.edit')">
+              <a class="dropdown-item" routerLink="/employees/credentials" routerLinkActive="active" *ngIf="auth.hasPerm('credentials.manage')">
                 <span class="di-icon">🔑</span> Identifiants
               </a>
               <a class="dropdown-item" routerLink="/config"                routerLinkActive="active" *ngIf="auth.hasPerm('config.manage')">
@@ -142,7 +142,7 @@ import { AuthService } from '../../../state/auth/auth.service';
           <a class="mobile-link mobile-sub" routerLink="/invoices/from-timesheets" routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('invoices.edit')">Facturer par pointages</a>
           <a class="mobile-link mobile-sub" routerLink="/invoices"                 routerLinkActive="active" (click)="closeMenu()">Gérer les factures</a>
         </ng-container>
-        <ng-container *ngIf="auth.hasPerm('groups.manage') || auth.hasPerm('employees.edit') || auth.hasPerm('config.manage')">
+        <ng-container *ngIf="auth.hasPerm('groups.manage') || auth.hasPerm('credentials.manage') || auth.hasPerm('config.manage')">
           <div class="mobile-section-label">Gestion accès</div>
           <a class="mobile-link mobile-sub" routerLink="/groups"                routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('groups.manage')">🔐 Groupes</a>
           <a class="mobile-link mobile-sub" routerLink="/employees/credentials" routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('employees.edit')">🔑 Identifiants</a>
