@@ -41,14 +41,19 @@
             [class.td-weekend]="day.isWeekend"
             [class.td-locked]="locked && !isAdmin"
             (click)="toggle(c, day.dateKey, $event)">
-          <button class="chk"
-                  [class.chk-on]="isChecked(c, day.dateKey)"
-                  [class.chk-admin]="isAdmin"
-                  [class.chk-locked]="locked && !isAdmin"
-                  [disabled]="!canEdit"
-                  type="button">
-            <span *ngIf="isChecked(c, day.dateKey)">✓</span>
-          </button>
+          <div class="cell-wrap">
+            <button class="chk"
+                    [class.chk-on]="isChecked(c, day.dateKey)"
+                    [class.chk-admin]="isAdmin"
+                    [class.chk-locked]="locked && !isAdmin"
+                    [disabled]="!canEdit"
+                    type="button">
+              <span *ngIf="isChecked(c, day.dateKey)">✓</span>
+            </button>
+            <span class="cell-price" *ngIf="isChecked(c, day.dateKey) && c.prices?.[day.dateKey]">
+              {{ c.prices![day.dateKey] | number:'1.2-2' }}&nbsp;$
+            </span>
+          </div>
         </td>
       </tr>
     </tbody>

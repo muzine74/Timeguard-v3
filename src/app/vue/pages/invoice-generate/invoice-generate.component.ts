@@ -5,6 +5,19 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { CompanyService, CompanySummary } from '../../../state/compagny/Company.service';
 import { InvoiceService, BillLine, BillCreatePayload } from '../../../state/invoice/invoice.service';
 import { ConfigService } from '../../../state/config/config.service';
+import { CompanyForm, SemainePlanning } from '../../../models';
+
+interface PriceGroup {
+  unitPrice: number;
+  visits:    number;
+  subtotal:  number;
+}
+
+interface CompanyPricing {
+  groups:          PriceGroup[];
+  totalPerPeriod:  number;
+  visitsPerPeriod: number;
+}
 
 @Component({
   selector: 'app-invoice-generate',
@@ -27,6 +40,11 @@ export class InvoiceGenerateComponent implements OnInit {
   coLoading    = signal(true);
   selectedCo   = signal<CompanySummary | null>(null);
   coSearch     = '';
+
+  // ── Tarif de la compagnie sélectionnée ────────────────
+  companyDetail  = signal<CompanyForm | null>(null);
+  detailLoading  = signal(false);
+  companyPricing = signal<CompanyPricing | null>(null);
 
   get filteredCompanies(): CompanySummary[] {
     const q = this.coSearch.toLowerCase();
@@ -138,9 +156,92 @@ export class InvoiceGenerateComponent implements OnInit {
 
   selectCompany(co: CompanySummary): void {
     this.selectedCo.set(co);
+    this.companyDetail.set(null);
+    this.companyPricing.set(null);
     this.error.set('');
     this.saved.set(false);
     this.sent.set(false);
+
+    this.detailLoading.set(true);
+    this.companySvc.getById(co.companyId).subscribe({
+      next: detail => {
+        this.companyDetail.set(detail);
+        this.companyPricing.set(this._computePricing(detail));
+        this.detailLoading.set(false);
+        this.cdr.markForCheck();
+      },
+      error: () => this.detailLoading.set(false),
+    });
+  }
+
+  // ── Auto-remplir les lignes depuis le tarif ───────────
+  autoFillFromPricing(): void {
+    const pricing = this.companyPricing();
+    if (!pricing || pricing.totalPerPeriod === 0) return;
+    this.numberOfVisits = pricing.visitsPerPeriod;
+    this.lines = pricing.groups.map(g => ({
+      id:          crypto.randomUUID(),
+      quantity:    g.visits,
+      description: `Services de nettoyage — ${this.period}`,
+      unitPrice:   g.unitPrice,
+      subTotal:    g.subtotal,
+    }));
+    this.cdr.markForCheck();
+  }
+
+  // ── Calcul du tarif depuis le planning ────────────────
+  private _computePricing(form: CompanyForm): CompanyPricing {
+    const jours = ['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'] as const;
+    const priceMap = new Map<number, number>(); // unitPrice → visit count
+
+    const collectSemaine = (s: SemainePlanning) => {
+      jours.forEach(j => {
+        const d = s[j];
+        if (d?.actif) {
+          const p = +d.compagnie;
+          priceMap.set(p, (priceMap.get(p) ?? 0) + 1);
+        }
+      });
+    };
+
+    switch (form.frequenceTravail) {
+      case 'hebdomadaire':
+        collectSemaine(form.semaine1);
+        break;
+      case 'biHebdomadaire':
+        collectSemaine(form.semaine1);
+        collectSemaine(form.semaine2);
+        break;
+      case 'biMensuel':
+        form.joursBiMensuel.forEach(j => {
+          if (j.actif) {
+            const p = +j.compagnie;
+            priceMap.set(p, (priceMap.get(p) ?? 0) + 1);
+          }
+        });
+        break;
+      case 'mensuel':
+        form.joursMensuel.forEach(j => {
+          if (j.actif) {
+            const p = +j.compagnie;
+            priceMap.set(p, (priceMap.get(p) ?? 0) + 1);
+          }
+        });
+        break;
+    }
+
+    const groups: PriceGroup[] = Array.from(priceMap.entries())
+      .sort(([a], [b]) => a - b)
+      .map(([unitPrice, visits]) => ({
+        unitPrice,
+        visits,
+        subtotal: +(unitPrice * visits).toFixed(2),
+      }));
+
+    const totalPerPeriod  = +groups.reduce((s, g) => s + g.subtotal, 0).toFixed(2);
+    const visitsPerPeriod = groups.reduce((s, g) => s + g.visits, 0);
+
+    return { groups, totalPerPeriod, visitsPerPeriod };
   }
 
   // ── Lignes ────────────────────────────────────────────

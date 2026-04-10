@@ -68,6 +68,7 @@ export interface Compagnie {
   nom:        string;
   selected?:  boolean;
   pointages?: Record<string, boolean>;
+  prices?:    Record<string, number>;  // prix employé par dateKey (depuis timelogs)
 }
 
 export interface WeekDay {

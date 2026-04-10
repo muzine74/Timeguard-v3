@@ -1,12 +1,11 @@
 import { Component, OnInit, signal, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { InvoiceService, BillableCompanies, BillableCompanyItem, BillCreatePayload } from '../../../state/invoice/invoice.service';
+import { InvoiceService, BillableCompanies, BillableCompanyItem, BillablePriceGroup, BillCreatePayload } from '../../../state/invoice/invoice.service';
 import { ConfigService } from '../../../state/config/config.service';
 
 export interface EligibleRow extends BillableCompanyItem {
   checked:      boolean;
-  pricePerVisit: number;
   tps:          number;
   tvq:          number;
   totalWithTax: number;
@@ -118,9 +117,17 @@ export class InvoiceFromTimesheetsComponent implements OnInit {
   }
 
   private _createInvoice(row: EligibleRow): Promise<void> {
-    const unitPrice = row.totalVisits > 0
-      ? +( row.totalAmount / row.totalVisits).toFixed(2)
-      : 0;
+    const lines = (row.priceGroups?.length ? row.priceGroups : [{
+      unitPrice: row.totalVisits > 0 ? +(row.totalAmount / row.totalVisits).toFixed(2) : 0,
+      visits:    row.totalVisits,
+      subtotal:  row.totalAmount,
+    } as BillablePriceGroup]).map(g => ({
+      id:          crypto.randomUUID(),
+      quantity:    g.visits,
+      description: `Services de nettoyage — ${this.period}`,
+      unitPrice:   +g.unitPrice,
+      subTotal:    +g.subtotal,
+    }));
 
     const payload: BillCreatePayload = {
       companyName:    row.companyName,
@@ -135,13 +142,7 @@ export class InvoiceFromTimesheetsComponent implements OnInit {
       totalWithTax:   row.totalWithTax,
       note:           '',
       paymentInfo:    '',
-      lines: [{
-        id:          crypto.randomUUID(),
-        quantity:    row.totalVisits,
-        description: `Services de nettoyage — ${this.period}`,
-        unitPrice,
-        subTotal:    row.totalAmount,
-      }],
+      lines,
     };
 
     return new Promise((resolve, reject) => {
@@ -159,10 +160,7 @@ export class InvoiceFromTimesheetsComponent implements OnInit {
     const tps          = +(co.totalAmount * this._tpsRate).toFixed(2);
     const tvq          = +(co.totalAmount * this._tvqRate).toFixed(2);
     const totalWithTax = +(co.totalAmount + tps + tvq).toFixed(2);
-    const pricePerVisit = co.totalVisits > 0
-      ? +(co.totalAmount / co.totalVisits).toFixed(2)
-      : 0;
-    return { ...co, checked: false, pricePerVisit, tps, tvq, totalWithTax };
+    return { ...co, checked: false, tps, tvq, totalWithTax };
   }
 
   private _currentPeriod(): string {

@@ -81,14 +81,17 @@ export class PointageEmployeeService {
   }
 
   private _fromTimeLogs(logs: TimeLogQueryResultDto[]): Compagnie[] {
-    const map = new Map<string, { id: number; companyId: string; nom: string; pointages: Record<string, boolean> }>();
+    const map = new Map<string, { id: number; companyId: string; nom: string; pointages: Record<string, boolean>; prices: Record<string, number> }>();
     let idCounter = 1;
     for (const log of logs) {
       if (!map.has(log.companyId)) {
-        map.set(log.companyId, { id: idCounter++, companyId: log.companyId, nom: log.companyName, pointages: {} });
+        map.set(log.companyId, { id: idCounter++, companyId: log.companyId, nom: log.companyName, pointages: {}, prices: {} });
       }
       const comp = map.get(log.companyId)!;
-      if (log.workDate && log.workDate !== '0001-01-01') comp.pointages[log.workDate] = true;
+      if (log.workDate && log.workDate !== '0001-01-01') {
+        comp.pointages[log.workDate] = true;
+        if (log.clientPrice > 0) comp.prices[log.workDate] = log.clientPrice;
+      }
     }
     return Array.from(map.values()).map(c => ({ ...c, selected: false }));
   }
@@ -121,6 +124,7 @@ export class PointageEmployeeService {
       companyId: c.compagnieId,
       nom:       c.compagnieName,
       pointages: {},
+      prices:    {},
       selected:  false,
     })));
     this.log(`initFromEmployee() → ${empCompanies.length} compagnie(s)`);
@@ -131,6 +135,11 @@ export class PointageEmployeeService {
   isChecked(c: Compagnie, dk: string): boolean { return !!c.pointages?.[dk]; }
   count(c: Compagnie, days: WeekDay[]): number  { return days.filter(d => !!c.pointages?.[d.dateKey]).length; }
   total(days: WeekDay[]): number { return this._compagnies().reduce((s, c) => s + this.count(c, days), 0); }
+  weekTotal(days: WeekDay[]): number {
+    return this._compagnies().reduce((s, c) =>
+      s + days.reduce((ds, d) =>
+        ds + (c.pointages?.[d.dateKey] ? (c.prices?.[d.dateKey] ?? 0) : 0), 0), 0);
+  }
 
   snapshot(): Record<string, Record<string, boolean>> {
     return Object.fromEntries(this._compagnies().map(c => [c.companyId, { ...c.pointages }]));

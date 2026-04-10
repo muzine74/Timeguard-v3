@@ -5,6 +5,11 @@
     <div class="sidebar-hdr">
       <div class="sidebar-title">Compagnies</div>
       <input class="sidebar-search" [(ngModel)]="searchQuery" placeholder="Rechercher..." />
+      <div class="status-filter">
+        <button class="sf-btn" [class.sf-active]="statusFilter === 'all'"      (click)="statusFilter = 'all'">Tous</button>
+        <button class="sf-btn" [class.sf-active]="statusFilter === 'active'"   (click)="statusFilter = 'active'">Actif</button>
+        <button class="sf-btn" [class.sf-active]="statusFilter === 'inactive'" (click)="statusFilter = 'inactive'">Inactif</button>
+      </div>
     </div>
 
     <div class="sidebar-loading" *ngIf="loadingList()">

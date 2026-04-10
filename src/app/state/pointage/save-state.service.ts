@@ -9,7 +9,7 @@ import { PointageAdminService } from './pointage-admin.service';
 export interface DashStats    { emp: number; adm: number; companies: number; days: number; weekTotal: number; }
 export interface PointageStatus { isLocked: boolean; validatedAt?: string; validatedById?: string; }
 
-export interface CompanyEarnings { companyId: string; companyName: string; visits: number; subtotal: number; }
+export interface CompanyEarnings { companyId: string; companyName: string; visits: number; subtotal: number; unitPrice: number; }
 export interface WeekEarnings    { totalGain: number; isLocked: boolean; validatedAt?: string; companies: CompanyEarnings[]; }
 
 @Injectable({ providedIn: 'root' })
@@ -39,7 +39,7 @@ export class SaveStateService {
       adm:       this._ptAdm.total(days),
       companies: this._ptEmp.compagnies().length,
       days:      days.length,
-      weekTotal: this._earnings()?.totalGain ?? 0,
+      weekTotal: this._ptEmp.weekTotal(days),
     };
   });
 
