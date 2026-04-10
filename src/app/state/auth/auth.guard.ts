@@ -28,6 +28,7 @@ export const homeGuard: CanActivateFn = () => {
   if (auth.hasPerm('invoices.view'))    return router.createUrlTree(['/invoices']);
   if (auth.hasPerm('companies.edit'))   return router.createUrlTree(['/companies/assign']);
   if (auth.hasPerm('groups.manage'))    return router.createUrlTree(['/groups']);
+  if (auth.hasPerm('config.manage'))    return router.createUrlTree(['/config']);
   auth.logout();
   return router.createUrlTree(['/login']);
 };

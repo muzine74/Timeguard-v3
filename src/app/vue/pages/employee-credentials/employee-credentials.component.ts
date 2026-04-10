@@ -7,6 +7,7 @@ import { FormsModule }            from '@angular/forms';
 import { takeUntilDestroyed }     from '@angular/core/rxjs-interop';
 import { CredentialsService, CredentialResponse } from '../../../state/auth/credentials.service';
 import { EmployeesService }       from '../../../state/employees/employees.service';
+import { GroupsService, GroupSummary } from '../../../state/groups/groups.service';
 
 @Component({
   selector: 'app-employee-credentials',
@@ -24,11 +25,15 @@ export class EmployeeCredentialsComponent implements OnInit {
   loading     = signal(true);
 
   // ── Panneau formulaire ────────────────────────────────────────────────
-  showForm    = signal(false);
-  formEmpId   = signal('');
-  formUser    = signal('');
-  formPass    = signal('');
-  showPass    = signal(false);
+  showForm     = signal(false);
+  formEmpId    = signal('');
+  formUser     = signal('');
+  formPass     = signal('');
+  showPass     = signal(false);
+  formGroupIds = signal<number[]>([]);
+
+  // ── Groupes disponibles ───────────────────────────────────────────────
+  groups       = signal<GroupSummary[]>([]);
 
   // ── Réinitialisation mot de passe ─────────────────────────────────────
   resetId     = signal<number | null>(null);
@@ -58,11 +63,15 @@ export class EmployeeCredentialsComponent implements OnInit {
   constructor(
     private credSvc:      CredentialsService,
     private employeeSvc:  EmployeesService,
+    private groupsSvc:    GroupsService,
   ) {}
 
   ngOnInit(): void {
     this._load();
     this.employeeSvc.loadList();
+    this.groupsSvc.getAll().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: list => this.groups.set(list),
+    });
   }
 
   private _load(): void {
@@ -83,10 +92,18 @@ export class EmployeeCredentialsComponent implements OnInit {
     this.formUser.set('');
     this.formPass.set('');
     this.showPass.set(false);
+    this.formGroupIds.set([]);
     this.error.set('');
   }
 
-  closeForm(): void { this.showForm.set(false); this.error.set(''); }
+  closeForm(): void { this.showForm.set(false); this.formGroupIds.set([]); this.error.set(''); }
+
+  toggleGroup(id: number): void {
+    const current = this.formGroupIds();
+    this.formGroupIds.set(
+      current.includes(id) ? current.filter(x => x !== id) : [...current, id]
+    );
+  }
 
   create(): void {
     if (!this.formEmpId()) { this.error.set('Sélectionnez un employé.'); return; }
@@ -95,16 +112,16 @@ export class EmployeeCredentialsComponent implements OnInit {
 
     this.saving.set(true);
     this.error.set('');
+    const empId    = this.formEmpId();
+    const groupIds = this.formGroupIds();
     this.credSvc.create({
-      employeeId: this.formEmpId(),
+      employeeId: empId,
       username:   this.formUser().trim(),
       password:   this.formPass(),
     }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
-        this.saving.set(false);
-        this.closeForm();
-        this._showToast('Credential créé.');
-        this._load();
+        if (groupIds.length === 0) { this._onCreateDone(); return; }
+        this._assignGroups(empId, groupIds, 0, () => this._onCreateDone());
       },
       error: err => {
         this.saving.set(false);
@@ -160,6 +177,34 @@ export class EmployeeCredentialsComponent implements OnInit {
         this.saving.set(false);
         this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
       },
+    });
+  }
+
+  // ── Helpers création + groupes ────────────────────────────────────────
+  private _onCreateDone(): void {
+    this.saving.set(false);
+    this.closeForm();
+    this._showToast('Credential créé.');
+    this._load();
+  }
+
+  private _assignGroups(empId: string, groupIds: number[], idx: number, done: () => void): void {
+    if (idx >= groupIds.length) { done(); return; }
+    const gid = groupIds[idx];
+    this.groupsSvc.getById(gid).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: detail => {
+        const ids = detail.employeeIds.includes(empId)
+          ? detail.employeeIds
+          : [...detail.employeeIds, empId];
+        this.groupsSvc.update(gid, {
+          name: detail.name, description: detail.description,
+          permissions: detail.permissions, employeeIds: ids,
+        }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+          next:  () => this._assignGroups(empId, groupIds, idx + 1, done),
+          error: () => this._assignGroups(empId, groupIds, idx + 1, done),
+        });
+      },
+      error: () => this._assignGroups(empId, groupIds, idx + 1, done),
     });
   }
 
