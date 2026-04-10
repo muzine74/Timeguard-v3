@@ -31,10 +31,7 @@ import { SaveStateService } from '../../../state/pointage/save-state.service';
       </div>
       <div class="stat s5" [class.locked]="svc.earnings()?.isLocked">
         <span class="val earn">
-          <ng-container *ngIf="svc.earnings() !== null">
-            {{ svc.stats().weekTotal | number:'1.2-2' }}&nbsp;$
-          </ng-container>
-          <span class="earn-loading" *ngIf="svc.earnings() === null">—</span>
+          {{ svc.stats().weekTotal | number:'1.2-2' }}&nbsp;$
         </span>
         <span class="lbl">Gains Hebdo
           <span class="lbl-locked" *ngIf="svc.earnings()?.isLocked"> · Validé</span>
@@ -52,6 +49,7 @@ import { SaveStateService } from '../../../state/pointage/save-state.service';
         <div class="earn-row" *ngFor="let co of svc.earnings()!.companies">
           <span class="earn-co">{{ co.companyName }}</span>
           <span class="earn-visits">{{ co.visits }} visite{{ co.visits > 1 ? 's' : '' }}</span>
+          <span class="earn-unit" *ngIf="co.unitPrice > 0">{{ co.unitPrice | number:'1.2-2' }}&nbsp;$/v</span>
           <span class="earn-sub">{{ co.subtotal | number:'1.2-2' }}&nbsp;$</span>
         </div>
         <div class="earn-row earn-total">

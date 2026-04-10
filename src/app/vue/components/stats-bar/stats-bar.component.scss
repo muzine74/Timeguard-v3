@@ -59,7 +59,7 @@
 }
 .earn-rows { border-top: 1px solid var(--border); }
 .earn-row {
-  display: grid; grid-template-columns: 1fr auto auto;
+  display: grid; grid-template-columns: 1fr auto auto auto;
   align-items: center; gap: 14px;
   padding: 8px 14px; border-bottom: 1px solid var(--border);
   font-size: 12px;
@@ -67,6 +67,7 @@
 }
 .earn-co     { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .earn-visits { color: var(--muted); font-size: 11px; white-space: nowrap; }
+.earn-unit   { font-size: 11px; color: var(--accent); font-weight: 600; white-space: nowrap; }
 .earn-sub    { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--success); white-space: nowrap; }
 .earn-total  {
   background: rgba(59,170,110,.05);

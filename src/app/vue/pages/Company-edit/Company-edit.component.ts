@@ -40,8 +40,9 @@ export class CompanyEditComponent implements OnInit {
     );
   });
 
-  companies   : CompanySummary[] = [];
-  searchQuery = '';
+  companies    : CompanySummary[] = [];
+  searchQuery  = '';
+  statusFilter : 'all' | 'active' | 'inactive' = 'all';
 
   freqOptions: FreqOption[] = [
     { value: 'hebdomadaire',   label: 'Hebdomadaire' },
@@ -64,8 +65,11 @@ export class CompanyEditComponent implements OnInit {
   get modeMensuel():   boolean { return this.form.frequenceTravail === 'mensuel'; }
 
   get filteredCompanies(): CompanySummary[] {
+    let list = this.companies;
+    if (this.statusFilter === 'active')   list = list.filter(c =>  c.isActive);
+    if (this.statusFilter === 'inactive') list = list.filter(c => !c.isActive);
     const q = this.searchQuery.toLowerCase();
-    return q ? this.companies.filter(c => c.companyName.toLowerCase().includes(q)) : this.companies;
+    return q ? list.filter(c => c.companyName.toLowerCase().includes(q)) : list;
   }
 
   constructor(

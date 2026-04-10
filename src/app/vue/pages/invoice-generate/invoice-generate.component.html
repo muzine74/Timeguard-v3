@@ -16,6 +16,12 @@
         <div class="sidebar-info">
           <div class="sidebar-name">{{ c.companyName }}</div>
           <div class="sidebar-meta">{{ c.companyId | slice:0:8 }}...</div>
+          <ng-container *ngIf="selectedCo()?.companyId === c.companyId">
+            <div class="sidebar-pricing" *ngIf="detailLoading()">Chargement tarif...</div>
+            <div class="sidebar-pricing" *ngIf="!detailLoading() && companyPricing() as p">
+              {{ p.visitsPerPeriod }} visite(s) · {{ p.totalPerPeriod | number:'1.2-2' }} $
+            </div>
+          </ng-container>
         </div>
       </div>
       <div class="sidebar-empty" *ngIf="filteredCompanies.length === 0">Aucune compagnie</div>
@@ -46,6 +52,10 @@
           <p class="page-sub">Période {{ period }}</p>
         </div>
         <div class="action-btns">
+          <button class="btn btn-tarif" *ngIf="companyPricing() && companyPricing()!.totalPerPeriod > 0 && !editId()"
+            (click)="autoFillFromPricing()" title="Pré-remplir depuis le tarif configuré">
+            ⚡ Pré-remplir ({{ companyPricing()!.totalPerPeriod | number:'1.2-2' }} $)
+          </button>
           <button class="btn btn-outline" (click)="printPreview()">🖨 Aperçu PDF</button>
           <button class="btn btn-secondary" [disabled]="saving()" (click)="save()">
             <span *ngIf="!saving()">💾 Enregistrer</span>

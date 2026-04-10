@@ -54,8 +54,7 @@
                        (change)="toggleAll($any($event.target).checked)" />
               </th>
               <th>Compagnie</th>
-              <th class="col-num">Visites</th>
-              <th class="col-num">Prix / visite</th>
+              <th>Visites / Prix</th>
               <th class="col-num">Sous-total</th>
               <th class="col-num">TPS (5 %)</th>
               <th class="col-num">TVQ (9,975 %)</th>
@@ -75,9 +74,18 @@
                 {{ r.companyName }}
                 <span class="co-code" *ngIf="r.companyCode">{{ r.companyCode }}</span>
               </td>
-              <td class="col-num">{{ r.totalVisits }}</td>
-              <td class="col-num">{{ r.pricePerVisit | number:'1.2-2' }} $</td>
-              <td class="col-num">{{ r.totalAmount  | number:'1.2-2' }} $</td>
+              <td class="col-groups">
+                <div class="price-group" *ngFor="let g of r.priceGroups">
+                  <span class="pg-visits">{{ g.visits }}×</span>
+                  <span class="pg-price">{{ g.unitPrice | number:'1.2-2' }}&nbsp;$</span>
+                  <span class="pg-sub">= {{ g.subtotal | number:'1.2-2' }}&nbsp;$</span>
+                </div>
+                <div class="price-group" *ngIf="!r.priceGroups?.length">
+                  <span class="pg-visits">{{ r.totalVisits }}×</span>
+                  <span class="pg-price muted">–</span>
+                </div>
+              </td>
+              <td class="col-num">{{ r.totalAmount | number:'1.2-2' }} $</td>
               <td class="col-num">{{ r.tps          | number:'1.2-2' }} $</td>
               <td class="col-num">{{ r.tvq          | number:'1.2-2' }} $</td>
               <td class="col-num col-ttc">{{ r.totalWithTax | number:'1.2-2' }} $</td>

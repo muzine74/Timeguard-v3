@@ -96,6 +96,7 @@
     padding: 11px 14px; border-bottom: 1px solid var(--border);
     font-size: 13px; vertical-align: middle;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    &.col-groups { white-space: normal; overflow: visible; }
   }
   tr:last-child td { border-bottom: none; }
 
@@ -129,6 +130,17 @@
 }
 .result-ok  { background: rgba(30,200,100,.12);  color: #4ecb80; }
 .result-err { background: rgba(224,82,82,.12); color: var(--danger); }
+
+// ── Groupes de prix ───────────────────────────────────────
+.price-group {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; padding: 1px 0;
+  & + .price-group { border-top: 1px solid rgba(255,255,255,.04); margin-top: 2px; padding-top: 3px; }
+}
+.pg-visits { color: var(--muted); font-weight: 600; min-width: 24px; text-align: right; }
+.pg-price  { color: var(--text);  font-family: 'JetBrains Mono', monospace; min-width: 72px; }
+.pg-sub    { color: var(--accent); font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+.pg-price.muted { color: var(--muted); }
 
 // ── Semaines en attente ───────────────────────────────────
 .week-chip {

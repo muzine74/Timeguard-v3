@@ -65,12 +65,19 @@ export interface BillFilter {
   dateTo?:      string;
 }
 
+export interface BillablePriceGroup {
+  unitPrice: number;
+  visits:    number;
+  subtotal:  number;
+}
+
 export interface BillableCompanyItem {
   companyId:    string;
   companyName:  string;
   companyCode:  string;
   totalVisits:  number;
   totalAmount:  number;
+  priceGroups:  BillablePriceGroup[];
   /** Semaines (lundi yyyy-MM-dd) dont le pointage n'est pas encore validé. */
   pendingWeeks: string[];
 }
