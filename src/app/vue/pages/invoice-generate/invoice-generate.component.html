@@ -8,7 +8,7 @@
     </div>
     <div class="sidebar-loading" *ngIf="coLoading()"><div class="mini-spinner"></div></div>
     <div class="sidebar-list" *ngIf="!coLoading()">
-      <div *ngFor="let c of filteredCompanies"
+      <div *ngFor="let c of filteredCompanies; trackBy: trackByCompanyId"
            class="sidebar-item"
            [class.active]="selectedCo()?.companyId === c.companyId"
            (click)="selectCompany(c)">

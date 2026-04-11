@@ -1,4 +1,5 @@
-import { Component, OnInit, signal, isDevMode, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, signal, isDevMode, ChangeDetectionStrategy, ChangeDetectorRef, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -48,6 +49,7 @@ export class EmployeeEditComponent implements OnInit {
 
   form: EmployeeForm = this._emptyForm();
 
+  private destroyRef = inject(DestroyRef);
   private get _dev() { return isDevMode(); }
   private log(...a: unknown[])  { if (this._dev) console.log('[EmployeeEdit]', ...a); }
   private warn(...a: unknown[]) { if (this._dev) console.warn('[EmployeeEdit]', ...a); }
@@ -74,7 +76,7 @@ export class EmployeeEditComponent implements OnInit {
     this.loadingForm.set(true);
     this.log(`selectEmployee(${id})`);
 
-    this.empSvc.getOne(id).subscribe({
+    this.empSvc.getOne(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: emp => {
         this.form = this._fromEmployee(emp);
         this.isActive.set(emp.isActive);
@@ -99,7 +101,7 @@ export class EmployeeEditComponent implements OnInit {
     this.saving.set(true);
     this.log(`submit() → PUT /api/employee/${this.employeeId()}`);
 
-    this.empSvc.updateFull(this.employeeId(), this.form).subscribe({
+    this.empSvc.updateFull(this.employeeId(), this.form).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.fieldErrors.set({});
         this.saved.set(true);
@@ -170,7 +172,7 @@ export class EmployeeEditComponent implements OnInit {
     if (!this.employeeId()) return;
     const newState = !this.isActive();
     this.togglingActive.set(true);
-    this.empSvc.setActive(this.employeeId(), newState).subscribe({
+    this.empSvc.setActive(this.employeeId(), newState).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.isActive.set(newState);
         this.togglingActive.set(false);
@@ -193,7 +195,7 @@ export class EmployeeEditComponent implements OnInit {
 
     this.fileError.set('');
     this.fileUploading.set(true);
-    this.empSvc.uploadFile(this.employeeId(), file).subscribe({
+    this.empSvc.uploadFile(this.employeeId(), file).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.fileUploading.set(false);
         this._loadFiles(this.employeeId());
@@ -209,14 +211,14 @@ export class EmployeeEditComponent implements OnInit {
 
   removeFile(fileId: string): void {
     if (!this.employeeId()) return;
-    this.empSvc.deleteFile(this.employeeId(), fileId).subscribe({
+    this.empSvc.deleteFile(this.employeeId(), fileId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => this._loadFiles(this.employeeId()),
       error: err => this.fileError.set(err?.error?.message ?? `Erreur HTTP ${err.status}`),
     });
   }
 
   openFile(fileId: string): void {
-    this.empSvc.downloadFile(this.employeeId(), fileId).subscribe({
+    this.empSvc.downloadFile(this.employeeId(), fileId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: res => {
         const blob = res.body!;
         const url  = URL.createObjectURL(blob);
@@ -234,7 +236,7 @@ export class EmployeeEditComponent implements OnInit {
   }
 
   private _loadFiles(id: string): void {
-    this.empSvc.getFiles(id).subscribe({
+    this.empSvc.getFiles(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: list => { this.files.set(list); this.cdr.markForCheck(); },
       error: ()  => {},
     });

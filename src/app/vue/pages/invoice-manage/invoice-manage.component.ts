@@ -64,6 +64,8 @@ export class InvoiceManageComponent implements OnInit {
     return this.rootNodes().slice((page - 1) * size, page * size);
   });
 
+  trackByBillId(_: number, r: FlatRow): number { return r.node.data.billIdentifier; }
+
   flatRows = computed((): FlatRow[] => {
     const rows: FlatRow[] = [];
     const expanded = this.expandedIds();

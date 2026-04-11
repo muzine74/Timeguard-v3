@@ -1,4 +1,5 @@
-import { Component, OnInit, signal, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy, ChangeDetectorRef, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { InvoiceService, BillableCompanies, BillableCompanyItem, BillablePriceGroup, BillCreatePayload } from '../../../state/invoice/invoice.service';
@@ -36,8 +37,9 @@ export class InvoiceFromTimesheetsComponent implements OnInit {
   get noneChecked(): boolean { return this.rows.every(r => !r.checked); }
   get checkedRows(): EligibleRow[] { return this.rows.filter(r => r.checked); }
 
-  private _tpsRate = 0.05;
-  private _tvqRate = 0.09975;
+  private _tpsRate   = 0.05;
+  private _tvqRate   = 0.09975;
+  private destroyRef = inject(DestroyRef);
 
   constructor(
     private invoiceSvc: InvoiceService,
@@ -46,13 +48,15 @@ export class InvoiceFromTimesheetsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.configSvc.get().subscribe({
-      next: data => {
-        if (data.config.tpsRate) this._tpsRate = data.config.tpsRate / 100;
-        if (data.config.tvqRate) this._tvqRate = data.config.tvqRate / 100;
-        this.cdr.markForCheck();
-      },
-    });
+    this.configSvc.get()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: data => {
+          if (data.config.tpsRate) this._tpsRate = data.config.tpsRate / 100;
+          if (data.config.tvqRate) this._tvqRate = data.config.tvqRate / 100;
+          this.cdr.markForCheck();
+        },
+      });
     this.load();
   }
 
@@ -85,7 +89,7 @@ export class InvoiceFromTimesheetsComponent implements OnInit {
 
   // ── Générer les factures cochées ──────────────────────────────────────────
   async generateSelected(): Promise<void> {
-    const selected = this.checkedRows;
+    const selected = this.checkedRows; // snapshot avant tout await
     if (!selected.length) return;
 
     this.generating.set(true);
@@ -95,25 +99,27 @@ export class InvoiceFromTimesheetsComponent implements OnInit {
     let ok = 0;
     let ko = 0;
 
-    for (const row of selected) {
-      try {
-        await this._createInvoice(row);
-        row.genResult = { ok: true, label: row.genResult?.label ?? '✓' };
-        ok++;
-      } catch {
-        row.genResult = { ok: false, label: '✕ Erreur' };
-        ko++;
+    try {
+      for (const row of selected) {
+        try {
+          await this._createInvoice(row);
+          row.genResult = { ok: true, label: row.genResult?.label ?? '✓' };
+          ok++;
+        } catch {
+          row.genResult = { ok: false, label: '✕ Erreur' };
+          ko++;
+        }
+        this.cdr.markForCheck();
       }
+
+      if (ko === 0)
+        this.success.set(`${ok} facture(s) générée(s) avec succès.`);
+      else
+        this.error.set(`${ok} succès, ${ko} erreur(s). Vérifiez les lignes en rouge.`);
+    } finally {
+      this.generating.set(false);
       this.cdr.markForCheck();
     }
-
-    this.generating.set(false);
-    if (ko === 0)
-      this.success.set(`${ok} facture(s) générée(s) avec succès.`);
-    else
-      this.error.set(`${ok} succès, ${ko} erreur(s). Vérifiez les lignes en rouge.`);
-
-    this.cdr.markForCheck();
   }
 
   private _createInvoice(row: EligibleRow): Promise<void> {

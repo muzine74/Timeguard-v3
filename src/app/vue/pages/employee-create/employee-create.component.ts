@@ -1,4 +1,5 @@
-import { Component, signal, isDevMode, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, signal, isDevMode, ChangeDetectionStrategy, ChangeDetectorRef, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -27,6 +28,7 @@ export class EmployeeCreateComponent {
 
   form: EmployeeForm = this._emptyForm();
 
+  private destroyRef = inject(DestroyRef);
   private get _dev() { return isDevMode(); }
   private log(...a: unknown[])  { if (this._dev) console.log('[EmployeeCreate]', ...a); }
   private warn(...a: unknown[]) { if (this._dev) console.warn('[EmployeeCreate]', ...a); }
@@ -43,7 +45,7 @@ export class EmployeeCreateComponent {
     this.error.set('');
     this.saving.set(true);
 
-    this.empSvc.create(this.form).subscribe({
+    this.empSvc.create(this.form).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: res => {
         this.log('✓ créé:', res.employeeId);
         this.fieldErrors.set({});
@@ -112,7 +114,7 @@ export class EmployeeCreateComponent {
 
     this.fileError.set('');
     this.fileUploading.set(true);
-    this.empSvc.uploadFile(this.createdId(), file).subscribe({
+    this.empSvc.uploadFile(this.createdId(), file).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.fileUploading.set(false);
         this._loadFiles();
@@ -127,7 +129,7 @@ export class EmployeeCreateComponent {
   }
 
   openFile(fileId: string): void {
-    this.empSvc.downloadFile(this.createdId(), fileId).subscribe({
+    this.empSvc.downloadFile(this.createdId(), fileId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: res => {
         const url = URL.createObjectURL(res.body!);
         const a   = document.createElement('a');
@@ -142,7 +144,7 @@ export class EmployeeCreateComponent {
   }
 
   removeFile(fileId: string): void {
-    this.empSvc.deleteFile(this.createdId(), fileId).subscribe({
+    this.empSvc.deleteFile(this.createdId(), fileId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => this._loadFiles(),
       error: err => this.fileError.set(err?.error?.message ?? `Erreur HTTP ${err.status}`),
     });
@@ -152,7 +154,7 @@ export class EmployeeCreateComponent {
   cancel(): void { this.router.navigate(['/employees']); }
 
   private _loadFiles(): void {
-    this.empSvc.getFiles(this.createdId()).subscribe({
+    this.empSvc.getFiles(this.createdId()).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: list => { this.files.set(list); this.cdr.markForCheck(); },
       error: ()  => {},
     });

@@ -1,4 +1,5 @@
-import { Component, OnInit, signal, effect, Injector, Signal, isDevMode, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, signal, effect, Injector, Signal, isDevMode, ChangeDetectionStrategy, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -48,6 +49,7 @@ export class EmployeeDetailsComponent implements OnInit {
 
   private _lastWeek  = '';
   private _lastEmpId = '';
+  private destroyRef = inject(DestroyRef);
 
   private get _dev(): boolean { return isDevMode(); }
   private warn(...a: unknown[]) { if (this._dev) console.warn('[EmployeeDetails]', ...a); }
@@ -99,7 +101,7 @@ export class EmployeeDetailsComponent implements OnInit {
     this.loadingDetail.set(true);
     this.router.navigate(['/employees', id]);
 
-    this.empSvc.getOne(id).subscribe({
+    this.empSvc.getOne(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: emp => {
         this.selected.set(emp);
         this.loadingDetail.set(false);
@@ -184,7 +186,7 @@ export class EmployeeDetailsComponent implements OnInit {
     if (!empId) return;
 
     this.validating.set(true);
-    this.saveSvc.unvalidateWeek(empId, week).subscribe({
+    this.saveSvc.unvalidateWeek(empId, week).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.saveSvc.loadStatus(empId, week);
         this.saveSvc.loadEarnings(empId, week);
@@ -214,7 +216,7 @@ export class EmployeeDetailsComponent implements OnInit {
     if (!empId || !adminId) return;
 
     this.validating.set(true);
-    this.saveSvc.validateWeek(empId, week, adminId).subscribe({
+    this.saveSvc.validateWeek(empId, week, adminId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.saveSvc.loadStatus(empId, week);
         this.saveSvc.loadEarnings(empId, week);
@@ -236,7 +238,7 @@ export class EmployeeDetailsComponent implements OnInit {
   }
 
   private _loadWeekStatuses(): void {
-    this.saveSvc.getAllValidatedStatuses().subscribe({
+    this.saveSvc.getAllValidatedStatuses().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: items => {
         const map = new Map<string, boolean>();
         items.forEach(i => map.set(i.employeeId.toLowerCase(), i.allValidated));
@@ -247,7 +249,7 @@ export class EmployeeDetailsComponent implements OnInit {
   }
 
   private _loadWeekHistory(empId: string): void {
-    this.saveSvc.getEmployeeWeekHistory(empId).subscribe({
+    this.saveSvc.getEmployeeWeekHistory(empId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: list => this.weekHistory.set(list),
       error: ()  => this.weekHistory.set([]),
     });

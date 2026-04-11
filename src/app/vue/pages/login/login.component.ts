@@ -13,8 +13,8 @@ import { AuthService } from '../../../state/auth/auth.service';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent {
-  username = 'user2';
-  password = 'user222';
+  username = '';
+  password = '';
   showPw   = signal(false);
   loading  = signal(false);
   error    = signal('');

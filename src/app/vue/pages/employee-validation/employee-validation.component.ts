@@ -1,4 +1,5 @@
-import { Component, OnInit, signal, isDevMode, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, signal, isDevMode, ChangeDetectionStrategy, ChangeDetectorRef, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -27,6 +28,7 @@ export class EmployeeValidationComponent implements OnInit {
   fileUploading = signal(false);
   fileError     = signal('');
 
+  private destroyRef = inject(DestroyRef);
   private get _dev() { return isDevMode(); }
   private warn(...a: unknown[]) { if (this._dev) console.warn('[EmployeeValidation]', ...a); }
 
@@ -60,7 +62,7 @@ export class EmployeeValidationComponent implements OnInit {
     this.fileError.set('');
     this.loadingDetail.set(true);
 
-    this.empSvc.getOne(id).subscribe({
+    this.empSvc.getOne(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: emp => {
         this.selected.set(emp);
         this.isActive.set(emp.isActive);
@@ -83,7 +85,7 @@ export class EmployeeValidationComponent implements OnInit {
 
     this.fileError.set('');
     this.fileUploading.set(true);
-    this.empSvc.uploadFile(this.employeeId(), file).subscribe({
+    this.empSvc.uploadFile(this.employeeId(), file).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.fileUploading.set(false);
         this._loadFiles(this.employeeId());
@@ -98,7 +100,7 @@ export class EmployeeValidationComponent implements OnInit {
   }
 
   openFile(fileId: string): void {
-    this.empSvc.downloadFile(this.employeeId(), fileId).subscribe({
+    this.empSvc.downloadFile(this.employeeId(), fileId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: res => {
         const url = URL.createObjectURL(res.body!);
         const a   = document.createElement('a');
@@ -113,7 +115,7 @@ export class EmployeeValidationComponent implements OnInit {
   }
 
   removeFile(fileId: string): void {
-    this.empSvc.deleteFile(this.employeeId(), fileId).subscribe({
+    this.empSvc.deleteFile(this.employeeId(), fileId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => this._loadFiles(this.employeeId()),
       error: err => this.fileError.set(err?.error?.message ?? `Erreur HTTP ${err.status}`),
     });
@@ -125,7 +127,7 @@ export class EmployeeValidationComponent implements OnInit {
   }
 
   private _loadFiles(id: string): void {
-    this.empSvc.getFiles(id).subscribe({
+    this.empSvc.getFiles(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: list => { this.files.set(list); this.cdr.markForCheck(); },
       error: ()  => {},
     });

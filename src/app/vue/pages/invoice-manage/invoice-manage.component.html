@@ -66,7 +66,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let row of flatRows()"
+        <tr *ngFor="let row of flatRows(); trackBy: trackByBillId"
             (click)="openDetail(row.node.data)"
             class="bill-row"
             [class.avoir-row]="row.node.data.parentBillIdentifier !== null"
