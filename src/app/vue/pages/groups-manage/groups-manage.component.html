@@ -80,7 +80,7 @@
             Aucune permission définie. <a class="perm-link" (click)="openPermPanel()">Gérer les permissions →</a>
           </div>
           <div class="perm-grid" *ngIf="permissions().length > 0">
-            <div class="perm-module" *ngFor="let mod of permModules">
+            <div class="perm-module" *ngFor="let mod of permModules()">
               <div class="perm-mod-hdr">
                 <label class="perm-check-lbl mod-check">
                   <input type="checkbox"
@@ -185,7 +185,7 @@
         <div class="form-section">
           <div class="section-title">Permissions existantes <span class="section-count">{{ permissions().length }}</span></div>
           <div class="perm-list">
-            <div class="perm-list-group" *ngFor="let mod of permModules">
+            <div class="perm-list-group" *ngFor="let mod of permModules()">
               <div class="perm-list-mod">{{ mod.label }}</div>
               <div class="perm-list-row" *ngFor="let p of mod.perms; trackBy: trackPermId">
                 <span class="perm-key">{{ p.key }}</span>

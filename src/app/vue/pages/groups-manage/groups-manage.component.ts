@@ -27,14 +27,14 @@ export class GroupsManageComponent implements OnInit {
   loading     = signal(true);
 
   // ── Modules calculés depuis les permissions DB ─────────────────────
-  get permModules(): { label: string; perms: PermissionDef[] }[] {
+  permModules = computed(() => {
     const map = new Map<string, PermissionDef[]>();
     for (const p of this.permissions()) {
       if (!map.has(p.module)) map.set(p.module, []);
       map.get(p.module)!.push(p);
     }
     return Array.from(map.entries()).map(([label, perms]) => ({ label, perms }));
-  }
+  });
 
   // ── Formulaire groupe ─────────────────────────────────────────────────
   isNew        = signal(false);

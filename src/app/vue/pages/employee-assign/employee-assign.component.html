@@ -12,7 +12,7 @@
     </div>
 
     <div class="sidebar-list" *ngIf="!coLoading()">
-      <div *ngFor="let c of filteredCompanies"
+      <div *ngFor="let c of filteredCompanies; trackBy: trackByCompanyId"
            class="sidebar-item"
            [class.active]="selectedCo()?.companyId === c.companyId"
            (click)="selectCompany(c)">
@@ -73,7 +73,7 @@
       <!-- Grille employés -->
       <div class="emp-grid" *ngIf="!loadingAssigned()">
         <label class="emp-card"
-               *ngFor="let e of sortedEmployees()"
+               *ngFor="let e of sortedEmployees(); trackBy: trackByEmployeeId"
                [class.emp-active]="isAssigned(e.employeeId)">
           <div class="emp-avatar">{{ initials(e.employeeName) }}</div>
           <div class="emp-info">

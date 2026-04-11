@@ -1,7 +1,8 @@
-import { Component, OnInit, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, signal, computed, ChangeDetectionStrategy, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { forkJoin } from 'rxjs';
+import { forkJoin, pairwise, filter, take } from 'rxjs';
 import { EmployeesService } from '../../../state/employees/employees.service';
 import { CompanyService, CompanySummary } from '../../../state/compagny/Company.service';
 
@@ -62,6 +63,9 @@ export class EmployeeAssignComponent implements OnInit {
   saved  = signal(false);
   error  = signal('');
 
+  private destroyRef    = inject(DestroyRef);
+  private _empLoading$  = toObservable(inject(EmployeesService).loading);
+
   constructor(
     private empSvc:     EmployeesService,
     private companySvc: CompanyService,
@@ -69,9 +73,12 @@ export class EmployeeAssignComponent implements OnInit {
 
   ngOnInit(): void {
     this.empSvc.loadList();
-    this.companySvc.getAll().subscribe({
+    this.companySvc.getAll().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: list => { this.companies.set(list); this.coLoading.set(false); },
-      error: ()  =>   this.coLoading.set(false),
+      error: () => {
+        this.error.set('Impossible de charger les compagnies.');
+        this.coLoading.set(false);
+      },
     });
   }
 
@@ -83,11 +90,14 @@ export class EmployeeAssignComponent implements OnInit {
     this.error.set('');
     this.loadingAssigned.set(true);
 
-    // Recharge la liste pour avoir les compagnies à jour
+    // Recharge la liste, puis attend la fin du chargement pour lire les assignations
     this.empSvc.loadList();
-
-    // Petit délai pour laisser loadList() mettre à jour le signal
-    setTimeout(() => {
+    this._empLoading$.pipe(
+      pairwise(),
+      filter(([prev, curr]) => prev === true && curr === false),
+      take(1),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe(() => {
       const ids = new Set(
         this.allEmployees()
           .filter(e => (e.employeeCompagnies ?? []).some(c => c.compagnieId === co.companyId))
@@ -96,7 +106,7 @@ export class EmployeeAssignComponent implements OnInit {
       this.assigned.set(new Set(ids));
       this.original.set(new Set(ids));
       this.loadingAssigned.set(false);
-    }, 600);
+    });
   }
 
   toggle(employeeId: string): void {
@@ -127,7 +137,7 @@ export class EmployeeAssignComponent implements OnInit {
     this.saving.set(true);
     this.error.set('');
 
-    forkJoin(calls).subscribe({
+    forkJoin(calls).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.original.set(new Set(curr));
         this.empSvc.loadList();
@@ -141,6 +151,9 @@ export class EmployeeAssignComponent implements OnInit {
       },
     });
   }
+
+  trackByCompanyId(_: number, c: CompanySummary): string { return c.companyId; }
+  trackByEmployeeId(_: number, e: { employeeId: string }): string { return e.employeeId; }
 
   initials(name: string): string {
     const p = name.trim().split(/\s+/);

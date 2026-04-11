@@ -1,6 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router, UrlTree } from '@angular/router';
 import { AuthService } from './auth.service';
+import { PERM } from './permissions';
 
 const _check = (auth: AuthService, router: Router): UrlTree | null => {
   if (!auth.loggedIn()) return router.createUrlTree(['/login']);
@@ -23,12 +24,12 @@ export const permGuard = (key: string): CanActivateFn => () => {
 export const homeGuard: CanActivateFn = () => {
   const auth = inject(AuthService); const router = inject(Router);
   if (!auth.loggedIn()) return router.createUrlTree(['/login']);
-  if (auth.hasPerm('employees.view'))   return router.createUrlTree(['/employees']);
-  if (auth.hasPerm('pointage.view'))    return router.createUrlTree(['/pointage']);
-  if (auth.hasPerm('invoices.view'))    return router.createUrlTree(['/invoices']);
-  if (auth.hasPerm('companies.edit'))   return router.createUrlTree(['/companies/assign']);
-  if (auth.hasPerm('groups.manage'))    return router.createUrlTree(['/groups']);
-  if (auth.hasPerm('config.manage'))    return router.createUrlTree(['/config']);
+  if (auth.hasPerm(PERM.employeesView))   return router.createUrlTree(['/employees']);
+  if (auth.hasPerm(PERM.pointageView))    return router.createUrlTree(['/pointage']);
+  if (auth.hasPerm(PERM.invoicesView))    return router.createUrlTree(['/invoices']);
+  if (auth.hasPerm(PERM.companiesEdit))   return router.createUrlTree(['/companies/assign']);
+  if (auth.hasPerm(PERM.groupsManage))    return router.createUrlTree(['/groups']);
+  if (auth.hasPerm(PERM.configManage))    return router.createUrlTree(['/config']);
   auth.logout();
   return router.createUrlTree(['/login']);
 };

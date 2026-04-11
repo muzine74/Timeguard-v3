@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, isDevMode, ChangeDetectionStrategy, DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EmployeeFormComponent }  from '../../components/employee-form/employee-form.component';
 import { StatsBarComponent }      from '../../components/stats-bar/stats-bar.component';
 import { SectionHeaderComponent } from '../../components/section-header/section-header.component';
@@ -61,12 +61,18 @@ export class PointagePage implements OnInit {
     private empSvc:   EmployeesService,
     public  auth:     AuthService,
     private route:    ActivatedRoute,
+    private router:   Router,
   ) {}
 
   ngOnInit(): void {
     this.log('ngOnInit()');
 
     const id = this._resolveEmployeeId();
+    if (!id) {
+      this.auth.logout();
+      this.router.navigate(['/login']);
+      return;
+    }
     this.log(`ID employé résolu: ${id}`);
 
     // Angular #8 : takeUntilDestroyed sur la subscription de chargement
@@ -95,16 +101,15 @@ export class PointagePage implements OnInit {
     this.saveSvc.loadEarnings(id, week);
   }
 
-  private _resolveEmployeeId(): string {
+  private _resolveEmployeeId(): string | null {
     const fromQuery = this.route.snapshot.queryParamMap.get('employeeId');
     if (fromQuery) { this.log(`→ query param: ${fromQuery}`); return fromQuery; }
 
     const fromJwt = this.auth.employeeId();
     if (fromJwt)  { this.log(`→ JWT: ${fromJwt}`); return fromJwt; }
 
-    const fallback = '00000000-0000-0000-0000-000000000001';
-    this.warn(`→ fallback démo: ${fallback}`);
-    return fallback;
+    this.warn('→ aucun employeeId disponible — session invalide');
+    return null;
   }
 
   private _lastWeek = '';
@@ -112,6 +117,7 @@ export class PointagePage implements OnInit {
   onWeekChange(): void {
     const week = this.weekSvc.weekKey();
     const id   = this._resolveEmployeeId();
+    if (!id) return;
 
     if (week === this._lastWeek) return;
 
@@ -148,6 +154,7 @@ export class PointagePage implements OnInit {
 
   unvalidateWeek(): void {
     const empId = this._resolveEmployeeId();
+    if (!empId) return;
     const week  = this.weekSvc.weekKey();
     this.validating.set(true);
 
@@ -176,6 +183,7 @@ export class PointagePage implements OnInit {
 
   validateWeek(): void {
     const empId   = this._resolveEmployeeId();
+    if (!empId) return;
     const week    = this.weekSvc.weekKey();
     const adminId = this.auth.employeeId() ?? '';
     this.validating.set(true);

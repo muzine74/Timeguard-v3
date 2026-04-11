@@ -1,4 +1,5 @@
-import { Component, OnInit, signal, isDevMode, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, signal, isDevMode, ChangeDetectionStrategy, ChangeDetectorRef, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -46,6 +47,8 @@ export class InvoiceGenerateComponent implements OnInit {
   detailLoading  = signal(false);
   companyPricing = signal<CompanyPricing | null>(null);
 
+  trackByCompanyId(_: number, c: CompanySummary): string { return c.companyId; }
+
   get filteredCompanies(): CompanySummary[] {
     const q = this.coSearch.toLowerCase();
     return q
@@ -61,9 +64,9 @@ export class InvoiceGenerateComponent implements OnInit {
   paymentInfo   = '';
   lines: BillLine[] = [];
 
-  // ── Totaux calculés ───────────────────────────────────
+  // ── Totaux calculés (toFixed évite les dérives float IEEE-754) ───────────
   get subtotal(): number {
-    return this.lines.reduce((s, l) => s + l.subTotal, 0);
+    return +this.lines.reduce((s, l) => s + l.subTotal, 0).toFixed(2);
   }
   private _tpsRate = 0.05;
   private _tvqRate = 0.09975;
@@ -80,6 +83,8 @@ export class InvoiceGenerateComponent implements OnInit {
   get tvqAmount(): number  { return +(this.subtotal * this._tvqRate).toFixed(2); }
   get totalTtc(): number   { return +(this.subtotal + this.tpsAmount + this.tvqAmount).toFixed(2); }
 
+  private destroyRef = inject(DestroyRef);
+
   private get _dev() { return isDevMode(); }
   private log(...a: unknown[])  { if (this._dev) console.log('[InvoiceGenerate]', ...a); }
   private warn(...a: unknown[]) { if (this._dev) console.warn('[InvoiceGenerate]', ...a); }
@@ -94,20 +99,22 @@ export class InvoiceGenerateComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.configSvc.get().subscribe({
-      next: data => {
-        const c = data.config;
-        if (c.tpsRate) this._tpsRate = c.tpsRate / 100;
-        if (c.tvqRate) this._tvqRate = c.tvqRate / 100;
-        this.providerName    = c.companyName    ?? '';
-        this.providerAddress = c.companyAddress ?? '';
-        this.providerPhone   = c.companyPhone   ?? '';
-        this.providerEmail   = c.companyEmail   ?? '';
-        this.tpsLabel = c.tpsRate ? `TPS (${c.tpsRate} %)` : 'TPS (5 %)';
-        this.tvqLabel = c.tvqRate ? `TVQ (${c.tvqRate} %)` : 'TVQ (9,975 %)';
-        this.cdr.markForCheck();
-      },
-    });
+    this.configSvc.get()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: data => {
+          const c = data.config;
+          if (c.tpsRate) this._tpsRate = c.tpsRate / 100;
+          if (c.tvqRate) this._tvqRate = c.tvqRate / 100;
+          this.providerName    = c.companyName    ?? '';
+          this.providerAddress = c.companyAddress ?? '';
+          this.providerPhone   = c.companyPhone   ?? '';
+          this.providerEmail   = c.companyEmail   ?? '';
+          this.tpsLabel = c.tpsRate ? `TPS (${c.tpsRate} %)` : 'TPS (5 %)';
+          this.tvqLabel = c.tvqRate ? `TVQ (${c.tvqRate} %)` : 'TVQ (9,975 %)';
+          this.cdr.markForCheck();
+        },
+      });
     const params       = this.route.snapshot.queryParamMap;
     const preCompanyId = params.get('companyId');
     const prePeriod    = params.get('period');
@@ -117,8 +124,10 @@ export class InvoiceGenerateComponent implements OnInit {
     if (prePeriod) this.period         = prePeriod;
     if (preVisits) this.numberOfVisits = parseInt(preVisits, 10) || 0;
 
-    this.companySvc.getAll().subscribe({
-      next: list => {
+    this.companySvc.getAll()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: list => {
         const active = list.filter(c => c.isActive);
         this.companies.set(active);
         this.coLoading.set(false);
@@ -127,7 +136,7 @@ export class InvoiceGenerateComponent implements OnInit {
           // Mode édition — charger la facture existante
           const id = parseInt(editIdStr, 10);
           this.editId.set(id);
-          this.invoiceSvc.getById(id).subscribe({
+          this.invoiceSvc.getById(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: d => {
               this.editNumber.set(d.billNumber);
               this.period         = d.period;
@@ -163,7 +172,7 @@ export class InvoiceGenerateComponent implements OnInit {
     this.sent.set(false);
 
     this.detailLoading.set(true);
-    this.companySvc.getById(co.companyId).subscribe({
+    this.companySvc.getById(co.companyId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: detail => {
         this.companyDetail.set(detail);
         this.companyPricing.set(this._computePricing(detail));
