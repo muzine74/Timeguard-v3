@@ -106,6 +106,11 @@ export const routes: Routes = [
     canActivate: [permGuard(PERM.invoicesEdit)],
     loadComponent: () => import('./vue/pages/invoice-from-timesheets/invoice-from-timesheets.component').then(m => m.InvoiceFromTimesheetsComponent)
   },
+  {
+    path: 'invoices/send',
+    canActivate: [permGuard(PERM.invoicesSend)],
+    loadComponent: () => import('./vue/pages/invoice-send/invoice-send.component').then(m => m.InvoiceSendComponent)
+  },
 
   // ── Groupes & accès ───────────────────────────────────────────────────────
   {

@@ -1,0 +1,161 @@
+<div class="page-layout">
+
+  <!-- ── Sidebar : factures non envoyées ── -->
+  <aside class="sidebar">
+    <div class="sidebar-hdr">
+      <div class="sidebar-title">Factures non envoyées</div>
+      <input class="sidebar-search" [(ngModel)]="search" placeholder="Rechercher..." />
+    </div>
+
+    <div class="sidebar-loading" *ngIf="loading()">
+      <div class="mini-spinner"></div>
+    </div>
+
+    <div class="sidebar-list" *ngIf="!loading()">
+      <div *ngFor="let b of filteredBills; trackBy: trackByBillId"
+           class="sidebar-item"
+           [class.active]="selected()?.billIdentifier === b.billIdentifier"
+           (click)="selectBill(b)">
+        <div class="sidebar-avatar">{{ initials(b.companyName) }}</div>
+        <div class="sidebar-info">
+          <div class="sidebar-name">{{ b.companyName }}</div>
+          <div class="sidebar-num">{{ b.billNumber }}</div>
+          <div class="sidebar-meta">{{ b.totalWithTax | number:'1.2-2' }} $ · {{ b.period }}</div>
+        </div>
+      </div>
+      <div class="sidebar-empty" *ngIf="filteredBills.length === 0">Aucune facture à envoyer</div>
+    </div>
+  </aside>
+
+  <!-- ── Zone principale ── -->
+  <div class="main-area">
+
+    <!-- Toasts -->
+    <div class="toast toast-success" [class.toast-show]="success()">{{ success() }}</div>
+    <div class="toast toast-error"   [class.toast-show]="error()">{{ error() }}</div>
+
+    <!-- Aucune sélection -->
+    <div class="no-selection" *ngIf="!selected()">
+      <div class="no-sel-icon">✉️</div>
+      <div class="no-sel-txt">Sélectionnez une facture pour composer le courriel</div>
+    </div>
+
+    <!-- Formulaire -->
+    <ng-container *ngIf="selected()">
+
+      <!-- En-tête -->
+      <div class="action-bar">
+        <div>
+          <h1 class="page-title">Envoyer la facture {{ selected()!.billNumber }}</h1>
+          <p class="page-sub">{{ selected()!.companyName }} · {{ selected()!.period }}</p>
+        </div>
+        <button class="btn btn-primary" [disabled]="sending() || detailLoading()" (click)="send()">
+          <span *ngIf="!sending()">Envoyer</span>
+          <span *ngIf="sending()" class="spinner"></span>
+        </button>
+      </div>
+
+      <!-- Chargement du détail -->
+      <div class="detail-loading" *ngIf="detailLoading()">
+        <div class="mini-spinner"></div>
+        <span>Chargement…</span>
+      </div>
+
+      <ng-container *ngIf="!detailLoading() && detail() as d">
+
+        <!-- Infos impayés -->
+        <div class="unpaid-banner" *ngIf="unpaidBills().length > 0">
+          <span class="unpaid-icon">⚠</span>
+          <span>
+            <strong>{{ unpaidBills().length }} facture(s) impayée(s)</strong> pour ce client —
+            numéros inclus dans le message automatique.
+          </span>
+        </div>
+        <div class="paid-banner" *ngIf="unpaidBills().length === 0">
+          <span>Client à jour · aucune facture impayée</span>
+        </div>
+
+        <!-- ── Destinataires ── -->
+        <div class="form-card">
+          <div class="form-section-title">Destinataires</div>
+
+          <!-- Chips -->
+          <div class="chip-field" [class.chip-field-focus]="false">
+            <span class="chip" *ngFor="let r of recipients">
+              {{ r }}
+              <button class="chip-rm" (click)="removeRecipient(r)" type="button">✕</button>
+            </span>
+            <input
+              class="chip-input"
+              [(ngModel)]="emailInput"
+              (keydown)="onEmailKeydown($event)"
+              (blur)="onEmailBlur()"
+              placeholder="Adresse courriel, puis Entrée…"
+              type="email" />
+          </div>
+          <div class="field-hint">Appuyez sur <kbd>Entrée</kbd> ou <kbd>,</kbd> pour ajouter un destinataire.</div>
+
+          <!-- Adresse du client (info) -->
+          <div class="client-info" *ngIf="d.clientEmail">
+            <span class="ci-label">Courriel client enregistré :</span>
+            <span class="ci-value">{{ d.clientEmail }}</span>
+          </div>
+        </div>
+
+        <!-- ── Sujet ── -->
+        <div class="form-card">
+          <div class="form-section-title">Sujet</div>
+          <input class="inp" [(ngModel)]="subject" placeholder="Sujet du courriel" />
+        </div>
+
+        <!-- ── Message ── -->
+        <div class="form-card">
+          <div class="form-section-title">
+            Message
+            <button class="btn-rebuild" (click)="buildMessage()" title="Régénérer le message automatique">
+              Régénérer
+            </button>
+          </div>
+          <textarea class="inp inp-msg" [(ngModel)]="body" rows="14"></textarea>
+        </div>
+
+        <!-- ── Pièce jointe ── -->
+        <div class="form-card">
+          <div class="form-section-title">Pièce jointe</div>
+          <div class="attachment" *ngIf="hasFile()">
+            <span class="att-icon">📎</span>
+            <span class="att-name">{{ d.filePath | slice:0:60 }}</span>
+            <span class="att-badge">PDF</span>
+          </div>
+          <div class="no-attachment" *ngIf="!hasFile()">
+            Aucun fichier joint à cette facture.
+            <span class="no-att-hint">Rendez-vous sur la page Factures pour en ajouter un.</span>
+          </div>
+        </div>
+
+        <!-- ── Récapitulatif impayés ── -->
+        <div class="form-card" *ngIf="unpaidBills().length > 0">
+          <div class="form-section-title">Factures impayées incluses dans le message</div>
+          <table class="unpaid-table">
+            <thead>
+              <tr>
+                <th>Numéro</th>
+                <th>Période</th>
+                <th class="col-r">Total TTC</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let u of unpaidBills()">
+                <td class="num-cell">{{ u.billNumber }}</td>
+                <td>{{ u.period }}</td>
+                <td class="col-r amt-cell">{{ u.totalWithTax | number:'1.2-2' }} $</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </ng-container>
+    </ng-container>
+
+  </div>
+</div>

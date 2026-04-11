@@ -36,6 +36,9 @@ export interface BillDetail extends BillSummary {
   numberOfVisits: number;
   companyPrice:   number;
   paymentInfo:    string;
+  clientEmail:    string;
+  clientPhone:    string;
+  clientAddress:  string;
   lines:          BillLine[];
 }
 
@@ -57,12 +60,19 @@ export interface BillCreatePayload {
 
 export interface BillFilter {
   search?:      string;
+  companyCode?: string;
   onlySent?:    boolean;
   onlyNotSent?: boolean;
   onlyPaid?:    boolean;
   onlyUnpaid?:  boolean;
   dateFrom?:    string;
   dateTo?:      string;
+}
+
+export interface SendEmailRequest {
+  recipients: string[];
+  subject:    string;
+  body:       string;
 }
 
 export interface BillablePriceGroup {
@@ -112,6 +122,7 @@ export class InvoiceService {
     this.log('getAll()', filter);
     let params = new HttpParams();
     if (filter.search)      params = params.set('search',      filter.search);
+    if (filter.companyCode) params = params.set('companyCode', filter.companyCode);
     if (filter.onlySent)    params = params.set('onlySent',    'true');
     if (filter.onlyNotSent) params = params.set('onlyNotSent', 'true');
     if (filter.onlyPaid)    params = params.set('onlyPaid',    'true');
@@ -225,6 +236,17 @@ export class InvoiceService {
 
   downloadFile(id: number) {
     return this.http.get(`/api/bills/${id}/file`, { responseType: 'blob' as const });
+  }
+
+  // ── Envoyer par courriel ──────────────────────────────────────────────
+  sendEmail(id: number, req: SendEmailRequest) {
+    this.log(`sendEmail(${id})`);
+    return this.http.post<{ message: string }>(`/api/bills/${id}/send-email`, req).pipe(
+      tap({
+        next:  res => this.log('✓ email envoyé:', res),
+        error: err => this.warn(`✕ POST /api/bills/${id}/send-email`, err),
+      }),
+    );
   }
 
   // ── Compagnies facturables ─────────────────────────────────────────────

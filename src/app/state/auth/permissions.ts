@@ -6,6 +6,7 @@ export const PERM = {
   pointageValidate:   'pointage.validate',
   invoicesView:       'invoices.view',
   invoicesEdit:       'invoices.edit',
+  invoicesSend:       'invoices.send',
   companiesEdit:      'companies.edit',
   groupsManage:       'groups.manage',
   configManage:       'config.manage',
