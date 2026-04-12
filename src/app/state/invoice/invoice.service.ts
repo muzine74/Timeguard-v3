@@ -238,6 +238,15 @@ export class InvoiceService {
     return this.http.get(`/api/bills/${id}/file`, { responseType: 'blob' as const });
   }
 
+  // ── PDF ───────────────────────────────────────────────────────────────
+  generatePdf(id: number) {
+    return this.http.post<{ fileName: string }>(`/api/bills/${id}/pdf`, {});
+  }
+
+  deletePdf(id: number) {
+    return this.http.delete<{ message: string }>(`/api/bills/${id}/pdf`);
+  }
+
   // ── Envoyer par courriel ──────────────────────────────────────────────
   sendEmail(id: number, req: SendEmailRequest) {
     this.log(`sendEmail(${id})`);

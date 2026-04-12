@@ -49,7 +49,7 @@
           <h1 class="page-title">Envoyer la facture {{ selected()!.billNumber }}</h1>
           <p class="page-sub">{{ selected()!.companyName }} · {{ selected()!.period }}</p>
         </div>
-        <button class="btn btn-primary" [disabled]="sending() || detailLoading()" (click)="send()">
+        <button class="btn btn-primary" [disabled]="sending() || detailLoading() || pdfGenerating()" (click)="send()">
           <span *ngIf="!sending()">Envoyer</span>
           <span *ngIf="sending()" class="spinner"></span>
         </button>
@@ -122,14 +122,25 @@
         <!-- ── Pièce jointe ── -->
         <div class="form-card">
           <div class="form-section-title">Pièce jointe</div>
-          <div class="attachment" *ngIf="hasFile()">
-            <span class="att-icon">📎</span>
-            <span class="att-name">{{ d.filePath | slice:0:60 }}</span>
-            <span class="att-badge">PDF</span>
+
+          <!-- Génération en cours -->
+          <div class="att-generating" *ngIf="pdfGenerating()">
+            <div class="mini-spinner"></div>
+            <span>Génération du PDF…</span>
           </div>
-          <div class="no-attachment" *ngIf="!hasFile()">
-            Aucun fichier joint à cette facture.
-            <span class="no-att-hint">Rendez-vous sur la page Factures pour en ajouter un.</span>
+
+          <!-- PDF prêt — cliquable -->
+          <button class="attachment att-btn" *ngIf="pdfReady()" (click)="openAttachment()" type="button"
+                  title="Cliquer pour ouvrir le PDF">
+            <span class="att-icon">📎</span>
+            <span class="att-name">{{ d.filePath }}</span>
+            <span class="att-badge">PDF</span>
+            <span class="att-open">Ouvrir ↗</span>
+          </button>
+
+          <!-- Aucun fichier (ne devrait pas arriver en pratique) -->
+          <div class="no-attachment" *ngIf="!hasFile() && !pdfGenerating()">
+            La génération du PDF a échoué.
           </div>
         </div>
 
