@@ -21,7 +21,6 @@ export class EmployeeValidationComponent implements OnInit {
   employeeId   = signal('');
   selected     = signal<Employee | null>(null);
   searchQuery  = '';
-  activeFilter: 'all' | 'active' | 'inactive' = 'active';
 
   isActive      = signal(true);
   files         = signal<EmployeeFile[]>([]);
@@ -34,13 +33,9 @@ export class EmployeeValidationComponent implements OnInit {
 
   get filteredEmployees(): Employee[] {
     const q = this.searchQuery.toLowerCase();
-    return this.empSvc.list().filter(e => {
-      const matchSearch = !q || e.employeeName.toLowerCase().includes(q);
-      const matchStatus = this.activeFilter === 'all'
-        || (this.activeFilter === 'active'   &&  e.isActive)
-        || (this.activeFilter === 'inactive' && !e.isActive);
-      return matchSearch && matchStatus;
-    });
+    return this.empSvc.list().filter(e =>
+      e.isActive && (!q || e.employeeName.toLowerCase().includes(q))
+    );
   }
 
   constructor(
@@ -50,7 +45,7 @@ export class EmployeeValidationComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.empSvc.loadList();
+    this.empSvc.loadList(true);
     const id = this.route.snapshot.paramMap.get('id');
     if (id) this.selectEmployee(id);
   }

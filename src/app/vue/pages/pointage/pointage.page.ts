@@ -86,6 +86,8 @@ export class PointagePage implements OnInit {
           this.log(`✓ employé chargé: ${emp.employeeName}`);
           // Initialise les compagnies depuis l'employé — visible même si aucun timelog pour la semaine
           this.ptEmpSvc.initFromEmployee(emp.employeeCompagnies ?? []);
+          // Charge le calendrier tarifaire → prix injectés automatiquement à chaque case cochée
+          this.ptEmpSvc.loadPricing(id, (emp.employeeCompagnies ?? []).map(c => c.compagnieId));
         },
         error: err => {
           this.warn(`✕ getOne(${id}) échoué — HTTP ${err.status}`);

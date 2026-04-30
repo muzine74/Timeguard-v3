@@ -2,14 +2,21 @@ import { Injectable, signal, isDevMode } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Compagnie, WeekDay, TimeLogQueryResultDto } from '../../models';
 
+interface WeekCache {
+  pointages: Record<string, Record<string, boolean>>;
+  prices:    Record<string, Record<string, number>>;
+}
+
 @Injectable({ providedIn: 'root' })
 export class PointageEmployeeService {
   private _compagnies  = signal<Compagnie[]>([]);
   private _loading     = signal(false);
   private _error       = signal<string | null>(null);
-  private _cache       = new Map<string, Record<string, Record<string, boolean>>>();
+  private _cache       = new Map<string, WeekCache>();
   private _currentWeek = '';
   private _employeeId  = '';
+  // companyId → nom-jour-FR → prix effectif (customPrice ?? defaultPrice)
+  private _pricingMap  = new Map<string, Record<string, number>>();
 
   readonly compagnies = this._compagnies.asReadonly();
   readonly isLoading  = this._loading.asReadonly();
@@ -25,8 +32,7 @@ export class PointageEmployeeService {
     this.log(`load(weekKey=${weekKey}, employeeId=${employeeId ?? 'undefined'})`);
 
     if (this._currentWeek && this._currentWeek !== weekKey) {
-      const snap = this.snapshot();
-      this._cache.set(this._currentWeek, snap);
+      this._cache.set(this._currentWeek, this._snapshotFull());
       this.log(`cache sauvegardé → semaine ${this._currentWeek}`);
     }
     this._currentWeek = weekKey;
@@ -36,7 +42,9 @@ export class PointageEmployeeService {
     if (cached) {
       this.log(`cache hit → semaine ${weekKey}`);
       this._compagnies.update(l => l.map(c => ({
-        ...c, pointages: cached[c.companyId] ?? {}
+        ...c,
+        pointages: cached.pointages[c.companyId] ?? {},
+        prices:    cached.prices[c.companyId]    ?? {},
       })));
       onLoaded?.();
       return;
@@ -59,14 +67,14 @@ export class PointageEmployeeService {
         this.log(`✓ ${logs.length} timelog(s)`);
         if (!logs || logs.length === 0) {
           this._compagnies.set([]);
-          this._cache.set(weekKey, {});
+          this._cache.set(weekKey, { pointages: {}, prices: {} });
           this._loading.set(false);
           onLoaded?.();
           return;
         }
         const compagnies = this._fromTimeLogs(logs);
         this._compagnies.set(compagnies);
-        this._cache.set(weekKey, this.snapshot());
+        this._cache.set(weekKey, this._snapshotFull());
         this._loading.set(false);
         onLoaded?.();
       },
@@ -97,22 +105,54 @@ export class PointageEmployeeService {
   }
 
   toggle(compId: number, dateKey: string): void {
-    this._compagnies.update(l => l.map(c => c.id !== compId ? c : {
-      ...c, pointages: { ...c.pointages, [dateKey]: !c.pointages?.[dateKey] }
+    this._compagnies.update(l => l.map(c => {
+      if (c.id !== compId) return c;
+      const isNowChecked = !c.pointages?.[dateKey];
+      const newPrices = { ...c.prices };
+      // Injecter le prix du calendrier si la case est cochée pour la première fois
+      if (isNowChecked && !(dateKey in newPrices)) {
+        const price = this._pricingMap.get(c.companyId)?.[this._toDayName(dateKey)];
+        if (price !== undefined) newPrices[dateKey] = price;
+      }
+      return { ...c, pointages: { ...c.pointages, [dateKey]: isNowChecked }, prices: newPrices };
     }));
-    if (this._currentWeek) this._cache.set(this._currentWeek, this.snapshot());
+    if (this._currentWeek) this._cache.set(this._currentWeek, this._snapshotFull());
+  }
+
+  /** Charge le calendrier tarifaire de chaque compagnie pour enrichir les prix lors du cochage. */
+  loadPricing(employeeId: string, companyIds: string[]): void {
+    for (const companyId of companyIds) {
+      this.http.get<{ day: string; defaultPrice: number; customPrice?: number }[]>(
+        `/api/employee/${employeeId}/pricing/${companyId}`
+      ).subscribe({
+        next: entries => {
+          const map: Record<string, number> = {};
+          for (const e of entries) map[e.day] = e.customPrice ?? e.defaultPrice;
+          this._pricingMap.set(companyId, map);
+          this.log(`✓ pricing ${companyId} (${entries.length} jours)`);
+        },
+        error: err => this.warn(`✕ pricing ${companyId} — HTTP ${err.status}`),
+      });
+    }
+  }
+
+  private _toDayName(dateKey: string): string {
+    const [y, m, d] = dateKey.split('-').map(Number);
+    return ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'][
+      new Date(y, m - 1, d).getDay()
+    ];
   }
 
   selectAll(days: WeekDay[]): void {
     this._compagnies.update(l => l.map(c => ({
       ...c, pointages: Object.fromEntries(days.map(d => [d.dateKey, true]))
     })));
-    if (this._currentWeek) this._cache.set(this._currentWeek, this.snapshot());
+    if (this._currentWeek) this._cache.set(this._currentWeek, this._snapshotFull());
   }
 
   clearAll(): void {
     this._compagnies.update(l => l.map(c => ({ ...c, pointages: {} })));
-    if (this._currentWeek) this._cache.set(this._currentWeek, this.snapshot());
+    if (this._currentWeek) this._cache.set(this._currentWeek, this._snapshotFull());
   }
 
   /** Initialise la liste des compagnies depuis l'employé (fallback si timelogs vides). */
@@ -141,8 +181,17 @@ export class PointageEmployeeService {
         ds + (c.pointages?.[d.dateKey] ? (c.prices?.[d.dateKey] ?? 0) : 0), 0), 0);
   }
 
+  /** Payload pour l'API (pointages uniquement). */
   snapshot(): Record<string, Record<string, boolean>> {
     return Object.fromEntries(this._compagnies().map(c => [c.companyId, { ...c.pointages }]));
+  }
+
+  /** Snapshot complet pour le cache interne (pointages + prix). */
+  private _snapshotFull(): WeekCache {
+    return {
+      pointages: Object.fromEntries(this._compagnies().map(c => [c.companyId, { ...c.pointages }])),
+      prices:    Object.fromEntries(this._compagnies().map(c => [c.companyId, { ...c.prices }])),
+    };
   }
 
   getEmployeeId(): string { return this._employeeId; }

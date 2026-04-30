@@ -51,12 +51,13 @@ export class EmployeesService {
   }
 
   // ── Liste ──────────────────────────────────────────────
-  loadList(): void {
+  loadList(onlyActive = false): void {
     this.log('loadList() → GET /api/employee');
     this._loading.set(true);
     this._error.set(null);
 
-    this.http.get<unknown>('/api/employee').pipe(
+    const url = onlyActive ? '/api/employee?onlyActive=true' : '/api/employee';
+    this.http.get<unknown>(url).pipe(
       map(raw => {
         const list: any[] = Array.isArray(raw)
           ? raw as any[]

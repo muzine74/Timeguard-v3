@@ -47,14 +47,13 @@
   }
 }
 
-// ── Dropdown Compagnies ──────────────────────────────────
+// ── Dropdown ─────────────────────────────────────────────
 .nav-dropdown {
   position: relative;
 
-  &:hover .dropdown-panel,
-  &:focus-within .dropdown-panel { opacity: 1; pointer-events: all; transform: translateY(0); }
+  &.is-open .dropdown-panel { opacity: 1; pointer-events: all; transform: translateY(0); }
 
-  // Bouton actif quand un sous-item est actif
+  // Bouton actif (jaune) quand un sous-item est sur la route courante
   &:has(.dropdown-item.active) .dropdown-btn {
     color: var(--accent); background: rgba(201,162,39,.1);
   }
@@ -71,11 +70,11 @@
 .dropdown-arrow {
   font-size: 9px; margin-top: 1px; opacity: .7;
   transition: transform .18s;
-  .nav-dropdown:hover & { transform: rotate(180deg); }
+  .nav-dropdown.is-open & { transform: rotate(180deg); }
 }
 
 .dropdown-panel {
-  position: absolute; top: calc(100% + 8px); left: 0;
+  position: absolute; top: calc(100% + 10px); left: 0;
   min-width: 210px;
   background: rgba(10,13,26,.98);
   border: 1px solid var(--border);

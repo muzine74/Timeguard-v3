@@ -5,10 +5,7 @@
     <div class="sidebar-hdr">
       <div class="sidebar-title">Employés</div>
       <input class="sidebar-search" [(ngModel)]="empSearch" placeholder="Rechercher..." />
-      <label class="inactive-toggle">
-        <input type="checkbox" [checked]="showInactive()" (change)="toggleInactive()" />
-        Inclure inactifs
-      </label>
+
     </div>
 
     <div class="sidebar-loading" *ngIf="empLoading()">

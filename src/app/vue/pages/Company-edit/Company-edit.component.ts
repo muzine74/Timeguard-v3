@@ -42,7 +42,7 @@ export class CompanyEditComponent implements OnInit {
 
   companies    : CompanySummary[] = [];
   searchQuery  = '';
-  statusFilter : 'all' | 'active' | 'inactive' = 'all';
+  statusFilter : 'all' | 'active' | 'inactive' = 'active';
 
   freqOptions: FreqOption[] = [
     { value: 'hebdomadaire',   label: 'Hebdomadaire' },

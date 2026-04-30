@@ -72,7 +72,7 @@ export class EmployeeDetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.empSvc.loadList();
+    this.empSvc.loadList(true);
 
     effect(() => {
       const list    = this.empSvc.list();
@@ -145,9 +145,9 @@ export class EmployeeDetailsComponent implements OnInit {
   get filteredEmployees(): Employee[] {
     const q      = this.searchQuery().toLowerCase();
     const status = this.allValidated();
-    const list   = q
-      ? this.employees().filter(e => e.employeeName.toLowerCase().includes(q))
-      : this.employees();
+    const list   = this.employees().filter(e =>
+      e.isActive && (!q || e.employeeName.toLowerCase().includes(q))
+    );
     return [...list].sort((a, b) => {
       const aOk = status.get(a.employeeId.toLowerCase()) ?? false;
       const bOk = status.get(b.employeeId.toLowerCase()) ?? false;

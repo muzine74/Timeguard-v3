@@ -34,9 +34,8 @@ export class CompanyAssignComponent implements OnInit {
   // ── Computed ──────────────────────────────────────────
   filteredEmps = computed(() => {
     const q = this.empSearch().toLowerCase();
-    if (!q) return this.employees();
     return this.employees().filter(e =>
-      e.employeeName.toLowerCase().includes(q)
+      e.isActive && (!q || e.employeeName.toLowerCase().includes(q))
     );
   });
 
@@ -50,12 +49,14 @@ export class CompanyAssignComponent implements OnInit {
   // Compagnies assignées en tête, puis le reste trié par nom
   sortedCompanies = computed(() => {
     const assigned = this.assigned();
-    return [...this.companies()].sort((a, b) => {
-      const aAssigned = assigned.has(a.companyId);
-      const bAssigned = assigned.has(b.companyId);
-      if (aAssigned !== bAssigned) return aAssigned ? -1 : 1;
-      return a.companyName.localeCompare(b.companyName, undefined, { sensitivity: 'base' });
-    });
+    return this.companies()
+      .filter(c => c.isActive)
+      .sort((a, b) => {
+        const aAssigned = assigned.has(a.companyId);
+        const bAssigned = assigned.has(b.companyId);
+        if (aAssigned !== bAssigned) return aAssigned ? -1 : 1;
+        return a.companyName.localeCompare(b.companyName, undefined, { sensitivity: 'base' });
+      });
   });
 
   constructor(

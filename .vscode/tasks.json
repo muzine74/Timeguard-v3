@@ -1,0 +1,47 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build",
+      "type": "shell",
+      "command": "ng build --configuration production",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Deploy → IIS",
+      "type": "shell",
+      "command": "Remove-Item '\\\\win-va4kca4qn9m\\d$\\www\\TimeGuard\\TimeGuards\\*' -Recurse -Force -ErrorAction SilentlyContinue; robocopy \"${workspaceFolder}\\dist\\timeguard\\browser\" \"\\\\win-va4kca4qn9m\\d$\\www\\TimeGuard\\TimeGuards\" /E /NFL /NDL /NJH /NJS",
+      "options": {
+        "shell": {
+          "executable": "powershell.exe",
+          "args": ["-NoProfile", "-Command"]
+        }
+      },
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Build & Deploy → IIS",
+      "dependsOn": ["Build", "Deploy → IIS"],
+      "dependsOrder": "sequence",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

@@ -64,7 +64,7 @@
         <div>
           <div class="panel-title">Compagnies</div>
           <div class="panel-sub" *ngIf="selected()">
-            {{ assigned().size }} assignée(s) sur {{ companies().length }}
+            {{ assigned().size }} assignée(s) sur {{ sortedCompanies().length }}
           </div>
           <div class="panel-sub" *ngIf="!selected()">Sélectionnez un employé</div>
         </div>

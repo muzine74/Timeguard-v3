@@ -24,9 +24,9 @@ export class EmployeeAssignComponent implements OnInit {
 
   get filteredCompanies(): CompanySummary[] {
     const q = this.coSearch.toLowerCase();
-    return q
-      ? this.companies().filter(c => c.companyName.toLowerCase().includes(q))
-      : this.companies();
+    return this.companies().filter(c =>
+      c.isActive && (!q || c.companyName.toLowerCase().includes(q))
+    );
   }
 
   // ── Employés (panneau droit) ─────────────────────────
@@ -41,9 +41,9 @@ export class EmployeeAssignComponent implements OnInit {
   sortedEmployees = computed(() => {
     const q    = this.empSearch.toLowerCase();
     const asgn = this.assigned();
-    const list = q
-      ? this.allEmployees().filter(e => e.employeeName.toLowerCase().includes(q))
-      : this.allEmployees();
+    const list = this.allEmployees().filter(e =>
+      e.isActive && (!q || e.employeeName.toLowerCase().includes(q))
+    );
 
     return [...list].sort((a, b) => {
       const aA = asgn.has(a.employeeId), bA = asgn.has(b.employeeId);

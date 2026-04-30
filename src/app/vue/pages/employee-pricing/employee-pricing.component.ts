@@ -33,16 +33,14 @@ export class EmployeePricingComponent implements OnInit {
   allEmployees     = this.empSvc.list;
   empLoading       = this.empSvc.loading;
   empSearch        = '';
-  showInactive     = signal(false);
   selectedEmployee = signal<Employee | null>(null);
   loadingEmployee  = signal(false);
 
   filteredEmployees = computed(() => {
-    const q    = this.empSearch.toLowerCase();
-    const list = this.showInactive()
-      ? this.allEmployees()
-      : this.allEmployees().filter(e => e.isActive);
-    return q ? list.filter(e => e.employeeName.toLowerCase().includes(q)) : list;
+    const q = this.empSearch.toLowerCase();
+    return this.allEmployees().filter(e =>
+      e.isActive && (!q || e.employeeName.toLowerCase().includes(q))
+    );
   });
 
   // ── Sélecteur compagnie ──────────────────────────────────────────────────
@@ -72,7 +70,7 @@ export class EmployeePricingComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.empSvc.loadList();
+    this.empSvc.loadList(true);
   }
 
   // ── Sélection employé → charge la fiche complète (avec compagnies) ───────
@@ -228,8 +226,6 @@ export class EmployeePricingComponent implements OnInit {
         },
       });
   }
-
-  toggleInactive(): void { this.showInactive.update(v => !v); }
 
   initials(name: string): string {
     const p = name.trim().split(/\s+/);

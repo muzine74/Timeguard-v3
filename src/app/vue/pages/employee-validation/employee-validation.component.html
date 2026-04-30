@@ -6,9 +6,7 @@
       <div class="sidebar-title">Profil Employé</div>
       <input class="sidebar-search" [(ngModel)]="searchQuery" placeholder="Rechercher..." />
       <div class="filter-tabs">
-        <button class="ftab" [class.ftab-active]="activeFilter==='active'"   (click)="activeFilter='active'">Actif</button>
-        <button class="ftab" [class.ftab-active]="activeFilter==='inactive'" (click)="activeFilter='inactive'">Inactif</button>
-        <button class="ftab" [class.ftab-active]="activeFilter==='all'"      (click)="activeFilter='all'">Tous</button>
+        <button class="ftab ftab-active">Actifs</button>
       </div>
     </div>
 

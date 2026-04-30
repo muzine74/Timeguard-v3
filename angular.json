@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "pointage-rh": {
+    "timeguard": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,12 +17,12 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/pointage-rh",
+            "outputPath": "dist/timeguard",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
-            "assets": ["src/favicon.ico"],
+            "assets": ["src/favicon.ico", "src/web.config"],
             "styles": ["src/styles.scss"],
             "scripts": []
           },
@@ -45,8 +45,8 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
-            "production":  { "buildTarget": "pointage-rh:build:production" },
-            "development": { "buildTarget": "pointage-rh:build:development" }
+            "production":  { "buildTarget": "timeguard:build:production" },
+            "development": { "buildTarget": "timeguard:build:development" }
           },
           "defaultConfiguration": "development",
           "options": { "proxyConfig": "proxy.conf.json" }

@@ -1,4 +1,4 @@
-import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../state/auth/auth.service';
@@ -24,89 +24,88 @@ import { AuthService } from '../../../state/auth/auth.service';
         </a>
 
           <!-- Dropdown Employés -->
-          <div class="nav-dropdown" *ngIf="auth.hasPerm('employees.view')">
-            <button class="nav-link dropdown-btn">
+          <div class="nav-dropdown" [class.is-open]="openMenu() === 'emp'" *ngIf="auth.hasPerm('employees.view')">
+            <button class="nav-link dropdown-btn" (click)="toggleDrop('emp', $event)">
               Employés <span class="dropdown-arrow">▾</span>
             </button>
             <div class="dropdown-panel">
-              <a class="dropdown-item" routerLink="/employees"            routerLinkActive="active">
-                <span class="di-icon">☰</span> Validation Pointage
-              </a>
-              <a class="dropdown-item" routerLink="/employees/validation" routerLinkActive="active">
-                <span class="di-icon">✅</span> Profil Employé
-              </a>
-              <a class="dropdown-item" routerLink="/employees/new"        routerLinkActive="active" *ngIf="auth.hasPerm('employees.create')">
+              <a class="dropdown-item" routerLink="/employees/new"        routerLinkActive="active" *ngIf="auth.hasPerm('employees.create')" (click)="closeDrop()">
                 <span class="di-icon">＋</span> Nouvel employé
               </a>
-              <a class="dropdown-item" routerLink="/employees/edit"       routerLinkActive="active" *ngIf="auth.hasPerm('employees.edit')">
+              <a class="dropdown-item" routerLink="/employees/validation" routerLinkActive="active" (click)="closeDrop()">
+                <span class="di-icon">✅</span> Profil Employé
+              </a>
+              <a class="dropdown-item" routerLink="/employees/edit"       routerLinkActive="active" *ngIf="auth.hasPerm('employees.edit')" (click)="closeDrop()">
                 <span class="di-icon">✎</span> Modifier employé
               </a>
-              <a class="dropdown-item" routerLink="/companies/assign"    routerLinkActive="active" *ngIf="auth.hasPerm('companies.edit')">
+              <a class="dropdown-item" routerLink="/employees" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeDrop()">
+                <span class="di-icon">☰</span> Validation Pointage
+              </a>
+              <a class="dropdown-item" routerLink="/companies/assign"    routerLinkActive="active" *ngIf="auth.hasPerm('companies.edit')" (click)="closeDrop()">
                 <span class="di-icon">⇄</span> Lier employés
               </a>
-              <a class="dropdown-item" routerLink="/employees/pricing"    routerLinkActive="active" *ngIf="auth.hasPerm('employees.edit')">
+              <a class="dropdown-item" routerLink="/employees/pricing"    routerLinkActive="active" *ngIf="auth.hasPerm('employees.edit')" (click)="closeDrop()">
                 <span class="di-icon">$</span> Tarifs employés
               </a>
             </div>
           </div>
 
           <!-- Dropdown Compagnies -->
-          <div class="nav-dropdown" *ngIf="auth.hasPerm('companies.view')">
-            <button class="nav-link dropdown-btn">
+          <div class="nav-dropdown" [class.is-open]="openMenu() === 'co'" *ngIf="auth.hasPerm('companies.view')">
+            <button class="nav-link dropdown-btn" (click)="toggleDrop('co', $event)">
               Compagnies <span class="dropdown-arrow">▾</span>
             </button>
             <div class="dropdown-panel">
-              <a class="dropdown-item" routerLink="/employees/assign"  routerLinkActive="active" *ngIf="auth.hasPerm('employees.edit')">
-                <span class="di-icon">⇄</span> Lier compagnies
-              </a>
-              <a class="dropdown-item" routerLink="/companies/new"    routerLinkActive="active" *ngIf="auth.hasPerm('companies.edit')">
+              <a class="dropdown-item" routerLink="/companies/new"    routerLinkActive="active" *ngIf="auth.hasPerm('companies.edit')" (click)="closeDrop()">
                 <span class="di-icon">＋</span> Nouvelle compagnie
               </a>
-              <a class="dropdown-item" routerLink="/companies/edit"   routerLinkActive="active" *ngIf="auth.hasPerm('companies.edit')">
+              <a class="dropdown-item" routerLink="/companies/edit"   routerLinkActive="active" *ngIf="auth.hasPerm('companies.edit')" (click)="closeDrop()">
                 <span class="di-icon">✎</span> Modifier compagnie
+              </a>
+              <a class="dropdown-item" routerLink="/employees/assign"  routerLinkActive="active" *ngIf="auth.hasPerm('employees.edit')" (click)="closeDrop()">
+                <span class="di-icon">⇄</span> Lier compagnies
               </a>
             </div>
           </div>
 
           <!-- Dropdown Factures -->
-          <div class="nav-dropdown" *ngIf="auth.hasPerm('invoices.view')">
-            <button class="nav-link dropdown-btn">
+          <div class="nav-dropdown" [class.is-open]="openMenu() === 'inv'" *ngIf="auth.hasPerm('invoices.view')">
+            <button class="nav-link dropdown-btn" (click)="toggleDrop('inv', $event)">
               Factures <span class="dropdown-arrow">▾</span>
             </button>
             <div class="dropdown-panel">
-              <a class="dropdown-item" routerLink="/invoices/new"             routerLinkActive="active" *ngIf="auth.hasPerm('invoices.edit')">
+              <a class="dropdown-item" routerLink="/invoices/new"             routerLinkActive="active" *ngIf="auth.hasPerm('invoices.edit')" (click)="closeDrop()">
                 <span class="di-icon">＋</span> Nouvelle facture
               </a>
-              <a class="dropdown-item" routerLink="/invoices/from-timesheets" routerLinkActive="active" *ngIf="auth.hasPerm('invoices.edit')">
+              <a class="dropdown-item" routerLink="/invoices/from-timesheets" routerLinkActive="active" *ngIf="auth.hasPerm('invoices.edit')" (click)="closeDrop()">
                 <span class="di-icon">🕐</span> Facturer par pointages
               </a>
-              <a class="dropdown-item" routerLink="/invoices/send" routerLinkActive="active" *ngIf="auth.hasPerm('invoices.send')">
+              <a class="dropdown-item" routerLink="/invoices/send" routerLinkActive="active" *ngIf="auth.hasPerm('invoices.send')" (click)="closeDrop()">
                 <span class="di-icon">✉</span> Envoyer les factures
               </a>
-              <a class="dropdown-item" routerLink="/invoices" routerLinkActive="active">
+              <a class="dropdown-item" routerLink="/invoices" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeDrop()">
                 <span class="di-icon">☰</span> Gérer les factures
               </a>
             </div>
           </div>
 
           <!-- Dropdown Gestion accès -->
-          <div class="nav-dropdown" *ngIf="auth.hasPerm('groups.manage') || auth.hasPerm('employees.edit') || auth.hasPerm('config.manage')">
-            <button class="nav-link dropdown-btn">
+          <div class="nav-dropdown" [class.is-open]="openMenu() === 'adm'" *ngIf="auth.hasPerm('groups.manage') || auth.hasPerm('employees.edit') || auth.hasPerm('config.manage')">
+            <button class="nav-link dropdown-btn" (click)="toggleDrop('adm', $event)">
               Gestion accès <span class="dropdown-arrow">▾</span>
             </button>
             <div class="dropdown-panel">
-              <a class="dropdown-item" routerLink="/groups"                routerLinkActive="active" *ngIf="auth.hasPerm('groups.manage')">
+              <a class="dropdown-item" routerLink="/groups"                routerLinkActive="active" *ngIf="auth.hasPerm('groups.manage')" (click)="closeDrop()">
                 <span class="di-icon">🔐</span> Groupes
               </a>
-              <a class="dropdown-item" routerLink="/employees/credentials" routerLinkActive="active" *ngIf="auth.hasPerm('credentials.manage')">
+              <a class="dropdown-item" routerLink="/employees/credentials" routerLinkActive="active" *ngIf="auth.hasPerm('credentials.manage')" (click)="closeDrop()">
                 <span class="di-icon">🔑</span> Identifiants
               </a>
-              <a class="dropdown-item" routerLink="/config"                routerLinkActive="active" *ngIf="auth.hasPerm('config.manage')">
+              <a class="dropdown-item" routerLink="/config"                routerLinkActive="active" *ngIf="auth.hasPerm('config.manage')" (click)="closeDrop()">
                 <span class="di-icon">⚙</span> Configuration
               </a>
             </div>
           </div>
-
       </div>
 
       <div class="nav-right">
@@ -126,7 +125,7 @@ import { AuthService } from '../../../state/auth/auth.service';
 
         <ng-container *ngIf="auth.hasPerm('employees.view')">
           <div class="mobile-section-label">Employés</div>
-          <a class="mobile-link mobile-sub" routerLink="/employees"             routerLinkActive="active" (click)="closeMenu()">Validation Pointage</a>
+          <a class="mobile-link mobile-sub" routerLink="/employees" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMenu()">Validation Pointage</a>
           <a class="mobile-link mobile-sub" routerLink="/employees/validation"  routerLinkActive="active" (click)="closeMenu()">Profil Employé</a>
           <a class="mobile-link mobile-sub" routerLink="/employees/new"         routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('employees.create')">Nouvel employé</a>
           <a class="mobile-link mobile-sub" routerLink="/employees/edit"        routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('employees.edit')">Modifier employé</a>
@@ -144,7 +143,7 @@ import { AuthService } from '../../../state/auth/auth.service';
           <a class="mobile-link mobile-sub" routerLink="/invoices/new"             routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('invoices.edit')">Nouvelle facture</a>
           <a class="mobile-link mobile-sub" routerLink="/invoices/from-timesheets" routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('invoices.edit')">Facturer par pointages</a>
           <a class="mobile-link mobile-sub" routerLink="/invoices/send"            routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('invoices.send')">✉ Envoyer les factures</a>
-          <a class="mobile-link mobile-sub" routerLink="/invoices"                 routerLinkActive="active" (click)="closeMenu()">Gérer les factures</a>
+          <a class="mobile-link mobile-sub" routerLink="/invoices" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMenu()">Gérer les factures</a>
         </ng-container>
         <ng-container *ngIf="auth.hasPerm('groups.manage') || auth.hasPerm('credentials.manage') || auth.hasPerm('config.manage')">
           <div class="mobile-section-label">Gestion accès</div>
@@ -162,13 +161,23 @@ import { AuthService } from '../../../state/auth/auth.service';
   styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent {
-  open = signal(false);
+  open     = signal(false);
+  openMenu = signal<string | null>(null);
 
   constructor(public auth: AuthService, private router: Router) {}
 
   toggleMenu(): void { this.open.update(v => !v); }
   closeMenu():  void { this.open.set(false); }
   initials(): string { return (this.auth.user()?.username ?? '?').substring(0, 2).toUpperCase(); }
+  logout():   void   { this.auth.logout(); this.router.navigate(['/login']); }
 
-  logout(): void { this.auth.logout(); this.router.navigate(['/login']); }
+  toggleDrop(name: string, e: MouseEvent): void {
+    e.stopPropagation();
+    this.openMenu.update(v => v === name ? null : name);
+  }
+
+  closeDrop(): void { this.openMenu.set(null); }
+
+  @HostListener('document:click')
+  onDocClick(): void { this.openMenu.set(null); }
 }
