@@ -3,9 +3,35 @@ export interface User {
   username:    string;
   permissions: string[];
   employeeId:  string;
+  tenantId:    string;
+  tenantSlug:  string;
+  isSuperUser: boolean;
 }
-export interface LoginRequest  { username: string; password: string; }
-export interface LoginResponse { token: string; username: string; permissions: string[]; employeeId: string; }
+
+export interface LoginRequest {
+  username:    string;
+  password:    string;
+  tenantSlug?: string;  // identifiant de l'entreprise
+}
+
+export interface LoginResponse {
+  token:       string;
+  username:    string;
+  permissions: string[];
+  employeeId:  string;
+  tenantId:    string;
+  tenantSlug:  string;
+  isSuperUser: boolean;
+}
+
+export interface RegisterTenantRequest {
+  companyName:   string;
+  slug:          string;
+  ownerEmail:    string;
+  adminUsername: string;
+  adminPassword: string;
+  plan?:         string;
+}
 
 // ── Fichiers employé ──────────────────────────────────────
 export interface EmployeeFile {
@@ -23,6 +49,7 @@ export interface Employee {
   employeeNote?:        string;
   nas?:                 string;
   isActive:             boolean;
+  employeeType?:        string;   // 'Permanent' | 'À la tâche'
   employeeCivicNumber?: string;
   employeeSuite?:       string;
   employeeZipCode?:     string;
@@ -141,6 +168,7 @@ export interface EmployeeForm {
   employeePhone:       string;
   employeeNote:        string;
   nas:                 string;
+  employeeType:        string;   // 'Permanent' | 'À la tâche'
   employeeCivicNumber: string;
   employeeSuite:       string;
   employeeZipCode:     string;

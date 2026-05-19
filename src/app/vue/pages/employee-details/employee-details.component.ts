@@ -120,6 +120,7 @@ export class EmployeeDetailsComponent implements OnInit {
     this.ptEmpSvc.clearCache();
     this.saveSvc.loadStatus(id, week);
     this.saveSvc.loadEarnings(id, week);
+    this.saveSvc.loadCumulativeEarnings(id);
     this.ptEmpSvc.load(week, id, () => this.admSvc.load(week, id));
   }
 
@@ -133,6 +134,7 @@ export class EmployeeDetailsComponent implements OnInit {
       this.hasSaved.set(false);
       if (id) this.saveSvc.loadStatus(id, week);
       if (id) this.saveSvc.loadEarnings(id, week);
+      if (id) this.saveSvc.loadCumulativeEarnings(id);
       this._loadWeekStatuses();
       this.ptEmpSvc.load(week, id ?? undefined, () => this.admSvc.load(week, id ?? undefined));
     }

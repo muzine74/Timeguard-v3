@@ -76,4 +76,22 @@
     <app-pointage-table mode="employee" [locked]="isLocked()"></app-pointage-table>
   </section>
 
+  <!-- Semaines passées non validées -->
+  <section class="section unlocked-weeks-section"
+           *ngIf="saveSvc.unlockedWeeks().length">
+    <div class="unlocked-header">
+      <span class="unlocked-title">⏳ Semaines non validées</span>
+      <span class="unlocked-count">{{ saveSvc.unlockedWeeks().length }}</span>
+    </div>
+    <div class="unlocked-list">
+      <div class="unlocked-row"
+           *ngFor="let w of saveSvc.unlockedWeeks()"
+           (click)="goToWeek(w.weekStart)">
+        <span class="unlocked-dates">{{ weekRangeLabel(w.weekStart) }}</span>
+        <span class="unlocked-gain">{{ w.totalGain | number:'1.2-2' }}&nbsp;$</span>
+        <span class="unlocked-arrow">→</span>
+      </div>
+    </div>
+  </section>
+
 </main>

@@ -105,6 +105,17 @@
                        placeholder="123 456 789" />
                 <span class="field-err" *ngIf="fieldErrors()['nas']">{{ fieldErrors()['nas'] }}</span>
               </div>
+              <div class="field span-full">
+                <label>Type d'emploi</label>
+                <div class="emp-type-group">
+                  <button type="button" class="emp-type-btn"
+                          [class.emp-type-active]="form.employeeType === 'Permanent'"
+                          (click)="form.employeeType = 'Permanent'">💼 Permanent</button>
+                  <button type="button" class="emp-type-btn"
+                          [class.emp-type-active]="form.employeeType === 'À la tâche'"
+                          (click)="form.employeeType = 'À la tâche'">🔧 À la tâche</button>
+                </div>
+              </div>
               <div class="field">
                 <label>Courriel</label>
                 <input class="inp" type="email" [(ngModel)]="form.employeeMail"

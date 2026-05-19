@@ -101,6 +101,7 @@ export class PointagePage implements OnInit {
     this.ptEmpSvc.load(week, id, () => this.ptAdmSvc.load(week, id));
     this.saveSvc.loadStatus(id, week);
     this.saveSvc.loadEarnings(id, week);
+    this.saveSvc.loadCumulativeEarnings(id);
   }
 
   private _resolveEmployeeId(): string | null {
@@ -135,6 +136,19 @@ export class PointagePage implements OnInit {
     this.employee.update(e => e ? { ...e, ...patch } : e);
   }
 
+  goToWeek(weekStart: string): void {
+    const [y, m, d] = weekStart.split('-').map(Number);
+    this.weekSvc.setDate(new Date(y, m - 1, d));
+    this.onWeekChange();
+  }
+
+  weekRangeLabel(weekStart: string): string {
+    const M = ['jan','fév','mar','avr','mai','jun','jul','aoû','sep','oct','nov','déc'];
+    const [y, m, d] = weekStart.split('-').map(Number);
+    const sun = new Date(y, m - 1, d + 6);
+    return `${d} ${M[m - 1]} → ${sun.getDate()} ${M[sun.getMonth()]} ${sun.getFullYear()}`;
+  }
+
   async save(): Promise<void> {
     this.log('save()');
     const emp = this.employee();
@@ -148,7 +162,11 @@ export class PointagePage implements OnInit {
     }
     const ok = await this.saveSvc.save();
     this.log(`save() → ${ok ? '✓' : '✕'}`);
-    if (ok) this.hasSaved.set(true);
+    if (ok) {
+      this.hasSaved.set(true);
+      const empId = this._resolveEmployeeId();
+      if (empId) this.saveSvc.loadCumulativeEarnings(empId);
+    }
     this.toast = ok ? '✓ Données sauvegardées' : '✕ Erreur lors de la sauvegarde';
     this.saved.set(true);
     setTimeout(() => this.saved.set(false), 3000);
@@ -166,6 +184,7 @@ export class PointagePage implements OnInit {
         next: () => {
           this.saveSvc.loadStatus(empId, week);
           this.saveSvc.loadEarnings(empId, week);
+          this.saveSvc.loadCumulativeEarnings(empId);
           this.hasSaved.set(false);
           this.ptEmpSvc.clearCache();
           this.ptEmpSvc.load(week, empId, () => this.ptAdmSvc.load(week, empId));
@@ -196,6 +215,8 @@ export class PointagePage implements OnInit {
         next: () => {
           this.saveSvc.loadStatus(empId, week);
           this.saveSvc.loadEarnings(empId, week);
+          this.saveSvc.loadCumulativeEarnings(empId);
+          this.ptEmpSvc.removeFromCache(week);
           this.hasSaved.set(false);
           this.toast = '✓ Semaine validée — pointage verrouillé.';
           this.saved.set(true);

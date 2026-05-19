@@ -17,17 +17,44 @@ export class AuthService {
 
   hasPerm(key: string): boolean { return this._permSet().has(key); }
 
-  // Accès aux pages de gestion (au moins une permission de gestion)
   readonly canManage = computed(() =>
     ['employees.view','companies.view','invoices.view','pointage.validate','groups.manage']
       .some(p => this._permSet().has(p))
   );
-  // Accès à la feuille de temps uniquement
   readonly canPointage = computed(() => this._permSet().has('pointage.view'));
-
   readonly loggedInWithAccess = computed(() => this.loggedIn() && (this.canManage() || this.canPointage()));
+  readonly employeeId  = computed(() => this._user()?.employeeId  ?? null);
+  readonly tenantId    = computed(() => this._user()?.tenantId    ?? null);
+  readonly tenantSlug  = computed(() => this._user()?.tenantSlug  ?? null);
+  readonly isSuperUser = computed(() => this._user()?.isSuperUser ?? false);
 
-  readonly employeeId = computed(() => this._user()?.employeeId ?? null);
+  private _superSession = signal<{ token: string; user: User } | null>(null);
+  readonly isImpersonating = computed(() => !!this._superSession());
+
+  impersonateAs(res: LoginResponse): void {
+    const snap = { token: localStorage.getItem('tg_token')!, user: this._user()! };
+    this._superSession.set(snap);
+    const u: User = {
+      username:    res.username,
+      permissions: res.permissions ?? [],
+      employeeId:  res.employeeId,
+      tenantId:    res.tenantId    ?? '',
+      tenantSlug:  res.tenantSlug  ?? '',
+      isSuperUser: false,
+    };
+    localStorage.setItem('tg_token', res.token);
+    localStorage.setItem('tg_user',  JSON.stringify(u));
+    this._user.set(u);
+  }
+
+  restoreSession(): void {
+    const s = this._superSession();
+    if (!s) return;
+    localStorage.setItem('tg_token', s.token);
+    localStorage.setItem('tg_user',  JSON.stringify(s.user));
+    this._user.set(s.user);
+    this._superSession.set(null);
+  }
 
   constructor(private http: HttpClient) {}
 
@@ -36,13 +63,15 @@ export class AuthService {
       tap(res => {
         localStorage.setItem(TOKEN_KEY, res.token);
 
-        // Décoder le JWT pour extraire employeeId si absent de la réponse
         const empId = res.employeeId ?? this._decodeEmployeeId(res.token);
 
         const u: User = {
           username:    res.username,
           permissions: res.permissions ?? [],
           employeeId:  empId,
+          tenantId:    res.tenantId    ?? '',
+          tenantSlug:  res.tenantSlug  ?? '',
+          isSuperUser: res.isSuperUser ?? false,
         };
         localStorage.setItem(USER_KEY, JSON.stringify(u));
         this._user.set(u);
@@ -58,16 +87,11 @@ export class AuthService {
 
   token(): string | null { return localStorage.getItem(TOKEN_KEY); }
 
-  // ── Décode le JWT et extrait employeeId ───────────────
   private _decodeEmployeeId(token: string): string {
     try {
       const payload = token.split('.')[1];
       const decoded = JSON.parse(atob(payload));
-      // Cherche les claims standards : sub, employeeId, nameid
-      return decoded['employeeId']
-          ?? decoded['sub']
-          ?? decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier']
-          ?? '';
+      return decoded['employeeId'] ?? decoded['sub'] ?? '';
     } catch {
       return '';
     }

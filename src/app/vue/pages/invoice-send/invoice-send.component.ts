@@ -83,7 +83,11 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: list => {
-          this.unsentBills.set(list.filter(b => b.parentBillIdentifier === null));
+          // Exclure les avoirs : ceux avec parentBillIdentifier défini (nouveaux)
+          // et ceux dont le numéro se termine par -AV (anciens, sans parentBillIdentifier)
+          this.unsentBills.set(list.filter(b =>
+            b.parentBillIdentifier === null && !b.billNumber?.endsWith('-AV')
+          ));
           this.loading.set(false);
           this.cdr.markForCheck();
         },

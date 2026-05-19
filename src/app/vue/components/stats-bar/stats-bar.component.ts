@@ -29,13 +29,11 @@ import { SaveStateService } from '../../../state/pointage/save-state.service';
         <span class="lbl">Jours / Semaine</span>
         <div class="bar"></div>
       </div>
-      <div class="stat s5" [class.locked]="svc.earnings()?.isLocked">
+      <div class="stat s5">
         <span class="val earn">
-          {{ svc.stats().weekTotal | number:'1.2-2' }}&nbsp;$
+          {{ svc.cumulativeGain() | number:'1.2-2' }}&nbsp;$
         </span>
-        <span class="lbl">Gains Hebdo
-          <span class="lbl-locked" *ngIf="svc.earnings()?.isLocked"> · Validé</span>
-        </span>
+        <span class="lbl">Gains non validés</span>
         <div class="bar"></div>
       </div>
     </div>

@@ -163,6 +163,7 @@ export class EmployeeCreateComponent {
   private _emptyForm(): EmployeeForm {
     return {
       employeeName: '', employeeMail: '', employeePhone: '', employeeNote: '', nas: '',
+      employeeType: 'Permanent',
       employeeCivicNumber: '', employeeSuite: '', employeeZipCode: '',
       employeeCity: '', employeeState: 'QC', employeeCountry: 'Canada', employeeAdressNote: '',
     };

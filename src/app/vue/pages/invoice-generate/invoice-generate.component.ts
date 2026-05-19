@@ -343,7 +343,10 @@ export class InvoiceGenerateComponent implements OnInit {
   }
 
   // ── Imprimer / PDF ────────────────────────────────────
-  printPreview(): void { window.print(); }
+  printPreview(): void {
+    // setTimeout laisse Angular terminer le cycle de détection avant l'impression
+    setTimeout(() => window.print(), 0);
+  }
 
   initials(name: string): string {
     const p = name.trim().split(/\s+/);

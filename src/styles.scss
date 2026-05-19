@@ -141,3 +141,131 @@ input, select, textarea { font-family: inherit; }
   border-radius: 50%; animation: spin .7s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Impression globale ── */
+@media print {
+  /* Reset thème sombre → fond blanc, texte noir */
+  html, body {
+    background: #fff !important;
+    color: #111 !important;
+  }
+
+  /* Masquer tous les éléments UI non imprimables */
+  .no-print { display: none !important; }
+
+  /* Révéler les spans print-only (remplacent les inputs dans l'aperçu facture) */
+  .print-only { display: inline !important; }
+
+  /* Mise en page de la facture : passer en colonne unique, sans padding inutile */
+  .page-layout {
+    display: block !important;
+  }
+  .main-area {
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* L'aperçu facture : nettoyer les décorations d'écran */
+  .invoice-preview {
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    background: #fff !important;
+    color: #111 !important;
+  }
+}
+
+/* ── Sélecteur type d'emploi (create / edit) ── */
+.emp-type-group {
+  display: flex; gap: 8px; flex-wrap: wrap;
+}
+.emp-type-btn {
+  flex: 1; min-width: 120px;
+  padding: 9px 16px; border-radius: 9px; border: 1px solid var(--border);
+  background: var(--surface2); color: var(--muted);
+  font-family: inherit; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: all .18s; text-align: center;
+  &:hover { border-color: rgba(201,162,39,.3); color: var(--text); }
+  &:disabled { opacity: .5; cursor: not-allowed; }
+}
+.emp-type-active {
+  background: rgba(201,162,39,.12);
+  border-color: rgba(201,162,39,.5);
+  color: var(--accent);
+}
+
+/* ── Badge type d'employé ── */
+.type-badge {
+  display: inline-flex; align-items: center;
+  font-size: 11px; font-weight: 700; letter-spacing: .4px;
+  padding: 3px 10px; border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface2); color: var(--muted);
+}
+.type-permanent {
+  background: rgba(36,87,197,.12); color: #6b9ef5;
+  border-color: rgba(36,87,197,.3);
+}
+.type-task {
+  background: rgba(224,154,34,.12); color: var(--warning);
+  border-color: rgba(224,154,34,.3);
+}
+
+/* ── Semaines non validées (page pointage) ── */
+.unlocked-weeks-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.unlocked-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+
+.unlocked-title {
+  font-size: 13px; font-weight: 600; color: var(--warning);
+  flex: 1;
+}
+
+.unlocked-count {
+  font-size: 11px; font-weight: 700;
+  background: rgba(224,154,34,.15); color: var(--warning);
+  border: 1px solid rgba(224,154,34,.3);
+  border-radius: 20px; padding: 2px 9px;
+}
+
+.unlocked-list { display: flex; flex-direction: column; }
+
+.unlocked-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background .15s;
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: var(--surface2); }
+}
+
+.unlocked-dates {
+  flex: 1; font-size: 13px; color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.unlocked-gain {
+  font-size: 13px; font-weight: 600; color: var(--success);
+  font-variant-numeric: tabular-nums;
+  min-width: 80px; text-align: right;
+}
+
+.unlocked-arrow {
+  font-size: 14px; color: var(--muted);
+  transition: color .15s, transform .15s;
+  .unlocked-row:hover & { color: var(--accent); transform: translateX(3px); }
+}

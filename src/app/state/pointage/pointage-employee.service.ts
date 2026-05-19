@@ -1,6 +1,7 @@
-import { Injectable, signal, isDevMode } from '@angular/core';
+import { Injectable, signal, computed, isDevMode } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Compagnie, WeekDay, TimeLogQueryResultDto } from '../../models';
+import { WeekService } from './week.service';
 
 interface WeekCache {
   pointages: Record<string, Record<string, boolean>>;
@@ -26,7 +27,15 @@ export class PointageEmployeeService {
   private log(...a: unknown[])  { if (this._dev) console.log('[PointageEmpSvc]', ...a); }
   private warn(...a: unknown[]) { if (this._dev) console.warn('[PointageEmpSvc]', ...a); }
 
-  constructor(private http: HttpClient) {}
+  /** Signal de premier niveau — réactif aux coches ET aux changements de semaine. */
+  readonly weekTotal = computed(() => {
+    const days = this._week.weekDays();
+    return this._compagnies().reduce((s, c) =>
+      s + days.reduce((ds, d) =>
+        ds + (c.pointages?.[d.dateKey] ? (c.prices?.[d.dateKey] ?? 0) : 0), 0), 0);
+  });
+
+  constructor(private http: HttpClient, private _week: WeekService) {}
 
   load(weekKey: string, employeeId?: string, onLoaded?: () => void): void {
     this.log(`load(weekKey=${weekKey}, employeeId=${employeeId ?? 'undefined'})`);
@@ -172,14 +181,15 @@ export class PointageEmployeeService {
 
   clearCache(): void { this.log('clearCache()'); this._cache.clear(); }
 
+  /** Supprime uniquement la semaine validée du cache (les autres semaines sont conservées). */
+  removeFromCache(weekKey: string): void {
+    this._cache.delete(weekKey);
+    this.log(`cache retiré → semaine ${weekKey}`);
+  }
+
   isChecked(c: Compagnie, dk: string): boolean { return !!c.pointages?.[dk]; }
   count(c: Compagnie, days: WeekDay[]): number  { return days.filter(d => !!c.pointages?.[d.dateKey]).length; }
   total(days: WeekDay[]): number { return this._compagnies().reduce((s, c) => s + this.count(c, days), 0); }
-  weekTotal(days: WeekDay[]): number {
-    return this._compagnies().reduce((s, c) =>
-      s + days.reduce((ds, d) =>
-        ds + (c.pointages?.[d.dateKey] ? (c.prices?.[d.dateKey] ?? 0) : 0), 0), 0);
-  }
 
   /** Payload pour l'API (pointages uniquement). */
   snapshot(): Record<string, Record<string, boolean>> {

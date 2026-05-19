@@ -58,6 +58,11 @@
         </div>
         <div class="profile-actions">
           <span class="status-badge active-badge">● Actif</span>
+          <span class="type-badge"
+                [class.type-permanent]="(selected()?.employeeType ?? 'Permanent') === 'Permanent'"
+                [class.type-task]="selected()?.employeeType === 'À la tâche'">
+            {{ selected()?.employeeType || 'Permanent' }}
+          </span>
           <button class="btn-save" (click)="save()"
                 [disabled]="isSaving() || (auth.canManage() && isLocked())">
             <span class="spinner" *ngIf="isSaving()"></span>

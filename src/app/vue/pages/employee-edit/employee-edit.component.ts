@@ -249,6 +249,7 @@ export class EmployeeEditComponent implements OnInit {
       employeePhone:       e.employeePhone       ?? '',
       employeeNote:        e.employeeNote        ?? '',
       nas:                 e.nas                 ?? '',
+      employeeType:        e.employeeType        ?? 'Permanent',
       employeeCivicNumber: e.employeeCivicNumber ?? '',
       employeeSuite:       e.employeeSuite       ?? '',
       employeeZipCode:     e.employeeZipCode     ?? '',
@@ -262,6 +263,7 @@ export class EmployeeEditComponent implements OnInit {
   private _emptyForm(): EmployeeForm {
     return {
       employeeName: '', employeeMail: '', employeePhone: '', employeeNote: '', nas: '',
+      employeeType: 'Permanent',
       employeeCivicNumber: '', employeeSuite: '', employeeZipCode: '',
       employeeCity: '', employeeState: 'QC', employeeCountry: 'Canada', employeeAdressNote: '',
     };

@@ -1,23 +1,24 @@
 import { Component, signal, isDevMode, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../state/auth/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent {
-  username = '';
-  password = '';
-  showPw   = signal(false);
-  loading  = signal(false);
-  error    = signal('');
+  username    = '';
+  password    = '';
+  tenantSlug  = '';
+  showPw      = signal(false);
+  loading     = signal(false);
+  error       = signal('');
 
   private get _dev(): boolean { return isDevMode(); }
   private log(...a: unknown[])  { if (this._dev) console.log('[LoginComponent]', ...a); }
@@ -36,7 +37,7 @@ export class LoginComponent {
     this.loading.set(true);
     this.error.set('');
 
-    this.auth.login({ username: this.username, password: this.password }).subscribe({
+    this.auth.login({ username: this.username, password: this.password, tenantSlug: this.tenantSlug || undefined }).subscribe({
       next: () => {
         this.loading.set(false);
         this.log('✓ login réussi');
@@ -44,6 +45,12 @@ export class LoginComponent {
         this.log('  employeeId: ', this.auth.employeeId());
         this.log('  permissions:', this.auth.user()?.permissions);
         this.log('  token JWT:  ', localStorage.getItem('tg_token'));
+
+        // Super user : panneau providers dédié
+        if (this.auth.isSuperUser()) {
+          this.router.navigate(['/providers']);
+          return;
+        }
 
         if (!this.auth.loggedInWithAccess()) {
           this.warn('✕ aucune permission assignée');

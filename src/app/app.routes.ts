@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { permGuard, homeGuard } from './state/auth/auth.guard';
+import { permGuard, homeGuard, superUserGuard } from './state/auth/auth.guard';
 import { PERM } from './state/auth/permissions';
 
 export const routes: Routes = [
@@ -12,6 +12,15 @@ export const routes: Routes = [
   {
     path: 'login',
     loadComponent: () => import('./vue/pages/login/login.component').then(m => m.LoginComponent)
+  },
+  {
+    path: 'register',
+    loadComponent: () => import('./vue/pages/register/register.component').then(m => m.RegisterComponent)
+  },
+  {
+    path: 'providers',
+    canActivate: [superUserGuard],
+    loadComponent: () => import('./vue/pages/providers/providers.component').then(m => m.ProvidersComponent)
   },
 
   // ── Pointage ─────────────────────────────────────────────────────────────

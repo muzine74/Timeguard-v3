@@ -16,7 +16,7 @@ import { AuthService } from '../../../state/auth/auth.service';
         <span class="brand-ver">v2.0</span>
       </div>
 
-      <div class="nav-links">
+      <div class="nav-links" *ngIf="!auth.isSuperUser()">
 
         <!-- ── Feuille de temps ── -->
         <a class="nav-link" routerLink="/pointage" routerLinkActive="active" *ngIf="auth.hasPerm('pointage.view')">
@@ -118,7 +118,7 @@ import { AuthService } from '../../../state/auth/auth.service';
       </div>
     </nav>
 
-    <div class="mobile-menu" *ngIf="open()">
+    <div class="mobile-menu" *ngIf="open() && !auth.isSuperUser()">
 
       <!-- Feuille de temps -->
       <a class="mobile-link" routerLink="/pointage" routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('pointage.view')">Feuille de temps</a>

@@ -46,6 +46,7 @@ export class EmployeesService {
       employeeState:       addr['state']          ?? addr['State']          ?? raw['employeeState']   ?? '',
       employeeCountry:     addr['country']        ?? addr['Country']        ?? raw['employeeCountry'] ?? '',
       employeeAdressNote:  addr['note']           ?? addr['Note']           ?? raw['employeeAdressNote'] ?? '',
+      employeeType:        raw['employeeType'] ?? raw['EmployeeType'] ?? 'Permanent',
       employeeCompagnies:  compagnies,
     };
   }
@@ -99,6 +100,7 @@ export class EmployeesService {
       employeePhone:       form.employeePhone,
       employeeNote:        form.employeeNote,
       nas:                 form.nas,
+      employeeType:        form.employeeType ?? 'Permanent',
       employeeCivicNumber: form.employeeCivicNumber,
       employeeSuite:       form.employeeSuite,
       employeeZipCode:     form.employeeZipCode,
@@ -126,6 +128,7 @@ export class EmployeesService {
       employeePhone:       n(form.employeePhone),
       employeeNote:        form.employeeNote,
       nas:                 form.nas,
+      employeeType:        form.employeeType ?? 'Permanent',
       employeeCivicNumber: form.employeeCivicNumber,
       employeeSuite:       form.employeeSuite,
       employeeZipCode:     form.employeeZipCode,
