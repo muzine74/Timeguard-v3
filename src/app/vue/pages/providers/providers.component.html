@@ -1,0 +1,249 @@
+<div class="providers-layout">
+
+  <!-- ── Toast ─────────────────────────────────────────────────────────── -->
+  <div class="toast" [class.toast-show]="toastVisible()">{{ toast() }}</div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       SIDEBAR — liste des providers
+  ══════════════════════════════════════════════════════════════════════════ -->
+  <aside class="sidebar">
+
+    <div class="sidebar-hdr">
+      <div class="sidebar-brand">
+        <span class="brand-icon">⚙</span>
+        <div>
+          <div class="sidebar-title">Super Admin</div>
+          <div class="sidebar-sub">Gestion des providers</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recherche -->
+    <div class="sidebar-search-wrap">
+      <input class="sidebar-search" type="text" placeholder="Rechercher…"
+             [(ngModel)]="search" />
+    </div>
+
+    <!-- Filtres Tous / Actifs / Inactifs -->
+    <div class="filter-tabs">
+      <button class="ftab" [class.ftab-active]="statusFilter() === 'all'"
+              (click)="setFilter('all')">Tous</button>
+      <button class="ftab" [class.ftab-active]="statusFilter() === 'active'"
+              (click)="setFilter('active')">Actifs</button>
+      <button class="ftab" [class.ftab-active]="statusFilter() === 'inactive'"
+              (click)="setFilter('inactive')">Inactifs</button>
+    </div>
+
+    <!-- Liste providers -->
+    <div class="sidebar-list">
+      <div *ngIf="tenantSvc.loading()" class="sidebar-loading">
+        <div class="mini-spinner"></div>
+      </div>
+
+      <button *ngFor="let t of filteredTenants"
+              class="provider-row"
+              [class.provider-selected]="selected()?.tenantId === t.tenantId"
+              [class.provider-inactive]="!t.isActive"
+              (click)="selectTenant(t)">
+        <div class="provider-avatar">{{ initials(t.name) }}</div>
+        <div class="provider-info">
+          <div class="provider-name">{{ t.name }}</div>
+          <div class="provider-meta">{{ t.slug }} · {{ planLabel(t.plan) }}</div>
+        </div>
+        <span class="status-dot" [class.dot-active]="t.isActive"
+              [title]="t.isActive ? 'Actif' : 'Inactif'"></span>
+      </button>
+
+      <div *ngIf="!tenantSvc.loading() && filteredTenants.length === 0" class="sidebar-empty">
+        Aucun provider
+      </div>
+    </div>
+
+    <!-- Bouton créer provider -->
+    <div class="sidebar-footer">
+      <button class="btn btn-new-provider" (click)="showNewForm.set(!showNewForm())">
+        {{ showNewForm() ? '✕ Annuler' : '+ Nouveau provider' }}
+      </button>
+    </div>
+  </aside>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       CONTENU PRINCIPAL
+  ══════════════════════════════════════════════════════════════════════════ -->
+  <div class="main">
+
+    <!-- ── Formulaire nouveau provider ──────────────────────────────────── -->
+    <div class="new-provider-form" *ngIf="showNewForm()">
+      <div class="form-card">
+        <div class="form-card-hdr">
+          <span class="form-card-icon">🏢</span>
+          <div>
+            <div class="form-card-title">Nouveau provider</div>
+            <div class="form-card-sub">Créer une nouvelle entreprise cliente</div>
+          </div>
+        </div>
+
+        <div class="fields-grid">
+          <div class="field span-2">
+            <label>Nom de l'entreprise *</label>
+            <input class="inp" [(ngModel)]="newForm.companyName"
+                   (input)="onNameChange()" placeholder="Ex: ABC Cleaning" />
+          </div>
+          <div class="field">
+            <label>Slug (identifiant) *</label>
+            <input class="inp" [(ngModel)]="newForm.slug" placeholder="abc-cleaning" />
+          </div>
+          <div class="field">
+            <label>Plan</label>
+            <select class="inp" [(ngModel)]="newForm.plan">
+              <option value="starter">Starter</option>
+              <option value="pro">Pro</option>
+              <option value="enterprise">Enterprise</option>
+            </select>
+          </div>
+          <div class="field span-2">
+            <label>Courriel du propriétaire *</label>
+            <input class="inp" type="email" [(ngModel)]="newForm.ownerEmail"
+                   placeholder="admin@abc-cleaning.com" />
+          </div>
+          <div class="field">
+            <label>Username admin *</label>
+            <input class="inp" [(ngModel)]="newForm.adminUsername" placeholder="admin" />
+          </div>
+          <div class="field">
+            <label>Mot de passe admin *</label>
+            <input class="inp" type="password" [(ngModel)]="newForm.adminPassword" />
+          </div>
+        </div>
+
+        <div class="form-error" *ngIf="newError()">⚠ {{ newError() }}</div>
+
+        <div class="form-actions">
+          <button class="btn btn-outline" (click)="showNewForm.set(false)">Annuler</button>
+          <button class="btn btn-primary" [disabled]="savingNew()" (click)="submitNew()">
+            <span *ngIf="savingNew()" class="spinner"></span>
+            <span *ngIf="!savingNew()">✓ Créer le provider</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Aucune sélection ──────────────────────────────────────────────── -->
+    <div class="no-selection" *ngIf="!selected() && !showNewForm() && !loadingDetail()">
+      <div class="no-sel-icon">🏢</div>
+      <div class="no-sel-txt">Sélectionnez un provider pour voir les détails</div>
+      <button class="btn btn-primary" style="margin-top:16px"
+              (click)="showNewForm.set(true)">+ Nouveau provider</button>
+    </div>
+
+    <!-- Chargement -->
+    <div class="loading-detail" *ngIf="loadingDetail()">
+      <div class="mini-spinner"></div>
+      <span>Chargement…</span>
+    </div>
+
+    <!-- ── Détail provider sélectionné ──────────────────────────────────── -->
+    <div class="detail" *ngIf="selected() && !loadingDetail() && !showNewForm()">
+
+      <!-- En-tête -->
+      <div class="detail-hdr">
+        <div class="detail-avatar">{{ initials(selected()!.name) }}</div>
+        <div class="detail-info">
+          <h1 class="detail-name">{{ selected()!.name }}</h1>
+          <div class="detail-meta">
+            <span class="chip">{{ selected()!.slug }}</span>
+            <span class="chip chip-plan">{{ planLabel(selected()!.plan) }}</span>
+            <span class="chip" [class.chip-active]="selected()!.isActive"
+                  [class.chip-inactive]="!selected()!.isActive">
+              {{ selected()!.isActive ? '● Actif' : '○ Inactif' }}
+            </span>
+          </div>
+        </div>
+        <button class="btn"
+                [class.btn-danger-sm]="selected()!.isActive"
+                [class.btn-activate]="!selected()!.isActive"
+                (click)="toggleActive()">
+          {{ selected()!.isActive ? '⛔ Désactiver' : '✅ Activer' }}
+        </button>
+      </div>
+
+      <!-- Informations compagnie -->
+      <div class="section-label">Informations compagnie</div>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-lbl">Propriétaire</span>
+          <span class="info-val">{{ selected()!.ownerEmail }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-lbl">Employés</span>
+          <span class="info-val">{{ selected()!.employeeCount }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-lbl">Créé le</span>
+          <span class="info-val">{{ selected()!.createdAt | date:'dd/MM/yyyy' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-lbl">Administrateurs</span>
+          <span class="info-val">{{ selected()!.admins.length }}</span>
+        </div>
+      </div>
+
+      <!-- Section administrateurs -->
+      <div class="section-card">
+        <div class="section-card-hdr">
+          <span class="section-card-title">👤 Administrateurs</span>
+          <button class="btn btn-sm btn-outline"
+                  (click)="showAdminForm.set(!showAdminForm())">
+            {{ showAdminForm() ? 'Annuler' : '+ Ajouter un admin' }}
+          </button>
+        </div>
+
+        <!-- Formulaire nouvel admin -->
+        <div class="admin-form" *ngIf="showAdminForm()">
+          <div class="admin-form-fields">
+            <div class="field">
+              <label>Nom complet *</label>
+              <input class="inp" [(ngModel)]="adminForm.employeeName" placeholder="Sophie Martin" />
+            </div>
+            <div class="field">
+              <label>Username *</label>
+              <input class="inp" [(ngModel)]="adminForm.username" placeholder="sophie.martin" />
+            </div>
+            <div class="field">
+              <label>Mot de passe *</label>
+              <input class="inp" type="password" [(ngModel)]="adminForm.password" />
+            </div>
+          </div>
+          <div class="form-error" *ngIf="adminError()">⚠ {{ adminError() }}</div>
+          <button class="btn btn-primary" [disabled]="savingAdmin()" (click)="submitAdmin()">
+            <span *ngIf="savingAdmin()" class="spinner"></span>
+            <span *ngIf="!savingAdmin()">✓ Créer l'administrateur</span>
+          </button>
+        </div>
+
+        <!-- Liste des admins -->
+        <div class="admin-list">
+          <div *ngIf="selected()!.admins.length === 0" class="admin-empty">
+            Aucun administrateur
+          </div>
+          <div *ngFor="let a of selected()!.admins" class="admin-row">
+            <div class="admin-avatar">{{ initials(a.employeeName) }}</div>
+            <div class="admin-info">
+              <span class="admin-name">{{ a.employeeName }}</span>
+              <span class="admin-user">&#64;{{ a.username }}</span>
+            </div>
+            <button class="btn-open-admin" (click)="openAsAdmin(a.credentialId)"
+                    [disabled]="openingId() === a.credentialId"
+                    title="Ouvrir la compagnie avec les permissions de cet utilisateur">
+              <span *ngIf="openingId() === a.credentialId" class="spinner-sm"></span>
+              <span *ngIf="openingId() !== a.credentialId">🔗 Ouvrir</span>
+            </button>
+            <button class="btn-rm" (click)="deleteAdmin(a.credentialId)"
+                    title="Supprimer cet administrateur">✕</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div>

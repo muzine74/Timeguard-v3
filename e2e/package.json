@@ -1,0 +1,19 @@
+{
+  "name": "timeguard-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test":          "playwright test",
+    "test:headed":   "playwright test --headed",
+    "test:ui":       "playwright test --ui",
+    "test:remote":   "cross-env E2E_ENV=remote playwright test",
+    "test:remote:headed": "cross-env E2E_ENV=remote playwright test --headed",
+    "report":        "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.43.0",
+    "@types/node":      "^20.0.0",
+    "dotenv":           "^16.4.0",
+    "cross-env":        "^7.0.3"
+  }
+}

@@ -1,0 +1,90 @@
+<div class="login-page">
+  <div class="login-card" style="max-width:480px">
+
+    <div class="brand">
+      <span class="dot"></span>
+      <span class="brand-name">TimeGuard</span>
+      <span class="brand-ver">v2.0</span>
+    </div>
+
+    <div class="card-header">
+      <h1 class="card-title">Créer un espace entreprise</h1>
+      <p class="card-sub">Essai gratuit — aucune carte bancaire requise</p>
+    </div>
+
+    <!-- Succès -->
+    <div *ngIf="success()" style="text-align:center;padding:24px 0;color:var(--success)">
+      <div style="font-size:36px">✅</div>
+      <p style="font-weight:600;margin-top:12px">Espace créé avec succès !</p>
+      <p style="font-size:12px;color:var(--muted);margin-top:6px">
+        Redirection vers la connexion…
+      </p>
+    </div>
+
+    <form class="form" *ngIf="!success()" (ngSubmit)="submit()">
+
+      <div class="field">
+        <label class="flabel">Nom de l'entreprise *</label>
+        <div class="input-wrap">
+          <span class="field-icon">🏢</span>
+          <input type="text" class="inp" placeholder="Ex: Ramssis Cleaning"
+                 [(ngModel)]="form.companyName" name="companyName"
+                 (input)="onNameChange()" [disabled]="loading()" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="flabel">Identifiant unique *</label>
+        <div class="input-wrap">
+          <span class="field-icon">🔗</span>
+          <input type="text" class="inp" placeholder="ramssis-cleaning"
+                 [(ngModel)]="form.slug" name="slug"
+                 [disabled]="loading()" />
+        </div>
+        <span style="font-size:11px;color:var(--muted)">
+          Utilisé à la connexion — lettres, chiffres et tirets uniquement
+        </span>
+      </div>
+
+      <div class="field">
+        <label class="flabel">Courriel propriétaire *</label>
+        <div class="input-wrap">
+          <span class="field-icon">✉</span>
+          <input type="email" class="inp" placeholder="admin@monentreprise.com"
+                 [(ngModel)]="form.ownerEmail" name="ownerEmail" [disabled]="loading()" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="flabel">Nom d'utilisateur admin *</label>
+        <div class="input-wrap">
+          <span class="field-icon">👤</span>
+          <input type="text" class="inp" placeholder="admin"
+                 [(ngModel)]="form.adminUsername" name="adminUsername" [disabled]="loading()" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="flabel">Mot de passe admin *</label>
+        <div class="input-wrap">
+          <span class="field-icon">🔒</span>
+          <input type="password" class="inp" placeholder="••••••••"
+                 [(ngModel)]="form.adminPassword" name="adminPassword" [disabled]="loading()" />
+        </div>
+      </div>
+
+      <div class="error-banner" *ngIf="error()">⚠ {{ error() }}</div>
+
+      <button type="submit" class="btn-login" [disabled]="loading()">
+        <span class="spinner" *ngIf="loading()"></span>
+        <span *ngIf="!loading()">→ Créer mon espace</span>
+        <span *ngIf="loading()">Création en cours…</span>
+      </button>
+
+      <p class="register-link">
+        Déjà un compte ? <a routerLink="/login">Se connecter</a>
+      </p>
+
+    </form>
+  </div>
+</div>
