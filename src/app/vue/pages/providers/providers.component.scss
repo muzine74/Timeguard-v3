@@ -218,7 +218,11 @@
   padding: 16px 18px; border-bottom: 1px solid var(--border);
   background: rgba(201,162,39,.02);
 }
-.admin-form-fields { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.admin-form-fields {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px;
+  .span-3 { grid-column: 1 / -1; }
+}
+.emp-loading { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); padding: 8px 0 12px; }
 
 .admin-list { padding: 6px 10px; }
 .admin-empty { font-size: 12px; color: var(--muted); font-style: italic; padding: 16px; text-align: center; }

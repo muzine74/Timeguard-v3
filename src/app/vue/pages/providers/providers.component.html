@@ -192,30 +192,47 @@
       <div class="section-card">
         <div class="section-card-hdr">
           <span class="section-card-title">👤 Administrateurs</span>
-          <button class="btn btn-sm btn-outline"
-                  (click)="showAdminForm.set(!showAdminForm())">
+          <button class="btn btn-sm btn-outline" (click)="openAdminForm()">
             {{ showAdminForm() ? 'Annuler' : '+ Ajouter un admin' }}
           </button>
         </div>
 
         <!-- Formulaire nouvel admin -->
         <div class="admin-form" *ngIf="showAdminForm()">
-          <div class="admin-form-fields">
-            <div class="field">
-              <label>Nom complet *</label>
-              <input class="inp" [(ngModel)]="adminForm.employeeName" placeholder="Sophie Martin" />
+
+          <!-- Spinner chargement liste -->
+          <div *ngIf="loadingEmps()" class="emp-loading">
+            <div class="mini-spinner"></div> Chargement des employés…
+          </div>
+
+          <div class="admin-form-fields" *ngIf="!loadingEmps()">
+            <div class="field span-3">
+              <label>Employé *</label>
+              <select class="inp" [(ngModel)]="adminForm.employeeId"
+                      name="adminEmp" (change)="onEmployeeSelect()">
+                <option value="">— Sélectionner un employé —</option>
+                <option *ngFor="let e of tenantEmployees()"
+                        [value]="e.employeeId"
+                        [disabled]="e.hasAccount">
+                  {{ e.name }}{{ e.hasAccount ? ' (compte existant)' : '' }}
+                </option>
+              </select>
             </div>
             <div class="field">
               <label>Username *</label>
-              <input class="inp" [(ngModel)]="adminForm.username" placeholder="sophie.martin" />
+              <input class="inp" [(ngModel)]="adminForm.username"
+                     name="adminUser" placeholder="sophie.martin" />
             </div>
             <div class="field">
               <label>Mot de passe *</label>
-              <input class="inp" type="password" [(ngModel)]="adminForm.password" />
+              <input class="inp" type="password"
+                     [(ngModel)]="adminForm.password" name="adminPwd" />
             </div>
           </div>
+
           <div class="form-error" *ngIf="adminError()">⚠ {{ adminError() }}</div>
-          <button class="btn btn-primary" [disabled]="savingAdmin()" (click)="submitAdmin()">
+          <button class="btn btn-primary" [disabled]="savingAdmin() || loadingEmps()"
+                  (click)="submitAdmin()">
             <span *ngIf="savingAdmin()" class="spinner"></span>
             <span *ngIf="!savingAdmin()">✓ Créer l'administrateur</span>
           </button>

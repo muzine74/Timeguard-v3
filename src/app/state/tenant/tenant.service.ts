@@ -24,7 +24,14 @@ export interface TenantDetail extends TenantSummary {
   admins:     TenantAdmin[];
 }
 
+export interface TenantEmployeeItem {
+  employeeId: string;
+  name:       string;
+  hasAccount: boolean;
+}
+
 export interface CreateAdminPayload {
+  employeeId?:  string;
   employeeName: string;
   username:     string;
   password:     string;
@@ -79,6 +86,10 @@ export class TenantService {
 
   deleteAdmin(tenantId: string, credentialId: number) {
     return this.http.delete(`/api/tenants/${tenantId}/admins/${credentialId}`);
+  }
+
+  getEmployees(tenantId: string) {
+    return this.http.get<TenantEmployeeItem[]>(`/api/tenants/${tenantId}/employees`);
   }
 
   impersonate(tenantId: string, credentialId: number) {

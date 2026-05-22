@@ -11,6 +11,7 @@ import { RegisterTenantRequest } from '../../../models';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './register.component.html',
+  styleUrls: ['./register.component.scss'],
 })
 export class RegisterComponent {
   form: RegisterTenantRequest = {

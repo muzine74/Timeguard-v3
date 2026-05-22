@@ -2,7 +2,7 @@ import { Component, OnInit, signal, computed, ChangeDetectionStrategy, ChangeDet
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { TenantService, TenantSummary, TenantDetail } from '../../../state/tenant/tenant.service';
+import { TenantService, TenantSummary, TenantDetail, TenantEmployeeItem } from '../../../state/tenant/tenant.service';
 import { AuthService } from '../../../state/auth/auth.service';
 
 type StatusFilter = 'all' | 'active' | 'inactive';
@@ -43,10 +43,12 @@ export class ProvidersComponent implements OnInit {
   newError = signal('');
 
   // ── Formulaire nouvel admin ───────────────────────────────────────────────
-  showAdminForm = signal(false);
-  savingAdmin   = signal(false);
-  adminForm     = { employeeName: '', username: '', password: '' };
-  adminError    = signal('');
+  showAdminForm   = signal(false);
+  savingAdmin     = signal(false);
+  adminForm       = { employeeId: '', employeeName: '', username: '', password: '' };
+  adminError      = signal('');
+  tenantEmployees = signal<TenantEmployeeItem[]>([]);
+  loadingEmps     = signal(false);
 
   // ── Toast ────────────────────────────────────────────────────────────────
   toast        = signal('');
@@ -88,6 +90,7 @@ export class ProvidersComponent implements OnInit {
     this.selected.set(null);
     this.showAdminForm.set(false);
     this.adminError.set('');
+    this.tenantEmployees.set([]);
     this.loadingDetail.set(true);
     this.tenantSvc.getById(t.tenantId).subscribe({
       next: d => { this.selected.set(d); this.loadingDetail.set(false); this.cdr.markForCheck(); },
@@ -128,20 +131,42 @@ export class ProvidersComponent implements OnInit {
     });
   }
 
+  // ── Charger les employés du tenant pour le formulaire admin ─────────────
+  openAdminForm(): void {
+    const show = !this.showAdminForm();
+    this.showAdminForm.set(show);
+    if (show && this.tenantEmployees().length === 0) {
+      const tid = this.selected()?.tenantId;
+      if (!tid) return;
+      this.loadingEmps.set(true);
+      this.tenantSvc.getEmployees(tid).subscribe({
+        next: list => { this.tenantEmployees.set(list); this.loadingEmps.set(false); this.cdr.markForCheck(); },
+        error: ()   => { this.loadingEmps.set(false); this.cdr.markForCheck(); },
+      });
+    }
+  }
+
+  onEmployeeSelect(): void {
+    const emp = this.tenantEmployees().find(e => e.employeeId === this.adminForm.employeeId);
+    if (emp) this.adminForm.employeeName = emp.name;
+  }
+
   // ── Créer un admin pour le tenant sélectionné ────────────────────────────
   submitAdmin(): void {
-    const { employeeName, username, password } = this.adminForm;
+    const { employeeId, employeeName, username, password } = this.adminForm;
     const tid = this.selected()?.tenantId;
-    if (!tid || !employeeName || !username || !password) {
+    if (!tid || (!employeeId && !employeeName) || !username || !password) {
       this.adminError.set('Tous les champs sont obligatoires.'); return;
     }
     this.savingAdmin.set(true);
     this.adminError.set('');
-    this.tenantSvc.createAdmin(tid, this.adminForm).subscribe({
+    const payload = { ...this.adminForm, employeeId: this.adminForm.employeeId || undefined };
+    this.tenantSvc.createAdmin(tid, payload).subscribe({
       next: admin => {
         this.savingAdmin.set(false);
         this.showAdminForm.set(false);
-        this.adminForm = { employeeName: '', username: '', password: '' };
+        this.adminForm = { employeeId: '', employeeName: '', username: '', password: '' };
+        this.tenantEmployees.set([]);
         this.selected.update(d => d ? { ...d, admins: [...d.admins, admin] } : d);
         this._toast('✅ Administrateur créé.');
         this.cdr.markForCheck();
