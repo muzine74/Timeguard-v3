@@ -79,6 +79,32 @@
         <div class="form-card">
           <div class="form-section-title">Destinataires</div>
 
+          <!-- Contacts de la compagnie -->
+          <div class="contacts-section" *ngIf="companyContacts().length > 0 || contactsLoading()">
+            <div class="contacts-loading" *ngIf="contactsLoading()">
+              <div class="mini-spinner"></div>
+            </div>
+            <ng-container *ngIf="!contactsLoading()">
+              <div class="contacts-label">Contacts de la compagnie</div>
+              <div class="contacts-list">
+                <label class="contact-check-row" *ngFor="let c of companyContacts()"
+                       [class.contact-check-no-mail]="!c.mail"
+                       [class.contact-check-inactive]="!c.isActive">
+                  <input type="checkbox"
+                         [checked]="isContactSelected(c.contactId)"
+                         [disabled]="!c.mail"
+                         (change)="toggleContactSelection(c)" />
+                  <div class="contact-check-info">
+                    <span class="contact-check-name">{{ c.name }}</span>
+                    <span class="contact-check-inactive-lbl" *ngIf="!c.isActive"> (inactif)</span>
+                    <span class="contact-check-mail" *ngIf="c.mail">{{ c.mail }}</span>
+                    <span class="contact-check-no-mail-lbl" *ngIf="!c.mail">Aucun courriel</span>
+                  </div>
+                </label>
+              </div>
+            </ng-container>
+          </div>
+
           <!-- Chips -->
           <div class="chip-field" [class.chip-field-focus]="false">
             <span class="chip" *ngFor="let r of recipients">
@@ -90,16 +116,10 @@
               [(ngModel)]="emailInput"
               (keydown)="onEmailKeydown($event)"
               (blur)="onEmailBlur()"
-              placeholder="Adresse courriel, puis Entrée…"
+              placeholder="Ajouter un destinataire manuellement…"
               type="email" />
           </div>
           <div class="field-hint">Appuyez sur <kbd>Entrée</kbd> ou <kbd>,</kbd> pour ajouter un destinataire.</div>
-
-          <!-- Adresse du client (info) -->
-          <div class="client-info" *ngIf="d.clientEmail">
-            <span class="ci-label">Courriel client enregistré :</span>
-            <span class="ci-value">{{ d.clientEmail }}</span>
-          </div>
         </div>
 
         <!-- ── Sujet ── -->

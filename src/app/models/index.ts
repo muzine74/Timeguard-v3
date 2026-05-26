@@ -214,7 +214,6 @@ export interface CompanyForm {
   companyName:        string;
   companyCode:        string;
   isActive:           boolean;
-  providerId:         string;
   note:               string;
   civicNumber:        string;
   suite:              string;
@@ -223,10 +222,6 @@ export interface CompanyForm {
   country:            string;
   zipCode:            string;
   addressNote:        string;
-  contactName:        string;
-  contactMail:        string;
-  contactPhone:       string;
-  contactNote:        string;
   tps:                string;
   tvq:                string;
   frequencePaiement:  FrequencePaiement;

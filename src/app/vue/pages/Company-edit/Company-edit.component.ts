@@ -2,7 +2,7 @@ import { Component, OnInit, signal, computed, isDevMode, ChangeDetectionStrategy
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { CompanyService } from  '../../../state/compagny/Company.service';
+import { CompanyService, ContactItem, ContactRequest } from  '../../../state/compagny/Company.service';
 import { EmployeesService } from '../../../state/employees/employees.service';
 import { CompanyForm, FreqOption, SemainePlanning, JourMensuel } from '../../../models';
 
@@ -26,6 +26,14 @@ export class CompanyEditComponent implements OnInit {
   error       = signal('');
   loadingList = signal(true);
   loadingForm = signal(false);
+
+  // ── Contacts ──────────────────────────────────────────
+  contacts        = signal<ContactItem[]>([]);
+  contactsLoading = signal(false);
+  contactError    = signal('');
+  showContactForm = signal(false);
+  editingContact  = signal<ContactItem | null>(null);
+  contactForm: ContactRequest = { name: '', mail: '', phone: '', notes: '', isActive: true };
 
   saving      = this.companySvc.saving;
   empLoading  = this.empSvc.loading;
@@ -87,6 +95,95 @@ export class CompanyEditComponent implements OnInit {
     if (id) this.selectCompany(id);
   }
 
+  // ── Contacts ──────────────────────────────────────────
+  private _loadContacts(id: string): void {
+    this.contactsLoading.set(true);
+    this.contactError.set('');
+    this.companySvc.getContacts(id).subscribe({
+      next: list => {
+        this.contacts.set(list);
+        this.contactsLoading.set(false);
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.contactsLoading.set(false);
+        this.contactError.set('Impossible de charger les contacts.');
+      }
+    });
+  }
+
+  openAddContact(): void {
+    this.editingContact.set(null);
+    this.contactForm = { name: '', mail: '', phone: '', notes: '', isActive: true };
+    this.showContactForm.set(true);
+    this.contactError.set('');
+  }
+
+  openEditContact(c: ContactItem): void {
+    this.editingContact.set(c);
+    this.contactForm = { name: c.name, mail: c.mail ?? '', phone: c.phone ?? '', notes: c.notes ?? '', isActive: c.isActive };
+    this.showContactForm.set(true);
+    this.contactError.set('');
+  }
+
+  cancelContactForm(): void {
+    this.showContactForm.set(false);
+    this.editingContact.set(null);
+    this.contactError.set('');
+  }
+
+  saveContact(): void {
+    if (!this.contactForm.name.trim()) { this.contactError.set('Le nom est requis.'); return; }
+    const id = this.companyId();
+    if (!id) return;
+    const editing = this.editingContact();
+
+    const req: ContactRequest = {
+      name:     this.contactForm.name.trim(),
+      mail:     this.contactForm.mail?.trim() || undefined,
+      phone:    this.contactForm.phone?.trim() || undefined,
+      notes:    this.contactForm.notes?.trim() || undefined,
+      isActive: this.contactForm.isActive,
+    };
+
+    if (editing) {
+      this.companySvc.updateContact(id, editing.contactId, req).subscribe({
+        next: () => {
+          this._loadContacts(id);
+          this.showContactForm.set(false);
+          this.editingContact.set(null);
+        },
+        error: () => this.contactError.set('Erreur lors de la modification.')
+      });
+    } else {
+      this.companySvc.addContact(id, req).subscribe({
+        next: () => {
+          this._loadContacts(id);
+          this.showContactForm.set(false);
+        },
+        error: () => this.contactError.set('Erreur lors de l\'ajout.')
+      });
+    }
+  }
+
+  toggleContact(c: ContactItem): void {
+    const id = this.companyId();
+    if (!id) return;
+    this.companySvc.toggleContact(id, c.contactId).subscribe({
+      next: () => this._loadContacts(id),
+      error: () => this.contactError.set('Erreur lors du changement de statut.')
+    });
+  }
+
+  deleteContact(c: ContactItem): void {
+    const id = this.companyId();
+    if (!id) return;
+    this.companySvc.deleteContact(id, c.contactId).subscribe({
+      next: () => this._loadContacts(id),
+      error: () => this.contactError.set('Erreur lors de la suppression.')
+    });
+  }
+
   // ── Charger la liste sidebar ──────────────────────────
   private _loadList(): void {
     this.loadingList.set(true);
@@ -116,6 +213,8 @@ export class CompanyEditComponent implements OnInit {
       next: data => {
         this.form = data;
         this.loadingForm.set(false);
+        this.showContactForm.set(false);
+        this.editingContact.set(null);
         this.cdr.markForCheck();
         this.log('✓ formulaire rempli:', data.companyName);
       },
@@ -125,6 +224,7 @@ export class CompanyEditComponent implements OnInit {
         this.loadingForm.set(false);
       }
     });
+    this._loadContacts(id);
   }
 
   initials(name: string): string {
@@ -192,10 +292,9 @@ export class CompanyEditComponent implements OnInit {
 
   private _emptyForm(): CompanyForm {
     return {
-      companyName: '', companyCode: '', isActive: false, providerId: '', note: '',
+      companyName: '', companyCode: '', isActive: false, note: '',
       civicNumber: '', suite: '', city: '', state: 'QC', country: 'Canada',
       zipCode: '', addressNote: '',
-      contactName: '', contactMail: '', contactPhone: '', contactNote: '',
       tps: '', tvq: '',
       frequencePaiement: 'hebdomadaire', frequenceTravail: 'hebdomadaire',
       semaine1: this._emptySemaine(), semaine2: this._emptySemaine(),

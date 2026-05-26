@@ -144,6 +144,38 @@
 .ci-label { color: var(--muted); }
 .ci-value { color: var(--text); font-family: monospace; }
 
+// ── Contacts compagnie ───────────────────────────────────
+.contacts-section {
+  margin-bottom: 12px;
+  border: 1px solid var(--border); border-radius: 9px; overflow: hidden;
+}
+.contacts-loading { display: flex; justify-content: center; padding: 16px; }
+.contacts-label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .5px; color: var(--muted);
+  padding: 8px 12px; background: rgba(201,162,39,.03);
+  border-bottom: 1px solid var(--border);
+}
+.contacts-list { display: flex; flex-direction: column; }
+.contact-check-row {
+  display: flex; align-items: center; gap: 10px; padding: 8px 12px;
+  cursor: pointer; transition: background .12s;
+  & + & { border-top: 1px solid var(--border); }
+  &:hover:not(.contact-check-no-mail) { background: rgba(201,162,39,.05); }
+  input[type="checkbox"] { width: 14px; height: 14px; accent-color: var(--accent); flex-shrink: 0; }
+}
+.contact-check-no-mail { opacity: .5; cursor: default; }
+.contact-check-inactive { opacity: .65; }
+.contact-check-info { display: flex; flex-direction: column; gap: 1px; }
+.contact-check-name {
+  font-size: 12px; font-weight: 600; color: var(--text);
+}
+.contact-check-inactive-lbl {
+  font-size: 10px; color: var(--muted); font-style: italic;
+}
+.contact-check-mail { font-size: 11px; color: var(--muted); font-family: monospace; }
+.contact-check-no-mail-lbl { font-size: 11px; color: var(--muted); font-style: italic; }
+
 // ── Champs texte ─────────────────────────────────────────
 .inp {
   background: var(--surface2); border: 1px solid var(--border);

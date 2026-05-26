@@ -34,10 +34,9 @@ export class CompanyFormComponent {
   private warn(...a: unknown[]) { if (this._dev) console.warn('[CompanyForm]', ...a); }
 
   form: CompanyForm = {
-    companyName: '', companyCode: '', isActive: false, providerId: '', note: '',
+    companyName: '', companyCode: '', isActive: false, note: '',
     civicNumber: '', suite: '', city: '', state: 'QC', country: 'Canada',
     zipCode: '', addressNote: '',
-    contactName: '', contactMail: '', contactPhone: '', contactNote: '',
     tps: '', tvq: '',
     frequencePaiement: 'hebdomadaire',
     frequenceTravail:  'hebdomadaire',

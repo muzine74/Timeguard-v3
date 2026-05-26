@@ -27,7 +27,7 @@
 
   <div class="cfg-grid" *ngIf="!loading()">
 
-    <!-- ══ Compagnie ══════════════════════════════════════════════════════ -->
+    <!-- Compagnie -->
     <section class="cfg-card">
       <div class="cfg-card-hdr">Compagnie</div>
       <div class="cfg-card-body">
@@ -54,7 +54,7 @@
       </div>
     </section>
 
-    <!-- ══ Courriel (SMTP) ════════════════════════════════════════════════ -->
+    <!-- Courriel (SMTP) -->
     <section class="cfg-card">
       <div class="cfg-card-hdr">Courriel (SMTP)</div>
       <div class="cfg-card-body">
@@ -77,7 +77,7 @@
       </div>
     </section>
 
-    <!-- ══ Taxes ══════════════════════════════════════════════════════════ -->
+    <!-- Taxes -->
     <section class="cfg-card">
       <div class="cfg-card-hdr">Taxes</div>
       <div class="cfg-card-body">
@@ -100,19 +100,19 @@
       </div>
     </section>
 
-    <!-- ══ Coordonnées bancaires ══════════════════════════════════════════ -->
+    <!-- Coordonnées bancaires -->
     <section class="cfg-card">
       <div class="cfg-card-hdr">Coordonnées bancaires</div>
       <div class="cfg-card-body">
         <div class="field field-full">
           <label>Coordonnées de paiement</label>
           <textarea class="inp inp-textarea" rows="4" [(ngModel)]="form.bankCoordinates"
-                    placeholder="Banque : ...\nTransit : ...\nFolio : ..."></textarea>
+                    placeholder="Banque : ...&#10;Transit : ...&#10;Folio : ..."></textarea>
         </div>
       </div>
     </section>
 
-    <!-- ══ Contact ════════════════════════════════════════════════════════ -->
+    <!-- Contact -->
     <section class="cfg-card">
       <div class="cfg-card-hdr">Contact</div>
       <div class="cfg-card-body">
@@ -131,7 +131,7 @@
       </div>
     </section>
 
-    <!-- ══ Application ════════════════════════════════════════════════════ -->
+    <!-- Application -->
     <section class="cfg-card">
       <div class="cfg-card-hdr">Application</div>
       <div class="cfg-card-body">
@@ -142,42 +142,15 @@
       </div>
     </section>
 
-    <!-- ══ Fournisseur ════════════════════════════════════════════════════ -->
-    <section class="cfg-card cfg-card-full">
-      <div class="cfg-card-hdr">Fournisseur</div>
-      <div class="cfg-card-body">
-        <table class="provider-table">
-          <thead>
-            <tr>
-              <th>Nom</th>
-              <th>Courriel</th>
-              <th>Téléphone</th>
-              <th>Notes</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><input class="inp inp-table" [(ngModel)]="provider.name"  placeholder="Nom fournisseur" /></td>
-              <td><input class="inp inp-table" [(ngModel)]="provider.mail"  placeholder="email@four.com" /></td>
-              <td><input class="inp inp-table" [(ngModel)]="provider.phone" placeholder="514-555-0000" /></td>
-              <td><input class="inp inp-table" [(ngModel)]="provider.notes" placeholder="Notes..." /></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
   </div><!-- /cfg-grid -->
 </div>
 
-<!-- ══════════════════════════════════
-     MODAL CONFIRMATION (diff)
-     ══════════════════════════════════ -->
+<!-- Modal confirmation (diff) -->
 <div class="modal-backdrop" *ngIf="showDiff()" (click)="cancelDiff()">
   <div class="modal" (click)="$event.stopPropagation()">
     <div class="modal-hdr">
       <div class="modal-title">Confirmer les modifications</div>
-      <button class="modal-close" (click)="cancelDiff()">✕</button>
+      <button class="modal-close" (click)="cancelDiff()">&#x2715;</button>
     </div>
     <div class="modal-body">
       <table class="diff-table">

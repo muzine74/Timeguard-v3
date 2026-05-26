@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { InvoiceService, BillSummary, BillDetail } from '../../../state/invoice/invoice.service';
 import { ConfigService } from '../../../state/config/config.service';
+import { CompanyService, ContactItem } from '../../../state/compagny/Company.service';
 
 @Component({
   selector: 'app-invoice-send',
@@ -45,6 +46,12 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
   /** true si la facture courante a été envoyée pendant cette session */
   private _sent = false;
 
+  // ── Contacts de la compagnie ─────────────────────────────────────────────
+  companyContacts  = signal<ContactItem[]>([]);
+  contactsLoading  = signal(false);
+  /** contactId → checked */
+  selectedContacts = new Set<string>();
+
   // ── Formulaire courriel ──────────────────────────────────────────────────
   recipients: string[] = [];
   emailInput  = '';
@@ -56,9 +63,10 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
   private destroyRef    = inject(DestroyRef);
 
   constructor(
-    private invoiceSvc: InvoiceService,
-    private configSvc:  ConfigService,
-    private cdr:        ChangeDetectorRef,
+    private invoiceSvc:  InvoiceService,
+    private configSvc:   ConfigService,
+    private companySvc:  CompanyService,
+    private cdr:         ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -108,6 +116,8 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
     this.selected.set(bill);
     this.detail.set(null);
     this.unpaidBills.set([]);
+    this.companyContacts.set([]);
+    this.selectedContacts.clear();
     this.recipients = [];
     this.emailInput = '';
     this.error.set('');
@@ -119,10 +129,11 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
       .subscribe({
         next: d => {
           this.detail.set(d);
-          if (d.clientEmail) this.recipients = [d.clientEmail];
           // Générer le PDF automatiquement
           this._generatePdf(d.billIdentifier);
           this._loadUnpaidForCompany(d.companyCode, d.billIdentifier);
+          // Charger les contacts de la compagnie (companyCode = CompanyId)
+          this._loadCompanyContacts(d.companyCode);
         },
         error: () => { this.detailLoading.set(false); this.cdr.markForCheck(); },
       });
@@ -157,6 +168,54 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
         },
         error: () => { this.buildMessage(); this.detailLoading.set(false); this.cdr.markForCheck(); },
       });
+  }
+
+  // ── Charger les contacts de la compagnie ─────────────────────────────────
+  private _loadCompanyContacts(companyId: string): void {
+    if (!companyId) return;
+    this.contactsLoading.set(true);
+    this.companySvc.getContacts(companyId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: contacts => {
+          this.companyContacts.set(contacts);
+          // Pré-sélectionner les contacts actifs
+          this.selectedContacts.clear();
+          contacts.filter(c => c.isActive && c.mail).forEach(c => this.selectedContacts.add(c.contactId));
+          // Mettre à jour les destinataires
+          this._syncRecipientsFromContacts();
+          this.contactsLoading.set(false);
+          this.cdr.markForCheck();
+        },
+        error: () => { this.contactsLoading.set(false); this.cdr.markForCheck(); },
+      });
+  }
+
+  isContactSelected(contactId: string): boolean {
+    return this.selectedContacts.has(contactId);
+  }
+
+  toggleContactSelection(contact: ContactItem): void {
+    if (!contact.mail) return;
+    if (this.selectedContacts.has(contact.contactId)) {
+      this.selectedContacts.delete(contact.contactId);
+    } else {
+      this.selectedContacts.add(contact.contactId);
+    }
+    this._syncRecipientsFromContacts();
+    this.cdr.markForCheck();
+  }
+
+  private _syncRecipientsFromContacts(): void {
+    const contacts = this.companyContacts();
+    if (contacts.length === 0) return;
+    const selected = contacts
+      .filter(c => c.mail && this.selectedContacts.has(c.contactId))
+      .map(c => c.mail!);
+    // Conserver les emails ajoutés manuellement (non présents dans les contacts)
+    const contactEmails = new Set(contacts.map(c => c.mail).filter(Boolean));
+    const manual = this.recipients.filter(r => !contactEmails.has(r));
+    this.recipients = [...new Set([...selected, ...manual])];
   }
 
   // ── Générer le message automatiquement ───────────────────────────────────

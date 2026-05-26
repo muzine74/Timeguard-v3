@@ -31,7 +31,6 @@
         <div class="fields-grid">
           <div class="field span-full"><label>Nom *</label><input class="inp" [(ngModel)]="form.companyName" placeholder="Acme Construction inc." /></div>
           <div class="field"><label>Code</label><input class="inp" [(ngModel)]="form.companyCode" placeholder="ACME-001" /></div>
-          <div class="field"><label>Fournisseur</label><input class="inp" [(ngModel)]="form.providerId" placeholder="9413-2776 Quebec Inc" /></div>
           <div class="field span-full"><label>Note</label><textarea class="inp inp-ta" [(ngModel)]="form.note" rows="3"></textarea></div>
         </div>
       </div>
@@ -67,19 +66,6 @@
 
     <!-- ── Colonne droite ── -->
     <div class="col-right">
-
-      <div class="card">
-        <div class="card-header">
-          <span class="card-icon">👤</span>
-          <div><div class="card-title">Contact</div><div class="card-sub">Responsable</div></div>
-        </div>
-        <div class="fields-grid">
-          <div class="field span-full"><label>Nom</label><input class="inp" [(ngModel)]="form.contactName" /></div>
-          <div class="field"><label>Courriel</label><input class="inp" type="email" [(ngModel)]="form.contactMail" /></div>
-          <div class="field"><label>Téléphone</label><input class="inp" [(ngModel)]="form.contactPhone" /></div>
-          <div class="field span-full"><label>Note</label><textarea class="inp inp-ta" [(ngModel)]="form.contactNote" rows="2"></textarea></div>
-        </div>
-      </div>
 
       <div class="card">
         <div class="card-header">

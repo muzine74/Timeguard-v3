@@ -3,6 +3,23 @@ import { HttpClient } from '@angular/common/http';
 import { map, tap } from 'rxjs';
 import { CompanyForm } from '../../models';
 
+export interface ContactItem {
+  contactId: string;
+  name:      string;
+  mail?:     string;
+  phone?:    string;
+  notes?:    string;
+  isActive:  boolean;
+}
+
+export interface ContactRequest {
+  name:     string;
+  mail?:    string;
+  phone?:   string;
+  notes?:   string;
+  isActive: boolean;
+}
+
 export interface CompanySummary {
   companyId:   string;
   companyName: string;
@@ -50,7 +67,6 @@ export class CompanyService {
         companyName:       d.name        ?? d.companyName        ?? '',
         companyCode:       d.code        ?? d.companyCode        ?? '',
         isActive:          d.isActive    ?? false,
-        providerId:        d.providerId  ?? '',
         note:              d.note        ?? '',
         civicNumber:       d.address?.civicNumber  ?? d.civicNumber  ?? '',
         suite:             d.address?.suite        ?? d.suite        ?? '',
@@ -59,10 +75,6 @@ export class CompanyService {
         country:           d.address?.country      ?? d.country      ?? '',
         zipCode:           d.address?.zipCode      ?? d.zipCode      ?? '',
         addressNote:       d.address?.note         ?? d.addressNote  ?? '',
-        contactName:       d.contact?.name         ?? d.contactName  ?? '',
-        contactMail:       d.contact?.mail         ?? d.contactMail  ?? '',
-        contactPhone:      d.contact?.phone        ?? d.contactPhone ?? '',
-        contactNote:       d.contact?.note         ?? d.contactNote  ?? '',
         tps:               d.taxes?.tps            ?? d.tps          ?? '',
         tvq:               d.taxes?.tvq            ?? d.tvq          ?? '',
         frequencePaiement: this._mapFreq(d.planning?.frequencePaiement ?? d.frequencePaiement),
@@ -77,11 +89,7 @@ export class CompanyService {
 
   /** Convertit les chaînes vides en null pour les champs validés côté API ([EmailAddress], [Phone]). */
   private _sanitize(form: CompanyForm): any {
-    return {
-      ...form,
-      contactMail:  form.contactMail  || null,
-      contactPhone: form.contactPhone || null,
-    };
+    return { ...form };
   }
 
   private _mapFreq(val: any): CompanyForm['frequencePaiement'] {
@@ -139,4 +147,29 @@ export class CompanyService {
   }
 
   reset(): void { this._error.set(null); this._lastId.set(null); }
+
+  // ── GET /api/companies/{id}/contacts ───────────────────
+  getContacts(companyId: string) {
+    return this.http.get<ContactItem[]>(`/api/companies/${companyId}/contacts`);
+  }
+
+  // ── POST /api/companies/{id}/contacts ──────────────────
+  addContact(companyId: string, req: ContactRequest) {
+    return this.http.post<ContactItem>(`/api/companies/${companyId}/contacts`, req);
+  }
+
+  // ── PUT /api/companies/{id}/contacts/{contactId} ───────
+  updateContact(companyId: string, contactId: string, req: ContactRequest) {
+    return this.http.put<void>(`/api/companies/${companyId}/contacts/${contactId}`, req);
+  }
+
+  // ── PATCH /api/companies/{id}/contacts/{contactId}/toggle ─
+  toggleContact(companyId: string, contactId: string) {
+    return this.http.patch<void>(`/api/companies/${companyId}/contacts/${contactId}/toggle`, {});
+  }
+
+  // ── DELETE /api/companies/{id}/contacts/{contactId} ────
+  deleteContact(companyId: string, contactId: string) {
+    return this.http.delete<void>(`/api/companies/${companyId}/contacts/${contactId}`);
+  }
 }

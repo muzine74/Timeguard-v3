@@ -22,17 +22,8 @@ export interface AppConfigDto {
   appVersion:      string | null;
 }
 
-export interface ProviderDto {
-  providerId: string | null;
-  name:       string | null;
-  mail:       string | null;
-  phone:      string | null;
-  notes:      string | null;
-}
-
 export interface AppConfigResponse {
-  config:   AppConfigDto;
-  provider: ProviderDto | null;
+  config: AppConfigDto;
 }
 
 export function emptyConfig(): AppConfigDto {
@@ -47,10 +38,6 @@ export function emptyConfig(): AppConfigDto {
   };
 }
 
-export function emptyProvider(): ProviderDto {
-  return { providerId: null, name: null, mail: null, phone: null, notes: null };
-}
-
 @Injectable({ providedIn: 'root' })
 export class ConfigService {
   constructor(private http: HttpClient) {}
@@ -59,7 +46,7 @@ export class ConfigService {
     return this.http.get<AppConfigResponse>('/api/config');
   }
 
-  save(config: AppConfigDto, provider: ProviderDto) {
-    return this.http.put<{ message: string }>('/api/config', { config, provider });
+  save(config: AppConfigDto) {
+    return this.http.put<{ message: string }>('/api/config', { config });
   }
 }

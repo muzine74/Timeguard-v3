@@ -469,3 +469,44 @@
   @media (max-width: 800px) { grid-template-columns: 1fr; }
 }
 .bi-mensuel-col { padding: 14px 18px; & + & { border-left: 1px solid var(--border); } }
+
+// ── Contacts multiples ───────────────────────────────────
+.contact-form-wrap {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(201,162,39,.03);
+}
+
+.contact-form-actions {
+  display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px;
+}
+
+.contact-actions {
+  display: flex; gap: 4px; margin-left: auto; flex-shrink: 0;
+}
+
+.btn-icon {
+  background: none; border: 1px solid var(--border); border-radius: 6px;
+  cursor: pointer; font-size: 13px; padding: 4px 7px;
+  transition: all .15s;
+  &:hover { border-color: var(--accent); background: rgba(201,162,39,.1); }
+}
+
+.btn-icon-del {
+  &:hover { border-color: var(--danger); background: rgba(224,82,82,.08); }
+}
+
+.contact-inactive { opacity: .65; }
+
+.avatar-inactive {
+  background: rgba(120,120,120,.1);
+  border-color: rgba(120,120,120,.2);
+  color: var(--muted);
+}
+
+.contact-status-badge {
+  font-size: 9px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .5px; color: var(--muted);
+  margin-left: 6px; vertical-align: middle;
+  &.badge-active { color: #27500A; }
+}
