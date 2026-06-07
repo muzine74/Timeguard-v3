@@ -27,10 +27,15 @@ export class EmployeesService {
   private _map(raw: any): Employee {
     const addr = raw['address'] ?? {};
     const rawCompanies: any[] = raw['companies'] ?? raw['employeeCompagnies'] ?? raw['EmployeeCompagnies'] ?? [];
-    const compagnies = rawCompanies.map((c: any) => ({
-      compagnieId:   c['companyId']   ?? c['compagnieId']   ?? c['CompagnieId']   ?? c['id']   ?? '',
-      compagnieName: c['companyName'] ?? c['compagnieName'] ?? c['CompagnieName'] ?? c['name'] ?? '',
-    }));
+    // companyIds : liste de GUIDs retournée par GetAllEmployees (EmployeeSummaryResponse.CompanyIds)
+    const companyIds: string[] = raw['companyIds'] ?? raw['CompanyIds'] ?? [];
+    const compagnies = rawCompanies.length > 0
+      ? rawCompanies.map((c: any) => ({
+          compagnieId:   c['companyId']   ?? c['compagnieId']   ?? c['CompagnieId']   ?? c['id']   ?? '',
+          compagnieName: c['companyName'] ?? c['compagnieName'] ?? c['CompagnieName'] ?? c['name'] ?? '',
+        }))
+      // Fallback depuis companyIds (liste summary) : pas de nom disponible
+      : companyIds.map((id: string) => ({ compagnieId: id, compagnieName: '' }));
     return {
       employeeId:          raw['employeeId']      ?? raw['EmployeeId']      ?? '',
       employeeName:        raw['name']            ?? raw['employeeName']    ?? raw['EmployeeName']    ?? '',

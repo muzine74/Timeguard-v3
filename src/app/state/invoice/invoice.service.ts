@@ -17,6 +17,7 @@ export interface BillSummary {
   billNumber:     string;
   companyName:    string;
   companyCode:    string;
+  companyId:      string;
   period:         string;
   billedDate:     string;
   totalBeforeTax: number;

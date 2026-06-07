@@ -9,6 +9,10 @@ import { InvoiceService, BillSummary, BillDetail } from '../../../state/invoice/
 import { ConfigService } from '../../../state/config/config.service';
 import { CompanyService, ContactItem } from '../../../state/compagny/Company.service';
 
+const L = (msg: string, ...args: unknown[]) => console.log(`[InvoiceSend] ${msg}`, ...args);
+const W = (msg: string, ...args: unknown[]) => console.warn(`[InvoiceSend] ⚠ ${msg}`, ...args);
+const E = (msg: string, ...args: unknown[]) => console.error(`[InvoiceSend] ✗ ${msg}`, ...args);
+
 @Component({
   selector: 'app-invoice-send',
   standalone: true,
@@ -43,13 +47,11 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
   unpaidBills   = signal<BillSummary[]>([]);
   detailLoading = signal(false);
 
-  /** true si la facture courante a été envoyée pendant cette session */
   private _sent = false;
 
   // ── Contacts de la compagnie ─────────────────────────────────────────────
   companyContacts  = signal<ContactItem[]>([]);
   contactsLoading  = signal(false);
-  /** contactId → checked */
   selectedContacts = new Set<string>();
 
   // ── Formulaire courriel ──────────────────────────────────────────────────
@@ -58,7 +60,6 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
   subject     = '';
   body        = '';
 
-  // ── Config fournisseur ───────────────────────────────────────────────────
   private _providerName = '';
   private destroyRef    = inject(DestroyRef);
 
@@ -70,47 +71,66 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    L('ngOnInit — chargement config + factures non envoyées');
     this.configSvc.get()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({ next: data => { this._providerName = data.config.companyName ?? ''; } });
+      .subscribe({
+        next: data => {
+          this._providerName = data.config.companyName ?? '';
+          L('Config chargée | fournisseur: %s | SMTP: %s:%s', this._providerName, data.config.smtpServer, data.config.smtpPort);
+        },
+        error: err => E('Erreur chargement config', err),
+      });
     this._loadUnsent();
   }
 
-  /** Quitter sans envoyer → supprimer le PDF généré */
   ngOnDestroy(): void {
     if (!this._sent) {
       const d = this.detail();
-      if (d?.filePath) this.invoiceSvc.deletePdf(d.billIdentifier).subscribe();
+      if (d?.filePath) {
+        L('ngOnDestroy — suppression PDF non envoyé: %s', d.filePath);
+        this.invoiceSvc.deletePdf(d.billIdentifier).subscribe();
+      }
     }
   }
 
   // ── Charger les factures non envoyées ─────────────────────────────────────
   private _loadUnsent(): void {
+    L('_loadUnsent — GET /api/bills?onlyNotSent=true');
     this.loading.set(true);
     this.invoiceSvc.getAll({ onlyNotSent: true })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: list => {
-          // Exclure les avoirs : ceux avec parentBillIdentifier défini (nouveaux)
-          // et ceux dont le numéro se termine par -AV (anciens, sans parentBillIdentifier)
-          this.unsentBills.set(list.filter(b =>
-            b.parentBillIdentifier === null && !b.billNumber?.endsWith('-AV')
-          ));
+          // Exclure les factures et avoirs déjà envoyés (avoirs contournent le filtre onlyNotSent côté API)
+          const filtered = list.filter(b => !b.isSent);
+          L('Factures non envoyées: %d total → %d après filtre isSent', list.length, filtered.length);
+          this.unsentBills.set(filtered);
           this.loading.set(false);
           this.cdr.markForCheck();
         },
-        error: () => { this.loading.set(false); this.cdr.markForCheck(); },
+        error: err => {
+          E('Erreur chargement factures', err.status, err.message);
+          this.loading.set(false);
+          this.cdr.markForCheck();
+        },
       });
   }
 
   // ── Sélectionner une facture ──────────────────────────────────────────────
   selectBill(bill: BillSummary): void {
-    if (this.selected()?.billIdentifier === bill.billIdentifier) return;
+    if (this.selected()?.billIdentifier === bill.billIdentifier) {
+      L('selectBill — facture déjà sélectionnée: #%d', bill.billIdentifier);
+      return;
+    }
+    L('selectBill — sélection: #%d %s | companyCode: %s | companyId: %s',
+      bill.billIdentifier, bill.billNumber, bill.companyCode, bill.companyId);
 
-    // Supprimer le PDF de l'ancienne sélection si pas envoyé
     const prev = this.detail();
-    if (prev?.filePath && !this._sent)
+    if (prev?.filePath && !this._sent) {
+      L('selectBill — suppression ancien PDF: %s', prev.filePath);
       this.invoiceSvc.deletePdf(prev.billIdentifier).subscribe();
+    }
 
     this._sent = false;
     this.selected.set(bill);
@@ -124,70 +144,122 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
     this.success.set('');
     this.detailLoading.set(true);
 
+    L('selectBill — GET /api/bills/%d', bill.billIdentifier);
     this.invoiceSvc.getById(bill.billIdentifier)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: d => {
+          L('Détail facture chargé: #%d | companyId: %s | filePath: %s | clientEmail: %s',
+            d.billIdentifier, d.companyId, d.filePath, d.clientEmail);
           this.detail.set(d);
-          // Générer le PDF automatiquement
           this._generatePdf(d.billIdentifier);
           this._loadUnpaidForCompany(d.companyCode, d.billIdentifier);
-          // Charger les contacts de la compagnie (companyCode = CompanyId)
-          this._loadCompanyContacts(d.companyCode);
+          // Utiliser companyId seulement si c'est un vrai GUID (non vide)
+          const cid = d.companyId && d.companyId !== '00000000-0000-0000-0000-000000000000'
+            ? d.companyId : d.companyCode;
+          L('CompanyId résolu pour contacts: %s', cid);
+          this._loadCompanyContacts(cid);
         },
-        error: () => { this.detailLoading.set(false); this.cdr.markForCheck(); },
+        error: err => {
+          E('Erreur chargement détail facture #%d', bill.billIdentifier, err.status, err.message);
+          this.detailLoading.set(false);
+          this.cdr.markForCheck();
+        },
       });
   }
 
   // ── Générer le PDF ────────────────────────────────────────────────────────
   private _generatePdf(id: number): void {
+    L('_generatePdf — POST /api/bills/%d/pdf', id);
     this.pdfGenerating.set(true);
     this.invoiceSvc.generatePdf(id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: res => {
+          L('PDF généré: %s', res.fileName);
           this.detail.update(d => d ? { ...d, filePath: res.fileName } : d);
           this.pdfGenerating.set(false);
           this.cdr.markForCheck();
         },
-        error: () => { this.pdfGenerating.set(false); this.cdr.markForCheck(); },
+        error: err => {
+          E('Erreur génération PDF #%d', id, err.status, err.message);
+          this.pdfGenerating.set(false);
+          this.cdr.markForCheck();
+        },
       });
   }
 
   // ── Charger les impayés de la compagnie ───────────────────────────────────
   private _loadUnpaidForCompany(companyCode: string, excludeId: number): void {
+    L('_loadUnpaidForCompany — companyCode: %s, exclure #%d', companyCode, excludeId);
     this.invoiceSvc.getAll({ companyCode, onlyUnpaid: true })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: list => {
           const unpaid = list.filter(b => b.billIdentifier !== excludeId && b.parentBillIdentifier === null);
+          L('Impayés: %d trouvés pour %s', unpaid.length, companyCode);
           this.unpaidBills.set(unpaid);
           this.buildMessage();
           this.detailLoading.set(false);
           this.cdr.markForCheck();
         },
-        error: () => { this.buildMessage(); this.detailLoading.set(false); this.cdr.markForCheck(); },
+        error: err => {
+          E('Erreur chargement impayés', err.status, err.message);
+          this.buildMessage();
+          this.detailLoading.set(false);
+          this.cdr.markForCheck();
+        },
       });
   }
 
   // ── Charger les contacts de la compagnie ─────────────────────────────────
   private _loadCompanyContacts(companyId: string): void {
-    if (!companyId) return;
+    L('_loadCompanyContacts — companyId: %s', companyId);
+    if (!companyId) {
+      W('_loadCompanyContacts — companyId vide, contacts non chargés');
+      return;
+    }
     this.contactsLoading.set(true);
     this.companySvc.getContacts(companyId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: contacts => {
+          L('Contacts chargés: %d total | actifs avec mail: %d',
+            contacts.length,
+            contacts.filter(c => c.isActive && c.mail).length);
+          contacts.forEach(c => L('  Contact: %s | mail: %s | actif: %s', c.name, c.mail, c.isActive));
+
           this.companyContacts.set(contacts);
-          // Pré-sélectionner les contacts actifs
           this.selectedContacts.clear();
           contacts.filter(c => c.isActive && c.mail).forEach(c => this.selectedContacts.add(c.contactId));
-          // Mettre à jour les destinataires
           this._syncRecipientsFromContacts();
+
+          // Fallback : si aucun contact, utiliser clientEmail du snapshot de la facture
+          if (this.recipients.length === 0) {
+            const clientEmail = this.detail()?.clientEmail?.trim();
+            if (clientEmail) {
+              this.recipients = [clientEmail];
+              L('Fallback clientEmail utilisé: %s', clientEmail);
+            } else {
+              W('Aucun contact et aucun clientEmail — destinataires vides');
+            }
+          }
+
+          L('Destinataires finaux: %o', this.recipients);
           this.contactsLoading.set(false);
           this.cdr.markForCheck();
         },
-        error: () => { this.contactsLoading.set(false); this.cdr.markForCheck(); },
+        error: err => {
+          E('Erreur chargement contacts companyId=%s | HTTP %d', companyId, err.status, err.message);
+          // Fallback sur clientEmail même en cas d'erreur
+          const clientEmail = this.detail()?.clientEmail?.trim();
+          if (clientEmail && !this.recipients.includes(clientEmail)) {
+            this.recipients = [clientEmail];
+            L('Fallback clientEmail après erreur contacts: %s', clientEmail);
+          }
+          this.contactsLoading.set(false);
+          this.cdr.markForCheck();
+        },
       });
   }
 
@@ -196,40 +268,41 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
   }
 
   toggleContactSelection(contact: ContactItem): void {
-    if (!contact.mail) return;
+    if (!contact.mail) { W('toggleContactSelection — contact sans email: %s', contact.name); return; }
     if (this.selectedContacts.has(contact.contactId)) {
       this.selectedContacts.delete(contact.contactId);
+      L('Contact désélectionné: %s (%s)', contact.name, contact.mail);
     } else {
       this.selectedContacts.add(contact.contactId);
+      L('Contact sélectionné: %s (%s)', contact.name, contact.mail);
     }
     this._syncRecipientsFromContacts();
+    L('Destinataires après toggle: %o', this.recipients);
     this.cdr.markForCheck();
   }
 
   private _syncRecipientsFromContacts(): void {
     const contacts = this.companyContacts();
-    if (contacts.length === 0) return;
+    if (contacts.length === 0) { W('_syncRecipientsFromContacts — aucun contact chargé'); return; }
     const selected = contacts
       .filter(c => c.mail && this.selectedContacts.has(c.contactId))
       .map(c => c.mail!);
-    // Conserver les emails ajoutés manuellement (non présents dans les contacts)
     const contactEmails = new Set(contacts.map(c => c.mail).filter(Boolean));
     const manual = this.recipients.filter(r => !contactEmails.has(r));
     this.recipients = [...new Set([...selected, ...manual])];
+    L('_syncRecipientsFromContacts — résultat: %o', this.recipients);
   }
 
   // ── Générer le message automatiquement ───────────────────────────────────
   buildMessage(): void {
     const d = this.detail();
-    if (!d) return;
+    if (!d) { W('buildMessage — pas de détail facture'); return; }
     const unpaid = this.unpaidBills();
     const amount = d.totalWithTax.toLocaleString('fr-CA', { minimumFractionDigits: 2 }) + ' $';
 
     this.subject = `Facture ${d.billNumber} — ${d.companyName}`;
-
     let msg = `Bonjour,\n\n`;
     msg += `Veuillez trouver en pièce jointe la facture ${d.billNumber} d'un montant de ${amount} pour la période ${d.period}.\n`;
-
     if (unpaid.length > 0) {
       msg += `\nNous vous rappelons que les factures suivantes sont en attente de paiement :\n`;
       unpaid.forEach(b => {
@@ -238,24 +311,29 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
       });
       msg += `\nNous vous saurions gré de bien vouloir régulariser ces paiements dans les meilleurs délais.\n`;
     }
-
     msg += `\nMerci pour votre confiance.\n\nCordialement,\n${this._providerName}`;
     this.body = msg;
+    L('buildMessage — sujet: %s | corps: %d chars | impayés: %d', this.subject, msg.length, unpaid.length);
   }
 
   // ── Ouvrir la pièce jointe (PDF) ─────────────────────────────────────────
   openAttachment(): void {
     const d = this.detail();
-    if (!d) return;
+    if (!d) { W('openAttachment — pas de détail'); return; }
+    L('openAttachment — GET /api/bills/%d/file', d.billIdentifier);
     this.invoiceSvc.downloadFile(d.billIdentifier)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: blob => {
+          L('PDF téléchargé: %d bytes', blob.size);
           const url = URL.createObjectURL(blob);
           window.open(url, '_blank', 'noopener');
           setTimeout(() => URL.revokeObjectURL(url), 30_000);
         },
-        error: () => this.error.set('Impossible d\'ouvrir le PDF.'),
+        error: err => {
+          E('Erreur ouverture PDF', err.status, err.message);
+          this.error.set('Impossible d\'ouvrir le PDF.');
+        },
       });
   }
 
@@ -272,8 +350,15 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
   private _addEmail(): void {
     const email = this.emailInput.trim().replace(/,$/, '');
     if (!email) return;
-    if (!this._validEmail(email)) { this.error.set(`Adresse invalide : ${email}`); return; }
-    if (!this.recipients.includes(email)) this.recipients = [...this.recipients, email];
+    if (!this._validEmail(email)) {
+      W('Email invalide: %s', email);
+      this.error.set(`Adresse invalide : ${email}`);
+      return;
+    }
+    if (!this.recipients.includes(email)) {
+      this.recipients = [...this.recipients, email];
+      L('Email ajouté manuellement: %s | total: %d', email, this.recipients.length);
+    }
     this.emailInput = '';
     this.error.set('');
     this.cdr.markForCheck();
@@ -281,6 +366,7 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
 
   removeRecipient(email: string): void {
     this.recipients = this.recipients.filter(r => r !== email);
+    L('Destinataire retiré: %s | reste: %d', email, this.recipients.length);
     this.cdr.markForCheck();
   }
 
@@ -291,11 +377,30 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
   // ── Envoyer ───────────────────────────────────────────────────────────────
   send(): void {
     const d = this.detail();
-    if (!d) return;
-    if (this.recipients.length === 0) { this.error.set('Veuillez ajouter au moins un destinataire.'); return; }
-    if (!this.subject.trim())         { this.error.set('Le sujet est requis.'); return; }
-    if (!this.body.trim())            { this.error.set('Le message est requis.'); return; }
+    L('send() — détail: #%s | destinataires: %o | sujet: %s | corps: %d chars',
+      d?.billIdentifier ?? 'NULL', this.recipients, this.subject, this.body?.length ?? 0);
 
+    if (!d) {
+      E('send() — aucune facture sélectionnée');
+      return;
+    }
+    if (this.recipients.length === 0) {
+      E('send() — aucun destinataire');
+      this.error.set('Veuillez ajouter au moins un destinataire.');
+      return;
+    }
+    if (!this.subject.trim()) {
+      E('send() — sujet vide');
+      this.error.set('Le sujet est requis.');
+      return;
+    }
+    if (!this.body.trim()) {
+      E('send() — corps vide');
+      this.error.set('Le message est requis.');
+      return;
+    }
+
+    L('send() — POST /api/bills/%d/send-email | vers: %o', d.billIdentifier, this.recipients);
     this.error.set('');
     this.success.set('');
     this.sending.set(true);
@@ -306,6 +411,7 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
       body:       this.body,
     }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: res => {
+        L('send() — ✓ succès: %s', res.message);
         this._sent = true;
         this.sending.set(false);
         this.success.set(res.message || 'Facture envoyée avec succès.');
@@ -315,6 +421,7 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
         this.cdr.markForCheck();
       },
       error: err => {
+        E('send() — HTTP %d: %s', err.status, err?.error?.message ?? err.message);
         this.sending.set(false);
         this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
         this.cdr.markForCheck();

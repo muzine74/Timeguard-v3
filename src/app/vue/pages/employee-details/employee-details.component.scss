@@ -1,7 +1,8 @@
 .page-layout {
   display: flex; gap: 0;
-  min-height: calc(100vh - 52px);
+  height: calc(100vh - 52px);
   background: var(--bg);
+  overflow: hidden;
 }
 
 /* ── Sidebar ───────────────────────────────────── */

@@ -69,6 +69,19 @@
 
       <div class="card">
         <div class="card-header">
+          <span class="card-icon">👤</span>
+          <div><div class="card-title">Contact</div><div class="card-sub">Personne responsable</div></div>
+        </div>
+        <div class="fields-grid">
+          <div class="field span-full"><label>Nom</label><input class="inp" [(ngModel)]="contact.name" placeholder="Jean Dupont" /></div>
+          <div class="field"><label>Courriel</label><input class="inp" type="email" [(ngModel)]="contact.mail" placeholder="jean@exemple.com" /></div>
+          <div class="field"><label>Téléphone</label><input class="inp" [(ngModel)]="contact.phone" placeholder="514-000-0000" /></div>
+          <div class="field span-full"><label>Notes</label><textarea class="inp inp-ta" [(ngModel)]="contact.notes" rows="2"></textarea></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
           <span class="card-icon">📅</span>
           <div><div class="card-title">Fréquences</div><div class="card-sub">Paiement et travail</div></div>
         </div>

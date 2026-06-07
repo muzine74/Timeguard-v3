@@ -1,0 +1,246 @@
+.page-wrap { padding: 24px; max-width: 1400px; margin: 0 auto; }
+
+// ── Header ────────────────────────────────────────────────────────────────
+.page-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.page-title { font-size: 1.5rem; font-weight: 700; margin: 0; }
+.page-sub   { font-size: .85rem; color: var(--text-muted); margin: 4px 0 0; }
+
+// ── Filtres ───────────────────────────────────────────────────────────────
+.filter-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.mode-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.mode-btn {
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: .85rem;
+  transition: all .15s;
+
+  &.active {
+    background: var(--accent);
+    color: #000;
+    border-color: var(--accent);
+    font-weight: 600;
+  }
+}
+
+.filter-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  label { font-size: .78rem; color: var(--text-muted); font-weight: 500; }
+  .inp  { width: 180px; }
+}
+
+.filter-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto;
+}
+
+.toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: .85rem;
+  color: var(--text-muted);
+}
+
+.err-msg {
+  margin-top: 12px;
+  color: var(--danger);
+  font-size: .85rem;
+}
+
+// ── Période label ─────────────────────────────────────────────────────────
+.periode-label {
+  font-size: .85rem;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  font-style: italic;
+}
+
+// ── Cartes totaux ─────────────────────────────────────────────────────────
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  border-radius: 12px;
+  padding: 18px 16px;
+  border: 1px solid var(--border);
+
+  .card-val {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .card-lbl {
+    font-size: .75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+
+  &.card-blue   { background: rgba(66,133,244,.12); border-color: rgba(66,133,244,.3); .card-val { color: #4285f4; } }
+  &.card-green  { background: rgba(52,168,83,.12);  border-color: rgba(52,168,83,.3);  .card-val { color: #34a853; } }
+  &.card-orange { background: rgba(251,188,4,.12);  border-color: rgba(251,188,4,.3);  .card-val { color: #d4a017; } }
+  &.card-purple { background: rgba(155,89,182,.12); border-color: rgba(155,89,182,.3); .card-val { color: #9b59b6; } }
+  &.card-gray   { background: var(--surface); }
+}
+
+// ── Sections ──────────────────────────────────────────────────────────────
+.section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 24px 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--accent);
+  color: var(--text);
+}
+
+.empty-msg {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 20px;
+  font-size: .88rem;
+}
+
+// ── Tables ────────────────────────────────────────────────────────────────
+.table-wrap {
+  overflow-x: auto;
+  margin-bottom: 8px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .85rem;
+
+  th {
+    background: var(--surface-alt, var(--surface));
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+
+    &.num { text-align: right; }
+  }
+
+  td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+
+    &.num    { text-align: right; white-space: nowrap; }
+    &.muted  { color: var(--text-muted); }
+    &.bold   { font-weight: 600; }
+    &.green  { color: #34a853; font-weight: 600; }
+    &.orange { color: #d4a017; }
+    &.gain   { color: var(--accent); font-weight: 600; }
+  }
+
+  tbody tr:hover { background: var(--hover, rgba(255,255,255,.03)); }
+
+  &.row-paid   { background: rgba(52,168,83,.05); }
+  &.row-unpaid { }
+
+  tfoot .total-row {
+    background: var(--surface-alt, var(--surface));
+    font-weight: 700;
+
+    td {
+      border-top: 2px solid var(--border);
+      border-bottom: none;
+    }
+  }
+}
+
+.row-paid   { background: rgba(52,168,83,.04); }
+.row-unpaid { }
+.row-avoir  { background: rgba(155,89,182,.06); border-left: 3px solid rgba(155,89,182,.4); }
+
+.avoir-cell { color: #9b59b6; font-weight: 600; }
+
+.badge-paid {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #34a853;
+  color: #fff;
+  font-size: .65rem;
+  font-weight: 700;
+  margin-right: 4px;
+}
+
+// ── Input ─────────────────────────────────────────────────────────────────
+.inp {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: .88rem;
+  outline: none;
+
+  &:focus { border-color: var(--accent); }
+}
+
+// Le picker natif "month" rend son icône en sombre, invisible sur fond sombre
+input[type="month"].inp {
+  color-scheme: dark;
+
+  &::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+  }
+}
+
+// ── Spinner ───────────────────────────────────────────────────────────────
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }

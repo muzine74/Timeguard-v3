@@ -16,9 +16,14 @@
            class="sidebar-item"
            [class.active]="selected()?.billIdentifier === b.billIdentifier"
            (click)="selectBill(b)">
-        <div class="sidebar-avatar">{{ initials(b.companyName) }}</div>
+        <div class="sidebar-avatar" [class.avatar-avoir]="b.parentBillIdentifier !== null">
+          {{ initials(b.companyName) }}
+        </div>
         <div class="sidebar-info">
-          <div class="sidebar-name">{{ b.companyName }}</div>
+          <div class="sidebar-name">
+            {{ b.companyName }}
+            <span class="badge-avoir" *ngIf="b.parentBillIdentifier !== null">AVOIR</span>
+          </div>
           <div class="sidebar-num">{{ b.billNumber }}</div>
           <div class="sidebar-meta">{{ b.totalWithTax | number:'1.2-2' }} $ · {{ b.period }}</div>
         </div>

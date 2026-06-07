@@ -2,7 +2,7 @@ import { Component, signal, isDevMode, ChangeDetectionStrategy } from '@angular/
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { CompanyService } from  '../../../state/compagny/Company.service';
+import { CompanyService, ContactRequest } from  '../../../state/compagny/Company.service';
 import { CompanyForm, FreqOption, SemainePlanning, JourMensuel } from '../../../models';
 
 @Component({
@@ -46,6 +46,8 @@ export class CompanyFormComponent {
     joursMensuel:    [],
   };
 
+  contact: ContactRequest = { name: '', isActive: true };
+
   get modeHebdo():     boolean { return this.form.frequenceTravail === 'hebdomadaire'; }
   get modeBiHebdo():   boolean { return this.form.frequenceTravail === 'biHebdomadaire'; }
   get modeBiMensuel(): boolean { return this.form.frequenceTravail === 'biMensuel'; }
@@ -88,6 +90,12 @@ export class CompanyFormComponent {
 
     this.companySvc.create(this.form).subscribe({
       next: () => {
+        const companyId = this.companySvc.lastId();
+        if (companyId && this.contact.name.trim()) {
+          this.companySvc.addContact(companyId, this.contact).subscribe({
+            error: e => this.warn('Contact non sauvegardé:', e)
+          });
+        }
         this.saved.set(true);
         this.log('✓ navigation vers /employees dans 1.5s');
         setTimeout(() => this.router.navigate(['/employees']), 1500);

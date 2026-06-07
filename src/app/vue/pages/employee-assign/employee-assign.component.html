@@ -3,58 +3,63 @@
   <!-- ── Sidebar compagnies ── -->
   <aside class="sidebar">
     <div class="sidebar-hdr">
-      <div class="sidebar-title">Compagnies</div>
-      <input class="sidebar-search" [(ngModel)]="coSearch" placeholder="Rechercher..." />
+      <div class="sidebar-top">
+        <span class="sidebar-title">Compagnies</span>
+        <span class="sidebar-count">{{ filteredCompanies.length }}</span>
+      </div>
+      <input class="sidebar-search" placeholder="Rechercher…" [(ngModel)]="coSearch" />
     </div>
 
-    <div class="sidebar-loading" *ngIf="coLoading()">
-      <div class="mini-spinner"></div>
-    </div>
+    <div class="sidebar-body">
+      <div class="sidebar-loading" *ngIf="coLoading()">
+        <div class="mini-spinner"></div>
+      </div>
 
-    <div class="sidebar-list" *ngIf="!coLoading()">
-      <div *ngFor="let c of filteredCompanies; trackBy: trackByCompanyId"
-           class="sidebar-item"
+      <div class="sidebar-item"
+           *ngFor="let c of filteredCompanies; trackBy: trackByCompanyId"
            [class.active]="selectedCo()?.companyId === c.companyId"
            (click)="selectCompany(c)">
-        <div class="sidebar-avatar co-avatar">🏢</div>
-        <div class="sidebar-info">
-          <div class="sidebar-name">{{ c.companyName }}</div>
-          <span class="sidebar-badge" [class.badge-active]="c.isActive">
+        <div class="s-avatar">🏢</div>
+        <div class="s-info">
+          <div class="s-name">{{ c.companyName }}</div>
+          <span class="s-badge" [class.badge-on]="c.isActive">
             {{ c.isActive ? 'Actif' : 'Inactif' }}
           </span>
         </div>
+        <span class="s-check" *ngIf="selectedCo()?.companyId === c.companyId">✓</span>
       </div>
+
       <div class="sidebar-empty" *ngIf="filteredCompanies.length === 0">
         Aucune compagnie
       </div>
     </div>
   </aside>
 
-  <!-- ── Panneau employés ── -->
-  <div class="form-area">
+  <!-- ── Zone principale ── -->
+  <div class="main-area">
 
     <div class="toast" [class.toast-show]="saved()">✓ Modifications sauvegardées</div>
     <div class="toast toast-error" [class.toast-show]="error()">{{ error() }}</div>
 
-    <!-- Aucune sélection -->
-    <div class="no-selection" *ngIf="!selectedCo()">
-      <div class="no-sel-icon">👥</div>
-      <div class="no-sel-txt">Sélectionnez une compagnie pour gérer ses employés</div>
+    <!-- Placeholder -->
+    <div class="placeholder" *ngIf="!selectedCo()">
+      <div class="ph-icon">👥</div>
+      <div class="ph-txt">Sélectionnez une compagnie pour gérer ses employés</div>
     </div>
 
-    <!-- Compagnie sélectionnée -->
+    <!-- Contenu -->
     <ng-container *ngIf="selectedCo()">
 
-      <header class="page-hdr">
-        <div>
-          <h1 class="page-title">{{ selectedCo()!.companyName }}</h1>
-          <p class="page-sub">
+      <div class="main-hdr">
+        <div class="main-hdr-left">
+          <h1 class="main-title">{{ selectedCo()!.companyName }}</h1>
+          <p class="main-sub">
             {{ assigned().size }} employé(s) assigné(s) sur {{ allEmployees().length }}
-            <span class="unsaved-badge" *ngIf="hasChanges()"> — ● Non sauvegardé</span>
+            <span class="unsaved-dot" *ngIf="hasChanges()">● Non sauvegardé</span>
           </p>
         </div>
-        <div class="page-actions">
-          <input class="inp-search" [(ngModel)]="empSearch" placeholder="Rechercher un employé..." />
+        <div class="main-hdr-right">
+          <input class="hdr-search" [(ngModel)]="empSearch" placeholder="Rechercher un employé…" />
           <button class="btn btn-primary"
                   [disabled]="!hasChanges() || saving() || loadingAssigned()"
                   (click)="save()">
@@ -62,12 +67,12 @@
             <span *ngIf="saving()" class="spinner"></span>
           </button>
         </div>
-      </header>
+      </div>
 
       <!-- Chargement -->
-      <div class="form-loading" *ngIf="loadingAssigned()">
+      <div class="loading-wrap" *ngIf="loadingAssigned()">
         <div class="loading-spinner"></div>
-        <div class="loading-txt">Chargement des assignations...</div>
+        <span>Chargement…</span>
       </div>
 
       <!-- Grille employés -->
@@ -75,17 +80,14 @@
         <label class="emp-card"
                *ngFor="let e of sortedEmployees(); trackBy: trackByEmployeeId"
                [class.emp-active]="isAssigned(e.employeeId)">
-          <div class="emp-avatar">{{ initials(e.employeeName) }}</div>
           <div class="emp-info">
-            <div class="emp-name">{{ e.employeeName }}</div>
-            <div class="emp-meta">{{ e.employeeMail }}</div>
-            <div class="emp-meta" *ngIf="e.employeePhone">{{ e.employeePhone }}</div>
+            <div class="emp-avatar">{{ initials(e.employeeName) }}</div>
+            <div class="emp-details">
+              <div class="emp-name">{{ e.employeeName }}</div>
+              <div class="emp-meta" *ngIf="e.employeeMail">{{ e.employeeMail }}</div>
+            </div>
           </div>
-          <div class="emp-toggle">
-            <input type="checkbox"
-                   [checked]="isAssigned(e.employeeId)"
-                   (change)="toggle(e.employeeId)" />
-          </div>
+          <input type="checkbox" [checked]="isAssigned(e.employeeId)" (change)="toggle(e.employeeId)" />
         </label>
 
         <div class="emp-empty" *ngIf="sortedEmployees().length === 0">

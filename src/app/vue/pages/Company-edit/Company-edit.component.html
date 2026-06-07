@@ -204,7 +204,7 @@
             <!-- Liste des contacts -->
             <div class="emp-list-wrap" *ngIf="!contactsLoading()">
               <div class="emp-row" *ngFor="let c of contacts()" [class.contact-inactive]="!c.isActive">
-                <div class="emp-avatar" [class.avatar-inactive]="!c.isActive">{{ (c.name[0] ?? '?').toUpperCase() }}</div>
+                <div class="emp-avatar" [class.avatar-inactive]="!c.isActive">{{ (c.name[0] || '?').toUpperCase() }}</div>
                 <div class="emp-info">
                   <div class="emp-name">
                     {{ c.name }}

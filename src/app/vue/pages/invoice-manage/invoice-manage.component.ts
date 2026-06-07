@@ -184,7 +184,10 @@ export class InvoiceManageComponent implements OnInit {
     };
 
     this.invoiceSvc.getAll(filter).subscribe({
-      next: ()   => {},   // bills + loading gérés dans InvoiceService
+      next: list => {
+        const avoirs = list.filter(b => b.parentBillIdentifier !== null);
+        console.log(`[loadBills] ${list.length} factures | ${avoirs.length} avoir(s)`, avoirs.map(a => a.billNumber));
+      },
       error: err => this.error.set(`HTTP ${err.status}`),
     });
   }
@@ -379,6 +382,12 @@ export class InvoiceManageComponent implements OnInit {
         this.success.set(`Avoir ${res.billNumber} créé avec succès.`);
         this.closeModal();
         this.loadBills();
+        // Auto-expanser le nœud parent pour que l'avoir soit visible immédiatement
+        this.expandedIds.update(s => {
+          const next = new Set(s);
+          next.add(bill.billIdentifier);
+          return next;
+        });
         setTimeout(() => this.success.set(''), 4000);
       },
       error: err => {

@@ -27,6 +27,10 @@
   color: var(--text); padding: 8px 12px; border-radius: 9px;
   font-family: inherit; font-size: 13px; outline: none;
   &:focus { border-color: var(--accent); }
+
+  // Le picker natif "month" rend son icône en sombre, invisible sur fond sombre
+  color-scheme: dark;
+  &::-webkit-calendar-picker-indicator { cursor: pointer; }
 }
 
 // ── Bouton générer ────────────────────────────────────────

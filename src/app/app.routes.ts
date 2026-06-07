@@ -121,6 +121,13 @@ export const routes: Routes = [
     loadComponent: () => import('./vue/pages/invoice-send/invoice-send.component').then(m => m.InvoiceSendComponent)
   },
 
+  // ── Statistiques ─────────────────────────────────────────────────────────
+  {
+    path: 'stats',
+    canActivate: [permGuard(PERM.invoicesView)],
+    loadComponent: () => import('./vue/pages/stats/stats.component').then(m => m.StatsComponent)
+  },
+
   // ── Groupes & accès ───────────────────────────────────────────────────────
   {
     path: 'groups',

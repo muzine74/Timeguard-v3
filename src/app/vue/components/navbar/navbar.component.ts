@@ -86,6 +86,9 @@ import { AuthService } from '../../../state/auth/auth.service';
               <a class="dropdown-item" routerLink="/invoices" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeDrop()">
                 <span class="di-icon">☰</span> Gérer les factures
               </a>
+              <a class="dropdown-item" routerLink="/stats" routerLinkActive="active" *ngIf="auth.hasPerm('invoices.view')" (click)="closeDrop()">
+                <span class="di-icon">📊</span> Statistiques
+              </a>
             </div>
           </div>
 

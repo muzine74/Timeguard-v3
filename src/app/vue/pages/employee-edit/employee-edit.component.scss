@@ -2,8 +2,8 @@
 .page-layout {
   display: grid;
   grid-template-columns: 280px 1fr;
-  min-height: calc(100vh - 60px);
-  @media (max-width: 900px) { grid-template-columns: 1fr; }
+  height: calc(100vh - 60px);
+  @media (max-width: 900px) { grid-template-columns: 1fr; height: auto; }
 }
 
 // ── Sidebar ──────────────────────────────────────────────
@@ -11,6 +11,7 @@
   background: var(--surface);
   border-right: 1px solid var(--border);
   display: flex; flex-direction: column;
+  overflow: hidden;
   @media (max-width: 900px) {
     border-right: none; border-bottom: 1px solid var(--border); max-height: 300px;
   }
