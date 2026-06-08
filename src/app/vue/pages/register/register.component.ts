@@ -62,7 +62,11 @@ export class RegisterComponent {
       },
       error: err => {
         this.loading.set(false);
-        this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        const validationErrors = err?.error?.errors;
+        const firstValidationMsg = validationErrors
+          ? (Object.values(validationErrors)[0] as string[] | undefined)?.[0]
+          : undefined;
+        this.error.set(err?.error?.message ?? firstValidationMsg ?? `Erreur HTTP ${err.status}`);
       },
     });
   }
