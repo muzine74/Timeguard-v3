@@ -40,10 +40,6 @@ export class StatsComponent {
   ) {}
 
   // ── Calculé ───────────────────────────────────────────────────────────────
-  compagniesPayees = computed(() =>
-    (this.stats()?.parCompagnie ?? []).filter(c => c.aPayee)
-  );
-
   totalNbAvoirs = computed(() =>
     (this.stats()?.parCompagnie ?? []).reduce((s, r) => s + r.nbAvoirs, 0)
   );

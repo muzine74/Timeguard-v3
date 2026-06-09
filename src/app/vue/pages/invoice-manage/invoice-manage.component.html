@@ -87,24 +87,28 @@
           <td>{{ row.node.data.billedDate | date:'dd/MM/yyyy' }}</td>
           <td class="col-right bill-amount">{{ row.node.data.totalWithTax | number:'1.2-2' }} $</td>
           <td class="col-center" (click)="$event.stopPropagation()">
-            <button class="badge-btn badge-not-sent" *ngIf="!row.node.data.isSent"
-                    title="Cliquer pour marquer comme envoyée"
-                    (click)="openSend(row.node.data, $event)">
-              ⏳ Non envoyée
+            <button class="badge-btn badge-not-sent has-tooltip" *ngIf="!row.node.data.isSent"
+                    [attr.data-tooltip]="sendingBillId() === row.node.data.billIdentifier ? null : 'Marquer comme envoyée'"
+                    [disabled]="sendingBillId() !== null"
+                    (click)="markSentInline(row.node.data, $event)">
+              <span *ngIf="sendingBillId() !== row.node.data.billIdentifier">⏳ Non envoyée</span>
+              <span *ngIf="sendingBillId() === row.node.data.billIdentifier" class="spinner"></span>
             </button>
-            <span class="badge badge-sent" *ngIf="row.node.data.isSent" [title]="sentTitle(row.node.data)">
+            <span class="badge badge-sent has-tooltip" *ngIf="row.node.data.isSent"
+                  [attr.data-tooltip]="sentTitle(row.node.data)">
               ✓ Envoyée
             </span>
           </td>
           <td class="col-center">
-            <button class="badge-btn"
-                    [class.badge-paid]="row.node.data.isPaid"
-                    [class.badge-unpaid]="!row.node.data.isPaid"
-                    [disabled]="!row.node.data.isSent"
-                    [title]="paidTitle(row.node.data)"
-                    (click)="togglePaid(row.node.data, $event)">
-              {{ row.node.data.isPaid ? '✓ Payée' : '◎ Impayée' }}
-            </button>
+            <span class="has-tooltip" [attr.data-tooltip]="paidTitle(row.node.data)">
+              <button class="badge-btn"
+                      [class.badge-paid]="row.node.data.isPaid"
+                      [class.badge-unpaid]="!row.node.data.isPaid"
+                      [disabled]="!row.node.data.isSent"
+                      (click)="togglePaid(row.node.data, $event)">
+                {{ row.node.data.isPaid ? '✓ Payée' : '◎ Impayée' }}
+              </button>
+            </span>
           </td>
           <td class="col-actions" (click)="$event.stopPropagation()">
             <button class="act-btn act-delete" *ngIf="!row.node.data.isSent"

@@ -361,3 +361,51 @@
   display: inline-block;
   width: 14px;
 }
+
+// ── Tooltip CSS (remplacement de l'attribut title natif) ──
+.has-tooltip {
+  position: relative;
+
+  &::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 7px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 11px;
+    font-weight: 400;
+    white-space: nowrap;
+    padding: 5px 10px;
+    border-radius: 7px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .35);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .1s;
+    z-index: 20;
+  }
+
+  // Petite flèche pointant vers le bas
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: calc(100% + 2px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--border);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .1s;
+    z-index: 21;
+  }
+
+  &:hover::after,
+  &:hover::before { opacity: 1; }
+
+  // Masquer si le texte est vide
+  &[data-tooltip='']::after,
+  &[data-tooltip='']::before { display: none; }
+}

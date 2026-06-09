@@ -204,35 +204,6 @@
       </div>
       <div class="empty-msg" *ngIf="s.parCompagnie.length === 0">Aucune facture pour cette période.</div>
 
-      <!-- ── Compagnies ayant payé ── -->
-      <ng-container *ngIf="compagniesPayees().length > 0">
-        <div class="section-title">Compagnies ayant payé</div>
-        <div class="table-wrap">
-          <table class="stats-table">
-            <thead>
-              <tr>
-                <th>Compagnie</th>
-                <th class="num">Factures</th>
-                <th class="num">Montant payé</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let row of compagniesPayees(); trackBy: trackByCode" class="row-paid">
-                <td><span class="badge-paid">✓</span> {{ row.companyName }}</td>
-                <td class="num">{{ row.nbFactures }}</td>
-                <td class="num green bold">{{ fmt(row.montantPaye) }}</td>
-              </tr>
-            </tbody>
-            <tfoot>
-              <tr class="total-row">
-                <td>Total payé</td>
-                <td class="num">{{ compagniesPayees().length }}</td>
-                <td class="num green bold">{{ fmt(s.totalPaye) }}</td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-      </ng-container>
 
     </ng-container>
     <!-- fin !regrouper -->

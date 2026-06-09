@@ -140,6 +140,9 @@ export class InvoiceManageComponent implements OnInit {
   dateFrom    = '';
   dateTo      = '';
 
+  // ── Envoi inline (sans modal) ─────────────────────────
+  sendingBillId = signal<number | null>(null);
+
   // ── Modal ─────────────────────────────────────────────
   modalMode     = signal<ModalMode>(null);
   selectedBill  = signal<BillSummary | null>(null);
@@ -207,6 +210,26 @@ export class InvoiceManageComponent implements OnInit {
   }
 
   // ── Confirmer envoi ───────────────────────────────────
+  markSentInline(bill: BillSummary, e: Event): void {
+    e.stopPropagation();
+    if (this.sendingBillId() !== null) return;
+    this.sendingBillId.set(bill.billIdentifier);
+
+    this.invoiceSvc.markSent(bill.billIdentifier).subscribe({
+      next: () => {
+        this.sendingBillId.set(null);
+        this.success.set(`Facture ${bill.billNumber} marquée comme envoyée.`);
+        this.loadBills();
+        setTimeout(() => this.success.set(''), 4000);
+      },
+      error: err => {
+        this.sendingBillId.set(null);
+        this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        setTimeout(() => this.error.set(''), 5000);
+      },
+    });
+  }
+
   openSend(bill: BillSummary, e: Event): void {
     e.stopPropagation();
     this.selectedBill.set(bill);

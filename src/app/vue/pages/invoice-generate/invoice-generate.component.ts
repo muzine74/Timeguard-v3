@@ -313,25 +313,55 @@ export class InvoiceGenerateComponent implements OnInit {
     });
   }
 
-  // ── Enregistrer + marquer envoyée ────────────────────
+  // ── Enregistrer + envoyer par courriel ──────────────
   saveAndSend(): void {
     if (!this.selectedCo()) { this.error.set('Sélectionnez une compagnie.'); return; }
     if (this.lines.every(l => !l.description.trim())) { this.error.set('Ajoutez au moins une ligne de description.'); return; }
 
     this.error.set('');
     this.saving.set(true);
+    const co = this.selectedCo()!;
+
     this.invoiceSvc.create(this._buildPayload()).subscribe({
       next: res => {
-        this.invoiceSvc.markSent(res.billIdentifier).subscribe({
-          next: () => {
-            this.log('✓ créée + envoyée:', res);
-            this.saving.set(false);
-            this.router.navigate(['/invoices']);
+        const id = res.billIdentifier;
+
+        this.companySvc.getContacts(co.companyId).subscribe({
+          next: contacts => {
+            const recipients = contacts
+              .filter(c => c.isActive && c.mail)
+              .map(c => c.mail!);
+
+            if (recipients.length === 0) {
+              this.saving.set(false);
+              this.saved.set(true);
+              this.error.set('Facture enregistrée, mais aucun contact courriel n\'est configuré pour cette compagnie. Envoyez-la depuis la page « Envoyer factures ».');
+              return;
+            }
+
+            const amount  = this.totalTtc.toLocaleString('fr-CA', { minimumFractionDigits: 2 });
+            const subject = `Facture ${res.billNumber} — ${co.companyName}`;
+            const body    = `Bonjour,\n\nVeuillez trouver en pièce jointe la facture ${res.billNumber} d'un montant de ${amount} $ pour la période ${this.period}.\n\nMerci pour votre confiance.\n\nCordialement,\n${this.providerName}`;
+
+            this.invoiceSvc.sendEmail(id, { recipients, subject, body }).subscribe({
+              next: () => {
+                this.log('✓ créée + courriel envoyé:', res);
+                this.saving.set(false);
+                this.router.navigate(['/invoices']).then(() => this.router.navigate(['/invoices/new']));
+              },
+              error: err => {
+                this.warn('✕ sendEmail:', err);
+                this.saving.set(false);
+                this.saved.set(true);
+                this.error.set(err?.error?.message ?? 'Facture enregistrée, mais l\'envoi du courriel a échoué. Envoyez-la depuis la page « Envoyer factures ».');
+              },
+            });
           },
           error: err => {
-            this.warn('✕ markSent:', err);
+            this.warn('✕ getContacts:', err);
             this.saving.set(false);
-            this.saved.set(true); // facture créée quand même
+            this.saved.set(true);
+            this.error.set(`Facture enregistrée, mais impossible de charger les contacts (HTTP ${err.status}). Envoyez-la depuis la page « Envoyer factures ».`);
           },
         });
       },
