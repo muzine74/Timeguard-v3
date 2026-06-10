@@ -112,17 +112,13 @@ export class EmployeeCredentialsComponent implements OnInit {
 
     this.saving.set(true);
     this.error.set('');
-    const empId    = this.formEmpId();
-    const groupIds = this.formGroupIds();
     this.credSvc.create({
-      employeeId: empId,
+      employeeId: this.formEmpId(),
       username:   this.formUser().trim(),
       password:   this.formPass(),
+      groupIds:   this.formGroupIds(),
     }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        if (groupIds.length === 0) { this._onCreateDone(); return; }
-        this._assignGroups(empId, groupIds, 0, () => this._onCreateDone());
-      },
+      next: () => this._onCreateDone(),
       error: err => {
         this.saving.set(false);
         this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
@@ -180,32 +176,12 @@ export class EmployeeCredentialsComponent implements OnInit {
     });
   }
 
-  // ── Helpers création + groupes ────────────────────────────────────────
+  // ── Helpers ───────────────────────────────────────────────────────────
   private _onCreateDone(): void {
     this.saving.set(false);
     this.closeForm();
     this._showToast('Credential créé.');
     this._load();
-  }
-
-  private _assignGroups(empId: string, groupIds: number[], idx: number, done: () => void): void {
-    if (idx >= groupIds.length) { done(); return; }
-    const gid = groupIds[idx];
-    this.groupsSvc.getById(gid).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: detail => {
-        const ids = detail.employeeIds.includes(empId)
-          ? detail.employeeIds
-          : [...detail.employeeIds, empId];
-        this.groupsSvc.update(gid, {
-          name: detail.name, description: detail.description,
-          permissions: detail.permissions, employeeIds: ids,
-        }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-          next:  () => this._assignGroups(empId, groupIds, idx + 1, done),
-          error: () => this._assignGroups(empId, groupIds, idx + 1, done),
-        });
-      },
-      error: () => this._assignGroups(empId, groupIds, idx + 1, done),
-    });
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────

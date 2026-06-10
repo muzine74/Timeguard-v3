@@ -13,6 +13,7 @@ export interface CredentialCreatePayload {
   employeeId: string;
   username:   string;
   password:   string;
+  groupIds:   number[];
 }
 
 @Injectable({ providedIn: 'root' })

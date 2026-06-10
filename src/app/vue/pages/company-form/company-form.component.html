@@ -29,7 +29,7 @@
           <label class="toggle-wrap"><input type="checkbox" [(ngModel)]="form.isActive"><span class="toggle-lbl">Actif</span></label>
         </div>
         <div class="fields-grid">
-          <div class="field span-full"><label>Nom *</label><input class="inp" [(ngModel)]="form.companyName" placeholder="Acme Construction inc." /></div>
+          <div class="field span-full"><label>Nom <span class="req">*</span></label><input class="inp" [(ngModel)]="form.companyName" placeholder="Acme Construction inc." /></div>
           <div class="field"><label>Code</label><input class="inp" [(ngModel)]="form.companyCode" placeholder="ACME-001" /></div>
           <div class="field span-full"><label>Note</label><textarea class="inp inp-ta" [(ngModel)]="form.note" rows="3"></textarea></div>
         </div>

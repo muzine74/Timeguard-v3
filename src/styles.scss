@@ -269,3 +269,6 @@ input, select, textarea { font-family: inherit; }
   transition: color .15s, transform .15s;
   .unlocked-row:hover & { color: var(--accent); transform: translateX(3px); }
 }
+
+/* ── Champ obligatoire ── */
+.req { color: var(--danger); }
