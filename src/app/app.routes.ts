@@ -124,7 +124,7 @@ export const routes: Routes = [
   // ── Statistiques ─────────────────────────────────────────────────────────
   {
     path: 'stats',
-    canActivate: [permGuard(PERM.invoicesView)],
+    canActivate: [permGuard(PERM.statsView)],
     loadComponent: () => import('./vue/pages/stats/stats.component').then(m => m.StatsComponent)
   },
 

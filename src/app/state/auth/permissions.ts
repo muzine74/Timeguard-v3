@@ -7,6 +7,7 @@ export const PERM = {
   invoicesView:       'invoices.view',
   invoicesEdit:       'invoices.edit',
   invoicesSend:       'invoices.send',
+  statsView:          'stats.view',
   companiesEdit:      'companies.edit',
   groupsManage:       'groups.manage',
   configManage:       'config.manage',
