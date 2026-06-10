@@ -69,7 +69,7 @@ import { AuthService } from '../../../state/auth/auth.service';
           </div>
 
           <!-- Dropdown Factures -->
-          <div class="nav-dropdown" [class.is-open]="openMenu() === 'inv'" *ngIf="auth.hasPerm('invoices.view')">
+          <div class="nav-dropdown" [class.is-open]="openMenu() === 'inv'" *ngIf="auth.hasPerm('invoices.view') || auth.hasPerm('stats.view')">
             <button class="nav-link dropdown-btn" (click)="toggleDrop('inv', $event)">
               Factures <span class="dropdown-arrow">▾</span>
             </button>
@@ -83,10 +83,10 @@ import { AuthService } from '../../../state/auth/auth.service';
               <a class="dropdown-item" routerLink="/invoices/send" routerLinkActive="active" *ngIf="auth.hasPerm('invoices.send')" (click)="closeDrop()">
                 <span class="di-icon">✉</span> Envoyer les factures
               </a>
-              <a class="dropdown-item" routerLink="/invoices" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeDrop()">
+              <a class="dropdown-item" routerLink="/invoices" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" *ngIf="auth.hasPerm('invoices.view')" (click)="closeDrop()">
                 <span class="di-icon">☰</span> Gérer les factures
               </a>
-              <a class="dropdown-item" routerLink="/stats" routerLinkActive="active" *ngIf="auth.hasPerm('invoices.view')" (click)="closeDrop()">
+              <a class="dropdown-item" routerLink="/stats" routerLinkActive="active" *ngIf="auth.hasPerm('stats.view')" (click)="closeDrop()">
                 <span class="di-icon">📊</span> Statistiques
               </a>
             </div>
@@ -141,12 +141,13 @@ import { AuthService } from '../../../state/auth/auth.service';
           <a class="mobile-link mobile-sub" routerLink="/companies/new"    routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('companies.edit')">Nouvelle compagnie</a>
           <a class="mobile-link mobile-sub" routerLink="/companies/edit"   routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('companies.edit')">Modifier compagnie</a>
         </ng-container>
-        <ng-container *ngIf="auth.hasPerm('invoices.view')">
+        <ng-container *ngIf="auth.hasPerm('invoices.view') || auth.hasPerm('stats.view')">
           <div class="mobile-section-label">Factures</div>
           <a class="mobile-link mobile-sub" routerLink="/invoices/new"             routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('invoices.edit')">Nouvelle facture</a>
           <a class="mobile-link mobile-sub" routerLink="/invoices/from-timesheets" routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('invoices.edit')">Facturer par pointages</a>
           <a class="mobile-link mobile-sub" routerLink="/invoices/send"            routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('invoices.send')">✉ Envoyer les factures</a>
-          <a class="mobile-link mobile-sub" routerLink="/invoices" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMenu()">Gérer les factures</a>
+          <a class="mobile-link mobile-sub" routerLink="/invoices" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMenu()" *ngIf="auth.hasPerm('invoices.view')">Gérer les factures</a>
+          <a class="mobile-link mobile-sub" routerLink="/stats" routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('stats.view')">📊 Statistiques</a>
         </ng-container>
         <ng-container *ngIf="auth.hasPerm('groups.manage') || auth.hasPerm('credentials.manage') || auth.hasPerm('config.manage')">
           <div class="mobile-section-label">Gestion accès</div>
