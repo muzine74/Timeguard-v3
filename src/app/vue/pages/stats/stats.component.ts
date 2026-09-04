@@ -6,7 +6,7 @@ import { DestroyRef, inject } from '@angular/core';
 import { StatsService, StatsResponse, StatsCompanyRow } from '../../../state/stats/stats.service';
 
 type FilterMode = 'period' | 'range';
-type StatutFilter = 'payee' | 'facturee';
+type StatutFilter = 'facturee' | 'nonpayee' | 'payee';
 
 @Component({
   selector: 'app-stats',
@@ -43,12 +43,14 @@ export class StatsComponent {
 
   // ── Calculé ───────────────────────────────────────────────────────────────
 
-  /** Compagnies du tableau "Revenus par compagnie" filtrées par statut (curseur Payée/Facturée). */
+  /** Compagnies du tableau "Revenus par compagnie" filtrées par statut (curseur Facturée/Non payée/Payée). */
   filteredCompanies = computed(() => {
     const rows = this.stats()?.parCompagnie ?? [];
-    return this.statutFilter() === 'payee'
-      ? rows.filter(r => r.aPayee)
-      : rows.filter(r => !r.aPayee);
+    switch (this.statutFilter()) {
+      case 'payee':    return rows.filter(r => r.aPayee);
+      case 'nonpayee': return rows.filter(r => !r.aPayee);
+      default:         return rows; // 'facturee' = toutes les compagnies facturées
+    }
   });
 
   totalNbAvoirs = computed(() =>
@@ -119,6 +121,14 @@ export class StatsComponent {
   }
 
   trackByCode(_: number, row: StatsCompanyRow) { return row.companyCode; }
+
+  statutLabel(): string {
+    switch (this.statutFilter()) {
+      case 'payee':    return 'Payée';
+      case 'nonpayee': return 'Non payée';
+      default:         return 'Facturée';
+    }
+  }
 
   // ── Navigation détail (nouvel onglet) ────────────────────────────────────
   private _rangeQuery(): string {

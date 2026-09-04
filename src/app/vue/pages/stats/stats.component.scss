@@ -32,8 +32,9 @@
   padding: 3px;
 }
 
-.mode-seg { min-width: 260px; }
+.mode-seg   { min-width: 260px; }
 .statut-seg { min-width: 200px; }
+.statut-seg-3 { min-width: 330px; }
 
 .seg-opt {
   position: relative;
@@ -63,6 +64,14 @@
   transition: transform .25s ease;
 
   &.thumb-right { transform: translateX(100%); }
+}
+
+// Variante 3 positions (curseur statut compagnies : Facturée / Non payée / Payée)
+.seg-thumb-3 {
+  width: calc(33.333% - 3px);
+
+  &.thumb-mid   { transform: translateX(100%); }
+  &.thumb-right { transform: translateX(200%); }
 }
 
 // ── Section 2 : champs de date + regrouper ──

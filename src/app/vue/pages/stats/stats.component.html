@@ -53,16 +53,22 @@
     <div class="filter-section filter-actions-row">
       <div class="statut-block" *ngIf="stats()">
         <span class="statut-lbl">Compagnies :</span>
-        <div class="seg-control statut-seg">
+        <div class="seg-control statut-seg statut-seg-3">
           <button type="button"
                   class="seg-opt"
                   [class.active]="statutFilter() === 'facturee'"
                   (click)="statutFilter.set('facturee')">Facturée</button>
           <button type="button"
                   class="seg-opt"
+                  [class.active]="statutFilter() === 'nonpayee'"
+                  (click)="statutFilter.set('nonpayee')">Non payée</button>
+          <button type="button"
+                  class="seg-opt"
                   [class.active]="statutFilter() === 'payee'"
                   (click)="statutFilter.set('payee')">Payée</button>
-          <div class="seg-thumb" [class.thumb-right]="statutFilter() === 'payee'"></div>
+          <div class="seg-thumb seg-thumb-3"
+               [class.thumb-mid]="statutFilter() === 'nonpayee'"
+               [class.thumb-right]="statutFilter() === 'payee'"></div>
         </div>
       </div>
 
@@ -159,7 +165,7 @@
       <!-- ── Revenus par compagnie ── -->
       <div class="section-title" *ngIf="s.parCompagnie.length > 0">
         Revenus par compagnie
-        <span class="section-sub">({{ statutFilter() === 'payee' ? 'Payée' : 'Facturée' }})</span>
+        <span class="section-sub">({{ statutLabel() }})</span>
       </div>
       <div class="table-wrap" *ngIf="filteredCompanies().length > 0">
         <table class="stats-table">
@@ -226,7 +232,7 @@
         </table>
       </div>
       <div class="empty-msg" *ngIf="s.parCompagnie.length > 0 && filteredCompanies().length === 0">
-        Aucune compagnie {{ statutFilter() === 'payee' ? 'payée' : 'en attente de paiement' }} pour cette période.
+        Aucune compagnie « {{ statutLabel() }} » pour cette période.
       </div>
       <div class="empty-msg" *ngIf="s.parCompagnie.length === 0">Aucune facture pour cette période.</div>
 
