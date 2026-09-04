@@ -10,19 +10,21 @@
   <!-- ── Filtres ─────────────────────────────────────────────────────────── -->
   <div class="filter-card">
 
-    <!-- Mode -->
-    <div class="mode-tabs">
-      <button class="mode-btn" [class.active]="mode === 'period'" (click)="mode = 'period'">
-        📅 Période
-      </button>
-      <button class="mode-btn" [class.active]="mode === 'range'" (click)="mode = 'range'">
-        📆 Intervalle
-      </button>
+    <!-- Section 1 : mode -->
+    <div class="filter-section">
+      <div class="seg-control mode-seg">
+        <button type="button" class="seg-opt" [class.active]="mode === 'period'" (click)="mode = 'period'">
+          📅 Période
+        </button>
+        <button type="button" class="seg-opt" [class.active]="mode === 'range'" (click)="mode = 'range'">
+          📆 Intervalle
+        </button>
+        <div class="seg-thumb" [class.thumb-right]="mode === 'range'"></div>
+      </div>
     </div>
 
-    <div class="filter-row">
-
-      <!-- Mode période -->
+    <!-- Section 2 : champs de date + regrouper -->
+    <div class="filter-section filter-fields">
       <ng-container *ngIf="mode === 'period'">
         <div class="filter-field">
           <label>Mois</label>
@@ -30,7 +32,6 @@
         </div>
       </ng-container>
 
-      <!-- Mode intervalle -->
       <ng-container *ngIf="mode === 'range'">
         <div class="filter-field">
           <label>Du</label>
@@ -42,33 +43,33 @@
         </div>
       </ng-container>
 
-      <!-- Regrouper + Charger -->
-      <div class="filter-actions">
-        <label class="toggle-wrap">
-          <input type="checkbox" [checked]="regrouper()" (change)="regrouper.set(!regrouper())">
-          <span class="toggle-lbl">Regrouper (totaux seuls)</span>
-        </label>
-        <button class="btn btn-primary" [disabled]="loading()" (click)="load()">
-          <span *ngIf="!loading()">🔍 Calculer</span>
-          <span *ngIf="loading()" class="spinner"></span>
-        </button>
-      </div>
+      <label class="toggle-wrap">
+        <input type="checkbox" [checked]="regrouper()" (change)="regrouper.set(!regrouper())">
+        <span class="toggle-lbl">Regrouper (totaux seuls)</span>
+      </label>
     </div>
 
-    <!-- Curseur statut compagnies -->
-    <div class="statut-slider-row" *ngIf="stats()">
-      <span class="statut-lbl">Compagnies :</span>
-      <div class="statut-slider">
-        <button type="button"
-                class="statut-opt"
-                [class.active]="statutFilter() === 'facturee'"
-                (click)="statutFilter.set('facturee')">Facturée</button>
-        <button type="button"
-                class="statut-opt"
-                [class.active]="statutFilter() === 'payee'"
-                (click)="statutFilter.set('payee')">Payée</button>
-        <div class="statut-thumb" [class.thumb-right]="statutFilter() === 'payee'"></div>
+    <!-- Section 3 : statut compagnies + action -->
+    <div class="filter-section filter-actions-row">
+      <div class="statut-block" *ngIf="stats()">
+        <span class="statut-lbl">Compagnies :</span>
+        <div class="seg-control statut-seg">
+          <button type="button"
+                  class="seg-opt"
+                  [class.active]="statutFilter() === 'facturee'"
+                  (click)="statutFilter.set('facturee')">Facturée</button>
+          <button type="button"
+                  class="seg-opt"
+                  [class.active]="statutFilter() === 'payee'"
+                  (click)="statutFilter.set('payee')">Payée</button>
+          <div class="seg-thumb" [class.thumb-right]="statutFilter() === 'payee'"></div>
+        </div>
       </div>
+
+      <button class="btn btn-primary btn-calculer" [disabled]="loading()" (click)="load()">
+        <span *ngIf="!loading()">🔍 Calculer</span>
+        <span *ngIf="loading()" class="spinner"></span>
+      </button>
     </div>
 
     <div class="err-msg" *ngIf="error()">{{ error() }}</div>

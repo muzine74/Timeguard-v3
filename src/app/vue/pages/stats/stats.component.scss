@@ -9,56 +9,77 @@
 .filter-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 24px;
+  border-radius: 14px;
+  padding: 28px;
+  margin-bottom: 28px;
 }
 
-.mode-tabs {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
+// Sections empilées, bien espacées, séparées par un filet léger
+.filter-section {
+  padding: 18px 0;
+
+  &:first-child { padding-top: 0; }
+  &:not(:last-child) { border-bottom: 1px solid var(--border); }
 }
 
-.mode-btn {
-  padding: 6px 16px;
-  border-radius: 20px;
-  border: 1px solid var(--border);
+// ── Contrôle segmenté générique (mode période/intervalle, statut compagnies) ──
+.seg-control {
+  position: relative;
+  display: inline-flex;
   background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 3px;
+}
+
+.mode-seg { min-width: 260px; }
+.statut-seg { min-width: 200px; }
+
+.seg-opt {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 8px 18px;
+  font-size: .85rem;
   color: var(--text-muted);
   cursor: pointer;
-  font-size: .85rem;
-  transition: all .15s;
+  border-radius: 19px;
+  white-space: nowrap;
+  transition: color .2s;
 
-  &.active {
-    background: var(--accent);
-    color: #000;
-    border-color: var(--accent);
-    font-weight: 600;
-  }
+  &.active { color: #000; font-weight: 600; }
 }
 
-.filter-row {
+.seg-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: calc(50% - 3px);
+  height: calc(100% - 6px);
+  background: var(--accent);
+  border-radius: 19px;
+  transition: transform .25s ease;
+
+  &.thumb-right { transform: translateX(100%); }
+}
+
+// ── Section 2 : champs de date + regrouper ──
+.filter-fields {
   display: flex;
   align-items: flex-end;
-  gap: 16px;
+  gap: 28px;
   flex-wrap: wrap;
 }
 
 .filter-field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 
   label { font-size: .78rem; color: var(--text-muted); font-weight: 500; }
-  .inp  { width: 180px; }
-}
-
-.filter-actions {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-left: auto;
+  .inp  { width: 190px; }
 }
 
 .toggle-wrap {
@@ -68,22 +89,21 @@
   cursor: pointer;
   font-size: .85rem;
   color: var(--text-muted);
+  padding-bottom: 8px; // aligne visuellement avec les champs de date
 }
 
-.err-msg {
-  margin-top: 12px;
-  color: var(--danger);
-  font-size: .85rem;
-}
-
-// ── Curseur statut compagnies ────────────────────────────────────────────
-.statut-slider-row {
+// ── Section 3 : statut compagnies + action ──
+.filter-actions-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid var(--border);
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.statut-block {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .statut-lbl {
@@ -92,43 +112,12 @@
   font-weight: 500;
 }
 
-.statut-slider {
-  position: relative;
-  display: inline-flex;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 2px;
-  width: 200px;
-}
+.btn-calculer { min-width: 140px; margin-left: auto; }
 
-.statut-opt {
-  position: relative;
-  z-index: 1;
-  flex: 1;
-  border: none;
-  background: transparent;
-  padding: 6px 10px;
-  font-size: .8rem;
-  color: var(--text-muted);
-  cursor: pointer;
-  border-radius: 18px;
-  transition: color .2s;
-
-  &.active { color: #000; font-weight: 600; }
-}
-
-.statut-thumb {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: calc(50% - 2px);
-  height: calc(100% - 4px);
-  background: var(--accent);
-  border-radius: 18px;
-  transition: transform .2s ease;
-
-  &.thumb-right { transform: translateX(100%); }
+.err-msg {
+  margin-top: 16px;
+  color: var(--danger);
+  font-size: .85rem;
 }
 
 // ── Période label ─────────────────────────────────────────────────────────
@@ -315,12 +304,15 @@ input[type="month"].inp {
 
 // ── Responsive ───────────────────────────────────────────
 @media (max-width: 768px) {
-  .page-wrap         { padding: 16px 12px; }
-  .page-hdr          { flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 16px; }
-  .filter-field .inp { width: auto; min-width: 0; flex: 1; }
-  .filter-row        { gap: 10px; }
-  .filter-actions    { margin-left: 0; width: 100%; flex-wrap: wrap; }
-  .cards-grid        { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
-  .statut-slider     { width: auto; flex: 1; }
-  .statut-slider-row { flex-wrap: wrap; }
+  .page-wrap          { padding: 16px 12px; }
+  .page-hdr           { flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 16px; }
+  .filter-card        { padding: 18px; }
+  .filter-field .inp  { width: auto; min-width: 0; flex: 1; }
+  .filter-fields      { gap: 14px; }
+  .cards-grid         { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  .mode-seg           { width: 100%; min-width: 0; }
+  .statut-seg         { width: auto; flex: 1; min-width: 0; }
+  .filter-actions-row { flex-wrap: wrap; }
+  .statut-block       { width: 100%; }
+  .btn-calculer       { width: 100%; }
 }
