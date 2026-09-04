@@ -16,6 +16,9 @@ export class PointageEmployeeService {
   private _cache       = new Map<string, WeekCache>();
   private _currentWeek = '';
   private _employeeId  = '';
+  // true dès que load() a été invoqué — empêche initFromEmployee() d'écraser
+  // le résultat (même vide) avec la liste brute non filtrée par statut actif
+  private _loadRequested = false;
   // companyId → nom-jour-FR → prix effectif (customPrice ?? defaultPrice)
   private _pricingMap  = new Map<string, Record<string, number>>();
 
@@ -39,6 +42,7 @@ export class PointageEmployeeService {
 
   load(weekKey: string, employeeId?: string, onLoaded?: () => void): void {
     this.log(`load(weekKey=${weekKey}, employeeId=${employeeId ?? 'undefined'})`);
+    this._loadRequested = true;
 
     if (this._currentWeek && this._currentWeek !== weekKey) {
       this._cache.set(this._currentWeek, this._snapshotFull());
@@ -128,6 +132,13 @@ export class PointageEmployeeService {
     if (this._currentWeek) this._cache.set(this._currentWeek, this._snapshotFull());
   }
 
+  private _toDayName(dateKey: string): string {
+    const [y, m, d] = dateKey.split('-').map(Number);
+    return ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'][
+      new Date(y, m - 1, d).getDay()
+    ];
+  }
+
   /** Charge le calendrier tarifaire de chaque compagnie pour enrichir les prix lors du cochage. */
   loadPricing(employeeId: string, companyIds: string[]): void {
     for (const companyId of companyIds) {
@@ -145,13 +156,6 @@ export class PointageEmployeeService {
     }
   }
 
-  private _toDayName(dateKey: string): string {
-    const [y, m, d] = dateKey.split('-').map(Number);
-    return ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'][
-      new Date(y, m - 1, d).getDay()
-    ];
-  }
-
   selectAll(days: WeekDay[]): void {
     this._compagnies.update(l => l.map(c => ({
       ...c, pointages: Object.fromEntries(days.map(d => [d.dateKey, true]))
@@ -166,7 +170,8 @@ export class PointageEmployeeService {
 
   /** Initialise la liste des compagnies depuis l'employé (fallback si timelogs vides). */
   initFromEmployee(empCompanies: { compagnieId: string; compagnieName: string }[]): void {
-    if (this._compagnies().length > 0) return; // déjà peuplé par les timelogs
+    // déjà peuplé par les timelogs, ou load() déjà invoqué (source non filtrée par statut actif)
+    if (this._compagnies().length > 0 || this._loadRequested) return;
     let id = 1;
     this._compagnies.set(empCompanies.map(c => ({
       id:        id++,
