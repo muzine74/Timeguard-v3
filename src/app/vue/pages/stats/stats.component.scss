@@ -76,6 +76,61 @@
   font-size: .85rem;
 }
 
+// ── Curseur statut compagnies ────────────────────────────────────────────
+.statut-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.statut-lbl {
+  font-size: .8rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.statut-slider {
+  position: relative;
+  display: inline-flex;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2px;
+  width: 200px;
+}
+
+.statut-opt {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 6px 10px;
+  font-size: .8rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 18px;
+  transition: color .2s;
+
+  &.active { color: #000; font-weight: 600; }
+}
+
+.statut-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: calc(50% - 2px);
+  height: calc(100% - 4px);
+  background: var(--accent);
+  border-radius: 18px;
+  transition: transform .2s ease;
+
+  &.thumb-right { transform: translateX(100%); }
+}
+
 // ── Période label ─────────────────────────────────────────────────────────
 .periode-label {
   font-size: .85rem;
@@ -124,6 +179,19 @@
   padding-bottom: 8px;
   border-bottom: 2px solid var(--accent);
   color: var(--text);
+
+  .section-sub {
+    font-size: .78rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: none;
+  }
+}
+
+.row-clickable {
+  cursor: pointer;
+
+  &:hover { background: var(--hover, rgba(255,255,255,.06)) !important; }
 }
 
 .empty-msg {
@@ -244,3 +312,15 @@ input[type="month"].inp {
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+// ── Responsive ───────────────────────────────────────────
+@media (max-width: 768px) {
+  .page-wrap         { padding: 16px 12px; }
+  .page-hdr          { flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 16px; }
+  .filter-field .inp { width: auto; min-width: 0; flex: 1; }
+  .filter-row        { gap: 10px; }
+  .filter-actions    { margin-left: 0; width: 100%; flex-wrap: wrap; }
+  .cards-grid        { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  .statut-slider     { width: auto; flex: 1; }
+  .statut-slider-row { flex-wrap: wrap; }
+}

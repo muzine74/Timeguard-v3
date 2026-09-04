@@ -55,6 +55,22 @@
       </div>
     </div>
 
+    <!-- Curseur statut compagnies -->
+    <div class="statut-slider-row" *ngIf="stats()">
+      <span class="statut-lbl">Compagnies :</span>
+      <div class="statut-slider">
+        <button type="button"
+                class="statut-opt"
+                [class.active]="statutFilter() === 'facturee'"
+                (click)="statutFilter.set('facturee')">Facturée</button>
+        <button type="button"
+                class="statut-opt"
+                [class.active]="statutFilter() === 'payee'"
+                (click)="statutFilter.set('payee')">Payée</button>
+        <div class="statut-thumb" [class.thumb-right]="statutFilter() === 'payee'"></div>
+      </div>
+    </div>
+
     <div class="err-msg" *ngIf="error()">{{ error() }}</div>
   </div>
 
@@ -122,7 +138,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let row of s.parEmploye">
+            <tr *ngFor="let row of s.parEmploye" class="row-clickable" (click)="openEmployee(row)" title="Voir le détail de l'employé (nouvel onglet)">
               <td>{{ row.employeeName }}</td>
               <td class="num">{{ row.nbVisites }}</td>
               <td class="num gain">{{ fmt(row.totalPaiementEmploye) }}</td>
@@ -140,8 +156,11 @@
       <div class="empty-msg" *ngIf="s.parEmploye.length === 0">Aucun pointage pour cette période.</div>
 
       <!-- ── Revenus par compagnie ── -->
-      <div class="section-title" *ngIf="s.parCompagnie.length > 0">Revenus par compagnie</div>
-      <div class="table-wrap" *ngIf="s.parCompagnie.length > 0">
+      <div class="section-title" *ngIf="s.parCompagnie.length > 0">
+        Revenus par compagnie
+        <span class="section-sub">({{ statutFilter() === 'payee' ? 'Payée' : 'Facturée' }})</span>
+      </div>
+      <div class="table-wrap" *ngIf="filteredCompanies().length > 0">
         <table class="stats-table">
           <thead>
             <tr>
@@ -159,7 +178,10 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let row of s.parCompagnie; trackBy: trackByCode"
+            <tr *ngFor="let row of filteredCompanies(); trackBy: trackByCode"
+                class="row-clickable"
+                (click)="openCompany(row)"
+                title="Voir le détail de la compagnie (nouvel onglet)"
                 [class.row-paid]="row.aPayee"
                 [class.row-unpaid]="!row.aPayee && row.totalTTC > 0"
                 [class.row-avoir]="row.nbAvoirs > 0">
@@ -188,19 +210,22 @@
           <tfoot>
             <tr class="total-row">
               <td>Total net</td>
-              <td class="num">{{ s.nbFactures }}</td>
+              <td class="num">{{ totalFactures() }}</td>
               <td class="num avoir-cell">{{ totalNbAvoirs() }}</td>
-              <td class="num">{{ s.nbVisitesTotal }}</td>
-              <td class="num">{{ fmt(s.totalHT) }}</td>
-              <td class="num muted">{{ fmt(s.totalTPS) }}</td>
-              <td class="num muted">{{ fmt(s.totalTVQ) }}</td>
-              <td class="num bold">{{ fmt(s.totalTTC) }}</td>
+              <td class="num">{{ totalVisites() }}</td>
+              <td class="num">{{ fmt(totalHT()) }}</td>
+              <td class="num muted">{{ fmt(totalTPSFilt()) }}</td>
+              <td class="num muted">{{ fmt(totalTVQFilt()) }}</td>
+              <td class="num bold">{{ fmt(totalTTCFilt()) }}</td>
               <td class="num avoir-cell">-{{ fmt(totalAvoirsSum()) }}</td>
-              <td class="num green">{{ fmt(s.totalPaye) }}</td>
-              <td class="num orange">{{ fmt(s.totalEnAttente) }}</td>
+              <td class="num green">{{ fmt(totalPayeFilt()) }}</td>
+              <td class="num orange">{{ fmt(totalEnAttenteFilt()) }}</td>
             </tr>
           </tfoot>
         </table>
+      </div>
+      <div class="empty-msg" *ngIf="s.parCompagnie.length > 0 && filteredCompanies().length === 0">
+        Aucune compagnie {{ statutFilter() === 'payee' ? 'payée' : 'en attente de paiement' }} pour cette période.
       </div>
       <div class="empty-msg" *ngIf="s.parCompagnie.length === 0">Aucune facture pour cette période.</div>
 

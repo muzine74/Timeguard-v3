@@ -1,0 +1,52 @@
+<div class="page-wrap">
+
+  <header class="page-hdr">
+    <div>
+      <h1 class="page-title" *ngIf="detail() as d">{{ d.companyName }}</h1>
+      <h1 class="page-title" *ngIf="!detail()">Détail compagnie</h1>
+      <p class="page-sub" *ngIf="detail()">Employés et dates travaillées (semaines validées) — {{ periodeLabel() }}</p>
+    </div>
+  </header>
+
+  <div class="spinner-wrap" *ngIf="loading()"><span class="spinner"></span></div>
+  <div class="err-msg" *ngIf="error()">{{ error() }}</div>
+
+  <ng-container *ngIf="detail() as d">
+
+    <div class="cards-grid" *ngIf="d.employees.length > 0">
+      <div class="stat-card card-gray">
+        <div class="card-val">{{ d.employees.length }}</div>
+        <div class="card-lbl">Employés</div>
+      </div>
+      <div class="stat-card card-gray">
+        <div class="card-val">{{ totalVisites() }}</div>
+        <div class="card-lbl">Visites validées</div>
+      </div>
+    </div>
+
+    <div class="table-wrap" *ngIf="d.employees.length > 0">
+      <table class="stats-table">
+        <thead>
+          <tr>
+            <th>Employé</th>
+            <th class="num">Visites</th>
+            <th>Dates travaillées</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let e of d.employees">
+            <td>{{ e.employeeName }}</td>
+            <td class="num">{{ e.nbVisites }}</td>
+            <td class="dates-cell">
+              <span class="date-chip" *ngFor="let dt of e.workDates">{{ fmtDate(dt) }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="empty-msg" *ngIf="d.employees.length === 0">Aucune semaine validée pour cette période.</div>
+
+  </ng-container>
+
+</div>

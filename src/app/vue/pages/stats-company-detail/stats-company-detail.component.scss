@@ -1,0 +1,103 @@
+.page-wrap { padding: 24px; max-width: 1200px; margin: 0 auto; }
+
+.page-hdr   { margin-bottom: 24px; }
+.page-title { font-size: 1.5rem; font-weight: 700; margin: 0; }
+.page-sub   { font-size: .85rem; color: var(--text-muted); margin: 4px 0 0; }
+
+.err-msg { color: var(--danger); font-size: .85rem; margin-bottom: 16px; }
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  border-radius: 12px;
+  padding: 18px 16px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+
+  .card-val { font-size: 1.25rem; font-weight: 700; margin-bottom: 4px; }
+  .card-lbl { font-size: .75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .85rem;
+
+  th {
+    background: var(--surface-alt, var(--surface));
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+
+    &.num { text-align: right; }
+  }
+
+  td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+
+    &.num { text-align: right; white-space: nowrap; }
+  }
+
+  tbody tr:hover { background: var(--hover, rgba(255,255,255,.03)); }
+}
+
+.dates-cell {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-width: 420px;
+}
+
+.date-chip {
+  background: var(--surface-alt, var(--surface));
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-size: .75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.empty-msg {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 20px;
+  font-size: .88rem;
+}
+
+.spinner-wrap { display: flex; justify-content: center; padding: 40px; }
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(255,255,255,.2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 768px) {
+  .page-wrap  { padding: 16px 12px; }
+  .cards-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+}

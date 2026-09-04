@@ -6,6 +6,7 @@ import { DestroyRef, inject } from '@angular/core';
 import { StatsService, StatsResponse, StatsCompanyRow } from '../../../state/stats/stats.service';
 
 type FilterMode = 'period' | 'range';
+type StatutFilter = 'payee' | 'facturee';
 
 @Component({
   selector: 'app-stats',
@@ -27,10 +28,11 @@ export class StatsComponent {
   dateTo   = '';
 
   // ── État ──────────────────────────────────────────────────────────────────
-  loading   = signal(false);
-  error     = signal('');
-  stats     = signal<StatsResponse | null>(null);
-  regrouper = signal(false);
+  loading      = signal(false);
+  error        = signal('');
+  stats        = signal<StatsResponse | null>(null);
+  regrouper    = signal(false);
+  statutFilter = signal<StatutFilter>('facturee');
 
   private destroyRef = inject(DestroyRef);
 
@@ -40,12 +42,32 @@ export class StatsComponent {
   ) {}
 
   // ── Calculé ───────────────────────────────────────────────────────────────
+
+  /** Compagnies du tableau "Revenus par compagnie" filtrées par statut (curseur Payée/Facturée). */
+  filteredCompanies = computed(() => {
+    const rows = this.stats()?.parCompagnie ?? [];
+    return this.statutFilter() === 'payee'
+      ? rows.filter(r => r.aPayee)
+      : rows.filter(r => !r.aPayee);
+  });
+
   totalNbAvoirs = computed(() =>
-    (this.stats()?.parCompagnie ?? []).reduce((s, r) => s + r.nbAvoirs, 0)
+    this.filteredCompanies().reduce((s, r) => s + r.nbAvoirs, 0)
   );
 
   totalAvoirsSum = computed(() =>
-    (this.stats()?.parCompagnie ?? []).reduce((s, r) => s + r.totalAvoirs, 0)
+    this.filteredCompanies().reduce((s, r) => s + r.totalAvoirs, 0)
+  );
+
+  totalFactures  = computed(() => this.filteredCompanies().reduce((s, r) => s + r.nbFactures, 0));
+  totalVisites   = computed(() => this.filteredCompanies().reduce((s, r) => s + r.nbVisites, 0));
+  totalHT        = computed(() => this.filteredCompanies().reduce((s, r) => s + r.totalHT, 0));
+  totalTPSFilt   = computed(() => this.filteredCompanies().reduce((s, r) => s + r.totalTPS, 0));
+  totalTVQFilt   = computed(() => this.filteredCompanies().reduce((s, r) => s + r.totalTVQ, 0));
+  totalTTCFilt   = computed(() => this.filteredCompanies().reduce((s, r) => s + r.totalTTC, 0));
+  totalPayeFilt  = computed(() => this.filteredCompanies().reduce((s, r) => s + r.montantPaye, 0));
+  totalEnAttenteFilt = computed(() =>
+    this.totalTTCFilt() - this.totalAvoirsSum() - this.totalPayeFilt()
   );
 
   // ── Chargement ────────────────────────────────────────────────────────────
@@ -97,4 +119,20 @@ export class StatsComponent {
   }
 
   trackByCode(_: number, row: StatsCompanyRow) { return row.companyCode; }
+
+  // ── Navigation détail (nouvel onglet) ────────────────────────────────────
+  private _rangeQuery(): string {
+    return this.mode === 'period'
+      ? `period=${encodeURIComponent(this.period)}`
+      : `from=${encodeURIComponent(this.dateFrom)}&to=${encodeURIComponent(this.dateTo)}`;
+  }
+
+  openEmployee(row: { employeeId: string }): void {
+    window.open(`/stats/employee/${row.employeeId}?${this._rangeQuery()}`, '_blank');
+  }
+
+  openCompany(row: StatsCompanyRow): void {
+    if (!row.companyId || row.companyId === '00000000-0000-0000-0000-000000000000') return;
+    window.open(`/stats/company/${row.companyId}?${this._rangeQuery()}`, '_blank');
+  }
 }

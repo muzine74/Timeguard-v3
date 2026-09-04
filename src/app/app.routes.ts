@@ -121,11 +121,30 @@ export const routes: Routes = [
     loadComponent: () => import('./vue/pages/invoice-send/invoice-send.component').then(m => m.InvoiceSendComponent)
   },
 
+  // ── Rapports ──────────────────────────────────────────────────────────
+  {
+    path: 'invoices/report',
+    canActivate: [permGuard(PERM.invoicesView)],
+    loadComponent: () =>
+      import('./vue/pages/invoice-report/invoice-report.component')
+        .then(m => m.InvoiceReportComponent)
+  },
+
   // ── Statistiques ─────────────────────────────────────────────────────────
   {
     path: 'stats',
     canActivate: [permGuard(PERM.statsView)],
     loadComponent: () => import('./vue/pages/stats/stats.component').then(m => m.StatsComponent)
+  },
+  {
+    path: 'stats/employee/:id',
+    canActivate: [permGuard(PERM.statsView)],
+    loadComponent: () => import('./vue/pages/stats-employee-detail/stats-employee-detail.component').then(m => m.StatsEmployeeDetailComponent)
+  },
+  {
+    path: 'stats/company/:id',
+    canActivate: [permGuard(PERM.statsView)],
+    loadComponent: () => import('./vue/pages/stats-company-detail/stats-company-detail.component').then(m => m.StatsCompanyDetailComponent)
   },
 
   // ── Groupes & accès ───────────────────────────────────────────────────────

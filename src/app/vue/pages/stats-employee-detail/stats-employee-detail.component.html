@@ -1,0 +1,58 @@
+<div class="page-wrap">
+
+  <header class="page-hdr">
+    <div>
+      <h1 class="page-title" *ngIf="detail() as d">{{ d.employeeName }}</h1>
+      <h1 class="page-title" *ngIf="!detail()">Détail employé</h1>
+      <p class="page-sub" *ngIf="detail()">Compagnies et dates de visite — {{ periodeLabel() }}</p>
+    </div>
+  </header>
+
+  <div class="spinner-wrap" *ngIf="loading()"><span class="spinner"></span></div>
+  <div class="err-msg" *ngIf="error()">{{ error() }}</div>
+
+  <ng-container *ngIf="detail() as d">
+
+    <div class="cards-grid" *ngIf="d.companies.length > 0">
+      <div class="stat-card card-gray">
+        <div class="card-val">{{ d.companies.length }}</div>
+        <div class="card-lbl">Compagnies</div>
+      </div>
+      <div class="stat-card card-gray">
+        <div class="card-val">{{ totalVisites() }}</div>
+        <div class="card-lbl">Visites totales</div>
+      </div>
+      <div class="stat-card card-blue">
+        <div class="card-val">{{ fmt(totalPaiement()) }}</div>
+        <div class="card-lbl">Paiement total</div>
+      </div>
+    </div>
+
+    <div class="table-wrap" *ngIf="d.companies.length > 0">
+      <table class="stats-table">
+        <thead>
+          <tr>
+            <th>Compagnie</th>
+            <th class="num">Visites</th>
+            <th class="num">Paiement</th>
+            <th>Dates de visite</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of d.companies">
+            <td>{{ c.companyName }}</td>
+            <td class="num">{{ c.nbVisites }}</td>
+            <td class="num gain">{{ fmt(c.totalPaiement) }}</td>
+            <td class="dates-cell">
+              <span class="date-chip" *ngFor="let dt of c.visitDates">{{ fmtDate(dt) }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="empty-msg" *ngIf="d.companies.length === 0">Aucune visite pour cette période.</div>
+
+  </ng-container>
+
+</div>
