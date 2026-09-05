@@ -44,16 +44,19 @@ export class PointageEmployeeService {
     this.log(`load(weekKey=${weekKey}, employeeId=${employeeId ?? 'undefined'})`);
     this._loadRequested = true;
 
-    if (this._currentWeek && this._currentWeek !== weekKey) {
-      this._cache.set(this._currentWeek, this._snapshotFull());
-      this.log(`cache sauvegardé → semaine ${this._currentWeek}`);
+    const employeeChanged = !!employeeId && employeeId !== this._employeeId;
+
+    if (this._currentWeek && this._currentWeek !== weekKey && !employeeChanged) {
+      this._cache.set(this._cacheKey(this._currentWeek), this._snapshotFull());
+      this.log(`cache sauvegardé → ${this._cacheKey(this._currentWeek)}`);
     }
     this._currentWeek = weekKey;
     if (employeeId) this._employeeId = employeeId;
 
-    const cached = this._cache.get(weekKey);
-    if (cached) {
-      this.log(`cache hit → semaine ${weekKey}`);
+    const cacheKey = this._cacheKey(weekKey);
+    const cached   = this._cache.get(cacheKey);
+    if (cached && !employeeChanged) {
+      this.log(`cache hit → ${cacheKey}`);
       this._compagnies.update(l => l.map(c => ({
         ...c,
         pointages: cached.pointages[c.companyId] ?? {},
@@ -80,14 +83,14 @@ export class PointageEmployeeService {
         this.log(`✓ ${logs.length} timelog(s)`);
         if (!logs || logs.length === 0) {
           this._compagnies.set([]);
-          this._cache.set(weekKey, { pointages: {}, prices: {} });
+          this._cache.set(cacheKey, { pointages: {}, prices: {} });
           this._loading.set(false);
           onLoaded?.();
           return;
         }
         const compagnies = this._fromTimeLogs(logs);
         this._compagnies.set(compagnies);
-        this._cache.set(weekKey, this._snapshotFull());
+        this._cache.set(cacheKey, this._snapshotFull());
         this._loading.set(false);
         onLoaded?.();
       },
@@ -99,6 +102,11 @@ export class PointageEmployeeService {
         onLoaded?.();
       }
     });
+  }
+
+  /** Clé de cache composite employé+semaine — évite qu'un changement d'employé réutilise le cache d'un autre. */
+  private _cacheKey(weekKey: string): string {
+    return `${this._employeeId}::${weekKey}`;
   }
 
   private _fromTimeLogs(logs: TimeLogQueryResultDto[]): Compagnie[] {
@@ -129,7 +137,7 @@ export class PointageEmployeeService {
       }
       return { ...c, pointages: { ...c.pointages, [dateKey]: isNowChecked }, prices: newPrices };
     }));
-    if (this._currentWeek) this._cache.set(this._currentWeek, this._snapshotFull());
+    if (this._currentWeek) this._cache.set(this._cacheKey(this._currentWeek), this._snapshotFull());
   }
 
   private _toDayName(dateKey: string): string {
@@ -160,12 +168,12 @@ export class PointageEmployeeService {
     this._compagnies.update(l => l.map(c => ({
       ...c, pointages: Object.fromEntries(days.map(d => [d.dateKey, true]))
     })));
-    if (this._currentWeek) this._cache.set(this._currentWeek, this._snapshotFull());
+    if (this._currentWeek) this._cache.set(this._cacheKey(this._currentWeek), this._snapshotFull());
   }
 
   clearAll(): void {
     this._compagnies.update(l => l.map(c => ({ ...c, pointages: {} })));
-    if (this._currentWeek) this._cache.set(this._currentWeek, this._snapshotFull());
+    if (this._currentWeek) this._cache.set(this._cacheKey(this._currentWeek), this._snapshotFull());
   }
 
   /** Initialise la liste des compagnies depuis l'employé (fallback si timelogs vides). */
@@ -188,8 +196,9 @@ export class PointageEmployeeService {
 
   /** Supprime uniquement la semaine validée du cache (les autres semaines sont conservées). */
   removeFromCache(weekKey: string): void {
-    this._cache.delete(weekKey);
-    this.log(`cache retiré → semaine ${weekKey}`);
+    const key = this._cacheKey(weekKey);
+    this._cache.delete(key);
+    this.log(`cache retiré → ${key}`);
   }
 
   isChecked(c: Compagnie, dk: string): boolean { return !!c.pointages?.[dk]; }
