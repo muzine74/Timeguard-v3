@@ -20,7 +20,7 @@
         <tr>
           <th class="col-expand"></th>
           <th>Titre</th>
-          <th>Propriétaire</th>
+          <th>Fournisseur</th>
           <th>Compagnies</th>
           <th class="col-num">Montant</th>
           <th class="col-num">Documents</th>
@@ -36,7 +36,7 @@
               <span class="charge-title">{{ c.title }}</span>
               <div class="charge-desc" *ngIf="c.description">{{ c.description }}</div>
             </td>
-            <td>{{ c.ownerCompanyName }}</td>
+            <td>{{ c.ownerCompanyName || '—' }}</td>
             <td>
               <span class="tag-company" *ngFor="let co of c.companies">
                 {{ co.companyName }} — {{ co.percentage }}%
@@ -95,14 +95,6 @@
         <div class="alert alert-error" *ngIf="error()">{{ error() }}</div>
 
         <div class="field-group">
-          <label>Compagnie propriétaire (fournisseur) <span class="req">*</span></label>
-          <select [(ngModel)]="ownerCompanyId">
-            <option value="" disabled>Sélectionner…</option>
-            <option *ngFor="let c of activeCompanies()" [value]="c.companyId">{{ c.companyName }}</option>
-          </select>
-        </div>
-
-        <div class="field-group">
           <label>Titre <span class="req">*</span></label>
           <input type="text" [(ngModel)]="title" placeholder="Ex. Assurance, Loyer, Comptabilité…" />
         </div>
@@ -119,7 +111,8 @@
 
         <!-- ── Compagnies ────────────────────────────────────────────── -->
         <div class="field-group">
-          <label>Compagnies <span class="req">*</span></label>
+          <label>Compagnies</label>
+          <p class="filter-hint">Aucune sélection = charge non associée à une compagnie. Cochez « Fournisseur » sur une ligne pour la désigner (optionnel).</p>
 
           <div class="company-checklist">
             <label class="company-check-row all-row">
@@ -138,6 +131,12 @@
                 <span class="co-name">{{ c.companyName }}</span>
               </label>
               <ng-container *ngIf="isCompanyChecked(c.companyId)">
+                <label class="owner-radio" title="Désigner comme compagnie fournisseur">
+                  <input type="radio" name="ownerCompany"
+                         [checked]="isOwner(c.companyId)"
+                         (change)="setOwner(c.companyId)" />
+                  <span>Fournisseur</span>
+                </label>
                 <input type="number" min="0" max="100" step="0.01" class="co-pct"
                        [value]="pctOf(c.companyId)"
                        (change)="onPercentageChange(c.companyId, $any($event.target).value)" />
@@ -147,6 +146,11 @@
             </div>
           </div>
           <p class="filter-hint" *ngIf="activeCompanies().length === 0">Aucune compagnie disponible.</p>
+
+          <div class="total-row" *ngIf="ownerCompanyId">
+            <span class="owner-summary">Fournisseur : <strong>{{ ownerCompanyName() }}</strong></span>
+            <button class="btn-link" type="button" (click)="ownerCompanyId = null">Retirer</button>
+          </div>
 
           <div class="total-row" *ngIf="rows().length > 0">
             <button class="btn-link" type="button" (click)="redistributeEqually()">Répartir également</button>

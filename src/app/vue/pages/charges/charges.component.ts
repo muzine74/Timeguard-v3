@@ -32,7 +32,7 @@ export class ChargesComponent implements OnInit {
   // ── Modal (création / édition) ───────────────────────────────────────────
   modalOpen  = signal(false);
   editingId: string | null = null;
-  ownerCompanyId = '';
+  ownerCompanyId: string | null = null;
   title       = '';
   description = '';
   amount: number | null = null;
@@ -103,7 +103,7 @@ export class ChargesComponent implements OnInit {
   // ── Modal — ouverture ─────────────────────────────────────────────────────
   openCreate(): void {
     this.editingId      = null;
-    this.ownerCompanyId = '';
+    this.ownerCompanyId = null;
     this.title          = '';
     this.description    = '';
     this.amount         = null;
@@ -144,6 +144,7 @@ export class ChargesComponent implements OnInit {
       this.rows.update(rows => [...rows, { companyId: c.companyId, companyName: c.companyName, percentage: 0 }]);
     } else {
       this.rows.update(rows => rows.filter(r => r.companyId !== c.companyId));
+      if (this.ownerCompanyId === c.companyId) this.ownerCompanyId = null;
     }
     this.redistributeEqually();
   }
@@ -152,12 +153,26 @@ export class ChargesComponent implements OnInit {
     this.rows.set(checked
       ? this.activeCompanies().map(c => ({ companyId: c.companyId, companyName: c.companyName, percentage: 0 }))
       : []);
+    if (!checked) this.ownerCompanyId = null;
     this.redistributeEqually();
   }
 
   removeCompany(companyId: string): void {
     this.rows.update(rows => rows.filter(r => r.companyId !== companyId));
+    if (this.ownerCompanyId === companyId) this.ownerCompanyId = null;
     this.redistributeEqually();
+  }
+
+  isOwner(companyId: string): boolean {
+    return this.ownerCompanyId === companyId;
+  }
+
+  setOwner(companyId: string): void {
+    this.ownerCompanyId = companyId;
+  }
+
+  ownerCompanyName(): string {
+    return this.rows().find(r => r.companyId === this.ownerCompanyId)?.companyName ?? '';
   }
 
   redistributeEqually(): void {
@@ -181,11 +196,12 @@ export class ChargesComponent implements OnInit {
   // ── Sauvegarde ────────────────────────────────────────────────────────────
   save(): void {
     const title = this.title.trim();
-    if (!this.ownerCompanyId) { this.error.set('La compagnie propriétaire (fournisseur) est requise.'); return; }
     if (!title) { this.error.set('Le titre est requis.'); return; }
     if (this.amount == null || this.amount < 0) { this.error.set('Le montant est requis.'); return; }
-    if (this.rows().length === 0) { this.error.set('Sélectionnez au moins une compagnie.'); return; }
-    if (!this.totalValid()) { this.error.set(`La somme des pourcentages doit être égale à 100 % (actuellement ${this.totalPercentage().toFixed(2)} %).`); return; }
+    if (this.rows().length > 0 && !this.totalValid()) {
+      this.error.set(`La somme des pourcentages doit être égale à 100 % (actuellement ${this.totalPercentage().toFixed(2)} %).`);
+      return;
+    }
 
     const companies: ChargeCompanyItem[] = this.rows().map(r => ({ companyId: r.companyId, percentage: r.percentage }));
     const payload = { ownerCompanyId: this.ownerCompanyId, title, description: this.description.trim(), amount: this.amount, companies };
