@@ -1,0 +1,229 @@
+<div class="report-page">
+
+  <!-- ── En-tête ──────────────────────────────────────────────────────── -->
+  <div class="page-header">
+    <h1 class="page-title">Rapport de factures</h1>
+    <p class="page-sub">Sélectionnez un filtre, choisissez les factures et exportez.</p>
+  </div>
+
+  <!-- ── Panneau filtre ────────────────────────────────────────────────── -->
+  <section class="filter-card">
+
+    <!-- Toggle date / période -->
+    <div class="filter-toggle">
+      <button class="toggle-btn" [class.active]="filterMode() === 'date'"
+              (click)="setFilterMode('date')">
+        Par date de création
+      </button>
+      <button class="toggle-btn" [class.active]="filterMode() === 'period'"
+              (click)="setFilterMode('period')">
+        Par période
+      </button>
+    </div>
+
+    <!-- ── Filtre par date ──────────────────────────────────────────── -->
+    <div class="filter-row" *ngIf="filterMode() === 'date'">
+      <div class="field-group">
+        <label>Du</label>
+        <input type="date" [(ngModel)]="dateFrom" />
+      </div>
+      <div class="field-group">
+        <label>Au</label>
+        <input type="date" [(ngModel)]="dateTo" />
+      </div>
+    </div>
+
+    <!-- ── Filtre par périodes multiples ───────────────────────────── -->
+    <div class="filter-section" *ngIf="filterMode() === 'period'">
+      <div class="filter-row">
+        <div class="field-group">
+          <label>Période(s) — sélectionnez et cliquez Appliquer</label>
+          <div class="period-input-row">
+            <input type="month" [(ngModel)]="periodInput"
+                   (keydown.enter)="addPeriod()" />
+            <button class="btn-add" type="button" (click)="addPeriod()">+ Ajouter</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chips périodes -->
+      <div class="chips-row" *ngIf="periods().length > 0">
+        <span class="chip" *ngFor="let p of periods()">
+          {{ p }}
+          <button class="chip-rm" (click)="removePeriod(p)">✕</button>
+        </span>
+      </div>
+      <p class="filter-hint" *ngIf="!periods().length">
+        Ajoutez une ou plusieurs périodes.
+      </p>
+    </div>
+
+    <!-- ── Filtre par compagnies ────────────────────────────────────── -->
+    <div class="filter-section" *ngIf="availableCompanies().length > 0">
+      <div class="company-filter-hdr">
+        <span class="section-label">Compagnies</span>
+        <button class="btn-company-pick" (click)="openCompanyPopup($event)">
+          <span *ngIf="selectedCompanies().size === 0">Toutes — Modifier ▾</span>
+          <span *ngIf="selectedCompanies().size > 0">{{ selectedCompanies().size }} sélectionnée(s) — Modifier ▾</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Popup sélection compagnies ──────────────────────────────────── -->
+    <div class="popup-backdrop" *ngIf="companyPopupOpen()" (click)="closeCompanyPopup()">
+      <div class="company-popup" (click)="$event.stopPropagation()">
+
+        <div class="popup-hdr">
+          <span class="popup-title">Sélectionner des compagnies</span>
+          <button class="popup-close" (click)="closeCompanyPopup()">✕</button>
+        </div>
+
+        <div class="popup-toolbar">
+          <label class="check-all">
+            <input type="checkbox"
+                   [checked]="allCompaniesSelected()"
+                   [indeterminate]="someCompaniesSelected()"
+                   (change)="toggleAllCompanies()" />
+            <span>Tout sélectionner</span>
+          </label>
+          <input class="popup-search" type="text"
+                 [(ngModel)]="companySearch"
+                 placeholder="Rechercher…" />
+        </div>
+
+        <div class="popup-list">
+          <label class="popup-item" *ngFor="let name of filteredCompanies">
+            <input type="checkbox"
+                   [checked]="isCompanySelected(name)"
+                   (change)="toggleCompany(name)" />
+            <span>{{ name }}</span>
+          </label>
+          <p class="popup-empty" *ngIf="filteredCompanies.length === 0">Aucun résultat.</p>
+        </div>
+
+        <div class="popup-footer">
+          <button class="btn-popup-confirm" (click)="closeCompanyPopup()">Confirmer</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Bouton Appliquer ─────────────────────────────────────────── -->
+    <div class="filter-actions">
+      <button class="btn-apply" (click)="applyFilter()" [disabled]="loading()">
+        <span *ngIf="!loading()">Appliquer</span>
+        <span *ngIf="loading()">Chargement…</span>
+      </button>
+    </div>
+
+  </section>
+
+  <!-- ── Feedback ──────────────────────────────────────────────────────── -->
+  <div class="alert alert-error"   *ngIf="error()">{{ error() }}</div>
+  <div class="alert alert-success" *ngIf="success()">{{ success() }}</div>
+
+  <!-- ── Barre d'actions ──────────────────────────────────────────────── -->
+  <div class="action-bar" *ngIf="displayedBills().length > 0">
+    <span class="selection-info">
+      {{ selectedIds().size }} / {{ displayedBills().length }} facture(s) sélectionnée(s)
+    </span>
+
+    <div class="export-wrap">
+      <button class="btn-export"
+              [disabled]="!someSelected() || exporting()"
+              (click)="toggleExportMenu($event)">
+        <span *ngIf="!exporting()">Exporter ▾</span>
+        <span *ngIf="exporting()">Génération…</span>
+      </button>
+      <div class="export-menu" *ngIf="exportOpen()">
+        <button class="export-item" (click)="exportAs('summary')">
+          <span class="ei-icon">📄</span>
+          <span>
+            <strong>PDF Récapitulatif</strong>
+            <small>Tableau consolidé de toutes les factures sélectionnées</small>
+          </span>
+        </button>
+        <div class="export-divider"></div>
+        <button class="export-item" (click)="exportAs('merged')">
+          <span class="ei-icon">📑</span>
+          <span>
+            <strong>PDFs fusionnés</strong>
+            <small>Un seul fichier PDF contenant chaque facture complète</small>
+          </span>
+        </button>
+        <button class="export-item" (click)="exportAs('zip')">
+          <span class="ei-icon">🗜</span>
+          <span>
+            <strong>PDFs séparés (ZIP)</strong>
+            <small>Une archive ZIP avec un PDF par facture</small>
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Tableau ────────────────────────────────────────────────────────── -->
+  <div class="table-wrap" *ngIf="displayedBills().length > 0">
+    <table class="report-table">
+      <thead>
+        <tr>
+          <th class="col-check">
+            <input type="checkbox"
+                   [checked]="allSelected()"
+                   [indeterminate]="someSelected() && !allSelected()"
+                   (change)="toggleSelectAll()" />
+          </th>
+          <th>N° Facture</th>
+          <th>Compagnie</th>
+          <th>Période</th>
+          <th class="col-num">Montant HT</th>
+          <th class="col-num">TPS</th>
+          <th class="col-num">TVQ</th>
+          <th class="col-num col-ttc">Total TTC</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let b of displayedBills()"
+            [class.selected]="isSelected(b.billIdentifier)"
+            [class.avoir]="b.parentBillIdentifier !== null"
+            (click)="toggleSelect(b.billIdentifier)">
+          <td class="col-check" (click)="$event.stopPropagation()">
+            <input type="checkbox"
+                   [checked]="isSelected(b.billIdentifier)"
+                   (change)="toggleSelect(b.billIdentifier)" />
+          </td>
+          <td>
+            <span class="bill-num">{{ b.billNumber }}</span>
+            <span class="tag-avoir" *ngIf="b.parentBillIdentifier !== null">AVOIR</span>
+          </td>
+          <td>{{ b.companyName }}</td>
+          <td>{{ b.period }}</td>
+          <td class="col-num">{{ b.totalBeforeTax | number:'1.2-2' }} $</td>
+          <td class="col-num">{{ b.tps | number:'1.2-2' }} $</td>
+          <td class="col-num">{{ b.tvq | number:'1.2-2' }} $</td>
+          <td class="col-num col-ttc">{{ b.totalWithTax | number:'1.2-2' }} $</td>
+        </tr>
+      </tbody>
+
+      <!-- Ligne totaux sélection -->
+      <tfoot *ngIf="someSelected()">
+        <tr class="totals-row">
+          <td colspan="4">
+            Totaux — {{ selectedIds().size }} facture(s) sélectionnée(s)
+          </td>
+          <td class="col-num">{{ totals().ht  | number:'1.2-2' }} $</td>
+          <td class="col-num">{{ totals().tps | number:'1.2-2' }} $</td>
+          <td class="col-num">{{ totals().tvq | number:'1.2-2' }} $</td>
+          <td class="col-num col-ttc">{{ totals().ttc | number:'1.2-2' }} $</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- ── État vide ─────────────────────────────────────────────────────── -->
+  <div class="empty-state" *ngIf="!loading() && displayedBills().length === 0 && !error()">
+    <span class="empty-icon">📋</span>
+    <p>Appliquez un filtre pour charger les factures.</p>
+  </div>
+
+</div>

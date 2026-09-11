@@ -5,6 +5,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { InvoiceService, BillSummary, BillDetail } from '../../../state/invoice/invoice.service';
 import { ConfigService } from '../../../state/config/config.service';
 import { CompanyService, ContactItem } from '../../../state/compagny/Company.service';
@@ -67,6 +68,7 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
     private invoiceSvc:  InvoiceService,
     private configSvc:   ConfigService,
     private companySvc:  CompanyService,
+    private route:       ActivatedRoute,
     private cdr:         ChangeDetectorRef,
   ) {}
 
@@ -81,7 +83,9 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
         },
         error: err => E('Erreur chargement config', err),
       });
-    this._loadUnsent();
+
+    const preselectId = Number(this.route.snapshot.queryParamMap.get('billId')) || null;
+    this._loadUnsent(preselectId);
   }
 
   ngOnDestroy(): void {
@@ -95,7 +99,7 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
   }
 
   // ── Charger les factures non envoyées ─────────────────────────────────────
-  private _loadUnsent(): void {
+  private _loadUnsent(preselectId: number | null = null): void {
     L('_loadUnsent — GET /api/bills?onlyNotSent=true');
     this.loading.set(true);
     this.invoiceSvc.getAll({ onlyNotSent: true })
@@ -108,6 +112,16 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
           this.unsentBills.set(filtered);
           this.loading.set(false);
           this.cdr.markForCheck();
+
+          if (preselectId) {
+            const match = filtered.find(b => b.billIdentifier === preselectId);
+            if (match) {
+              L('Présélection depuis query param billId=%d', preselectId);
+              this.selectBill(match);
+            } else {
+              W('billId=%d introuvable parmi les factures non envoyées', preselectId);
+            }
+          }
         },
         error: err => {
           E('Erreur chargement factures', err.status, err.message);

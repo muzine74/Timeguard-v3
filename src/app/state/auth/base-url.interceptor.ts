@@ -1,6 +1,6 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 
-const API_BASE = 'http://timeguardsapi.net:4000';
+const API_BASE = 'https://timeguardsapi.net:4001';
 
 export const baseUrlInterceptor: HttpInterceptorFn = (req, next) => {
   if (req.url.startsWith('/api/')) {

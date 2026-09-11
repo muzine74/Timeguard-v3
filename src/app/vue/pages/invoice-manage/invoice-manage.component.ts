@@ -140,9 +140,6 @@ export class InvoiceManageComponent implements OnInit {
   dateFrom    = '';
   dateTo      = '';
 
-  // ── Envoi inline (sans modal) ─────────────────────────
-  sendingBillId = signal<number | null>(null);
-
   // ── Modal ─────────────────────────────────────────────
   modalMode     = signal<ModalMode>(null);
   selectedBill  = signal<BillSummary | null>(null);
@@ -209,27 +206,7 @@ export class InvoiceManageComponent implements OnInit {
     });
   }
 
-  // ── Confirmer envoi ───────────────────────────────────
-  markSentInline(bill: BillSummary, e: Event): void {
-    e.stopPropagation();
-    if (this.sendingBillId() !== null) return;
-    this.sendingBillId.set(bill.billIdentifier);
-
-    this.invoiceSvc.markSent(bill.billIdentifier).subscribe({
-      next: () => {
-        this.sendingBillId.set(null);
-        this.success.set(`Facture ${bill.billNumber} marquée comme envoyée.`);
-        this.loadBills();
-        setTimeout(() => this.success.set(''), 4000);
-      },
-      error: err => {
-        this.sendingBillId.set(null);
-        this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
-        setTimeout(() => this.error.set(''), 5000);
-      },
-    });
-  }
-
+  // ── Choix : mettre à jour le statut ou envoyer réellement ─────────────
   openSend(bill: BillSummary, e: Event): void {
     e.stopPropagation();
     this.selectedBill.set(bill);
@@ -256,6 +233,11 @@ export class InvoiceManageComponent implements OnInit {
     });
   }
 
+  goToRealSend(bill: BillSummary): void {
+    this.closeModal();
+    this.router.navigate(['/invoices/send'], { queryParams: { billId: bill.billIdentifier } });
+  }
+
   // ── Supprimer ─────────────────────────────────────────
   openDelete(bill: BillSummary, e: Event): void {
     e.stopPropagation();
@@ -268,9 +250,14 @@ export class InvoiceManageComponent implements OnInit {
     if (!bill) return;
     this.acting.set(true);
 
-    this.invoiceSvc.delete(bill.billIdentifier).subscribe({
+    const isAvoir = bill.parentBillIdentifier !== null;
+    const obs = isAvoir
+      ? this.invoiceSvc.deleteAvoir(bill.billIdentifier)
+      : this.invoiceSvc.delete(bill.billIdentifier);
+
+    obs.subscribe({
       next: () => {
-        this.success.set(`Facture ${bill.billNumber} supprimée.`);
+        this.success.set(`${isAvoir ? 'Avoir' : 'Facture'} ${bill.billNumber} supprimé(e).`);
         this.closeModal();
         this.loadBills();
         setTimeout(() => this.success.set(''), 4000);
@@ -312,9 +299,15 @@ export class InvoiceManageComponent implements OnInit {
     const bill = this.selectedBill();
     if (!bill) return;
     this.acting.set(true);
-    this.invoiceSvc.delete(bill.billIdentifier).subscribe({
+
+    const isAvoir = bill.parentBillIdentifier !== null;
+    const obs = isAvoir
+      ? this.invoiceSvc.deleteAvoir(bill.billIdentifier)
+      : this.invoiceSvc.delete(bill.billIdentifier);
+
+    obs.subscribe({
       next: () => {
-        this.success.set(`Facture ${bill.billNumber} supprimée.`);
+        this.success.set(`${isAvoir ? 'Avoir' : 'Facture'} ${bill.billNumber} supprimé(e).`);
         this.closeModal();
         this.loadBills();
         setTimeout(() => this.success.set(''), 4000);

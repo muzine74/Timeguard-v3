@@ -1,0 +1,134 @@
+<div class="report-page">
+
+  <!-- ── En-tête ──────────────────────────────────────────────────────── -->
+  <div class="page-header">
+    <h1 class="page-title">Téléchargement des factures</h1>
+    <p class="page-sub">Sélectionnez une période, un statut, puis téléchargez.</p>
+  </div>
+
+  <!-- ── Panneau filtre ────────────────────────────────────────────────── -->
+  <section class="filter-card">
+
+    <!-- Champ de date -->
+    <div class="filter-section">
+      <span class="section-label">Basée sur</span>
+      <div class="filter-toggle">
+        <button class="toggle-btn" [class.active]="dateField() === 'sent'"
+                (click)="setDateField('sent')">
+          Date d'envoi
+        </button>
+        <button class="toggle-btn" [class.active]="dateField() === 'paid'"
+                (click)="setDateField('paid')">
+          Date de paiement
+        </button>
+      </div>
+    </div>
+
+    <div class="filter-row">
+      <div class="field-group">
+        <label>Du</label>
+        <input type="date" [(ngModel)]="dateFrom" />
+      </div>
+      <div class="field-group">
+        <label>Au</label>
+        <input type="date" [(ngModel)]="dateTo" />
+      </div>
+    </div>
+
+    <!-- Statut -->
+    <div class="filter-section">
+      <span class="section-label">Statut</span>
+      <div class="filter-toggle">
+        <button class="toggle-btn" [class.active]="status() === 'all'"
+                (click)="setStatus('all')">Toutes</button>
+        <button class="toggle-btn" [class.active]="status() === 'paid'"
+                (click)="setStatus('paid')">Payées</button>
+        <button class="toggle-btn" [class.active]="status() === 'unpaid'"
+                (click)="setStatus('unpaid')">Non payées</button>
+      </div>
+    </div>
+
+    <!-- ── Bouton Rechercher ────────────────────────────────────────── -->
+    <div class="filter-actions">
+      <button class="btn-apply" (click)="search()" [disabled]="loading()">
+        <span *ngIf="!loading()">Rechercher</span>
+        <span *ngIf="loading()">Chargement…</span>
+      </button>
+    </div>
+
+  </section>
+
+  <!-- ── Feedback ──────────────────────────────────────────────────────── -->
+  <div class="alert alert-error"   *ngIf="error()">{{ error() }}</div>
+  <div class="alert alert-success" *ngIf="success()">{{ success() }}</div>
+
+  <!-- ── Barre d'actions ──────────────────────────────────────────────── -->
+  <div class="action-bar" *ngIf="bills().length > 0">
+    <span class="selection-info">
+      {{ selectedIds().size }} / {{ bills().length }} facture(s) sélectionnée(s)
+      <em *ngIf="selectedIds().size > 0">— les avoirs liés sont inclus automatiquement dans le PDF de chaque facture</em>
+    </span>
+
+    <button class="btn-export"
+            [disabled]="!someSelected() || downloading()"
+            (click)="download()">
+      <span *ngIf="!downloading()">Télécharger</span>
+      <span *ngIf="downloading()">Génération…</span>
+    </button>
+  </div>
+
+  <!-- ── Tableau ────────────────────────────────────────────────────────── -->
+  <div class="table-wrap" *ngIf="bills().length > 0">
+    <table class="report-table">
+      <thead>
+        <tr>
+          <th class="col-check">
+            <input type="checkbox"
+                   [checked]="allSelected()"
+                   [indeterminate]="someSelected() && !allSelected()"
+                   (change)="toggleSelectAll()" />
+          </th>
+          <th>N° Facture</th>
+          <th>Compagnie</th>
+          <th>Date d'envoi</th>
+          <th>Date de paiement</th>
+          <th class="col-num col-ttc">Total TTC</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let b of bills()"
+            [class.selected]="isSelected(b.billIdentifier)"
+            (click)="toggleSelect(b.billIdentifier)">
+          <td class="col-check" (click)="$event.stopPropagation()">
+            <input type="checkbox"
+                   [checked]="isSelected(b.billIdentifier)"
+                   (change)="toggleSelect(b.billIdentifier)" />
+          </td>
+          <td><span class="bill-num">{{ b.billNumber }}</span></td>
+          <td>{{ b.companyName }}</td>
+          <td>{{ b.sentDate ? (b.sentDate | date:'dd/MM/yyyy') : '—' }}</td>
+          <td>{{ b.paidDate ? (b.paidDate | date:'dd/MM/yyyy') : '—' }}</td>
+          <td class="col-num col-ttc">{{ b.totalWithTax | number:'1.2-2' }} $</td>
+        </tr>
+      </tbody>
+
+      <!-- Ligne totaux sélection -->
+      <tfoot *ngIf="someSelected()">
+        <tr class="totals-row">
+          <td colspan="4">
+            Totaux — {{ selectedIds().size }} facture(s) sélectionnée(s)
+          </td>
+          <td class="col-num"></td>
+          <td class="col-num col-ttc">{{ totals().ttc | number:'1.2-2' }} $</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- ── État vide ─────────────────────────────────────────────────────── -->
+  <div class="empty-state" *ngIf="!loading() && bills().length === 0 && !error()">
+    <span class="empty-icon">📥</span>
+    <p>Choisissez une période/statut puis cliquez sur Rechercher.</p>
+  </div>
+
+</div>

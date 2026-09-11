@@ -88,11 +88,9 @@
           <td class="col-right bill-amount">{{ row.node.data.totalWithTax | number:'1.2-2' }} $</td>
           <td class="col-center" (click)="$event.stopPropagation()">
             <button class="badge-btn badge-not-sent has-tooltip" *ngIf="!row.node.data.isSent"
-                    [attr.data-tooltip]="sendingBillId() === row.node.data.billIdentifier ? null : 'Marquer comme envoyée'"
-                    [disabled]="sendingBillId() !== null"
-                    (click)="markSentInline(row.node.data, $event)">
-              <span *ngIf="sendingBillId() !== row.node.data.billIdentifier">⏳ Non envoyée</span>
-              <span *ngIf="sendingBillId() === row.node.data.billIdentifier" class="spinner"></span>
+                    data-tooltip="Mettre à jour le statut ou envoyer"
+                    (click)="openSend(row.node.data, $event)">
+              ⏳ Non envoyée
             </button>
             <span class="badge badge-sent has-tooltip" *ngIf="row.node.data.isSent"
                   [attr.data-tooltip]="sentTitle(row.node.data)">
@@ -111,10 +109,12 @@
             </span>
           </td>
           <td class="col-actions" (click)="$event.stopPropagation()">
-            <button class="act-btn act-delete" *ngIf="!row.node.data.isSent"
-                    title="Supprimer"
+            <button class="act-btn act-delete"
+                    *ngIf="!row.node.data.isSent || row.node.data.parentBillIdentifier !== null"
+                    [title]="row.node.data.parentBillIdentifier !== null ? 'Supprimer l\'avoir' : 'Supprimer'"
                     (click)="openDelete(row.node.data, $event)">🗑</button>
             <button class="act-btn act-avoir"
+                    *ngIf="row.node.data.parentBillIdentifier === null"
                     [disabled]="!row.node.data.isSent"
                     [title]="row.node.data.isSent ? 'Créer un avoir' : 'La facture doit être envoyée'"
                     (click)="openAvoir(row.node.data, $event)">📋 Avoir</button>
@@ -225,23 +225,26 @@
       <!-- ── État normal ── -->
       <ng-container *ngIf="detailAction === null">
         <button class="btn btn-outline" (click)="closeModal()">Fermer</button>
-        <!-- Non envoyée : Modifier + Supprimer -->
-        <ng-container *ngIf="!selectedBill()?.isSent">
+        <!-- Facture non envoyée : Modifier + Supprimer -->
+        <ng-container *ngIf="!selectedBill()?.isSent && selectedBill()?.parentBillIdentifier === null">
           <button class="btn act-edit-btn" (click)="navigateEdit(selectedBill()!)">✎ Modifier</button>
           <button class="btn act-delete-btn" (click)="requestDetailDelete()">🗑 Supprimer</button>
         </ng-container>
-        <!-- Envoyée : Avoir -->
-        <button class="btn act-avoir-btn" *ngIf="selectedBill()?.isSent" (click)="openAvoir(selectedBill()!, $event)">📋 Avoir</button>
+        <!-- Avoir (toujours supprimable) -->
+        <button class="btn act-delete-btn" *ngIf="selectedBill()?.parentBillIdentifier !== null" (click)="requestDetailDelete()">🗑 Supprimer l'avoir</button>
+        <!-- Facture envoyée (non-avoir) : Avoir -->
+        <button class="btn act-avoir-btn" *ngIf="selectedBill()?.isSent && selectedBill()?.parentBillIdentifier === null" (click)="openAvoir(selectedBill()!, $event)">📋 Avoir</button>
       </ng-container>
 
       <!-- ── Confirmation envoi ── -->
       <ng-container *ngIf="detailAction === 'send'">
-        <span class="confirm-inline-txt">Marquer cette facture comme envoyée ? Action irréversible.</span>
+        <span class="confirm-inline-txt">Mettre à jour le statut (sans courriel) ou envoyer réellement la facture ?</span>
         <button class="btn btn-outline" [disabled]="acting()" (click)="cancelDetailAction()">Annuler</button>
-        <button class="btn act-send-btn" [disabled]="acting()" (click)="confirmDetailSend()">
-          <span *ngIf="!acting()">📤 Confirmer l'envoi</span>
+        <button class="btn btn-outline" [disabled]="acting()" (click)="confirmDetailSend()">
+          <span *ngIf="!acting()">🔄 Statut seulement</span>
           <span *ngIf="acting()" class="spinner"></span>
         </button>
+        <button class="btn act-send-btn" [disabled]="acting()" (click)="goToRealSend(selectedBill()!)">📧 Envoyer</button>
       </ng-container>
 
       <!-- ── Confirmation suppression ── -->
@@ -264,23 +267,24 @@
 <div class="modal-backdrop" *ngIf="modalMode() === 'send'" (click)="closeModal()">
   <div class="modal modal-sm" (click)="$event.stopPropagation()">
     <div class="modal-hdr">
-      <div class="modal-title">Confirmer l'envoi</div>
+      <div class="modal-title">Facture non envoyée</div>
       <button class="modal-close" (click)="closeModal()">✕</button>
     </div>
     <div class="modal-body">
       <div class="confirm-icon">📤</div>
       <p class="confirm-txt">
-        Marquer la facture <strong>{{ selectedBill()?.billNumber }}</strong>
-        de <strong>{{ selectedBill()?.companyName }}</strong> comme <strong>envoyée</strong> ?
+        Que voulez-vous faire pour la facture <strong>{{ selectedBill()?.billNumber }}</strong>
+        de <strong>{{ selectedBill()?.companyName }}</strong> ?
       </p>
-      <p class="confirm-warn">Cette action est irréversible. La facture ne pourra plus être supprimée.</p>
+      <p class="confirm-warn">"Mettre à jour le statut" n'envoie aucun courriel — à utiliser seulement si la facture a déjà été transmise autrement.</p>
     </div>
     <div class="modal-footer">
       <button class="btn btn-outline" (click)="closeModal()">Annuler</button>
-      <button class="btn btn-primary" [disabled]="acting()" (click)="confirmSend()">
-        <span *ngIf="!acting()">📤 Confirmer l'envoi</span>
+      <button class="btn btn-outline" [disabled]="acting()" (click)="confirmSend()">
+        <span *ngIf="!acting()">🔄 Mettre à jour le statut</span>
         <span *ngIf="acting()" class="spinner"></span>
       </button>
+      <button class="btn btn-primary" [disabled]="acting()" (click)="goToRealSend(selectedBill()!)">📧 Envoyer la facture</button>
     </div>
   </div>
 </div>
@@ -291,13 +295,14 @@
 <div class="modal-backdrop" *ngIf="modalMode() === 'delete'" (click)="closeModal()">
   <div class="modal modal-sm" (click)="$event.stopPropagation()">
     <div class="modal-hdr">
-      <div class="modal-title">Supprimer la facture</div>
+      <div class="modal-title">{{ selectedBill()?.parentBillIdentifier !== null ? 'Supprimer l\'avoir' : 'Supprimer la facture' }}</div>
       <button class="modal-close" (click)="closeModal()">✕</button>
     </div>
     <div class="modal-body">
       <div class="confirm-icon">🗑</div>
       <p class="confirm-txt">
-        Voulez-vous supprimer la facture <strong>{{ selectedBill()?.billNumber }}</strong>
+        Voulez-vous supprimer {{ selectedBill()?.parentBillIdentifier !== null ? 'l\'avoir' : 'la facture' }}
+        <strong>{{ selectedBill()?.billNumber }}</strong>
         de <strong>{{ selectedBill()?.companyName }}</strong> ?
       </p>
       <p class="confirm-warn">Cette action est irréversible.</p>

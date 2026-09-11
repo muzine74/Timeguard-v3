@@ -68,6 +68,12 @@ export interface BillFilter {
   onlyUnpaid?:  boolean;
   dateFrom?:    string;
   dateTo?:      string;
+  /** Filtre sur MouthBill (ex. "2024-06"). */
+  period?:      string;
+  /** Plusieurs périodes (prioritaires sur period). */
+  periods?:     string[];
+  /** Filtrer par noms de compagnies. */
+  companies?:   string[];
 }
 
 export interface SendEmailRequest {
@@ -134,6 +140,9 @@ export class InvoiceService {
     if (filter.onlyUnpaid)  params = params.set('onlyUnpaid',  'true');
     if (filter.dateFrom)    params = params.set('dateFrom',    filter.dateFrom);
     if (filter.dateTo)      params = params.set('dateTo',      filter.dateTo);
+    if (filter.period)      params = params.set('period',      filter.period);
+    if (filter.periods?.length)   params = params.set('periods',   filter.periods.join(','));
+    if (filter.companies?.length) params = params.set('companies', filter.companies.join(','));
 
     this._loading.set(true);
     return this.http.get<BillSummary[]>('/api/bills', { params }).pipe(
@@ -150,6 +159,14 @@ export class InvoiceService {
         },
       }),
     );
+  }
+
+  // ── Rapport (signal local, ne touche pas à _list) ────────────────────────
+  fetchReport(dateFrom?: string, dateTo?: string) {
+    let params = new HttpParams();
+    if (dateFrom) params = params.set('dateFrom', dateFrom);
+    if (dateTo)   params = params.set('dateTo',   dateTo);
+    return this.http.get<BillSummary[]>('/api/bills', { params });
   }
 
   // ── Détail ────────────────────────────────────────────────────────────────
@@ -228,6 +245,33 @@ export class InvoiceService {
       tap({
         next:  res => { this.log('✓ avoir créé:', res); this._saving.set(false); },
         error: err => { this.warn(`✕ POST /api/bills/${id}/avoir`, err); this._error.set(err?.error?.message ?? `HTTP ${err.status}`); this._saving.set(false); },
+      }),
+    );
+  }
+
+  // ── Exporter un rapport ───────────────────────────────────────────────
+  exportReport(billIds: number[], exportType: 'summary' | 'merged' | 'zip' | 'grouped', filterLabel = '') {
+    this.log(`exportReport(${exportType}, ${billIds.length} facture(s))`);
+    return this.http.post(
+      '/api/bills/report/export',
+      { billIds, exportType, filterLabel },
+      { responseType: 'blob' as const },
+    );
+  }
+
+  // ── Téléchargement des factures (recherche par date d'envoi/paiement + statut) ──
+  searchDownloadable(filter: { dateFrom?: string; dateTo?: string; dateField: 'sent' | 'paid'; status: 'all' | 'paid' | 'unpaid' }) {
+    this.log('searchDownloadable', filter);
+    return this.http.post<BillSummary[]>('/api/bills/download/search', filter);
+  }
+
+  // ── Supprimer un avoir ─────────────────────────────────────────────────
+  deleteAvoir(id: number) {
+    this.log(`deleteAvoir(${id})`);
+    return this.http.delete<{ message: string }>(`/api/bills/${id}/avoir`).pipe(
+      tap({
+        next:  res => { this.log('✓ avoir supprimé:', res); this._list.update(l => l.filter(b => b.billIdentifier !== id)); },
+        error: err => this.warn(`✕ DELETE /api/bills/${id}/avoir`, err),
       }),
     );
   }
