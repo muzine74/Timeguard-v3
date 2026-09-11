@@ -143,6 +143,15 @@
 .result-ok  { background: rgba(30,200,100,.12);  color: #4ecb80; }
 .result-err { background: rgba(224,82,82,.12); color: var(--danger); }
 
+// ── Symbole planifié vs réel ────────────────────────────────
+.match-symbol {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px; border-radius: 50%;
+  font-size: 12px; font-weight: 700; margin-right: 6px;
+}
+.match-ok  { background: rgba(30,200,100,.15); color: #4ecb80; }
+.match-err { background: rgba(224,82,82,.15);  color: var(--danger); }
+
 // ── Groupes de prix ───────────────────────────────────────
 .price-group {
   display: flex; align-items: center; gap: 6px;

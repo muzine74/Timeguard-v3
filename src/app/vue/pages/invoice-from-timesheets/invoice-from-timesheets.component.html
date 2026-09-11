@@ -87,6 +87,12 @@
               <td class="col-num" [class.mismatch-text]="hasDiscrepancy(r)">{{ r.tvq          | number:'1.2-2' }} $</td>
               <td class="col-num col-ttc" [class.mismatch-text]="hasDiscrepancy(r)">{{ r.totalWithTax | number:'1.2-2' }} $</td>
               <td class="col-status">
+                <span class="match-symbol"
+                      [class.match-ok]="!hasDiscrepancy(r)"
+                      [class.match-err]="hasDiscrepancy(r)"
+                      [title]="hasDiscrepancy(r) ? 'Le montant réel diffère du planifié' : 'Le montant réel correspond au planifié'">
+                  {{ hasDiscrepancy(r) ? '✕' : '✓' }}
+                </span>
                 <span *ngIf="r.genResult" class="result-badge"
                       [class.result-ok]="r.genResult.ok"
                       [class.result-err]="!r.genResult.ok">
