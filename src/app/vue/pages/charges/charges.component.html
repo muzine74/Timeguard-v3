@@ -98,7 +98,7 @@
           <label>Compagnie propriétaire (fournisseur) <span class="req">*</span></label>
           <select [(ngModel)]="ownerCompanyId">
             <option value="" disabled>Sélectionner…</option>
-            <option *ngFor="let c of companies()" [value]="c.companyId">{{ c.companyName }}</option>
+            <option *ngFor="let c of activeCompanies()" [value]="c.companyId">{{ c.companyName }}</option>
           </select>
         </div>
 
@@ -130,7 +130,7 @@
               <span class="co-name"><strong>Toutes</strong></span>
             </label>
 
-            <div class="company-check-row" *ngFor="let c of companies()">
+            <div class="company-check-row" *ngFor="let c of activeCompanies()">
               <label class="check-label">
                 <input type="checkbox"
                        [checked]="isCompanyChecked(c.companyId)"
@@ -146,7 +146,7 @@
               </ng-container>
             </div>
           </div>
-          <p class="filter-hint" *ngIf="companies().length === 0">Aucune compagnie disponible.</p>
+          <p class="filter-hint" *ngIf="activeCompanies().length === 0">Aucune compagnie disponible.</p>
 
           <div class="total-row" *ngIf="rows().length > 0">
             <button class="btn-link" type="button" (click)="redistributeEqually()">Répartir également</button>

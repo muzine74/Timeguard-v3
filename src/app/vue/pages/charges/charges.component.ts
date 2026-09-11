@@ -46,8 +46,10 @@ export class ChargesComponent implements OnInit {
   totalPercentage = computed(() => this.rows().reduce((s, r) => s + (+r.percentage || 0), 0));
   totalValid      = computed(() => Math.abs(this.totalPercentage() - 100) < 0.01);
 
+  activeCompanies = computed(() => this.companies().filter(c => c.isActive));
+
   allCompaniesChecked = computed(() => {
-    const total = this.companies().length;
+    const total = this.activeCompanies().length;
     return total > 0 && this.rows().length === total;
   });
   someCompaniesChecked = computed(() =>
@@ -148,7 +150,7 @@ export class ChargesComponent implements OnInit {
 
   toggleAllCompanies(checked: boolean): void {
     this.rows.set(checked
-      ? this.companies().map(c => ({ companyId: c.companyId, companyName: c.companyName, percentage: 0 }))
+      ? this.activeCompanies().map(c => ({ companyId: c.companyId, companyName: c.companyName, percentage: 0 }))
       : []);
     this.redistributeEqually();
   }
