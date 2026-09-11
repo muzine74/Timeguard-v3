@@ -1,0 +1,77 @@
+<div class="page-wrap">
+
+  <header class="page-hdr">
+    <div>
+      <h1 class="page-title">Notes</h1>
+      <p class="page-sub">Ajoutez des notes et activez/désactivez-les selon leur pertinence</p>
+    </div>
+  </header>
+
+  <!-- ── Ajouter une note ─────────────────────────────────────────────────── -->
+  <div class="add-card">
+    <textarea class="inp inp-textarea"
+              placeholder="Écrire une nouvelle note…"
+              [(ngModel)]="newText"
+              [disabled]="saving()"
+              rows="2"></textarea>
+    <div class="add-actions">
+      <label class="toggle-wrap">
+        <input type="checkbox" [(ngModel)]="newActive" [disabled]="saving()">
+        <span>Active</span>
+      </label>
+      <button class="btn btn-primary" [disabled]="!newText.trim() || saving()" (click)="add()">
+        <span *ngIf="!saving()">+ Ajouter</span>
+        <span *ngIf="saving()" class="spinner"></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="err-msg" *ngIf="error()">{{ error() }}</div>
+
+  <!-- ── Liste ────────────────────────────────────────────────────────────── -->
+  <div class="loading-wrap" *ngIf="loading()">
+    <div class="spinner"></div>
+    <span>Chargement…</span>
+  </div>
+
+  <ng-container *ngIf="!loading()">
+    <div class="note-list" *ngIf="notes().length > 0">
+      <div class="note-card" *ngFor="let n of notes()" [class.note-inactive]="!n.isActive">
+
+        <ng-container *ngIf="editingId !== n.noteId">
+          <div class="note-body">
+            <p class="note-text">{{ n.text }}</p>
+            <span class="note-date">{{ fmtDate(n.createdAt) }}</span>
+          </div>
+          <div class="note-actions">
+            <label class="toggle-wrap">
+              <input type="checkbox" [checked]="n.isActive" (change)="toggleActive(n)">
+              <span>{{ n.isActive ? 'Active' : 'Inactive' }}</span>
+            </label>
+            <button class="btn-icon" title="Modifier" (click)="startEdit(n)">✎</button>
+            <button class="btn-icon btn-icon-danger" title="Supprimer" (click)="remove(n)">✕</button>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="editingId === n.noteId">
+          <textarea class="inp inp-textarea" [(ngModel)]="editText" rows="2"></textarea>
+          <div class="add-actions">
+            <label class="toggle-wrap">
+              <input type="checkbox" [(ngModel)]="editActive">
+              <span>Active</span>
+            </label>
+            <button class="btn btn-ghost" (click)="cancelEdit()">Annuler</button>
+            <button class="btn btn-primary" [disabled]="!editText.trim()" (click)="saveEdit(n)">Enregistrer</button>
+          </div>
+        </ng-container>
+
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="notes().length === 0">
+      <div class="empty-icon">📝</div>
+      <div class="empty-txt">Aucune note pour le moment</div>
+    </div>
+  </ng-container>
+
+</div>

@@ -23,6 +23,11 @@ import { AuthService } from '../../../state/auth/auth.service';
           Feuille de temps
         </a>
 
+        <!-- ── Notes (accessible à tous les utilisateurs connectés) ── -->
+        <a class="nav-link" routerLink="/notes" routerLinkActive="active">
+          📝 Notes
+        </a>
+
           <!-- Dropdown Employés -->
           <div class="nav-dropdown" [class.is-open]="openMenu() === 'emp'" *ngIf="auth.hasPerm('employees.view')">
             <button class="nav-link dropdown-btn" (click)="toggleDrop('emp', $event)">
@@ -125,6 +130,9 @@ import { AuthService } from '../../../state/auth/auth.service';
 
       <!-- Feuille de temps -->
       <a class="mobile-link" routerLink="/pointage" routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('pointage.view')">Feuille de temps</a>
+
+      <!-- Notes (accessible à tous les utilisateurs connectés) -->
+      <a class="mobile-link" routerLink="/notes" routerLinkActive="active" (click)="closeMenu()">📝 Notes</a>
 
         <ng-container *ngIf="auth.hasPerm('employees.view')">
           <div class="mobile-section-label">Employés</div>

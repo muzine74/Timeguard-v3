@@ -24,6 +24,13 @@ export const permGuard = (key: string): CanActivateFn => () => {
   return auth.hasPerm(key) ? true : router.createUrlTree(['/']);
 };
 
+/** Guard générique — accessible à tout utilisateur connecté, sans permission spécifique. */
+export const authGuard: CanActivateFn = () => {
+  const auth = inject(AuthService); const router = inject(Router);
+  const fail = _check(auth, router);
+  return fail ?? true;
+};
+
 /** Guard réservé au super utilisateur. */
 export const superUserGuard: CanActivateFn = () => {
   const auth   = inject(AuthService);

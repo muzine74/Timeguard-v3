@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { permGuard, homeGuard, superUserGuard } from './state/auth/auth.guard';
+import { permGuard, homeGuard, superUserGuard, authGuard } from './state/auth/auth.guard';
 import { PERM } from './state/auth/permissions';
 
 export const routes: Routes = [
@@ -145,6 +145,13 @@ export const routes: Routes = [
     path: 'stats/company/:id',
     canActivate: [permGuard(PERM.statsView)],
     loadComponent: () => import('./vue/pages/stats-company-detail/stats-company-detail.component').then(m => m.StatsCompanyDetailComponent)
+  },
+
+  // ── Notes ────────────────────────────────────────────────────────────────
+  {
+    path: 'notes',
+    canActivate: [authGuard],
+    loadComponent: () => import('./vue/pages/notes/notes.component').then(m => m.NotesComponent)
   },
 
   // ── Groupes & accès ───────────────────────────────────────────────────────
