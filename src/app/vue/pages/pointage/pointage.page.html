@@ -24,7 +24,7 @@
 
       <!-- Valider : visible admin, semaine non verrouillée, activé après save -->
       <button class="btn btn-validate"
-              *ngIf="auth.canManage() && !isLocked()"
+              *ngIf="auth.canValidatePointage() && !isLocked()"
               [disabled]="validating() || !hasSaved()"
               (click)="validateWeek()">
         <span *ngIf="!validating()">✅ Valider la semaine</span>
@@ -32,7 +32,7 @@
       </button>
       <!-- Annuler validation : visible admin, semaine verrouillée -->
       <button class="btn btn-danger-sm"
-              *ngIf="auth.canManage() && isLocked()"
+              *ngIf="auth.canValidatePointage() && isLocked()"
               [disabled]="validating()"
               (click)="unvalidateWeek()">
         <span *ngIf="!validating()">🔓 Annuler la validation</span>

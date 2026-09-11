@@ -83,14 +83,14 @@
           <button class="btn-ghost" (click)="ptEmpSvc.clearAll()">Effacer</button>
         </ng-container>
         <button class="btn btn-validate"
-                *ngIf="auth.canManage() && !isLocked()"
+                *ngIf="auth.canValidatePointage() && !isLocked()"
                 [disabled]="validating() || !hasSaved()"
                 (click)="validateWeek()">
           <span *ngIf="!validating()">✅ Valider la semaine</span>
           <span *ngIf="validating()" class="spinner"></span>
         </button>
         <button class="btn btn-danger-sm"
-                *ngIf="auth.canManage() && isLocked()"
+                *ngIf="auth.canValidatePointage() && isLocked()"
                 [disabled]="validating()"
                 (click)="unvalidateWeek()">
           <span *ngIf="!validating()">🔓 Annuler la validation</span>

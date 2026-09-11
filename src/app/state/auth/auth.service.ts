@@ -22,6 +22,7 @@ export class AuthService {
       .some(p => this._permSet().has(p))
   );
   readonly canPointage = computed(() => this._permSet().has('pointage.view'));
+  readonly canValidatePointage = computed(() => this._permSet().has('pointage.validate'));
   readonly loggedInWithAccess = computed(() => this.loggedIn() && (this.canManage() || this.canPointage()));
   readonly employeeId  = computed(() => this._user()?.employeeId  ?? null);
   readonly tenantId    = computed(() => this._user()?.tenantId    ?? null);
