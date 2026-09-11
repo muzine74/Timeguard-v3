@@ -289,8 +289,9 @@
   &:focus { border-color: var(--accent); }
 }
 
-// Le picker natif "month" rend son icône en sombre, invisible sur fond sombre
-input[type="month"].inp {
+// Le picker natif "month"/"date" rend son icône en sombre, invisible sur fond sombre
+input[type="month"].inp,
+input[type="date"].inp {
   color-scheme: dark;
 
   &::-webkit-calendar-picker-indicator {
