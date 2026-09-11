@@ -89,6 +89,9 @@ import { AuthService } from '../../../state/auth/auth.service';
               <a class="dropdown-item" routerLink="/invoices/download" routerLinkActive="active" *ngIf="auth.hasPerm('invoices.view')" (click)="closeDrop()">
                 <span class="di-icon">📥</span> Téléchargement des factures
               </a>
+              <a class="dropdown-item" routerLink="/charges" routerLinkActive="active" *ngIf="auth.hasPerm('invoices.view')" (click)="closeDrop()">
+                <span class="di-icon">💰</span> Charges
+              </a>
             </div>
           </div>
 
@@ -168,6 +171,7 @@ import { AuthService } from '../../../state/auth/auth.service';
           <a class="mobile-link mobile-sub" routerLink="/invoices/from-timesheets" routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('invoices.edit')">Facturer par pointages</a>
           <a class="mobile-link mobile-sub" routerLink="/invoices/send"            routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('invoices.send')">✉ Envoyer les factures</a>
           <a class="mobile-link mobile-sub" routerLink="/invoices/download" routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('invoices.view')">📥 Téléchargement des factures</a>
+          <a class="mobile-link mobile-sub" routerLink="/charges" routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('invoices.view')">💰 Charges</a>
         </ng-container>
         <ng-container *ngIf="auth.hasPerm('invoices.view') || auth.hasPerm('stats.view')">
           <div class="mobile-section-label">Rapports</div>

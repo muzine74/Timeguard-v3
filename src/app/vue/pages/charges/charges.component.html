@@ -1,0 +1,186 @@
+<div class="charges-page">
+
+  <!-- ── En-tête ──────────────────────────────────────────────────────── -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Charges</h1>
+      <p class="page-sub">Gérer les charges partagées entre compagnies.</p>
+    </div>
+    <button class="btn-primary" (click)="openCreate()">+ Nouvelle charge</button>
+  </div>
+
+  <!-- ── Feedback ──────────────────────────────────────────────────────── -->
+  <div class="alert alert-error"   *ngIf="error() && !modalOpen()">{{ error() }}</div>
+  <div class="alert alert-success" *ngIf="success()">{{ success() }}</div>
+
+  <!-- ── Tableau ────────────────────────────────────────────────────────── -->
+  <div class="table-wrap" *ngIf="!loading() && charges().length > 0">
+    <table class="charges-table">
+      <thead>
+        <tr>
+          <th class="col-expand"></th>
+          <th>Titre</th>
+          <th>Compagnies</th>
+          <th class="col-num">Montant</th>
+          <th class="col-num">Documents</th>
+          <th>Créée le</th>
+          <th class="col-actions"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let c of charges()">
+          <tr class="charge-row" (click)="toggleExpand(c)">
+            <td class="col-expand">{{ isExpanded(c) ? '▼' : '▶' }}</td>
+            <td>
+              <span class="charge-title">{{ c.title }}</span>
+              <div class="charge-desc" *ngIf="c.description">{{ c.description }}</div>
+            </td>
+            <td>
+              <span class="tag-company" *ngFor="let co of c.companies">
+                {{ co.companyName }} — {{ co.percentage }}%
+              </span>
+            </td>
+            <td class="col-num">{{ c.amount | number:'1.2-2' }} $</td>
+            <td class="col-num">{{ c.documents.length }}</td>
+            <td>{{ fmtDate(c.createdAt) }}</td>
+            <td class="col-actions" (click)="$event.stopPropagation()">
+              <button class="btn-icon" title="Modifier" (click)="openEdit(c, $event)">✏️</button>
+              <button class="btn-icon" title="Supprimer" (click)="remove(c, $event)">🗑️</button>
+            </td>
+          </tr>
+          <tr class="charge-detail-row" *ngIf="isExpanded(c)">
+            <td colspan="7">
+              <div class="charge-detail">
+                <div class="detail-companies">
+                  <strong>Répartition</strong>
+                  <div class="detail-co-row" *ngFor="let co of c.companies">
+                    <span>{{ co.companyName }}</span>
+                    <span>{{ co.percentage }}%</span>
+                    <span>{{ co.amount | number:'1.2-2' }} $</span>
+                  </div>
+                </div>
+                <div class="detail-documents">
+                  <strong>Documents ({{ c.documents.length }})</strong>
+                  <p class="doc-empty" *ngIf="c.documents.length === 0">Aucun document.</p>
+                  <div class="doc-row" *ngFor="let d of c.documents">
+                    <span>📄 {{ d.originalName }}</span>
+                    <span class="doc-date">{{ fmtDate(d.uploadedAt) }}</span>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="empty-state" *ngIf="!loading() && charges().length === 0">
+    <span class="empty-icon">💰</span>
+    <p>Aucune charge. Cliquez sur "Nouvelle charge" pour en créer une.</p>
+  </div>
+
+  <!-- ── Modale création/édition ──────────────────────────────────────────── -->
+  <div class="popup-backdrop" *ngIf="modalOpen()" (click)="closeModal()">
+    <div class="charge-modal" (click)="$event.stopPropagation()">
+
+      <div class="popup-hdr">
+        <span class="popup-title">{{ editingId ? 'Modifier la charge' : 'Nouvelle charge' }}</span>
+        <button class="popup-close" (click)="closeModal()">✕</button>
+      </div>
+
+      <div class="popup-body">
+        <div class="alert alert-error" *ngIf="error()">{{ error() }}</div>
+
+        <div class="field-group">
+          <label>Titre <span class="req">*</span></label>
+          <input type="text" [(ngModel)]="title" placeholder="Ex. Assurance, Loyer, Comptabilité…" />
+        </div>
+
+        <div class="field-group">
+          <label>Description</label>
+          <textarea [(ngModel)]="description" rows="2" placeholder="Optionnel"></textarea>
+        </div>
+
+        <div class="field-group">
+          <label>Montant total <span class="req">*</span></label>
+          <input type="number" min="0" step="0.01" [(ngModel)]="amount" placeholder="0.00" />
+        </div>
+
+        <!-- ── Compagnies ────────────────────────────────────────────── -->
+        <div class="field-group">
+          <div class="companies-hdr">
+            <label>Compagnies <span class="req">*</span></label>
+            <button class="btn-add" type="button" (click)="openCompanyPicker($event)">+ Ajouter</button>
+          </div>
+
+          <div class="company-rows" *ngIf="rows().length > 0">
+            <div class="company-row" *ngFor="let r of rows()">
+              <span class="co-name">{{ r.companyName }}</span>
+              <input type="number" min="0" max="100" step="0.01" class="co-pct"
+                     [ngModel]="r.percentage"
+                     (ngModelChange)="onPercentageChange(r.companyId, $event)" />
+              <span class="co-pct-sign">%</span>
+              <span class="co-amount" *ngIf="amount != null">{{ (amount * r.percentage / 100) | number:'1.2-2' }} $</span>
+              <button class="btn-remove" type="button" (click)="removeCompany(r.companyId)">✕</button>
+            </div>
+          </div>
+          <p class="filter-hint" *ngIf="rows().length === 0">Ajoutez au moins une compagnie.</p>
+
+          <div class="total-row" *ngIf="rows().length > 0">
+            <button class="btn-link" type="button" (click)="redistributeEqually()">Répartir également</button>
+            <span [class.total-ok]="totalValid()" [class.total-bad]="!totalValid()">
+              Total : {{ totalPercentage().toFixed(2) }} %
+            </span>
+          </div>
+        </div>
+
+        <!-- ── Popup sélection compagnie ─────────────────────────────── -->
+        <div class="popup-backdrop nested" *ngIf="companyPickerOpen()" (click)="companyPickerOpen.set(false)">
+          <div class="company-popup" (click)="$event.stopPropagation()">
+            <div class="popup-hdr">
+              <span class="popup-title">Ajouter une compagnie</span>
+              <button class="popup-close" (click)="companyPickerOpen.set(false)">✕</button>
+            </div>
+            <div class="popup-toolbar">
+              <input class="popup-search" type="text" [(ngModel)]="companySearch" placeholder="Rechercher…" />
+            </div>
+            <div class="popup-list">
+              <button class="popup-item" type="button" *ngFor="let c of availableCompanies()" (click)="addCompany(c)">
+                <span>{{ c.companyName }}</span>
+              </button>
+              <p class="popup-empty" *ngIf="availableCompanies().length === 0">Aucune compagnie disponible.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Documents (édition seulement) ─────────────────────────── -->
+        <div class="field-group" *ngIf="editingId">
+          <label>Documents</label>
+          <div class="doc-rows">
+            <div class="doc-row" *ngFor="let d of documents()">
+              <span class="doc-name" (click)="downloadDocument(d)">📄 {{ d.originalName }}</span>
+              <button class="btn-remove" type="button" (click)="removeDocument(d)">✕</button>
+            </div>
+            <p class="doc-empty" *ngIf="documents().length === 0">Aucun document.</p>
+          </div>
+          <input type="file" (change)="onFileSelected($event)" [disabled]="uploading()" />
+          <p class="filter-hint" *ngIf="uploading()">Envoi en cours…</p>
+        </div>
+        <p class="filter-hint" *ngIf="!editingId">
+          Les documents pourront être ajoutés après la création de la charge.
+        </p>
+      </div>
+
+      <div class="popup-footer">
+        <button class="btn-cancel" type="button" (click)="closeModal()">Annuler</button>
+        <button class="btn-popup-confirm" type="button" [disabled]="saving()" (click)="save()">
+          <span *ngIf="!saving()">{{ editingId ? 'Enregistrer' : 'Créer' }}</span>
+          <span *ngIf="saving()">Enregistrement…</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

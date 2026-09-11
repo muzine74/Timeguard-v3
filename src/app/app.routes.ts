@@ -136,6 +136,13 @@ export const routes: Routes = [
       import('./vue/pages/invoice-download/invoice-download.component')
         .then(m => m.InvoiceDownloadComponent)
   },
+  {
+    path: 'charges',
+    canActivate: [permGuard(PERM.invoicesView)],
+    loadComponent: () =>
+      import('./vue/pages/charges/charges.component')
+        .then(m => m.ChargesComponent)
+  },
 
   // ── Statistiques ─────────────────────────────────────────────────────────
   {

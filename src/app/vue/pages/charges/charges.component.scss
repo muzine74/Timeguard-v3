@@ -1,0 +1,342 @@
+// ── Mise en page globale ──────────────────────────────────────────────────
+.charges-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  .page-title { font-size: 1.6rem; font-weight: 700; color: var(--text); margin: 0 0 .25rem; }
+  .page-sub   { color: var(--muted); font-size: .9rem; margin: 0; }
+}
+
+.btn-primary {
+  padding: .6rem 1.4rem;
+  background: rgba(201, 162, 39, .15);
+  color: var(--accent);
+  border: 1px solid rgba(201, 162, 39, .4);
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: .9rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s;
+  &:hover { background: rgba(201, 162, 39, .25); }
+}
+
+// ── Alertes ───────────────────────────────────────────────────────────────
+.alert {
+  padding: .75rem 1rem;
+  border-radius: 8px;
+  font-size: .9rem;
+  font-weight: 500;
+  &.alert-error   { background: rgba(224,82,82,.1);  color: var(--danger);  border: 1px solid rgba(224,82,82,.3); }
+  &.alert-success { background: rgba(59,170,110,.1); color: var(--success); border: 1px solid rgba(59,170,110,.3); }
+}
+
+// ── Tableau ───────────────────────────────────────────────────────────────
+.table-wrap {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.charges-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .875rem;
+  background: var(--surface);
+
+  thead tr { background: var(--surface2); border-bottom: 1px solid var(--border); }
+  th {
+    padding: .75rem 1rem;
+    font-weight: 700;
+    font-size: .78rem;
+    letter-spacing: .04em;
+    text-align: left;
+    white-space: nowrap;
+    color: var(--muted);
+  }
+  td { padding: .65rem 1rem; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; background: var(--surface); }
+
+  .charge-row { cursor: pointer; transition: background .1s; &:hover td { background: var(--surface2); } }
+  .col-expand { width: 28px; text-align: center; color: var(--muted); }
+  .col-num    { text-align: right; font-variant-numeric: tabular-nums; }
+  .col-actions { text-align: right; white-space: nowrap; }
+}
+
+.charge-title { font-weight: 600; }
+.charge-desc  { font-size: .78rem; color: var(--muted); margin-top: .15rem; }
+
+.tag-company {
+  display: inline-block;
+  margin: .1rem .3rem .1rem 0;
+  padding: .1rem .5rem;
+  background: rgba(201, 162, 39, .12);
+  border: 1px solid rgba(201, 162, 39, .3);
+  color: var(--accent);
+  border-radius: 20px;
+  font-size: .75rem;
+  font-weight: 600;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: .95rem;
+  padding: .2rem .4rem;
+  border-radius: 4px;
+  &:hover { background: var(--surface2); }
+}
+
+.charge-detail-row td { background: var(--surface2); padding: 1rem 1.5rem; }
+.charge-detail { display: flex; gap: 2.5rem; flex-wrap: wrap; }
+.detail-companies, .detail-documents { flex: 1; min-width: 220px; }
+.detail-co-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 1rem;
+  padding: .3rem 0;
+  font-size: .85rem;
+  border-bottom: 1px solid var(--border);
+}
+.doc-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .3rem 0;
+  font-size: .85rem;
+  border-bottom: 1px solid var(--border);
+}
+.doc-date  { color: var(--muted); font-size: .78rem; }
+.doc-empty { color: var(--muted); font-size: .85rem; font-style: italic; }
+
+// ── État vide ─────────────────────────────────────────────────────────────
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--muted);
+  .empty-icon { font-size: 2.5rem; display: block; margin-bottom: .75rem; }
+  p { font-size: .95rem; margin: 0; }
+}
+
+// ── Champs de formulaire (modale) ───────────────────────────────────────────
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  margin-bottom: 1rem;
+
+  label {
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .req { color: var(--danger); }
+
+  input, textarea {
+    padding: .5rem .75rem;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    font-size: .9rem;
+    color: var(--text);
+    background: var(--surface2);
+    font-family: inherit;
+    color-scheme: dark;
+    &:focus { outline: none; border-color: var(--accent); }
+  }
+  textarea { resize: vertical; }
+}
+
+.filter-hint { font-size: .8rem; color: var(--muted); font-style: italic; margin: .3rem 0 0; }
+
+// ── Compagnies (dans la modale) ─────────────────────────────────────────────
+.companies-hdr { display: flex; align-items: center; justify-content: space-between; }
+
+.btn-add {
+  padding: .35rem .9rem;
+  background: var(--surface2);
+  color: var(--accent);
+  border: 1px solid rgba(201, 162, 39, .4);
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: .8rem;
+  cursor: pointer;
+  &:hover { background: rgba(201, 162, 39, .15); }
+}
+
+.company-rows { display: flex; flex-direction: column; gap: .4rem; margin-top: .5rem; }
+
+.company-row {
+  display: grid;
+  grid-template-columns: 1fr 70px auto 90px auto;
+  align-items: center;
+  gap: .5rem;
+  padding: .4rem .6rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+
+  .co-name { font-size: .85rem; font-weight: 600; }
+  .co-pct  { width: 70px; text-align: right; padding: .3rem .4rem; }
+  .co-pct-sign { color: var(--muted); font-size: .8rem; }
+  .co-amount { font-size: .8rem; color: var(--muted); text-align: right; white-space: nowrap; }
+}
+
+.btn-remove {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: .85rem;
+  padding: .1rem .3rem;
+  &:hover { color: var(--danger); }
+}
+
+.total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: .5rem;
+  font-size: .85rem;
+  font-weight: 700;
+
+  .total-ok  { color: var(--success); }
+  .total-bad { color: var(--danger); }
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: .8rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  &:hover { text-decoration: underline; }
+}
+
+// ── Documents (édition) ─────────────────────────────────────────────────────
+.doc-rows { margin-bottom: .5rem; }
+.doc-name { cursor: pointer; &:hover { color: var(--accent); text-decoration: underline; } }
+
+// ── Popup / modale (réutilise le pattern des autres pages) ─────────────────
+.popup-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .55);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+
+  &.nested { z-index: 250; }
+}
+
+.charge-modal, .company-popup {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .5);
+  overflow: hidden;
+}
+
+.company-popup { max-width: 420px; max-height: 70vh; }
+
+.popup-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.popup-title { font-size: 1rem; font-weight: 700; color: var(--text); }
+.popup-close {
+  background: none; border: none; color: var(--muted); font-size: 1rem;
+  cursor: pointer; line-height: 1; padding: .2rem .4rem; border-radius: 4px;
+  &:hover { color: var(--text); background: var(--surface2); }
+}
+
+.popup-body { padding: 1.25rem; overflow-y: auto; }
+
+.popup-toolbar { padding: .75rem 1.25rem; border-bottom: 1px solid var(--border); background: var(--surface2); }
+.popup-search {
+  width: 100%; padding: .4rem .7rem; background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: 6px; color: var(--text); font-size: .85rem; font-family: inherit; outline: none;
+  &:focus { border-color: var(--accent); }
+  &::placeholder { color: var(--muted); font-style: italic; }
+}
+
+.popup-list { flex: 1; overflow-y: auto; padding: .5rem 0; }
+.popup-item {
+  display: flex; align-items: center; width: 100%; gap: .65rem; padding: .6rem 1.25rem;
+  font-size: .9rem; color: var(--text); cursor: pointer; background: none; border: none; text-align: left;
+  transition: background .1s;
+  &:hover { background: var(--surface2); }
+}
+.popup-empty { text-align: center; padding: 1.5rem; color: var(--muted); font-size: .875rem; font-style: italic; }
+
+.popup-footer {
+  padding: .85rem 1.25rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: .6rem;
+  flex-shrink: 0;
+}
+
+.btn-cancel {
+  padding: .5rem 1.4rem;
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: .9rem;
+  cursor: pointer;
+  &:hover { border-color: var(--muted); }
+}
+
+.btn-popup-confirm {
+  padding: .5rem 1.6rem;
+  background: rgba(201, 162, 39, .15);
+  color: var(--accent);
+  border: 1px solid rgba(201, 162, 39, .4);
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: .9rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .15s;
+  &:disabled { opacity: .55; cursor: default; }
+  &:hover:not(:disabled) { background: rgba(201, 162, 39, .25); }
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────
+@media (max-width: 640px) {
+  .charges-page { padding: 1rem; }
+  .page-header { flex-direction: column; align-items: stretch; }
+  .btn-primary { width: 100%; }
+  .company-row { grid-template-columns: 1fr 60px auto; }
+  .co-amount { display: none; }
+  .charge-detail { flex-direction: column; gap: 1.25rem; }
+}
