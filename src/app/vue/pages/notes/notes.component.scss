@@ -110,6 +110,17 @@
   word-break: break-word;
 }
 
+.note-author {
+  flex-shrink: 0;
+  font-size: .72rem;
+  color: var(--text-muted);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
 .note-actions {
   display: flex;
   align-items: center;

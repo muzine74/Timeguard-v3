@@ -47,6 +47,7 @@
         <div class="note-header" (click)="toggleExpand(n)">
           <span class="expand-arrow" [class.expanded]="isExpanded(n)">▸</span>
           <span class="note-title">{{ n.title }}</span>
+          <span class="note-author" *ngIf="n.createdByEmployeeName">{{ n.createdByEmployeeName }}</span>
           <div class="note-actions">
             <label class="toggle-wrap" (click)="$event.stopPropagation()">
               <input type="checkbox" [checked]="n.isActive" (change)="toggleActive(n, $event)">

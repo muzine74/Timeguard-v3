@@ -2,11 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 export interface NoteItem {
-  noteId:      string;
-  title:       string;
-  description: string;
-  isActive:    boolean;
-  createdAt:   string;
+  noteId:                string;
+  title:                 string;
+  description:           string;
+  isActive:              boolean;
+  createdAt:             string;
+  createdByEmployeeId:   string;
+  createdByEmployeeName: string;
 }
 
 export interface NoteCreatePayload {
