@@ -81,7 +81,7 @@
 .count-pending { background: rgba(201,162,39,.12); color: var(--accent); }
 
 // ── Table ─────────────────────────────────────────────────
-.table-wrap { overflow-x: auto; }
+.table-wrap { overflow-x: auto; width: 100%; }
 
 .data-table {
   width: 100%; border-collapse: collapse; table-layout: fixed;
@@ -104,6 +104,8 @@
   }
   tr:last-child td { border-bottom: none; }
 
+  @media (max-width: 640px) { min-width: 560px; }
+
   // Largeurs fixes — alignement garanti
   th.col-chk,    td.col-chk    { width: 44px;  min-width: 44px;  text-align: center; }
   th.col-num,    td.col-num    { width: 108px; min-width: 108px; text-align: right; }
@@ -115,10 +117,12 @@
 .table-pending td { color: var(--muted); }
 .col-ttc { font-weight: 700; color: var(--accent); }
 
-.row-checked td { background: rgba(30,200,100,.03); }
-.row-ok td      { background: rgba(30,200,100,.07); }
-.row-err td     { background: rgba(224,82,82,.07); }
-.row-pending    { opacity: .7; }
+.row-checked  td { background: rgba(30,200,100,.03); }
+// Écart planifié / réel — priorité visuelle plus basse que le résultat de génération (ok/err)
+.row-mismatch td { background: rgba(230,160,20,.10); border-left: 3px solid rgba(230,160,20,.6); }
+.row-ok       td { background: rgba(30,200,100,.07); }
+.row-err      td { background: rgba(224,82,82,.07); }
+.row-pending     { opacity: .7; }
 
 // ── Compagnie ─────────────────────────────────────────────
 .co-name { font-weight: 600; }

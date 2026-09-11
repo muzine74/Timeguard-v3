@@ -169,6 +169,11 @@ export class InvoiceFromTimesheetsComponent implements OnInit {
     return { ...co, checked: false, tps, tvq, totalWithTax };
   }
 
+  /** Écart entre le montant planifié (calendrier tarifaire) et le montant réel (pointages). */
+  hasDiscrepancy(row: EligibleRow): boolean {
+    return Math.abs(row.plannedAmount - row.totalAmount) > 0.01;
+  }
+
   private _currentPeriod(): string {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;

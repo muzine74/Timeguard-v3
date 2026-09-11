@@ -91,6 +91,10 @@ export interface BillableCompanyItem {
   priceGroups:  BillablePriceGroup[];
   /** Semaines (lundi yyyy-MM-dd) dont le pointage n'est pas encore validé. */
   pendingWeeks: string[];
+  /** Nombre de jours cochés dans le calendrier de tarification pour la période. */
+  plannedDays:   number;
+  /** Montant total attendu selon le calendrier de tarification pour la période. */
+  plannedAmount: number;
 }
 
 export interface BillableCompanies {

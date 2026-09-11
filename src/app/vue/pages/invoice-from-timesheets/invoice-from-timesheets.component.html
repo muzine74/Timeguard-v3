@@ -54,6 +54,7 @@
                        (change)="toggleAll($any($event.target).checked)" />
               </th>
               <th>Compagnie</th>
+              <th>Jours planifiés / Prix</th>
               <th>Visites / Prix</th>
               <th class="col-num">Sous-total</th>
               <th class="col-num">TPS (5 %)</th>
@@ -66,13 +67,21 @@
             <tr *ngFor="let r of rows"
                 [class.row-checked]="r.checked"
                 [class.row-ok]="r.genResult?.ok === true"
-                [class.row-err]="r.genResult?.ok === false">
+                [class.row-err]="r.genResult?.ok === false"
+                [class.row-mismatch]="hasDiscrepancy(r)"
+                [title]="hasDiscrepancy(r) ? 'Le montant planifié diffère du montant réel des visites' : ''">
               <td class="col-chk">
                 <input type="checkbox" [(ngModel)]="r.checked" [disabled]="generating()" />
               </td>
               <td class="co-name">
                 {{ r.companyName }}
                 <span class="co-code" *ngIf="r.companyCode">{{ r.companyCode }}</span>
+              </td>
+              <td class="col-groups">
+                <div class="price-group">
+                  <span class="pg-visits">{{ r.plannedDays }}×</span>
+                  <span class="pg-sub">= {{ r.plannedAmount | number:'1.2-2' }}&nbsp;$</span>
+                </div>
               </td>
               <td class="col-groups">
                 <div class="price-group" *ngFor="let g of r.priceGroups">
