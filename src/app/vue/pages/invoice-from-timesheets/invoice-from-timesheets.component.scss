@@ -118,10 +118,14 @@
 .col-ttc { font-weight: 700; color: var(--accent); }
 
 .row-checked  td { background: rgba(30,200,100,.03); }
-// Écart planifié / réel — priorité visuelle plus basse que le résultat de génération (ok/err)
-.row-mismatch td { background: rgba(230,160,20,.10); border-left: 3px solid rgba(230,160,20,.6); }
 .row-ok       td { background: rgba(30,200,100,.07); }
 .row-err      td { background: rgba(224,82,82,.07); }
+
+// Écart planifié / réel — texte des cellules concernées en rouge
+.mismatch-text {
+  color: #e05252;
+  .pg-visits, .pg-price, .pg-sub { color: inherit; }
+}
 .row-pending     { opacity: .7; }
 
 // ── Compagnie ─────────────────────────────────────────────
