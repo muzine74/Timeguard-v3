@@ -55,12 +55,12 @@
               </th>
               <th>Compagnie</th>
               <th>Jours planifiés / Prix</th>
-              <th>Visites / Prix</th>
               <th class="col-num">Sous-total</th>
               <th class="col-num">TPS (5 %)</th>
               <th class="col-num">TVQ (9,975 %)</th>
               <th class="col-num">Total TTC</th>
               <th class="col-status">Résultat</th>
+              <th>Visites / Prix</th>
             </tr>
           </thead>
           <tbody>
@@ -82,6 +82,17 @@
                   <span class="pg-sub">= {{ r.plannedAmount | number:'1.2-2' }}&nbsp;$</span>
                 </div>
               </td>
+              <td class="col-num" [class.mismatch-text]="hasDiscrepancy(r)">{{ r.totalAmount | number:'1.2-2' }} $</td>
+              <td class="col-num" [class.mismatch-text]="hasDiscrepancy(r)">{{ r.tps          | number:'1.2-2' }} $</td>
+              <td class="col-num" [class.mismatch-text]="hasDiscrepancy(r)">{{ r.tvq          | number:'1.2-2' }} $</td>
+              <td class="col-num col-ttc" [class.mismatch-text]="hasDiscrepancy(r)">{{ r.totalWithTax | number:'1.2-2' }} $</td>
+              <td class="col-status">
+                <span *ngIf="r.genResult" class="result-badge"
+                      [class.result-ok]="r.genResult.ok"
+                      [class.result-err]="!r.genResult.ok">
+                  {{ r.genResult.label }}
+                </span>
+              </td>
               <td class="col-groups" [class.mismatch-text]="hasDiscrepancy(r)"
                   [title]="hasDiscrepancy(r) ? 'Diffère du montant planifié' : ''">
                 <div class="price-group" *ngFor="let g of r.priceGroups">
@@ -93,17 +104,6 @@
                   <span class="pg-visits">{{ r.totalVisits }}×</span>
                   <span class="pg-price muted">–</span>
                 </div>
-              </td>
-              <td class="col-num" [class.mismatch-text]="hasDiscrepancy(r)">{{ r.totalAmount | number:'1.2-2' }} $</td>
-              <td class="col-num" [class.mismatch-text]="hasDiscrepancy(r)">{{ r.tps          | number:'1.2-2' }} $</td>
-              <td class="col-num" [class.mismatch-text]="hasDiscrepancy(r)">{{ r.tvq          | number:'1.2-2' }} $</td>
-              <td class="col-num col-ttc" [class.mismatch-text]="hasDiscrepancy(r)">{{ r.totalWithTax | number:'1.2-2' }} $</td>
-              <td class="col-status">
-                <span *ngIf="r.genResult" class="result-badge"
-                      [class.result-ok]="r.genResult.ok"
-                      [class.result-err]="!r.genResult.ok">
-                  {{ r.genResult.label }}
-                </span>
               </td>
             </tr>
           </tbody>
