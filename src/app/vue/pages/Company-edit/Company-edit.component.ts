@@ -275,18 +275,25 @@ export class CompanyEditComponent implements OnInit {
   addJourMensuel(): void {
     const used = new Set(this.form.joursMensuel.map(j => j.jour));
     const next = Array.from({length:31},(_,i)=>i+1).find(n => !used.has(n)) ?? 1;
-    this.form.joursMensuel.push({ jour: next, actif: true, compagnie: 0, employe: 0 });
-    this.form.joursMensuel.sort((a, b) => a.jour - b.jour);
+    this.form.joursMensuel = [...this.form.joursMensuel, { jour: next, actif: true, compagnie: 0, employe: 0, applicatedDate: null }]
+      .sort((a, b) => a.jour - b.jour);
+    this.cdr.markForCheck();
   }
 
-  stepJourLigne(index: number, delta: number): void {
+  onJourChange(index: number): void {
     const j = this.form.joursMensuel[index];
-    const next = Math.max(1, Math.min(31, j.jour + delta));
-    const used = new Set(this.form.joursMensuel.map((x, i) => i !== index ? x.jour : null));
-    if (!used.has(next)) j.jour = next;
+    j.jour = Math.max(1, Math.min(31, Math.round(+j.jour) || 1));
+    const duplicate = this.form.joursMensuel.some((x, i) => i !== index && x.jour === j.jour);
+    if (!duplicate) {
+      this.form.joursMensuel = [...this.form.joursMensuel].sort((a, b) => a.jour - b.jour);
+    }
+    this.cdr.markForCheck();
   }
 
-  removeJourMensuel(index: number): void { this.form.joursMensuel.splice(index, 1); }
+  removeJourMensuel(index: number): void {
+    this.form.joursMensuel = this.form.joursMensuel.filter((_, i) => i !== index);
+    this.cdr.markForCheck();
+  }
 
   cancel(): void { this.router.navigate(['/employees']); }
 

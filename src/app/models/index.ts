@@ -139,10 +139,11 @@ export interface FreqOption {
 }
 
 export interface JourMensuel {
-  jour:      number;
-  actif:     boolean;
-  compagnie: number;
-  employe:   number;
+  jour:            number;
+  actif:           boolean;
+  compagnie:       number;
+  employe:         number;
+  applicatedDate?: string | null;  // "yyyy-MM-dd" or null = always applicable
 }
 
 export interface JourPlanning {

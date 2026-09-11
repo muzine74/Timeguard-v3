@@ -298,14 +298,13 @@
             </div>
             <div class="mensuel-wrap">
               <div class="mensuel-row" *ngFor="let j of form.joursMensuel; let i = index">
-                <div class="jour-stepper">
-                  <button class="step-btn" (click)="stepJourLigne(i, -1)">◀</button>
-                  <div class="step-val">{{ j.jour }}</div>
-                  <button class="step-btn" (click)="stepJourLigne(i, 1)">▶</button>
-                </div>
+                <input class="inp-num" type="number" min="1" max="31"
+                       [(ngModel)]="j.jour" (change)="onJourChange(i)"
+                       style="width:55px;text-align:center;font-weight:600" title="Jour du mois (1–31)" />
                 <input type="checkbox" [(ngModel)]="j.actif" />
                 <input class="inp-num" type="number" min="0" step="0.01" [(ngModel)]="j.compagnie" [disabled]="!j.actif" placeholder="Cie $" />
                 <input class="inp-num" type="number" min="0" step="0.01" [(ngModel)]="j.employe"   [disabled]="!j.actif" placeholder="Emp $" />
+                <input class="inp" type="date" [(ngModel)]="j.applicatedDate" [disabled]="!j.actif" title="Date d'application (vide = toujours applicable)" style="width:145px;font-size:0.8rem" />
                 <button class="btn-remove" (click)="removeJourMensuel(i)">✕</button>
               </div>
               <div class="mensuel-empty" *ngIf="form.joursMensuel.length === 0">
