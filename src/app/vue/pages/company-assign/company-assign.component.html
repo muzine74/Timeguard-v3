@@ -1,5 +1,21 @@
 <div class="page-layout">
 
+  <!-- ── Mobile : dropdown employés (≤1023px) ── -->
+  <div class="mob-select-wrap">
+    <select class="mob-select"
+            [value]="selected()?.employeeId ?? ''"
+            (change)="selectEmpById($any($event.target).value)">
+      <option value="">— Sélectionner un employé —</option>
+      <option *ngFor="let e of filteredEmps()" [value]="e.employeeId">
+        {{ e.employeeName }}
+      </option>
+    </select>
+    <div class="mob-result" *ngIf="selected()">
+      <span class="mob-result-name">👤 {{ selected()!.employeeName }}</span>
+      <span class="mob-result-meta">{{ assigned().size }} compagnie(s) assignée(s)</span>
+    </div>
+  </div>
+
   <!-- ── Sidebar employés ── -->
   <aside class="sidebar">
     <div class="sidebar-hdr">

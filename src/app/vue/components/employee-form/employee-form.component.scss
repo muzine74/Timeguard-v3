@@ -158,3 +158,17 @@ label {
   position: absolute; right: 8px; font-size: 8px; font-weight: 700;
   color: rgba(201,162,39,.45); text-transform: uppercase; pointer-events: none;
 }
+
+// ── Collapse (mobile/tablette uniquement) ────────────────
+.btn-collapse {
+  display: none;
+  padding: 5px 10px; border-radius: 8px; font-size: 11px;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--muted); cursor: pointer; font-family: inherit;
+  transition: all .15s; flex-shrink: 0;
+  &:hover { border-color: var(--accent); color: var(--accent); }
+}
+@media (max-width: 1023px) {
+  .btn-collapse { display: inline-flex; align-items: center; }
+  .form-body-collapsed { display: none; }
+}

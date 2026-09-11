@@ -151,6 +151,11 @@ export class CompanyAssignComponent implements OnInit {
     });
   }
 
+  selectEmpById(id: string): void {
+    const e = this.employees().find(emp => emp.employeeId === id);
+    if (e) this.select(e);
+  }
+
   // ── Helpers ───────────────────────────────────────────
   initials(name: string): string {
     const parts = name.trim().split(/\s+/);

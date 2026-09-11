@@ -18,7 +18,9 @@ export class EmployeeFormComponent {
   @Output() weekChange     = new EventEmitter<Date>();
   @Output() employeeChange = new EventEmitter<Partial<Employee>>();
 
-  editMode = signal(false);
+  editMode  = signal(false);
+  collapsed = signal(window.innerWidth <= 1023);
+  toggleCollapse(): void { this.collapsed.update(v => !v); }
 
   // Infos personnelles
   infoFields = [

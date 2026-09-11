@@ -74,3 +74,20 @@
   .earn-co  { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .4px; }
   .earn-sub { font-size: 14px; }
 }
+
+// ── En-tête collapse (mobile/tablette uniquement) ─────────
+.stats-hdr {
+  display: none;
+}
+@media (max-width: 1023px) {
+  .stats-hdr {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px; cursor: pointer; user-select: none;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    margin-bottom: 10px; transition: background .15s;
+    &:hover { background: var(--surface2); }
+  }
+  .stats-hdr-title { font-size: 13px; font-weight: 700; }
+  .stats-hdr-toggle { font-size: 11px; color: var(--muted); }
+  .stats-body-collapsed { display: none; }
+}

@@ -203,3 +203,11 @@
 .empty-txt   { font-size: 13px; color: var(--muted); }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+// ── Responsive ───────────────────────────────────────────
+@media (max-width: 1023px) {
+  .groups-layout { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .page-wrap { padding: 14px 12px; }
+}

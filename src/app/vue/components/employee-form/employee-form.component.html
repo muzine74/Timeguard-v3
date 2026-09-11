@@ -12,9 +12,13 @@
           {{ editMode() ? '✓ Terminer' : '✏ Modifier' }}
         </button>
       </ng-container>
+      <button class="btn-collapse" (click)="toggleCollapse()" [title]="collapsed() ? 'Développer' : 'Réduire'">
+        {{ collapsed() ? '▶' : '▼' }}
+      </button>
     </div>
   </div>
 
+  <div class="form-body" [class.form-body-collapsed]="collapsed()">
   <!-- Ligne 1 : Infos personnelles | Adresse -->
   <div class="form-row">
 
@@ -70,6 +74,6 @@
     </div>
 
   </div>
-
+  </div><!-- /.form-body -->
 
 </div>

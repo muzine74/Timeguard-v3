@@ -1,5 +1,21 @@
 <div class="page-layout">
 
+  <!-- ── Mobile : dropdown compagnies (≤1023px) ── -->
+  <div class="mob-select-wrap">
+    <select class="mob-select"
+            [value]="selectedCo()?.companyId ?? ''"
+            (change)="selectCoById($any($event.target).value)">
+      <option value="">— Sélectionner une compagnie —</option>
+      <option *ngFor="let c of activeCompanies; trackBy: trackByCompanyId" [value]="c.companyId">
+        {{ c.companyName }}
+      </option>
+    </select>
+    <div class="mob-result" *ngIf="selectedCo()">
+      <span class="mob-result-name">🏢 {{ selectedCo()!.companyName }}</span>
+      <span class="mob-result-meta">{{ assigned().size }} employé(s) assigné(s)</span>
+    </div>
+  </div>
+
   <!-- ── Sidebar compagnies ── -->
   <aside class="sidebar">
     <div class="sidebar-hdr">

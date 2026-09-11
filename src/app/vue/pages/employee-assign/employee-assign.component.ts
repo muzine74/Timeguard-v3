@@ -152,6 +152,15 @@ export class EmployeeAssignComponent implements OnInit {
     });
   }
 
+  get activeCompanies(): CompanySummary[] {
+    return this.companies().filter(c => c.isActive);
+  }
+
+  selectCoById(id: string): void {
+    const c = this.companies().find(co => co.companyId === id);
+    if (c) this.selectCompany(c);
+  }
+
   trackByCompanyId(_: number, c: CompanySummary): string { return c.companyId; }
   trackByEmployeeId(_: number, e: { employeeId: string }): string { return e.employeeId; }
 
