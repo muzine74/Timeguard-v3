@@ -36,6 +36,7 @@ export class InvoiceFromTimesheetsComponent implements OnInit {
   get allChecked(): boolean  { return this.rows.length > 0 && this.rows.every(r => r.checked); }
   get noneChecked(): boolean { return this.rows.every(r => !r.checked); }
   get checkedRows(): EligibleRow[] { return this.rows.filter(r => r.checked); }
+  get hasAnyDiscrepancy(): boolean { return this.rows.some(r => this.hasDiscrepancy(r)); }
 
   private _tpsRate   = 0.05;
   private _tvqRate   = 0.09975;

@@ -43,6 +43,11 @@
         <span class="section-hint">Toutes les semaines ont été validées</span>
       </div>
 
+      <div class="warning-banner" *ngIf="hasAnyDiscrepancy">
+        ⚠️ Écart détecté sur au moins une compagnie (symbole ✕ rouge) — revérifiez la facture avant de la générer :
+        le montant ou le nombre de visites ne correspond pas au planning.
+      </div>
+
       <div class="table-wrap" *ngIf="rows.length > 0">
         <table class="data-table">
           <thead>
@@ -90,7 +95,9 @@
                 <span class="match-symbol"
                       [class.match-ok]="!hasDiscrepancy(r)"
                       [class.match-err]="hasDiscrepancy(r)"
-                      [title]="hasDiscrepancy(r) ? 'Le montant réel diffère du planifié' : 'Le montant réel correspond au planifié'">
+                      [title]="hasDiscrepancy(r)
+                        ? 'Écart détecté — revérifiez la facture avant de la générer (montant ou nombre de visites incorrect)'
+                        : 'Le montant réel correspond au planifié'">
                   {{ hasDiscrepancy(r) ? '✕' : '✓' }}
                 </span>
                 <span *ngIf="r.genResult" class="result-badge"
