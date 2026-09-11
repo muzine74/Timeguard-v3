@@ -59,13 +59,13 @@
                        (change)="toggleAll($any($event.target).checked)" />
               </th>
               <th>Compagnie</th>
-              <th>Jours planifiés / Prix</th>
+              <th>Visites / Prix</th>
               <th class="col-num">Sous-total</th>
               <th class="col-num">TPS (5 %)</th>
               <th class="col-num">TVQ (9,975 %)</th>
               <th class="col-num">Total TTC</th>
               <th class="col-status">Résultat</th>
-              <th>Visites / Prix</th>
+              <th>Jours planifiés / Prix</th>
             </tr>
           </thead>
           <tbody>
@@ -81,10 +81,15 @@
                 <span class="co-code" *ngIf="r.companyCode">{{ r.companyCode }}</span>
               </td>
               <td class="col-groups" [class.mismatch-text]="hasDiscrepancy(r)"
-                  [title]="hasDiscrepancy(r) ? 'Diffère du montant réel des visites' : ''">
-                <div class="price-group">
-                  <span class="pg-visits">{{ r.plannedDays }}×</span>
-                  <span class="pg-sub">= {{ r.plannedAmount | number:'1.2-2' }}&nbsp;$</span>
+                  [title]="hasDiscrepancy(r) ? 'Diffère du montant planifié' : ''">
+                <div class="price-group" *ngFor="let g of r.priceGroups">
+                  <span class="pg-visits">{{ g.visits }}×</span>
+                  <span class="pg-price">{{ g.unitPrice | number:'1.2-2' }}&nbsp;$</span>
+                  <span class="pg-sub">= {{ g.subtotal | number:'1.2-2' }}&nbsp;$</span>
+                </div>
+                <div class="price-group" *ngIf="!r.priceGroups?.length">
+                  <span class="pg-visits">{{ r.totalVisits }}×</span>
+                  <span class="pg-price muted">–</span>
                 </div>
               </td>
               <td class="col-num" [class.mismatch-text]="hasDiscrepancy(r)">{{ r.totalAmount | number:'1.2-2' }} $</td>
@@ -107,15 +112,10 @@
                 </span>
               </td>
               <td class="col-groups" [class.mismatch-text]="hasDiscrepancy(r)"
-                  [title]="hasDiscrepancy(r) ? 'Diffère du montant planifié' : ''">
-                <div class="price-group" *ngFor="let g of r.priceGroups">
-                  <span class="pg-visits">{{ g.visits }}×</span>
-                  <span class="pg-price">{{ g.unitPrice | number:'1.2-2' }}&nbsp;$</span>
-                  <span class="pg-sub">= {{ g.subtotal | number:'1.2-2' }}&nbsp;$</span>
-                </div>
-                <div class="price-group" *ngIf="!r.priceGroups?.length">
-                  <span class="pg-visits">{{ r.totalVisits }}×</span>
-                  <span class="pg-price muted">–</span>
+                  [title]="hasDiscrepancy(r) ? 'Diffère du montant réel des visites' : ''">
+                <div class="price-group">
+                  <span class="pg-visits">{{ r.plannedDays }}×</span>
+                  <span class="pg-sub">= {{ r.plannedAmount | number:'1.2-2' }}&nbsp;$</span>
                 </div>
               </td>
             </tr>
