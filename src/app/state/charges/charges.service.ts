@@ -18,6 +18,7 @@ export interface ChargeDocument {
 }
 
 export interface ChargePayload {
+  ownerCompanyId: string;
   title:       string;
   description?: string;
   amount:      number;
@@ -26,6 +27,8 @@ export interface ChargePayload {
 
 export interface ChargeItem {
   chargeId:    string;
+  ownerCompanyId:   string;
+  ownerCompanyName: string;
   title:       string;
   description?: string;
   amount:      number;

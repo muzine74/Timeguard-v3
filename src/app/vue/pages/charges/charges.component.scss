@@ -146,7 +146,7 @@
   }
   .req { color: var(--danger); }
 
-  input, textarea {
+  input, textarea, select {
     padding: .5rem .75rem;
     border: 1.5px solid var(--border);
     border-radius: 6px;
@@ -177,19 +177,49 @@
   &:hover { background: rgba(201, 162, 39, .15); }
 }
 
-.company-rows { display: flex; flex-direction: column; gap: .4rem; margin-top: .5rem; }
+.company-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+  margin-top: .5rem;
+  max-height: 260px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .5rem;
+}
 
-.company-row {
+.company-check-row {
   display: grid;
-  grid-template-columns: 1fr 70px auto 90px auto;
+  grid-template-columns: 1fr 70px auto 90px;
   align-items: center;
   gap: .5rem;
-  padding: .4rem .6rem;
-  background: var(--surface2);
-  border: 1px solid var(--border);
+  padding: .35rem .5rem;
   border-radius: 6px;
+  &:hover { background: var(--surface2); }
 
-  .co-name { font-size: .85rem; font-weight: 600; }
+  &.all-row {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    border-radius: 0;
+    margin-bottom: .3rem;
+    padding-bottom: .5rem;
+  }
+
+  .check-label {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    cursor: pointer;
+    min-width: 0;
+  }
+
+  input[type="checkbox"] { accent-color: var(--accent); cursor: pointer; width: 15px; height: 15px; flex-shrink: 0; }
+
+  .co-name { font-size: .85rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .co-pct  { width: 70px; text-align: right; padding: .3rem .4rem; }
   .co-pct-sign { color: var(--muted); font-size: .8rem; }
   .co-amount { font-size: .8rem; color: var(--muted); text-align: right; white-space: nowrap; }

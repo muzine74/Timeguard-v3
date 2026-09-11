@@ -32,13 +32,11 @@ export class ChargesComponent implements OnInit {
   // ── Modal (création / édition) ───────────────────────────────────────────
   modalOpen  = signal(false);
   editingId: string | null = null;
+  ownerCompanyId = '';
   title       = '';
   description = '';
   amount: number | null = null;
   rows = signal<CompanyRow[]>([]);
-
-  companyPickerOpen = signal(false);
-  companySearch = '';
 
   documents = signal<ChargeItem['documents']>([]);
   uploading = signal(false);
@@ -48,13 +46,13 @@ export class ChargesComponent implements OnInit {
   totalPercentage = computed(() => this.rows().reduce((s, r) => s + (+r.percentage || 0), 0));
   totalValid      = computed(() => Math.abs(this.totalPercentage() - 100) < 0.01);
 
-  availableCompanies = computed(() => {
-    const used = new Set(this.rows().map(r => r.companyId));
-    const q = this.companySearch.toLowerCase();
-    return this.companies()
-      .filter(c => !used.has(c.companyId))
-      .filter(c => !q || c.companyName.toLowerCase().includes(q));
+  allCompaniesChecked = computed(() => {
+    const total = this.companies().length;
+    return total > 0 && this.rows().length === total;
   });
+  someCompaniesChecked = computed(() =>
+    this.rows().length > 0 && !this.allCompaniesChecked()
+  );
 
   constructor(
     private chargesSvc: ChargesService,
@@ -102,10 +100,11 @@ export class ChargesComponent implements OnInit {
 
   // ── Modal — ouverture ─────────────────────────────────────────────────────
   openCreate(): void {
-    this.editingId   = null;
-    this.title       = '';
-    this.description = '';
-    this.amount      = null;
+    this.editingId      = null;
+    this.ownerCompanyId = '';
+    this.title          = '';
+    this.description    = '';
+    this.amount         = null;
     this.rows.set([]);
     this.documents.set([]);
     this.error.set('');
@@ -114,10 +113,11 @@ export class ChargesComponent implements OnInit {
 
   openEdit(charge: ChargeItem, event: Event): void {
     event.stopPropagation();
-    this.editingId   = charge.chargeId;
-    this.title       = charge.title;
-    this.description = charge.description ?? '';
-    this.amount      = charge.amount;
+    this.editingId      = charge.chargeId;
+    this.ownerCompanyId = charge.ownerCompanyId;
+    this.title          = charge.title;
+    this.description    = charge.description ?? '';
+    this.amount         = charge.amount;
     this.rows.set(charge.companies.map(c => ({ companyId: c.companyId, companyName: c.companyName, percentage: c.percentage })));
     this.documents.set(charge.documents);
     this.error.set('');
@@ -126,20 +126,31 @@ export class ChargesComponent implements OnInit {
 
   closeModal(): void {
     this.modalOpen.set(false);
-    this.companyPickerOpen.set(false);
   }
 
-  // ── Compagnies — sélection + répartition ─────────────────────────────────
-  openCompanyPicker(e: MouseEvent): void {
-    e.stopPropagation();
-    this.companySearch = '';
-    this.companyPickerOpen.set(true);
+  // ── Compagnies — sélection (checkbox) + répartition ──────────────────────
+  isCompanyChecked(companyId: string): boolean {
+    return this.rows().some(r => r.companyId === companyId);
   }
 
-  addCompany(c: CompanySummary): void {
-    this.rows.update(rows => [...rows, { companyId: c.companyId, companyName: c.companyName, percentage: 0 }]);
+  pctOf(companyId: string): number {
+    return this.rows().find(r => r.companyId === companyId)?.percentage ?? 0;
+  }
+
+  toggleCompany(c: CompanySummary, checked: boolean): void {
+    if (checked) {
+      this.rows.update(rows => [...rows, { companyId: c.companyId, companyName: c.companyName, percentage: 0 }]);
+    } else {
+      this.rows.update(rows => rows.filter(r => r.companyId !== c.companyId));
+    }
     this.redistributeEqually();
-    this.companyPickerOpen.set(false);
+  }
+
+  toggleAllCompanies(checked: boolean): void {
+    this.rows.set(checked
+      ? this.companies().map(c => ({ companyId: c.companyId, companyName: c.companyName, percentage: 0 }))
+      : []);
+    this.redistributeEqually();
   }
 
   removeCompany(companyId: string): void {
@@ -168,13 +179,14 @@ export class ChargesComponent implements OnInit {
   // ── Sauvegarde ────────────────────────────────────────────────────────────
   save(): void {
     const title = this.title.trim();
+    if (!this.ownerCompanyId) { this.error.set('La compagnie propriétaire (fournisseur) est requise.'); return; }
     if (!title) { this.error.set('Le titre est requis.'); return; }
     if (this.amount == null || this.amount < 0) { this.error.set('Le montant est requis.'); return; }
     if (this.rows().length === 0) { this.error.set('Sélectionnez au moins une compagnie.'); return; }
     if (!this.totalValid()) { this.error.set(`La somme des pourcentages doit être égale à 100 % (actuellement ${this.totalPercentage().toFixed(2)} %).`); return; }
 
     const companies: ChargeCompanyItem[] = this.rows().map(r => ({ companyId: r.companyId, percentage: r.percentage }));
-    const payload = { title, description: this.description.trim(), amount: this.amount, companies };
+    const payload = { ownerCompanyId: this.ownerCompanyId, title, description: this.description.trim(), amount: this.amount, companies };
 
     this.saving.set(true);
     this.error.set('');

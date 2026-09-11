@@ -20,6 +20,7 @@
         <tr>
           <th class="col-expand"></th>
           <th>Titre</th>
+          <th>Propriétaire</th>
           <th>Compagnies</th>
           <th class="col-num">Montant</th>
           <th class="col-num">Documents</th>
@@ -35,6 +36,7 @@
               <span class="charge-title">{{ c.title }}</span>
               <div class="charge-desc" *ngIf="c.description">{{ c.description }}</div>
             </td>
+            <td>{{ c.ownerCompanyName }}</td>
             <td>
               <span class="tag-company" *ngFor="let co of c.companies">
                 {{ co.companyName }} — {{ co.percentage }}%
@@ -49,7 +51,7 @@
             </td>
           </tr>
           <tr class="charge-detail-row" *ngIf="isExpanded(c)">
-            <td colspan="7">
+            <td colspan="8">
               <div class="charge-detail">
                 <div class="detail-companies">
                   <strong>Répartition</strong>
@@ -93,6 +95,14 @@
         <div class="alert alert-error" *ngIf="error()">{{ error() }}</div>
 
         <div class="field-group">
+          <label>Compagnie propriétaire (fournisseur) <span class="req">*</span></label>
+          <select [(ngModel)]="ownerCompanyId">
+            <option value="" disabled>Sélectionner…</option>
+            <option *ngFor="let c of companies()" [value]="c.companyId">{{ c.companyName }}</option>
+          </select>
+        </div>
+
+        <div class="field-group">
           <label>Titre <span class="req">*</span></label>
           <input type="text" [(ngModel)]="title" placeholder="Ex. Assurance, Loyer, Comptabilité…" />
         </div>
@@ -109,48 +119,40 @@
 
         <!-- ── Compagnies ────────────────────────────────────────────── -->
         <div class="field-group">
-          <div class="companies-hdr">
-            <label>Compagnies <span class="req">*</span></label>
-            <button class="btn-add" type="button" (click)="openCompanyPicker($event)">+ Ajouter</button>
-          </div>
+          <label>Compagnies <span class="req">*</span></label>
 
-          <div class="company-rows" *ngIf="rows().length > 0">
-            <div class="company-row" *ngFor="let r of rows()">
-              <span class="co-name">{{ r.companyName }}</span>
-              <input type="number" min="0" max="100" step="0.01" class="co-pct"
-                     [ngModel]="r.percentage"
-                     (ngModelChange)="onPercentageChange(r.companyId, $event)" />
-              <span class="co-pct-sign">%</span>
-              <span class="co-amount" *ngIf="amount != null">{{ (amount * r.percentage / 100) | number:'1.2-2' }} $</span>
-              <button class="btn-remove" type="button" (click)="removeCompany(r.companyId)">✕</button>
+          <div class="company-checklist">
+            <label class="company-check-row all-row">
+              <input type="checkbox"
+                     [checked]="allCompaniesChecked()"
+                     [indeterminate]="someCompaniesChecked()"
+                     (change)="toggleAllCompanies($any($event.target).checked)" />
+              <span class="co-name"><strong>Toutes</strong></span>
+            </label>
+
+            <div class="company-check-row" *ngFor="let c of companies()">
+              <label class="check-label">
+                <input type="checkbox"
+                       [checked]="isCompanyChecked(c.companyId)"
+                       (change)="toggleCompany(c, $any($event.target).checked)" />
+                <span class="co-name">{{ c.companyName }}</span>
+              </label>
+              <ng-container *ngIf="isCompanyChecked(c.companyId)">
+                <input type="number" min="0" max="100" step="0.01" class="co-pct"
+                       [value]="pctOf(c.companyId)"
+                       (change)="onPercentageChange(c.companyId, $any($event.target).value)" />
+                <span class="co-pct-sign">%</span>
+                <span class="co-amount" *ngIf="amount != null">{{ (amount * pctOf(c.companyId) / 100) | number:'1.2-2' }} $</span>
+              </ng-container>
             </div>
           </div>
-          <p class="filter-hint" *ngIf="rows().length === 0">Ajoutez au moins une compagnie.</p>
+          <p class="filter-hint" *ngIf="companies().length === 0">Aucune compagnie disponible.</p>
 
           <div class="total-row" *ngIf="rows().length > 0">
             <button class="btn-link" type="button" (click)="redistributeEqually()">Répartir également</button>
             <span [class.total-ok]="totalValid()" [class.total-bad]="!totalValid()">
               Total : {{ totalPercentage().toFixed(2) }} %
             </span>
-          </div>
-        </div>
-
-        <!-- ── Popup sélection compagnie ─────────────────────────────── -->
-        <div class="popup-backdrop nested" *ngIf="companyPickerOpen()" (click)="companyPickerOpen.set(false)">
-          <div class="company-popup" (click)="$event.stopPropagation()">
-            <div class="popup-hdr">
-              <span class="popup-title">Ajouter une compagnie</span>
-              <button class="popup-close" (click)="companyPickerOpen.set(false)">✕</button>
-            </div>
-            <div class="popup-toolbar">
-              <input class="popup-search" type="text" [(ngModel)]="companySearch" placeholder="Rechercher…" />
-            </div>
-            <div class="popup-list">
-              <button class="popup-item" type="button" *ngFor="let c of availableCompanies()" (click)="addCompany(c)">
-                <span>{{ c.companyName }}</span>
-              </button>
-              <p class="popup-empty" *ngIf="availableCompanies().length === 0">Aucune compagnie disponible.</p>
-            </div>
           </div>
         </div>
 
