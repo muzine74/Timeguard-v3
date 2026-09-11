@@ -71,7 +71,7 @@
               <td class="col-chk">
                 <input type="checkbox" [(ngModel)]="r.checked" [disabled]="generating()" />
               </td>
-              <td class="co-name">
+              <td class="co-name" [class.mismatch-text]="hasDiscrepancy(r)">
                 {{ r.companyName }}
                 <span class="co-code" *ngIf="r.companyCode">{{ r.companyCode }}</span>
               </td>
@@ -94,10 +94,10 @@
                   <span class="pg-price muted">–</span>
                 </div>
               </td>
-              <td class="col-num">{{ r.totalAmount | number:'1.2-2' }} $</td>
-              <td class="col-num">{{ r.tps          | number:'1.2-2' }} $</td>
-              <td class="col-num">{{ r.tvq          | number:'1.2-2' }} $</td>
-              <td class="col-num col-ttc">{{ r.totalWithTax | number:'1.2-2' }} $</td>
+              <td class="col-num" [class.mismatch-text]="hasDiscrepancy(r)">{{ r.totalAmount | number:'1.2-2' }} $</td>
+              <td class="col-num" [class.mismatch-text]="hasDiscrepancy(r)">{{ r.tps          | number:'1.2-2' }} $</td>
+              <td class="col-num" [class.mismatch-text]="hasDiscrepancy(r)">{{ r.tvq          | number:'1.2-2' }} $</td>
+              <td class="col-num col-ttc" [class.mismatch-text]="hasDiscrepancy(r)">{{ r.totalWithTax | number:'1.2-2' }} $</td>
               <td class="col-status">
                 <span *ngIf="r.genResult" class="result-badge"
                       [class.result-ok]="r.genResult.ok"
