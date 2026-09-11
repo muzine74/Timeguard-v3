@@ -18,11 +18,16 @@ export class NotesComponent implements OnInit {
   saving   = signal(false);
   error    = signal('');
 
-  newText = '';
+  /** Notes actuellement dépliées (affichent leur description). */
+  expandedIds = signal<Set<string>>(new Set());
+
+  newTitle = '';
+  newDescription = '';
   newActive = true;
 
   editingId: string | null = null;
-  editText  = '';
+  editTitle = '';
+  editDescription = '';
   editActive = true;
 
   private destroyRef = inject(DestroyRef);
@@ -56,15 +61,16 @@ export class NotesComponent implements OnInit {
   }
 
   add(): void {
-    const text = this.newText.trim();
-    if (!text) return;
+    const title = this.newTitle.trim();
+    if (!title) return;
 
     this.saving.set(true);
-    this.notesSvc.create({ text, isActive: this.newActive })
+    this.notesSvc.create({ title, description: this.newDescription.trim(), isActive: this.newActive })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.newText = '';
+          this.newTitle = '';
+          this.newDescription = '';
           this.newActive = true;
           this.saving.set(false);
           this.load();
@@ -77,7 +83,22 @@ export class NotesComponent implements OnInit {
       });
   }
 
-  toggleActive(note: NoteItem): void {
+  isExpanded(note: NoteItem): boolean {
+    return this.expandedIds().has(note.noteId);
+  }
+
+  toggleExpand(note: NoteItem): void {
+    if (this.editingId === note.noteId) return; // ne pas replier pendant l'édition
+    this.expandedIds.update(set => {
+      const next = new Set(set);
+      if (next.has(note.noteId)) next.delete(note.noteId);
+      else next.add(note.noteId);
+      return next;
+    });
+  }
+
+  toggleActive(note: NoteItem, event: Event): void {
+    event.stopPropagation();
     const next = !note.isActive;
     this.notesSvc.setActive(note.noteId, next)
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -93,21 +114,25 @@ export class NotesComponent implements OnInit {
       });
   }
 
-  startEdit(note: NoteItem): void {
-    this.editingId  = note.noteId;
-    this.editText   = note.text;
-    this.editActive = note.isActive;
+  startEdit(note: NoteItem, event: Event): void {
+    event.stopPropagation();
+    this.editingId       = note.noteId;
+    this.editTitle       = note.title;
+    this.editDescription = note.description;
+    this.editActive      = note.isActive;
   }
 
-  cancelEdit(): void {
+  cancelEdit(event: Event): void {
+    event.stopPropagation();
     this.editingId = null;
   }
 
-  saveEdit(note: NoteItem): void {
-    const text = this.editText.trim();
-    if (!text) return;
+  saveEdit(note: NoteItem, event: Event): void {
+    event.stopPropagation();
+    const title = this.editTitle.trim();
+    if (!title) return;
 
-    this.notesSvc.update(note.noteId, { text, isActive: this.editActive })
+    this.notesSvc.update(note.noteId, { title, description: this.editDescription.trim(), isActive: this.editActive })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
@@ -121,7 +146,8 @@ export class NotesComponent implements OnInit {
       });
   }
 
-  remove(note: NoteItem): void {
+  remove(note: NoteItem, event: Event): void {
+    event.stopPropagation();
     this.notesSvc.delete(note.noteId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({

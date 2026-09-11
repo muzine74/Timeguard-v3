@@ -3,15 +3,20 @@
   <header class="page-hdr">
     <div>
       <h1 class="page-title">Notes</h1>
-      <p class="page-sub">Ajoutez des notes et activez/désactivez-les selon leur pertinence</p>
+      <p class="page-sub">Cliquez sur un titre pour afficher sa description</p>
     </div>
   </header>
 
   <!-- ── Ajouter une note ─────────────────────────────────────────────────── -->
   <div class="add-card">
+    <input class="inp"
+           type="text"
+           placeholder="Titre de la note…"
+           [(ngModel)]="newTitle"
+           [disabled]="saving()" />
     <textarea class="inp inp-textarea"
-              placeholder="Écrire une nouvelle note…"
-              [(ngModel)]="newText"
+              placeholder="Description (optionnel)…"
+              [(ngModel)]="newDescription"
               [disabled]="saving()"
               rows="2"></textarea>
     <div class="add-actions">
@@ -19,7 +24,7 @@
         <input type="checkbox" [(ngModel)]="newActive" [disabled]="saving()">
         <span>Active</span>
       </label>
-      <button class="btn btn-primary" [disabled]="!newText.trim() || saving()" (click)="add()">
+      <button class="btn btn-primary" [disabled]="!newTitle.trim() || saving()" (click)="add()">
         <span *ngIf="!saving()">+ Ajouter</span>
         <span *ngIf="saving()" class="spinner"></span>
       </button>
@@ -38,32 +43,43 @@
     <div class="note-list" *ngIf="notes().length > 0">
       <div class="note-card" *ngFor="let n of notes()" [class.note-inactive]="!n.isActive">
 
-        <ng-container *ngIf="editingId !== n.noteId">
-          <div class="note-body">
-            <p class="note-text">{{ n.text }}</p>
-            <span class="note-date">{{ fmtDate(n.createdAt) }}</span>
-          </div>
+        <!-- En-tête cliquable : titre + statut -->
+        <div class="note-header" (click)="toggleExpand(n)">
+          <span class="expand-arrow" [class.expanded]="isExpanded(n)">▸</span>
+          <span class="note-title">{{ n.title }}</span>
           <div class="note-actions">
-            <label class="toggle-wrap">
-              <input type="checkbox" [checked]="n.isActive" (change)="toggleActive(n)">
+            <label class="toggle-wrap" (click)="$event.stopPropagation()">
+              <input type="checkbox" [checked]="n.isActive" (change)="toggleActive(n, $event)">
               <span>{{ n.isActive ? 'Active' : 'Inactive' }}</span>
             </label>
-            <button class="btn-icon" title="Modifier" (click)="startEdit(n)">✎</button>
-            <button class="btn-icon btn-icon-danger" title="Supprimer" (click)="remove(n)">✕</button>
+            <button class="btn-icon" title="Modifier" (click)="startEdit(n, $event)">✎</button>
+            <button class="btn-icon btn-icon-danger" title="Supprimer" (click)="remove(n, $event)">✕</button>
           </div>
-        </ng-container>
+        </div>
 
-        <ng-container *ngIf="editingId === n.noteId">
-          <textarea class="inp inp-textarea" [(ngModel)]="editText" rows="2"></textarea>
-          <div class="add-actions">
-            <label class="toggle-wrap">
-              <input type="checkbox" [(ngModel)]="editActive">
-              <span>Active</span>
-            </label>
-            <button class="btn btn-ghost" (click)="cancelEdit()">Annuler</button>
-            <button class="btn btn-primary" [disabled]="!editText.trim()" (click)="saveEdit(n)">Enregistrer</button>
-          </div>
-        </ng-container>
+        <!-- Contenu déplié : description + édition -->
+        <div class="note-content" *ngIf="isExpanded(n)">
+
+          <ng-container *ngIf="editingId !== n.noteId">
+            <p class="note-description" *ngIf="n.description">{{ n.description }}</p>
+            <p class="note-description note-empty" *ngIf="!n.description">Aucune description</p>
+            <span class="note-date">{{ fmtDate(n.createdAt) }}</span>
+          </ng-container>
+
+          <ng-container *ngIf="editingId === n.noteId">
+            <input class="inp" type="text" [(ngModel)]="editTitle" (click)="$event.stopPropagation()" />
+            <textarea class="inp inp-textarea" [(ngModel)]="editDescription" (click)="$event.stopPropagation()" rows="2"></textarea>
+            <div class="add-actions">
+              <label class="toggle-wrap" (click)="$event.stopPropagation()">
+                <input type="checkbox" [(ngModel)]="editActive">
+                <span>Active</span>
+              </label>
+              <button class="btn btn-ghost" (click)="cancelEdit($event)">Annuler</button>
+              <button class="btn btn-primary" [disabled]="!editTitle.trim()" (click)="saveEdit(n, $event)">Enregistrer</button>
+            </div>
+          </ng-container>
+
+        </div>
 
       </div>
     </div>

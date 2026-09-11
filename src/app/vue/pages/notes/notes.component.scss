@@ -11,9 +11,12 @@
   border-radius: 12px;
   padding: 16px;
   margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.inp-textarea {
+.inp {
   width: 100%;
   padding: 10px 12px;
   border: 1px solid var(--border);
@@ -22,17 +25,19 @@
   color: var(--text);
   font-size: .9rem;
   font-family: inherit;
-  resize: vertical;
   outline: none;
+  box-sizing: border-box;
 
   &:focus { border-color: var(--accent); }
 }
+
+.inp-textarea { resize: vertical; }
 
 .add-actions {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-top: 12px;
+  margin-top: 2px;
 }
 
 .toggle-wrap {
@@ -42,6 +47,7 @@
   cursor: pointer;
   font-size: .85rem;
   color: var(--text-muted);
+  white-space: nowrap;
 }
 
 .btn {
@@ -71,19 +77,38 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 14px 16px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
+  overflow: hidden;
 
   &.note-inactive { opacity: .55; }
 }
 
-.note-body { flex: 1; min-width: 200px; }
-.note-text { margin: 0 0 4px; font-size: .9rem; color: var(--text); white-space: pre-wrap; word-break: break-word; }
-.note-date { font-size: .72rem; color: var(--text-muted); }
+.note-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  cursor: pointer;
+
+  &:hover { background: var(--hover, rgba(255,255,255,.03)); }
+}
+
+.expand-arrow {
+  flex-shrink: 0;
+  font-size: .75rem;
+  color: var(--text-muted);
+  transition: transform .15s ease;
+
+  &.expanded { transform: rotate(90deg); }
+}
+
+.note-title {
+  flex: 1;
+  min-width: 100px;
+  font-size: .92rem;
+  font-weight: 600;
+  color: var(--text);
+  word-break: break-word;
+}
 
 .note-actions {
   display: flex;
@@ -91,6 +116,25 @@
   gap: 10px;
   flex-shrink: 0;
 }
+
+.note-content {
+  padding: 0 16px 14px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.note-description {
+  margin: 0;
+  font-size: .85rem;
+  color: var(--text);
+  white-space: pre-wrap;
+  word-break: break-word;
+
+  &.note-empty { color: var(--text-muted); font-style: italic; }
+}
+
+.note-date { font-size: .72rem; color: var(--text-muted); }
 
 .btn-icon {
   background: transparent;
@@ -135,6 +179,7 @@
 
 @media (max-width: 640px) {
   .page-wrap    { padding: 16px 12px; }
-  .note-card    { flex-direction: column; }
+  .note-header  { flex-wrap: wrap; }
   .note-actions { width: 100%; justify-content: space-between; }
+  .note-content { padding-left: 16px; }
 }

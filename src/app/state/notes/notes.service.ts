@@ -2,15 +2,17 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 export interface NoteItem {
-  noteId:    string;
-  text:      string;
-  isActive:  boolean;
-  createdAt: string;
+  noteId:      string;
+  title:       string;
+  description: string;
+  isActive:    boolean;
+  createdAt:   string;
 }
 
 export interface NoteCreatePayload {
-  text:     string;
-  isActive: boolean;
+  title:       string;
+  description: string;
+  isActive:    boolean;
 }
 
 @Injectable({ providedIn: 'root' })

@@ -23,11 +23,6 @@ import { AuthService } from '../../../state/auth/auth.service';
           Feuille de temps
         </a>
 
-        <!-- ── Notes (accessible à tous les utilisateurs connectés) ── -->
-        <a class="nav-link" routerLink="/notes" routerLinkActive="active">
-          📝 Notes
-        </a>
-
           <!-- Dropdown Employés -->
           <div class="nav-dropdown" [class.is-open]="openMenu() === 'emp'" *ngIf="auth.hasPerm('employees.view')">
             <button class="nav-link dropdown-btn" (click)="toggleDrop('emp', $event)">
@@ -114,6 +109,11 @@ import { AuthService } from '../../../state/auth/auth.service';
               </a>
             </div>
           </div>
+
+        <!-- ── Notes (accessible à tous les utilisateurs connectés) — en dernier ── -->
+        <a class="nav-link" routerLink="/notes" routerLinkActive="active">
+          📝 Notes
+        </a>
       </div>
 
       <div class="nav-right">
@@ -130,9 +130,6 @@ import { AuthService } from '../../../state/auth/auth.service';
 
       <!-- Feuille de temps -->
       <a class="mobile-link" routerLink="/pointage" routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('pointage.view')">Feuille de temps</a>
-
-      <!-- Notes (accessible à tous les utilisateurs connectés) -->
-      <a class="mobile-link" routerLink="/notes" routerLinkActive="active" (click)="closeMenu()">📝 Notes</a>
 
         <ng-container *ngIf="auth.hasPerm('employees.view')">
           <div class="mobile-section-label">Employés</div>
@@ -163,6 +160,9 @@ import { AuthService } from '../../../state/auth/auth.service';
           <a class="mobile-link mobile-sub" routerLink="/employees/credentials" routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('employees.edit')">🔑 Identifiants</a>
           <a class="mobile-link mobile-sub" routerLink="/config"                routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('config.manage')">⚙ Configuration</a>
         </ng-container>
+
+      <!-- Notes (accessible à tous les utilisateurs connectés) — en dernier -->
+      <a class="mobile-link" routerLink="/notes" routerLinkActive="active" (click)="closeMenu()">📝 Notes</a>
 
       <div class="mobile-footer">
         <span class="badge badge-admin" *ngIf="auth.canManage()">ADMIN</span>
