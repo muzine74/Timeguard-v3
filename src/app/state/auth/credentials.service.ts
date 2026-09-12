@@ -24,4 +24,9 @@ export class CredentialsService {
   create(p: CredentialCreatePayload)          { return this.http.post<{ credentialId: number }>('/api/auth/credentials', p); }
   resetPassword(id: number, pwd: string)      { return this.http.put<any>(`/api/auth/credentials/${id}/password`, { newPassword: pwd }); }
   delete(id: number)                          { return this.http.delete<any>(`/api/auth/credentials/${id}`); }
+
+  /** Envoie à l'employé un lien courriel pour choisir son mot de passe. */
+  sendResetLink(employeeId: string) {
+    return this.http.post<{ message: string }>(`/api/auth/employees/${employeeId}/send-reset-link`, {});
+  }
 }

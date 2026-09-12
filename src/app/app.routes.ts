@@ -18,6 +18,10 @@ export const routes: Routes = [
     loadComponent: () => import('./vue/pages/register/register.component').then(m => m.RegisterComponent)
   },
   {
+    path: 'reset-password',
+    loadComponent: () => import('./vue/pages/reset-password/reset-password.component').then(m => m.ResetPasswordComponent)
+  },
+  {
     path: 'providers',
     canActivate: [superUserGuard],
     loadComponent: () => import('./vue/pages/providers/providers.component').then(m => m.ProvidersComponent)

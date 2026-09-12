@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { EmployeesService } from '../../../state/employees/employees.service';
+import { CredentialsService } from '../../../state/auth/credentials.service';
 import { Employee, EmployeeFile, EmployeeForm } from '../../../models';
 
 @Component({
@@ -22,6 +23,11 @@ export class EmployeeEditComponent implements OnInit {
   isActive       = signal(true);
   togglingActive = signal(false);
   fieldErrors    = signal<Record<string, string>>({});
+
+  // Lien de réinitialisation de mot de passe
+  sendingResetLink = signal(false);
+  resetLinkSent    = signal(false);
+  resetLinkError   = signal('');
 
   // Fichiers
   files        = signal<EmployeeFile[]>([]);
@@ -55,10 +61,11 @@ export class EmployeeEditComponent implements OnInit {
   private warn(...a: unknown[]) { if (this._dev) console.warn('[EmployeeEdit]', ...a); }
 
   constructor(
-    private empSvc: EmployeesService,
-    private router: Router,
-    private route:  ActivatedRoute,
-    private cdr:    ChangeDetectorRef,
+    private empSvc:   EmployeesService,
+    private credSvc:  CredentialsService,
+    private router:   Router,
+    private route:    ActivatedRoute,
+    private cdr:      ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -73,6 +80,8 @@ export class EmployeeEditComponent implements OnInit {
     this.error.set('');
     this.saved.set(false);
     this.fieldErrors.set({});
+    this.resetLinkSent.set(false);
+    this.resetLinkError.set('');
     this.loadingForm.set(true);
     this.log(`selectEmployee(${id})`);
 
@@ -187,6 +196,27 @@ export class EmployeeEditComponent implements OnInit {
   }
 
   cancel(): void { this.router.navigate(['/employees']); }
+
+  sendResetLink(): void {
+    if (!this.employeeId()) return;
+    this.sendingResetLink.set(true);
+    this.resetLinkSent.set(false);
+    this.resetLinkError.set('');
+
+    this.credSvc.sendResetLink(this.employeeId()).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.sendingResetLink.set(false);
+        this.resetLinkSent.set(true);
+        this.cdr.markForCheck();
+        setTimeout(() => this.resetLinkSent.set(false), 5000);
+      },
+      error: err => {
+        this.sendingResetLink.set(false);
+        this.resetLinkError.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.cdr.markForCheck();
+      },
+    });
+  }
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;

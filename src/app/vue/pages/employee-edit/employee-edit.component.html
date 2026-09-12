@@ -69,12 +69,24 @@
             <span class="spinner" *ngIf="togglingActive()"></span>
             <span *ngIf="!togglingActive()">{{ isActive() ? '⛔ Désactiver' : '✅ Activer' }}</span>
           </button>
+          <button class="btn btn-outline" [disabled]="sendingResetLink()" (click)="sendResetLink()"
+                  title="Envoyer un courriel avec un lien pour choisir un nouveau mot de passe">
+            <span class="spinner" *ngIf="sendingResetLink()"></span>
+            <span *ngIf="!sendingResetLink()">✉ Envoyer lien de réinitialisation</span>
+          </button>
           <button class="btn btn-primary" [disabled]="saving()" (click)="submit()">
             <span *ngIf="!saving()">✓ Enregistrer</span>
             <span *ngIf="saving()" class="spinner"></span>
           </button>
         </div>
       </header>
+
+      <div class="reset-link-banner reset-link-ok" *ngIf="resetLinkSent()">
+        ✓ Lien de réinitialisation envoyé par courriel à l'employé.
+      </div>
+      <div class="reset-link-banner reset-link-error" *ngIf="resetLinkError()">
+        ⚠ {{ resetLinkError() }}
+      </div>
 
       <div class="form-layout">
 

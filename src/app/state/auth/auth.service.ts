@@ -88,6 +88,11 @@ export class AuthService {
 
   token(): string | null { return localStorage.getItem(TOKEN_KEY); }
 
+  /** Applique un nouveau mot de passe à partir d'un jeton reçu par courriel (page publique). */
+  resetPasswordByToken(token: string, newPassword: string) {
+    return this.http.post<{ message: string }>('/api/auth/reset-password', { token, newPassword });
+  }
+
   private _decodeEmployeeId(token: string): string {
     try {
       const payload = token.split('.')[1];

@@ -176,6 +176,15 @@
   border: 2px solid rgba(201,162,39,.3); border-top-color: var(--accent);
   border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle;
 }
+.reset-link-banner {
+  border-radius: 9px; padding: 10px 14px; font-size: 12.5px; margin: 0 0 16px;
+}
+.reset-link-ok {
+  background: rgba(30,200,100,.1); border: 1px solid rgba(30,200,100,.3); color: #4ecb80;
+}
+.reset-link-error {
+  background: rgba(224,82,82,.1); border: 1px solid rgba(224,82,82,.25); color: var(--danger);
+}
 @keyframes spin { to { transform: rotate(360deg); } }
 
 // ── Responsive ───────────────────────────────────────────
