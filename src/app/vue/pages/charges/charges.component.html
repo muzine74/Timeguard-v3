@@ -63,7 +63,7 @@
                   <strong>Documents ({{ c.documents.length }})</strong>
                   <p class="doc-empty" *ngIf="c.documents.length === 0">Aucun document.</p>
                   <div class="doc-row" *ngFor="let d of c.documents">
-                    <span>📄 {{ d.originalName }}</span>
+                    <span class="doc-name" (click)="$event.stopPropagation(); downloadDocument(d, c.chargeId)">📄 {{ d.originalName }}</span>
                     <span class="doc-date">{{ fmtDate(d.uploadedAt) }}</span>
                   </div>
                 </div>

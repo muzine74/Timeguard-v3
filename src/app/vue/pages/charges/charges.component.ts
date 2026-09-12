@@ -255,9 +255,10 @@ export class ChargesComponent implements OnInit {
       });
   }
 
-  downloadDocument(doc: ChargeItem['documents'][number]): void {
-    if (!this.editingId) return;
-    this.chargesSvc.downloadDocument(this.editingId, doc.chargeDocumentId)
+  downloadDocument(doc: ChargeItem['documents'][number], chargeId?: string): void {
+    const id = chargeId ?? this.editingId;
+    if (!id) return;
+    this.chargesSvc.downloadDocument(id, doc.chargeDocumentId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(blob => {
         const url = URL.createObjectURL(blob);
