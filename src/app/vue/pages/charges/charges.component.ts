@@ -32,7 +32,6 @@ export class ChargesComponent implements OnInit {
   // ── Modal (création / édition) ───────────────────────────────────────────
   modalOpen  = signal(false);
   editingId: string | null = null;
-  ownerCompanyId: string | null = null;
   title       = '';
   description = '';
   amount: number | null = null;
@@ -103,7 +102,6 @@ export class ChargesComponent implements OnInit {
   // ── Modal — ouverture ─────────────────────────────────────────────────────
   openCreate(): void {
     this.editingId      = null;
-    this.ownerCompanyId = null;
     this.title          = '';
     this.description    = '';
     this.amount         = null;
@@ -116,7 +114,6 @@ export class ChargesComponent implements OnInit {
   openEdit(charge: ChargeItem, event: Event): void {
     event.stopPropagation();
     this.editingId      = charge.chargeId;
-    this.ownerCompanyId = charge.ownerCompanyId;
     this.title          = charge.title;
     this.description    = charge.description ?? '';
     this.amount         = charge.amount;
@@ -144,7 +141,6 @@ export class ChargesComponent implements OnInit {
       this.rows.update(rows => [...rows, { companyId: c.companyId, companyName: c.companyName, percentage: 0 }]);
     } else {
       this.rows.update(rows => rows.filter(r => r.companyId !== c.companyId));
-      if (this.ownerCompanyId === c.companyId) this.ownerCompanyId = null;
     }
     this.redistributeEqually();
   }
@@ -153,26 +149,12 @@ export class ChargesComponent implements OnInit {
     this.rows.set(checked
       ? this.activeCompanies().map(c => ({ companyId: c.companyId, companyName: c.companyName, percentage: 0 }))
       : []);
-    if (!checked) this.ownerCompanyId = null;
     this.redistributeEqually();
   }
 
   removeCompany(companyId: string): void {
     this.rows.update(rows => rows.filter(r => r.companyId !== companyId));
-    if (this.ownerCompanyId === companyId) this.ownerCompanyId = null;
     this.redistributeEqually();
-  }
-
-  isOwner(companyId: string): boolean {
-    return this.ownerCompanyId === companyId;
-  }
-
-  setOwner(companyId: string): void {
-    this.ownerCompanyId = companyId;
-  }
-
-  ownerCompanyName(): string {
-    return this.rows().find(r => r.companyId === this.ownerCompanyId)?.companyName ?? '';
   }
 
   redistributeEqually(): void {
@@ -204,7 +186,7 @@ export class ChargesComponent implements OnInit {
     }
 
     const companies: ChargeCompanyItem[] = this.rows().map(r => ({ companyId: r.companyId, percentage: r.percentage }));
-    const payload = { ownerCompanyId: this.ownerCompanyId, title, description: this.description.trim(), amount: this.amount, companies };
+    const payload = { title, description: this.description.trim(), amount: this.amount, companies };
 
     this.saving.set(true);
     this.error.set('');
