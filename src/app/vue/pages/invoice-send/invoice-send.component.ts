@@ -322,6 +322,7 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
     this.subject = `Facture ${d.billNumber} — ${d.companyName}`;
     let msg = `Bonjour,\n\n`;
     msg += `Veuillez trouver en pièce jointe la facture ${d.billNumber} d'un montant de ${amount} pour la période ${d.period}.\n`;
+    msg += `\nVeuillez indiquer le numéro de facture (${d.billNumber}) lors de votre paiement afin d'en assurer un bon suivi.\n`;
     if (unpaid.length > 0) {
       msg += `\nNous vous rappelons que les factures suivantes sont en attente de paiement :\n`;
       unpaid.forEach(b => {
