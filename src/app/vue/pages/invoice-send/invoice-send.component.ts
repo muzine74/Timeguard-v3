@@ -61,6 +61,10 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
   subject     = '';
   body        = '';
 
+  // ── Pièces jointes additionnelles ─────────────────────────────────────────
+  extraAttachments = signal<File[]>([]);
+  private static readonly ALLOWED_EXT = ['.pdf', '.jpg', '.jpeg', '.png', '.doc', '.docx', '.xls', '.xlsx'];
+
   private _providerName = '';
   private destroyRef    = inject(DestroyRef);
 
@@ -154,6 +158,7 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
     this.selectedContacts.clear();
     this.recipients = [];
     this.emailInput = '';
+    this.extraAttachments.set([]);
     this.error.set('');
     this.success.set('');
     this.detailLoading.set(true);
@@ -351,6 +356,32 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
       });
   }
 
+  // ── Pièces jointes additionnelles ─────────────────────────────────────────
+  onExtraFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const files = Array.from(input.files ?? []);
+    input.value = '';
+    if (files.length === 0) return;
+
+    for (const file of files) {
+      const ext = '.' + (file.name.split('.').pop() ?? '').toLowerCase();
+      if (!InvoiceSendComponent.ALLOWED_EXT.includes(ext)) {
+        W('onExtraFileSelected — type refusé: %s (%s)', file.name, ext);
+        this.error.set(`Type de fichier non autorisé (${ext}).`);
+        continue;
+      }
+      this.extraAttachments.update(list => [...list, file]);
+      L('Pièce jointe additionnelle ajoutée: %s (%d o)', file.name, file.size);
+    }
+    this.cdr.markForCheck();
+  }
+
+  removeExtraAttachment(file: File): void {
+    this.extraAttachments.update(list => list.filter(f => f !== file));
+    L('Pièce jointe additionnelle retirée: %s', file.name);
+    this.cdr.markForCheck();
+  }
+
   // ── Gestion des destinataires (multi) ─────────────────────────────────────
   onEmailKeydown(event: KeyboardEvent): void {
     if (event.key === 'Enter' || event.key === ',') {
@@ -423,13 +454,14 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
       recipients: this.recipients,
       subject:    this.subject,
       body:       this.body,
-    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    }, this.extraAttachments()).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: res => {
         L('send() — ✓ succès: %s', res.message);
         this._sent = true;
         this.sending.set(false);
         this.success.set(res.message || 'Facture envoyée avec succès.');
         this.unsentBills.update(list => list.filter(b => b.billIdentifier !== d.billIdentifier));
+        this.extraAttachments.set([]);
         this.selected.set(null);
         this.detail.set(null);
         this.cdr.markForCheck();

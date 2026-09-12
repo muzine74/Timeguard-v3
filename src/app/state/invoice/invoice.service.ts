@@ -297,9 +297,15 @@ export class InvoiceService {
   }
 
   // ── Envoyer par courriel ──────────────────────────────────────────────
-  sendEmail(id: number, req: SendEmailRequest) {
-    this.log(`sendEmail(${id})`);
-    return this.http.post<{ message: string }>(`/api/bills/${id}/send-email`, req).pipe(
+  sendEmail(id: number, req: SendEmailRequest, attachments: File[] = []) {
+    this.log(`sendEmail(${id})`, `${attachments.length} PJ additionnelle(s)`);
+    const form = new FormData();
+    req.recipients.forEach(r => form.append('Recipients', r));
+    form.append('Subject', req.subject);
+    form.append('Body', req.body);
+    attachments.forEach(f => form.append('Attachments', f, f.name));
+
+    return this.http.post<{ message: string }>(`/api/bills/${id}/send-email`, form).pipe(
       tap({
         next:  res => this.log('✓ email envoyé:', res),
         error: err => this.warn(`✕ POST /api/bills/${id}/send-email`, err),

@@ -167,6 +167,21 @@
           <div class="no-attachment" *ngIf="!hasFile() && !pdfGenerating()">
             La génération du PDF a échoué.
           </div>
+
+          <!-- Pièces jointes additionnelles -->
+          <div class="extra-att-row" *ngFor="let f of extraAttachments()">
+            <span class="att-icon">📎</span>
+            <span class="att-name">{{ f.name }}</span>
+            <span class="att-badge">{{ (f.size / 1024).toFixed(0) }} Ko</span>
+            <button class="btn-remove-att" type="button" (click)="removeExtraAttachment(f)" title="Retirer cette pièce jointe">✕</button>
+          </div>
+
+          <label class="btn-add-attachment">
+            <span>+ Ajouter une pièce jointe</span>
+            <input type="file" multiple style="display:none"
+                   accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
+                   (change)="onExtraFileSelected($event)" />
+          </label>
         </div>
 
         <!-- ── Récapitulatif impayés ── -->
