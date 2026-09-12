@@ -117,6 +117,10 @@
   background: rgba(59,130,246,.08); border-color: rgba(59,130,246,.3); color: #60a5fa;
   &:hover { background: rgba(59,130,246,.18); }
 }
+.act-edit {
+  background: rgba(100,100,100,.08); border-color: rgba(100,100,100,.3); color: var(--text);
+  &:hover { background: rgba(100,100,100,.18); }
+}
 .act-send {
   background: rgba(201,162,39,.08); border-color: rgba(201,162,39,.3); color: var(--accent);
   &:hover { background: rgba(201,162,39,.18); }

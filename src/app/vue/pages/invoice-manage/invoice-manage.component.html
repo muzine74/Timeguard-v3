@@ -113,10 +113,13 @@
                     *ngIf="!row.node.data.isSent || row.node.data.parentBillIdentifier !== null"
                     [title]="row.node.data.parentBillIdentifier !== null ? 'Supprimer l\'avoir' : 'Supprimer'"
                     (click)="openDelete(row.node.data, $event)">🗑</button>
+            <button class="act-btn act-edit"
+                    *ngIf="row.node.data.parentBillIdentifier === null && !row.node.data.isSent"
+                    title="Modifier la facture"
+                    (click)="navigateEdit(row.node.data)">✎ Modifier</button>
             <button class="act-btn act-avoir"
-                    *ngIf="row.node.data.parentBillIdentifier === null"
-                    [disabled]="!row.node.data.isSent"
-                    [title]="row.node.data.isSent ? 'Créer un avoir' : 'La facture doit être envoyée'"
+                    *ngIf="row.node.data.parentBillIdentifier === null && row.node.data.isSent"
+                    title="Créer un avoir"
                     (click)="openAvoir(row.node.data, $event)">📋 Avoir</button>
           </td>
         </tr>
