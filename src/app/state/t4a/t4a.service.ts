@@ -5,6 +5,7 @@ export interface T4AData {
   employeeId: string;
   year: number;
   payerName: string;
+  payerAddress: string;
   payerAccountNumber: string;
   lastName: string;
   firstName: string;
