@@ -29,7 +29,7 @@ export class LoginComponent {
   togglePw(): void { this.showPw.update(v => !v); }
 
   submit(): void {
-    if (!this.username || !this.password) {
+    if (!this.tenantSlug || !this.username || !this.password) {
       this.error.set('Veuillez remplir tous les champs.'); return;
     }
 
@@ -37,7 +37,7 @@ export class LoginComponent {
     this.loading.set(true);
     this.error.set('');
 
-    this.auth.login({ username: this.username, password: this.password, tenantSlug: this.tenantSlug || undefined }).subscribe({
+    this.auth.login({ username: this.username, password: this.password, tenantSlug: this.tenantSlug }).subscribe({
       next: () => {
         this.loading.set(false);
         this.log('✓ login réussi');

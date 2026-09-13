@@ -9,9 +9,9 @@ export interface User {
 }
 
 export interface LoginRequest {
-  username:    string;
-  password:    string;
-  tenantSlug?: string;  // identifiant de l'entreprise
+  username:   string;
+  password:   string;
+  tenantSlug: string;  // identifiant de l'entreprise — requis
 }
 
 export interface LoginResponse {
