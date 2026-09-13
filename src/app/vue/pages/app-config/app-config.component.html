@@ -40,8 +40,24 @@
           <input class="inp" [(ngModel)]="form.companyName" placeholder="Rammsis Cleaning..." />
         </div>
         <div class="field field-full">
-          <label>Adresse</label>
-          <input class="inp" [(ngModel)]="form.companyAddress" placeholder="123 rue Principale, Montréal, QC" />
+          <label>Adresse civique</label>
+          <input class="inp" [(ngModel)]="form.companyAddress" placeholder="123 rue Principale" />
+        </div>
+        <div class="field">
+          <label>Ville</label>
+          <input class="inp" [(ngModel)]="form.companyCity" placeholder="Montréal" />
+        </div>
+        <div class="field">
+          <label>Code postal</label>
+          <input class="inp" [(ngModel)]="form.companyPostalCode" placeholder="H2X 1Y6" />
+        </div>
+        <div class="field">
+          <label>Province</label>
+          <input class="inp" [(ngModel)]="form.companyProvince" placeholder="QC" />
+        </div>
+        <div class="field">
+          <label>Pays</label>
+          <input class="inp" [(ngModel)]="form.companyCountry" placeholder="Canada" />
         </div>
         <div class="field">
           <label>Téléphone</label>

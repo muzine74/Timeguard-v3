@@ -5,12 +5,16 @@ export interface T4AData {
   employeeId: string;
   year: number;
   payerName: string;
-  payerAddress: string;
+  payerAddressLine1: string;
+  payerAddressLine2: string;
+  payerAddressLine3: string;
   payerAccountNumber: string;
   lastName: string;
   firstName: string;
   initials: string;
-  address: string;
+  addressLine1: string;
+  addressLine2: string;
+  addressLine3: string;
   sin: string;
   recipientAccountNumber: string;
   dentalBenefitsCode: string;

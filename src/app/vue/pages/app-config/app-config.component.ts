@@ -97,7 +97,11 @@ export class AppConfigComponent implements OnInit {
     const labels: Record<string, string> = {
       logoPath:        'Logo (chemin)',
       companyName:     'Nom compagnie',
-      companyAddress:  'Adresse',
+      companyAddress:  'Adresse civique',
+      companyCity:       'Ville',
+      companyProvince:   'Province',
+      companyPostalCode: 'Code postal',
+      companyCountry:    'Pays',
       companyPhone:    'Téléphone compagnie',
       companyEmail:    'Courriel compagnie',
       smtpServer:      'Serveur SMTP',

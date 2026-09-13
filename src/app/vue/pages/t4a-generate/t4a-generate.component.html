@@ -40,15 +40,17 @@
       <div class="params-grid">
         <div class="field">
           <label>Nom du payeur</label>
-          <input class="inp" [(ngModel)]="data.payerName" />
+          <div class="value-label">{{ data.payerName }}</div>
         </div>
         <div class="field span-full">
           <label>Adresse du payeur</label>
-          <input class="inp" [(ngModel)]="data.payerAddress" placeholder="123 Rue Principale, Montréal, QC H2X 1Y6" />
+          <div class="value-label">{{ data.payerAddressLine1 }}</div>
+          <div class="value-label">{{ data.payerAddressLine2 }}</div>
+          <div class="value-label">{{ data.payerAddressLine3 }}</div>
         </div>
         <div class="field">
           <label>Case 061 — Numéro de compte de programme du payeur</label>
-          <input class="inp" [(ngModel)]="data.payerAccountNumber" placeholder="123456789RP0001" />
+          <div class="value-label">{{ data.payerAccountNumber }}</div>
         </div>
         <div class="field">
           <label>Case 015 — Code prestations dentaires (payeur)</label>
@@ -62,11 +64,11 @@
       <div class="params-grid">
         <div class="field">
           <label>Nom de famille</label>
-          <input class="inp" [(ngModel)]="data.lastName" />
+          <div class="value-label">{{ data.lastName }}</div>
         </div>
         <div class="field">
           <label>Prénom</label>
-          <input class="inp" [(ngModel)]="data.firstName" />
+          <div class="value-label">{{ data.firstName }}</div>
         </div>
         <div class="field">
           <label>Initiale</label>
@@ -74,11 +76,13 @@
         </div>
         <div class="field span-full">
           <label>Adresse</label>
-          <input class="inp" [(ngModel)]="data.address" />
+          <div class="value-label">{{ data.addressLine1 }}</div>
+          <div class="value-label">{{ data.addressLine2 }}</div>
+          <div class="value-label">{{ data.addressLine3 }}</div>
         </div>
         <div class="field">
           <label>Case 012 — N° d'assurance sociale</label>
-          <input class="inp" [(ngModel)]="data.sin" placeholder="123 456 789" />
+          <div class="value-label">{{ data.sin }}</div>
         </div>
         <div class="field">
           <label>Case 013 — N° de compte du bénéficiaire</label>

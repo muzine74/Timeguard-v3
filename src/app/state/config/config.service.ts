@@ -5,6 +5,10 @@ export interface AppConfigDto {
   logoPath:        string | null;
   companyName:     string | null;
   companyAddress:  string | null;
+  companyCity:       string | null;
+  companyProvince:   string | null;
+  companyPostalCode: string | null;
+  companyCountry:    string | null;
   companyPhone:    string | null;
   companyEmail:    string | null;
   smtpServer:      string | null;
@@ -30,6 +34,7 @@ export interface AppConfigResponse {
 export function emptyConfig(): AppConfigDto {
   return {
     logoPath: null, companyName: null, companyAddress: null,
+    companyCity: null, companyProvince: null, companyPostalCode: null, companyCountry: null,
     companyPhone: null, companyEmail: null,
     smtpServer: null, smtpPort: null, smtpUser: null, smtpPassword: null,
     tpsNumber: null, tvqNumber: null, tpsRate: 5, tvqRate: 9.975,
