@@ -43,8 +43,12 @@
           <input class="inp" [(ngModel)]="data.payerName" />
         </div>
         <div class="field">
-          <label>Numéro de compte du payeur</label>
+          <label>Case 061 — Numéro de compte de programme du payeur</label>
           <input class="inp" [(ngModel)]="data.payerAccountNumber" placeholder="123456789RP0001" />
+        </div>
+        <div class="field">
+          <label>Case 015 — Code prestations dentaires (payeur)</label>
+          <input class="inp" [(ngModel)]="data.dentalBenefitsCode" placeholder="1 à 5, laisser vide si non applicable" />
         </div>
       </div>
     </div>

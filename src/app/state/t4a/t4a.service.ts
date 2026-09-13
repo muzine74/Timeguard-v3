@@ -12,6 +12,7 @@ export interface T4AData {
   address: string;
   sin: string;
   recipientAccountNumber: string;
+  dentalBenefitsCode: string;
   pension: number;
   lumpSum: number;
   commissions: number;

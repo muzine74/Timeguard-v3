@@ -89,7 +89,7 @@ export class T4aGenerateComponent implements OnInit {
       employeeId: '', year: this.year,
       payerName: '', payerAccountNumber: '',
       lastName: '', firstName: '', initials: '', address: '',
-      sin: '', recipientAccountNumber: '',
+      sin: '', recipientAccountNumber: '', dentalBenefitsCode: '',
       pension: 0, lumpSum: 0, commissions: 0, incomeTaxDeducted: 0, annuities: 0, feesForServices: 0,
     };
   }
