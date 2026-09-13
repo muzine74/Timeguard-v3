@@ -87,7 +87,7 @@ export class T4aGenerateComponent implements OnInit {
   private _emptyData(): T4AData {
     return {
       employeeId: '', year: this.year,
-      payerName: '', payerAccountNumber: '',
+      payerName: '', payerAddress: '', payerAccountNumber: '',
       lastName: '', firstName: '', initials: '', address: '',
       sin: '', recipientAccountNumber: '', dentalBenefitsCode: '',
       pension: 0, lumpSum: 0, commissions: 0, incomeTaxDeducted: 0, annuities: 0, feesForServices: 0,
