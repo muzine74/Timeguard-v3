@@ -104,14 +104,14 @@ export class InvoiceGenerateComponent implements OnInit {
       .subscribe({
         next: data => {
           const c = data.config;
-          if (c.tpsRate) this._tpsRate = c.tpsRate / 100;
-          if (c.tvqRate) this._tvqRate = c.tvqRate / 100;
+          if (c.tpsRate != null) this._tpsRate = c.tpsRate / 100;
+          if (c.tvqRate != null) this._tvqRate = c.tvqRate / 100;
           this.providerName    = c.companyName    ?? '';
           this.providerAddress = c.companyAddress ?? '';
           this.providerPhone   = c.companyPhone   ?? '';
           this.providerEmail   = c.companyEmail   ?? '';
-          this.tpsLabel = c.tpsRate ? `TPS (${c.tpsRate} %)` : 'TPS (5 %)';
-          this.tvqLabel = c.tvqRate ? `TVQ (${c.tvqRate} %)` : 'TVQ (9,975 %)';
+          this.tpsLabel = c.tpsRate != null ? `TPS (${c.tpsRate} %)` : 'TPS (5 %)';
+          this.tvqLabel = c.tvqRate != null ? `TVQ (${c.tvqRate} %)` : 'TVQ (9,975 %)';
           this.cdr.markForCheck();
         },
       });

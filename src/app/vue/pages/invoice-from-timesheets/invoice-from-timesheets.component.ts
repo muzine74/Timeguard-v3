@@ -53,8 +53,8 @@ export class InvoiceFromTimesheetsComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: data => {
-          if (data.config.tpsRate) this._tpsRate = data.config.tpsRate / 100;
-          if (data.config.tvqRate) this._tvqRate = data.config.tvqRate / 100;
+          if (data.config.tpsRate != null) this._tpsRate = data.config.tpsRate / 100;
+          if (data.config.tvqRate != null) this._tvqRate = data.config.tvqRate / 100;
           this.cdr.markForCheck();
         },
       });

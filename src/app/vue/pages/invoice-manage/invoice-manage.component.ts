@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { InvoiceService, BillSummary, BillDetail, BillLine, BillFilter, BillCreatePayload } from '../../../state/invoice/invoice.service';
+import { ConfigService } from '../../../state/config/config.service';
 
 type ModalMode = 'delete' | 'avoir' | 'detail' | 'send' | null;
 
@@ -156,17 +157,29 @@ export class InvoiceManageComponent implements OnInit {
   aPaymentInfo    = '';
   aLines: BillLine[] = [];
 
-  get aSubtotal(): number { return this.aLines.reduce((s, l) => s + l.subTotal, 0); }
-  get aTps(): number      { return +(this.aSubtotal * 0.05).toFixed(2); }
-  get aTvq(): number      { return +(this.aSubtotal * 0.09975).toFixed(2); }
+  private _tpsRate = 0.05;
+  private _tvqRate = 0.09975;
+
+  get aSubtotal(): number { return +this.aLines.reduce((s, l) => s + l.subTotal, 0).toFixed(2); }
+  get aTps(): number      { return +(this.aSubtotal * this._tpsRate).toFixed(2); }
+  get aTvq(): number      { return +(this.aSubtotal * this._tvqRate).toFixed(2); }
   get aTtc(): number      { return +(this.aSubtotal + this.aTps + this.aTvq).toFixed(2); }
 
   constructor(
     public  invoiceSvc: InvoiceService,
+    private configSvc:  ConfigService,
     private router:     Router,
   ) {}
 
-  ngOnInit(): void { this.loadBills(); }
+  ngOnInit(): void {
+    this.loadBills();
+    this.configSvc.get().subscribe({
+      next: data => {
+        if (data.config.tpsRate != null) this._tpsRate = data.config.tpsRate / 100;
+        if (data.config.tvqRate != null) this._tvqRate = data.config.tvqRate / 100;
+      },
+    });
+  }
 
   // ── Chargement ────────────────────────────────────────
   loadBills(): void {
