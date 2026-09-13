@@ -35,7 +35,6 @@
   padding: 9px 11px; border-radius: 8px; font-size: 13px; color: var(--text);
   background: transparent; min-height: 1.2em;
 }
-.value-label:empty::before { content: '—'; color: var(--muted); }
 
 .total-row {
   display: flex; justify-content: space-between; align-items: center;

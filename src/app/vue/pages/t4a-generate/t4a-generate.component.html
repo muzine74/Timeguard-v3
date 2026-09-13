@@ -38,17 +38,17 @@
     <div class="card">
       <div class="card-header">Payeur</div>
       <div class="params-grid">
-        <div class="field">
+        <div class="field" *ngIf="data.payerName">
           <label>Nom du payeur</label>
           <div class="value-label">{{ data.payerName }}</div>
         </div>
-        <div class="field span-full">
+        <div class="field span-full" *ngIf="data.payerAddressLine1 || data.payerAddressLine2 || data.payerAddressLine3">
           <label>Adresse du payeur</label>
-          <div class="value-label">{{ data.payerAddressLine1 }}</div>
-          <div class="value-label">{{ data.payerAddressLine2 }}</div>
-          <div class="value-label">{{ data.payerAddressLine3 }}</div>
+          <div class="value-label" *ngIf="data.payerAddressLine1">{{ data.payerAddressLine1 }}</div>
+          <div class="value-label" *ngIf="data.payerAddressLine2">{{ data.payerAddressLine2 }}</div>
+          <div class="value-label" *ngIf="data.payerAddressLine3">{{ data.payerAddressLine3 }}</div>
         </div>
-        <div class="field">
+        <div class="field" *ngIf="data.payerAccountNumber">
           <label>Case 061 — Numéro de compte de programme du payeur</label>
           <div class="value-label">{{ data.payerAccountNumber }}</div>
         </div>
@@ -62,11 +62,11 @@
     <div class="card">
       <div class="card-header">Bénéficiaire</div>
       <div class="params-grid">
-        <div class="field">
+        <div class="field" *ngIf="data.lastName">
           <label>Nom de famille</label>
           <div class="value-label">{{ data.lastName }}</div>
         </div>
-        <div class="field">
+        <div class="field" *ngIf="data.firstName">
           <label>Prénom</label>
           <div class="value-label">{{ data.firstName }}</div>
         </div>
@@ -74,13 +74,13 @@
           <label>Initiale</label>
           <input class="inp" [(ngModel)]="data.initials" maxlength="1" />
         </div>
-        <div class="field span-full">
+        <div class="field span-full" *ngIf="data.addressLine1 || data.addressLine2 || data.addressLine3">
           <label>Adresse</label>
-          <div class="value-label">{{ data.addressLine1 }}</div>
-          <div class="value-label">{{ data.addressLine2 }}</div>
-          <div class="value-label">{{ data.addressLine3 }}</div>
+          <div class="value-label" *ngIf="data.addressLine1">{{ data.addressLine1 }}</div>
+          <div class="value-label" *ngIf="data.addressLine2">{{ data.addressLine2 }}</div>
+          <div class="value-label" *ngIf="data.addressLine3">{{ data.addressLine3 }}</div>
         </div>
-        <div class="field">
+        <div class="field" *ngIf="data.sin">
           <label>Case 012 — N° d'assurance sociale</label>
           <div class="value-label">{{ data.sin }}</div>
         </div>
