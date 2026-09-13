@@ -18,7 +18,7 @@ export const routes: Routes = [
     loadComponent: () => import('./vue/pages/register/register.component').then(m => m.RegisterComponent)
   },
   {
-    path: 'reset-password',
+    path: 'nouveau-mot-de-passe',
     loadComponent: () => import('./vue/pages/reset-password/reset-password.component').then(m => m.ResetPasswordComponent)
   },
   {
