@@ -47,6 +47,9 @@ import { AuthService } from '../../../state/auth/auth.service';
               <a class="dropdown-item" routerLink="/employees/pricing"    routerLinkActive="active" *ngIf="auth.hasPerm('employees.edit')" (click)="closeDrop()">
                 <span class="di-icon">$</span> Tarifs employés
               </a>
+              <a class="dropdown-item" routerLink="/employees/t4a"    routerLinkActive="active" *ngIf="auth.hasPerm('employees.edit')" (click)="closeDrop()">
+                <span class="di-icon">📄</span> Feuillet T4A
+              </a>
             </div>
           </div>
 
@@ -157,6 +160,7 @@ import { AuthService } from '../../../state/auth/auth.service';
           <a class="mobile-link mobile-sub" routerLink="/employees/validation"  routerLinkActive="active" (click)="closeMenu()">Profil Employé</a>
           <a class="mobile-link mobile-sub" routerLink="/companies/assign"     routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('companies.edit')">Assigner compagnies</a>
           <a class="mobile-link mobile-sub" routerLink="/employees/pricing"     routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('employees.edit')">Tarifs employés</a>
+          <a class="mobile-link mobile-sub" routerLink="/employees/t4a"         routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('employees.edit')">Feuillet T4A</a>
         </ng-container>
         <ng-container *ngIf="auth.hasPerm('companies.view')">
           <div class="mobile-section-label">Compagnies</div>

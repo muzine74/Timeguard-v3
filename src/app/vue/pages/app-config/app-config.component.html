@@ -97,6 +97,10 @@
           <label>Taux TVQ (%)</label>
           <input class="inp" type="number" step="0.001" [(ngModel)]="form.tvqRate" />
         </div>
+        <div class="field">
+          <label>N° de compte payeur ARC (T4A)</label>
+          <input class="inp" [(ngModel)]="form.payerAccountNumber" placeholder="123456789RP0001" />
+        </div>
       </div>
     </section>
 

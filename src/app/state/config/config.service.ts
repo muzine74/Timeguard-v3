@@ -15,6 +15,7 @@ export interface AppConfigDto {
   tvqNumber:       string | null;
   tpsRate:         number;
   tvqRate:         number;
+  payerAccountNumber: string | null;
   bankCoordinates: string | null;
   contactName:     string | null;
   contactPhone:    string | null;
@@ -32,6 +33,7 @@ export function emptyConfig(): AppConfigDto {
     companyPhone: null, companyEmail: null,
     smtpServer: null, smtpPort: null, smtpUser: null, smtpPassword: null,
     tpsNumber: null, tvqNumber: null, tpsRate: 5, tvqRate: 9.975,
+    payerAccountNumber: null,
     bankCoordinates: null,
     contactName: null, contactPhone: null, contactEmail: null,
     appVersion: null,

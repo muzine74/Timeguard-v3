@@ -61,6 +61,11 @@ export const routes: Routes = [
     loadComponent: () => import('./vue/pages/employee-assign/employee-assign.component').then(m => m.EmployeeAssignComponent)
   },
   {
+    path: 'employees/t4a',
+    canActivate: [permGuard(PERM.employeesEdit)],
+    loadComponent: () => import('./vue/pages/t4a-generate/t4a-generate.component').then(m => m.T4aGenerateComponent)
+  },
+  {
     path: 'employees/pricing',
     canActivate: [permGuard(PERM.employeesEdit)],
     loadComponent: () => import('./vue/pages/employee-pricing/employee-pricing.component').then(m => m.EmployeePricingComponent)

@@ -1,0 +1,124 @@
+<div class="page-wrap">
+  <header class="page-hdr">
+    <div>
+      <h1 class="page-title">Feuillet T4A</h1>
+      <p class="page-sub">Générer un feuillet T4A pour un employé et une année donnée</p>
+    </div>
+  </header>
+
+  <div class="error-banner" *ngIf="error()">⚠ {{ error() }}</div>
+
+  <!-- ── Sélection ── -->
+  <div class="card">
+    <div class="card-header">Employé et année</div>
+    <div class="params-grid">
+      <div class="field">
+        <label>Employé</label>
+        <select class="inp" [(ngModel)]="employeeId">
+          <option value="" disabled selected>Choisir un employé...</option>
+          <option *ngFor="let e of employeesSvc.list()" [value]="e.employeeId">{{ e.employeeName }}</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Année</label>
+        <input class="inp" type="number" [(ngModel)]="year" />
+      </div>
+      <div class="field field-btn">
+        <button class="btn btn-primary" [disabled]="loading()" (click)="suggest()">
+          <span *ngIf="!loading()">⚡ Suggérer les montants</span>
+          <span *ngIf="loading()" class="spinner"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Formulaire éditable ── -->
+  <ng-container *ngIf="loaded()">
+
+    <div class="card">
+      <div class="card-header">Payeur</div>
+      <div class="params-grid">
+        <div class="field">
+          <label>Nom du payeur</label>
+          <input class="inp" [(ngModel)]="data.payerName" />
+        </div>
+        <div class="field">
+          <label>Numéro de compte du payeur</label>
+          <input class="inp" [(ngModel)]="data.payerAccountNumber" placeholder="123456789RP0001" />
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">Bénéficiaire</div>
+      <div class="params-grid">
+        <div class="field">
+          <label>Nom de famille</label>
+          <input class="inp" [(ngModel)]="data.lastName" />
+        </div>
+        <div class="field">
+          <label>Prénom</label>
+          <input class="inp" [(ngModel)]="data.firstName" />
+        </div>
+        <div class="field">
+          <label>Initiale</label>
+          <input class="inp" [(ngModel)]="data.initials" maxlength="1" />
+        </div>
+        <div class="field span-full">
+          <label>Adresse</label>
+          <input class="inp" [(ngModel)]="data.address" />
+        </div>
+        <div class="field">
+          <label>Case 012 — N° d'assurance sociale</label>
+          <input class="inp" [(ngModel)]="data.sin" placeholder="123 456 789" />
+        </div>
+        <div class="field">
+          <label>Case 013 — N° de compte du bénéficiaire</label>
+          <input class="inp" [(ngModel)]="data.recipientAccountNumber" />
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">Montants</div>
+      <div class="params-grid">
+        <div class="field">
+          <label>Case 016 — Prestations de retraite ou de pension</label>
+          <input class="inp" type="number" step="0.01" [(ngModel)]="data.pension" />
+        </div>
+        <div class="field">
+          <label>Case 018 — Paiement forfaitaire</label>
+          <input class="inp" type="number" step="0.01" [(ngModel)]="data.lumpSum" />
+        </div>
+        <div class="field">
+          <label>Case 020 — Commissions</label>
+          <input class="inp" type="number" step="0.01" [(ngModel)]="data.commissions" />
+        </div>
+        <div class="field">
+          <label>Case 022 — Impôt sur le revenu retenu</label>
+          <input class="inp" type="number" step="0.01" [(ngModel)]="data.incomeTaxDeducted" />
+        </div>
+        <div class="field">
+          <label>Case 024 — Rentes</label>
+          <input class="inp" type="number" step="0.01" [(ngModel)]="data.annuities" />
+        </div>
+        <div class="field">
+          <label>Case 048 — Honoraires pour services rendus</label>
+          <input class="inp" type="number" step="0.01" [(ngModel)]="data.feesForServices" />
+        </div>
+      </div>
+      <div class="total-row">
+        <span>Total des montants déclarés</span>
+        <strong>{{ total | number:'1.2-2' }} $</strong>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" [disabled]="generating()" (click)="generate()">
+        <span *ngIf="!generating()">📄 Générer le PDF</span>
+        <span *ngIf="generating()" class="spinner"></span>
+      </button>
+    </div>
+
+  </ng-container>
+</div>
