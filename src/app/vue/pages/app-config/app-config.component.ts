@@ -102,6 +102,7 @@ export class AppConfigComponent implements OnInit {
       companyProvince:   'Province',
       companyPostalCode: 'Code postal',
       companyCountry:    'Pays',
+      payerAccountNumber: 'Numéro de compte de programme du payeur',
       companyPhone:    'Téléphone compagnie',
       companyEmail:    'Courriel compagnie',
       smtpServer:      'Serveur SMTP',

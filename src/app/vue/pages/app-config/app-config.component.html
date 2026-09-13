@@ -60,6 +60,10 @@
           <input class="inp" [(ngModel)]="form.companyCountry" placeholder="Canada" />
         </div>
         <div class="field">
+          <label>Numéro de compte de programme du payeur</label>
+          <input class="inp" [(ngModel)]="form.payerAccountNumber" placeholder="123456789RP0001" />
+        </div>
+        <div class="field">
           <label>Téléphone</label>
           <input class="inp" [(ngModel)]="form.companyPhone" placeholder="514-555-0000" />
         </div>
@@ -112,10 +116,6 @@
         <div class="field">
           <label>Taux TVQ (%)</label>
           <input class="inp" type="number" step="0.001" [(ngModel)]="form.tvqRate" />
-        </div>
-        <div class="field">
-          <label>N° de compte payeur ARC (T4A)</label>
-          <input class="inp" [(ngModel)]="form.payerAccountNumber" placeholder="123456789RP0001" />
         </div>
       </div>
     </section>
