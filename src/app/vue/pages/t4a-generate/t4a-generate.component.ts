@@ -103,7 +103,10 @@ export class T4aGenerateComponent implements OnInit, OnDestroy {
     this.t4aSvc.generate(this.data).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: blob => {
         this._revokePreviewUrl();
-        this.previewObjectUrl = URL.createObjectURL(blob);
+        // Force le type MIME du blob : certains navigateurs refusent de rendre le PDF dans
+        // l'iframe si le blob n'est pas explicitement typé 'application/pdf'.
+        const pdfBlob = new Blob([blob], { type: 'application/pdf' });
+        this.previewObjectUrl = URL.createObjectURL(pdfBlob);
         this.previewUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.previewObjectUrl);
         this.previewOpen.set(true);
         this.generating.set(false);
