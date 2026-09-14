@@ -1,7 +1,8 @@
-import { Component, OnInit, signal, ChangeDetectionStrategy, ChangeDetectorRef, DestroyRef, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, ChangeDetectionStrategy, ChangeDetectorRef, DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { EmployeesService } from '../../../state/employees/employees.service';
 import { T4AService, T4AData } from '../../../state/t4a/t4a.service';
 
@@ -13,7 +14,7 @@ import { T4AService, T4AData } from '../../../state/t4a/t4a.service';
   templateUrl: './t4a-generate.component.html',
   styleUrls: ['./t4a-generate.component.scss'],
 })
-export class T4aGenerateComponent implements OnInit {
+export class T4aGenerateComponent implements OnInit, OnDestroy {
   employeeId = '';
   year       = new Date().getFullYear();
 
@@ -21,6 +22,12 @@ export class T4aGenerateComponent implements OnInit {
   generating = signal(false);
   error     = signal('');
   loaded    = signal(false);
+
+  previewOpen = signal(false);
+  previewUrl: SafeResourceUrl | null = null;
+  saving      = signal(false);
+  saveMessage = signal('');
+  private previewObjectUrl: string | null = null;
 
   data: T4AData = this._emptyData();
 
@@ -30,7 +37,12 @@ export class T4aGenerateComponent implements OnInit {
     public  employeesSvc: EmployeesService,
     private t4aSvc:       T4AService,
     private cdr:          ChangeDetectorRef,
+    private sanitizer:    DomSanitizer,
   ) {}
+
+  ngOnDestroy(): void {
+    this._revokePreviewUrl();
+  }
 
   ngOnInit(): void {
     this.employeesSvc.loadList(true);
@@ -82,6 +94,72 @@ export class T4aGenerateComponent implements OnInit {
         this.cdr.markForCheck();
       },
     });
+  }
+
+  previewPdf(): void {
+    this.error.set('');
+    this.saveMessage.set('');
+    this.generating.set(true);
+    this.t4aSvc.generate(this.data).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: blob => {
+        this._revokePreviewUrl();
+        this.previewObjectUrl = URL.createObjectURL(blob);
+        this.previewUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.previewObjectUrl);
+        this.previewOpen.set(true);
+        this.generating.set(false);
+        this.cdr.markForCheck();
+      },
+      error: err => {
+        this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.generating.set(false);
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  closePreview(): void {
+    this.previewOpen.set(false);
+    this._revokePreviewUrl();
+    this.previewUrl = null;
+  }
+
+  saveOnly(): void {
+    this._save(false);
+  }
+
+  saveAndSend(): void {
+    this._save(true);
+  }
+
+  private _save(send: boolean): void {
+    this.error.set('');
+    this.saving.set(true);
+    this.t4aSvc.save(this.data, send).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: res => {
+        this.saving.set(false);
+        this.closePreview();
+        if (send) {
+          this.saveMessage.set(res.emailSent
+            ? `✓ Feuillet enregistré et envoyé par courriel.`
+            : `✓ Feuillet enregistré. ⚠ Courriel non envoyé : ${res.emailError}`);
+        } else {
+          this.saveMessage.set('✓ Feuillet enregistré.');
+        }
+        this.cdr.markForCheck();
+      },
+      error: err => {
+        this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.saving.set(false);
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  private _revokePreviewUrl(): void {
+    if (this.previewObjectUrl) {
+      URL.revokeObjectURL(this.previewObjectUrl);
+      this.previewObjectUrl = null;
+    }
   }
 
   private _emptyData(): T4AData {

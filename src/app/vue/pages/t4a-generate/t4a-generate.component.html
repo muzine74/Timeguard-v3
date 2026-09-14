@@ -125,7 +125,13 @@
       </div>
     </div>
 
+    <div class="success-banner" *ngIf="saveMessage()">{{ saveMessage() }}</div>
+
     <div class="actions">
+      <button class="btn" [disabled]="generating()" (click)="previewPdf()">
+        <span *ngIf="!generating()">👁 Visualiser PDF</span>
+        <span *ngIf="generating()" class="spinner"></span>
+      </button>
       <button class="btn btn-primary" [disabled]="generating()" (click)="generate()">
         <span *ngIf="!generating()">📄 Générer le PDF</span>
         <span *ngIf="generating()" class="spinner"></span>
@@ -133,4 +139,26 @@
     </div>
 
   </ng-container>
+
+  <!-- ── Visionneuse PDF ── -->
+  <div class="preview-overlay" *ngIf="previewOpen()">
+    <div class="preview-panel">
+      <div class="preview-hdr">
+        <span>Aperçu — T4A {{ data.year }} {{ data.firstName }} {{ data.lastName }}</span>
+      </div>
+      <iframe class="preview-frame" [src]="previewUrl" title="Aperçu du feuillet T4A"></iframe>
+      <div class="error-banner" *ngIf="error()">⚠ {{ error() }}</div>
+      <div class="preview-actions">
+        <button class="btn" [disabled]="saving()" (click)="closePreview()">Annuler</button>
+        <button class="btn" [disabled]="saving()" (click)="saveOnly()">
+          <span *ngIf="!saving()">💾 Enregistrer</span>
+          <span *ngIf="saving()" class="spinner"></span>
+        </button>
+        <button class="btn btn-primary" [disabled]="saving()" (click)="saveAndSend()">
+          <span *ngIf="!saving()">📧 Enregistrer et envoyer</span>
+          <span *ngIf="saving()" class="spinner"></span>
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

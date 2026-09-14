@@ -1,6 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
+export interface T4ASaveResponse {
+  savedPath: string;
+  emailSent: boolean;
+  emailError: string | null;
+}
+
 export interface T4AData {
   employeeId: string;
   year: number;
@@ -38,5 +44,9 @@ export class T4AService {
 
   generate(data: T4AData) {
     return this.http.post('/api/t4a/generate', data, { responseType: 'blob' as const });
+  }
+
+  save(data: T4AData, send: boolean) {
+    return this.http.post<T4ASaveResponse>('/api/t4a/save', data, { params: { send: send.toString() } });
   }
 }
