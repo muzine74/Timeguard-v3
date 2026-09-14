@@ -22,7 +22,11 @@
             "main": "src/main.ts",
             "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
-            "assets": ["src/favicon.ico", "src/web.config"],
+            "assets": [
+              "src/favicon.ico",
+              "src/web.config",
+              { "glob": "pdf.worker.min.js", "input": "node_modules/pdfjs-dist/build", "output": "/assets/" }
+            ],
             "styles": ["src/styles.scss"],
             "scripts": []
           },

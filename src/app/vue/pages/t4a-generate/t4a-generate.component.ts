@@ -1,10 +1,16 @@
-import { Component, OnInit, OnDestroy, signal, ChangeDetectionStrategy, ChangeDetectorRef, DestroyRef, inject } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy, ChangeDetectorRef, DestroyRef, ElementRef, ViewChild, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import * as pdfjsLib from 'pdfjs-dist';
 import { EmployeesService } from '../../../state/employees/employees.service';
 import { T4AService, T4AData } from '../../../state/t4a/t4a.service';
+
+// Rendu du PDF fait nous-mêmes (canvas) plutôt que via le lecteur PDF natif du navigateur
+// (iframe) : certains navigateurs (ex. Chrome avec "toujours télécharger les PDF" activé)
+// n'affichent pas les PDF intégrés et montrent un simple bouton "Open" à la place. PDF.js
+// garantit un rendu identique partout, peu importe les réglages du navigateur.
+pdfjsLib.GlobalWorkerOptions.workerSrc = '/assets/pdf.worker.min.js';
 
 @Component({
   selector: 'app-t4a-generate',
@@ -14,7 +20,7 @@ import { T4AService, T4AData } from '../../../state/t4a/t4a.service';
   templateUrl: './t4a-generate.component.html',
   styleUrls: ['./t4a-generate.component.scss'],
 })
-export class T4aGenerateComponent implements OnInit, OnDestroy {
+export class T4aGenerateComponent implements OnInit {
   employeeId = '';
   year       = new Date().getFullYear();
 
@@ -24,10 +30,10 @@ export class T4aGenerateComponent implements OnInit, OnDestroy {
   loaded    = signal(false);
 
   previewOpen = signal(false);
-  previewUrl: SafeResourceUrl | null = null;
   saving      = signal(false);
   saveMessage = signal('');
-  private previewObjectUrl: string | null = null;
+
+  @ViewChild('pdfContainer', { static: true }) pdfContainerRef!: ElementRef<HTMLDivElement>;
 
   data: T4AData = this._emptyData();
 
@@ -37,12 +43,7 @@ export class T4aGenerateComponent implements OnInit, OnDestroy {
     public  employeesSvc: EmployeesService,
     private t4aSvc:       T4AService,
     private cdr:          ChangeDetectorRef,
-    private sanitizer:    DomSanitizer,
   ) {}
-
-  ngOnDestroy(): void {
-    this._revokePreviewUrl();
-  }
 
   ngOnInit(): void {
     this.employeesSvc.loadList(true);
@@ -101,16 +102,17 @@ export class T4aGenerateComponent implements OnInit, OnDestroy {
     this.saveMessage.set('');
     this.generating.set(true);
     this.t4aSvc.generate(this.data).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: blob => {
-        this._revokePreviewUrl();
-        // Force le type MIME du blob : certains navigateurs refusent de rendre le PDF dans
-        // l'iframe si le blob n'est pas explicitement typé 'application/pdf'.
-        const pdfBlob = new Blob([blob], { type: 'application/pdf' });
-        this.previewObjectUrl = URL.createObjectURL(pdfBlob);
-        this.previewUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.previewObjectUrl);
-        this.previewOpen.set(true);
+      next: async blob => {
         this.generating.set(false);
+        this.previewOpen.set(true);
         this.cdr.markForCheck();
+        try {
+          const bytes = new Uint8Array(await blob.arrayBuffer());
+          await this._renderPdf(bytes);
+        } catch {
+          this.error.set("Impossible d'afficher l'aperçu du PDF.");
+          this.cdr.markForCheck();
+        }
       },
       error: err => {
         this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
@@ -120,10 +122,29 @@ export class T4aGenerateComponent implements OnInit, OnDestroy {
     });
   }
 
+  private async _renderPdf(bytes: Uint8Array): Promise<void> {
+    const container = this.pdfContainerRef.nativeElement;
+    container.innerHTML = '';
+
+    const pdf = await pdfjsLib.getDocument({ data: bytes }).promise;
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+      const page = await pdf.getPage(pageNum);
+      const viewport = page.getViewport({ scale: 1.5 });
+
+      const canvas = document.createElement('canvas');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      canvas.className = 'pdf-page';
+      container.appendChild(canvas);
+
+      const ctx = canvas.getContext('2d')!;
+      await page.render({ canvasContext: ctx, viewport }).promise;
+    }
+  }
+
   closePreview(): void {
     this.previewOpen.set(false);
-    this._revokePreviewUrl();
-    this.previewUrl = null;
+    this.pdfContainerRef.nativeElement.innerHTML = '';
   }
 
   saveOnly(): void {
@@ -156,13 +177,6 @@ export class T4aGenerateComponent implements OnInit, OnDestroy {
         this.cdr.markForCheck();
       },
     });
-  }
-
-  private _revokePreviewUrl(): void {
-    if (this.previewObjectUrl) {
-      URL.revokeObjectURL(this.previewObjectUrl);
-      this.previewObjectUrl = null;
-    }
   }
 
   private _emptyData(): T4AData {
