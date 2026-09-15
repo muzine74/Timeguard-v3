@@ -25,7 +25,8 @@ export class T4aGenerateComponent implements OnInit {
   year       = new Date().getFullYear();
 
   loading   = signal(false);
-  generating = signal(false);
+  downloading = signal(false);
+  previewing  = signal(false);
   error     = signal('');
   loaded    = signal(false);
 
@@ -77,10 +78,10 @@ export class T4aGenerateComponent implements OnInit {
 
   generate(): void {
     this.error.set('');
-    this.generating.set(true);
+    this.downloading.set(true);
     this.t4aSvc.generate(this.data).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: blob => {
-        this.generating.set(false);
+        this.downloading.set(false);
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -91,7 +92,7 @@ export class T4aGenerateComponent implements OnInit {
       },
       error: err => {
         this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
-        this.generating.set(false);
+        this.downloading.set(false);
         this.cdr.markForCheck();
       },
     });
@@ -100,10 +101,10 @@ export class T4aGenerateComponent implements OnInit {
   previewPdf(): void {
     this.error.set('');
     this.saveMessage.set('');
-    this.generating.set(true);
+    this.previewing.set(true);
     this.t4aSvc.generate(this.data).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: async blob => {
-        this.generating.set(false);
+        this.previewing.set(false);
         this.previewOpen.set(true);
         this.cdr.markForCheck();
         try {
@@ -116,7 +117,7 @@ export class T4aGenerateComponent implements OnInit {
       },
       error: err => {
         this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
-        this.generating.set(false);
+        this.previewing.set(false);
         this.cdr.markForCheck();
       },
     });

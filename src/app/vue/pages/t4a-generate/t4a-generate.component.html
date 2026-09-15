@@ -128,13 +128,13 @@
     <div class="success-banner" *ngIf="saveMessage()">{{ saveMessage() }}</div>
 
     <div class="actions">
-      <button class="btn" [disabled]="generating()" (click)="previewPdf()">
-        <span *ngIf="!generating()">👁 Visualiser PDF</span>
-        <span *ngIf="generating()" class="spinner"></span>
+      <button class="btn" [disabled]="previewing() || downloading()" (click)="previewPdf()">
+        <span *ngIf="!previewing()">👁 Visualiser PDF</span>
+        <span *ngIf="previewing()" class="spinner"></span>
       </button>
-      <button class="btn btn-primary" [disabled]="generating()" (click)="generate()">
-        <span *ngIf="!generating()">📄 Générer le PDF</span>
-        <span *ngIf="generating()" class="spinner"></span>
+      <button class="btn btn-primary" [disabled]="previewing() || downloading()" (click)="generate()">
+        <span *ngIf="!downloading()">📄 Générer le PDF</span>
+        <span *ngIf="downloading()" class="spinner"></span>
       </button>
     </div>
 
