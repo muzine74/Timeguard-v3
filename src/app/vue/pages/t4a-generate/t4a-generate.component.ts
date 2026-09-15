@@ -2,15 +2,15 @@ import { Component, OnInit, signal, ChangeDetectionStrategy, ChangeDetectorRef, 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import * as pdfjsLib from 'pdfjs-dist';
 import { EmployeesService } from '../../../state/employees/employees.service';
 import { T4AService, T4AData } from '../../../state/t4a/t4a.service';
 
 // Rendu du PDF fait nous-mêmes (canvas) plutôt que via le lecteur PDF natif du navigateur
 // (iframe) : certains navigateurs (ex. Chrome avec "toujours télécharger les PDF" activé)
 // n'affichent pas les PDF intégrés et montrent un simple bouton "Open" à la place. PDF.js
-// garantit un rendu identique partout, peu importe les réglages du navigateur.
-pdfjsLib.GlobalWorkerOptions.workerSrc = '/assets/pdf.worker.min.js';
+// garantit un rendu identique partout, peu importe les réglages du navigateur. Chargé en
+// import() dynamique (pas au niveau du module) pour que la page reste utilisable même si
+// cette bibliothèque échoue à s'initialiser dans un navigateur donné.
 
 @Component({
   selector: 'app-t4a-generate',
@@ -123,6 +123,9 @@ export class T4aGenerateComponent implements OnInit {
   }
 
   private async _renderPdf(bytes: Uint8Array): Promise<void> {
+    const pdfjsLib = await import('pdfjs-dist');
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '/assets/pdf.worker.min.js';
+
     const container = this.pdfContainerRef.nativeElement;
     container.innerHTML = '';
 
