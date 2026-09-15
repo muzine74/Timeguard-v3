@@ -12,6 +12,7 @@ export const PERM = {
   groupsManage:       'groups.manage',
   configManage:       'config.manage',
   credentialsManage:  'credentials.manage',
+  paymentsManage:     'payments.manage',
 } as const;
 
 export type PermKey = typeof PERM[keyof typeof PERM];

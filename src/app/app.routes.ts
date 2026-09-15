@@ -71,6 +71,11 @@ export const routes: Routes = [
     loadComponent: () => import('./vue/pages/employee-pricing/employee-pricing.component').then(m => m.EmployeePricingComponent)
   },
   {
+    path: 'employees/payments',
+    canActivate: [permGuard(PERM.paymentsManage)],
+    loadComponent: () => import('./vue/pages/employee-payments/employee-payments.component').then(m => m.EmployeePaymentsComponent)
+  },
+  {
     path: 'employees/credentials',
     canActivate: [permGuard(PERM.credentialsManage)],
     loadComponent: () => import('./vue/pages/employee-credentials/employee-credentials.component').then(m => m.EmployeeCredentialsComponent)
