@@ -149,14 +149,14 @@
       <div class="preview-frame" #pdfContainer></div>
       <div class="error-banner" *ngIf="error()">⚠ {{ error() }}</div>
       <div class="preview-actions">
-        <button class="btn" [disabled]="saving()" (click)="closePreview()">Annuler</button>
-        <button class="btn" [disabled]="saving()" (click)="saveOnly()">
-          <span *ngIf="!saving()">💾 Enregistrer</span>
-          <span *ngIf="saving()" class="spinner"></span>
+        <button class="btn" [disabled]="savingOnly() || savingAndSending()" (click)="closePreview()">Annuler</button>
+        <button class="btn" [disabled]="savingOnly() || savingAndSending()" (click)="saveOnly()">
+          <span *ngIf="!savingOnly()">💾 Enregistrer</span>
+          <span *ngIf="savingOnly()" class="spinner"></span>
         </button>
-        <button class="btn btn-primary" [disabled]="saving()" (click)="saveAndSend()">
-          <span *ngIf="!saving()">📧 Enregistrer et envoyer</span>
-          <span *ngIf="saving()" class="spinner"></span>
+        <button class="btn btn-primary" [disabled]="savingOnly() || savingAndSending()" (click)="saveAndSend()">
+          <span *ngIf="!savingAndSending()">📧 Enregistrer et envoyer</span>
+          <span *ngIf="savingAndSending()" class="spinner"></span>
         </button>
       </div>
     </div>

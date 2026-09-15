@@ -31,7 +31,8 @@ export class T4aGenerateComponent implements OnInit {
   loaded    = signal(false);
 
   previewOpen = signal(false);
-  saving      = signal(false);
+  savingOnly    = signal(false);
+  savingAndSending = signal(false);
   saveMessage = signal('');
 
   @ViewChild('pdfContainer', { static: true }) pdfContainerRef!: ElementRef<HTMLDivElement>;
@@ -160,11 +161,12 @@ export class T4aGenerateComponent implements OnInit {
   }
 
   private _save(send: boolean): void {
+    const savingSignal = send ? this.savingAndSending : this.savingOnly;
     this.error.set('');
-    this.saving.set(true);
+    savingSignal.set(true);
     this.t4aSvc.save(this.data, send).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: res => {
-        this.saving.set(false);
+        savingSignal.set(false);
         this.closePreview();
         if (send) {
           this.saveMessage.set(res.emailSent
@@ -177,7 +179,7 @@ export class T4aGenerateComponent implements OnInit {
       },
       error: err => {
         this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
-        this.saving.set(false);
+        savingSignal.set(false);
         this.cdr.markForCheck();
       },
     });
