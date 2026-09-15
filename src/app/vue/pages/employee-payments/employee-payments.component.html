@@ -62,9 +62,24 @@
   <div class="card" *ngIf="rows().length > 0">
     <div *ngFor="let row of rows(); trackBy: trackByEmployeeId" class="payment-row" [class.mismatch]="hasMismatch(row)">
       <div class="payment-hdr">
-        <span class="emp-name">{{ row.employeeName }}</span>
+        <button type="button" class="emp-name-btn" (click)="toggleExpand(row.employeeId)">
+          <span class="chevron" [class.open]="isExpanded(row.employeeId)">▸</span>
+          <span class="emp-name">{{ row.employeeName }}</span>
+          <span class="nb-jours" *ngIf="row.workDates.length">({{ row.workDates.length }} jour{{ row.workDates.length > 1 ? 's' : '' }})</span>
+        </button>
         <span class="save-msg" *ngIf="row.saveMessage">{{ row.saveMessage }}</span>
       </div>
+
+      <div class="week-blocks" *ngIf="isExpanded(row.employeeId)">
+        <div class="week-block" *ngFor="let block of weekBlocks(row)">
+          <div class="week-label">{{ weekLabel(block) }}</div>
+          <div class="day-chips">
+            <span class="day-chip" *ngFor="let d of block.dates">{{ dayLabel(d) }}</span>
+          </div>
+        </div>
+        <div class="week-empty" *ngIf="row.workDates.length === 0">Aucun jour travaillé sur cette période.</div>
+      </div>
+
       <div class="payment-fields">
         <div class="field">
           <label>Gain cumulé</label>

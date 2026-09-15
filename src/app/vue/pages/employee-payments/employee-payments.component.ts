@@ -12,6 +12,12 @@ interface PaymentRowState extends EmployeePaymentRow {
   saveMessage: string;
 }
 
+interface WeekBlock {
+  weekStart: string;
+  weekEnd: string;
+  dates: string[];
+}
+
 @Component({
   selector: 'app-employee-payments',
   standalone: true,
@@ -32,6 +38,7 @@ export class EmployeePaymentsComponent {
   loading = signal(false);
   error   = signal('');
   rows    = signal<PaymentRowState[]>([]);
+  expanded = new Set<string>();
 
   private destroyRef = inject(DestroyRef);
 
@@ -137,6 +144,55 @@ export class EmployeePaymentsComponent {
         this.cdr.markForCheck();
       },
     });
+  }
+
+  isExpanded(employeeId: string): boolean {
+    return this.expanded.has(employeeId);
+  }
+
+  toggleExpand(employeeId: string): void {
+    if (this.expanded.has(employeeId)) this.expanded.delete(employeeId);
+    else this.expanded.add(employeeId);
+  }
+
+  weekBlocks(row: PaymentRowState): WeekBlock[] {
+    const byWeek = new Map<string, string[]>();
+    for (const d of row.workDates) {
+      const start = this._mondayOf(d);
+      if (!byWeek.has(start)) byWeek.set(start, []);
+      byWeek.get(start)!.push(d);
+    }
+    return Array.from(byWeek.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([weekStart, dates]) => ({
+        weekStart,
+        weekEnd: this._addDays(weekStart, 6),
+        dates: dates.sort(),
+      }));
+  }
+
+  dayLabel(dateStr: string): string {
+    const d = new Date(dateStr + 'T00:00:00');
+    return d.toLocaleDateString('fr-CA', { weekday: 'long', day: 'numeric', month: 'short' });
+  }
+
+  weekLabel(block: WeekBlock): string {
+    const fmt = (s: string) => new Date(s + 'T00:00:00').toLocaleDateString('fr-CA', { day: 'numeric', month: 'short' });
+    return `Semaine du ${fmt(block.weekStart)} au ${fmt(block.weekEnd)}`;
+  }
+
+  private _mondayOf(dateStr: string): string {
+    const d = new Date(dateStr + 'T00:00:00');
+    const day = d.getDay(); // 0=dim, 1=lun, ...
+    const diff = day === 0 ? -6 : 1 - day;
+    d.setDate(d.getDate() + diff);
+    return d.toISOString().slice(0, 10);
+  }
+
+  private _addDays(dateStr: string, n: number): string {
+    const d = new Date(dateStr + 'T00:00:00');
+    d.setDate(d.getDate() + n);
+    return d.toISOString().slice(0, 10);
   }
 
   fmt(val: number): string {

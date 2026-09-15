@@ -7,6 +7,7 @@ export interface EmployeePaymentRow {
   gainCumule: number;
   amountPaid: number;
   note: string | null;
+  workDates: string[]; // yyyy-MM-dd, un par jour travaillé
 }
 
 export interface EmployeePaymentSavePayload {
