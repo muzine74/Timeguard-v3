@@ -11,7 +11,11 @@ type ResultsView = 'daily' | 'company';
 interface PaymentRowState extends EmployeePaymentRow {
   saving: boolean;
   saveMessage: string;
-  selectedDays: Set<string>; // dates (yyyy-MM-dd) cochées comme "à payer"
+  // Clé = "date::compagnie" pour chaque contribution (jour, compagnie) -- cochée = comptée
+  // dans le montant payé. Un jour est "sélectionné" quand toutes ses clés le sont ; une
+  // compagnie (pour une semaine) pareil. Ça permet aux deux vues (journalière / compagnie)
+  // de partager exactement la même logique de sélection et de total.
+  selectedKeys: Set<string>;
 }
 
 interface WeekBlock {
@@ -24,6 +28,10 @@ interface CompanyBlock {
   name: string;
   total: number;
   days: { date: string; amount: number }[];
+}
+
+function dayCompanyKey(date: string, company: string): string {
+  return `${date}::${company}`;
 }
 
 @Component({
@@ -115,8 +123,11 @@ export class EmployeePaymentsComponent {
             ...r,
             saving: false,
             saveMessage: '',
-            // Par défaut, toutes les journées travaillées sont cochées (= montant payé = gain cumulé)
-            selectedDays: new Set(r.workDays.map(w => w.date)),
+            // Par défaut, toutes les contributions (jour, compagnie) sont cochées
+            // (= montant payé = gain cumulé)
+            selectedKeys: new Set(
+              r.workDays.flatMap(w => w.companies.map(c => dayCompanyKey(w.date, c.name)))
+            ),
           })));
           this.loading.set(false);
           this.cdr.markForCheck();
@@ -133,21 +144,37 @@ export class EmployeePaymentsComponent {
     return Math.round(row.amountPaid * 100) !== Math.round(row.gainCumule * 100);
   }
 
-  isDaySelected(row: PaymentRowState, date: string): boolean {
-    return row.selectedDays.has(date);
+  private _dayKeys(w: EmployeePaymentWorkDay): string[] {
+    return w.companies.map(c => dayCompanyKey(w.date, c.name));
   }
 
-  toggleDay(row: PaymentRowState, date: string): void {
-    if (row.selectedDays.has(date)) row.selectedDays.delete(date);
-    else row.selectedDays.add(date);
+  isDaySelected(row: PaymentRowState, w: EmployeePaymentWorkDay): boolean {
+    const keys = this._dayKeys(w);
+    return keys.length > 0 && keys.every(k => row.selectedKeys.has(k));
+  }
+
+  isDayPartial(row: PaymentRowState, w: EmployeePaymentWorkDay): boolean {
+    const keys = this._dayKeys(w);
+    const nSelected = keys.filter(k => row.selectedKeys.has(k)).length;
+    return nSelected > 0 && nSelected < keys.length;
+  }
+
+  toggleDay(row: PaymentRowState, w: EmployeePaymentWorkDay): void {
+    const keys = this._dayKeys(w);
+    const selectAll = !this.isDaySelected(row, w); // partiel ou vide -> tout cocher ; complet -> tout décocher
+    for (const k of keys) {
+      if (selectAll) row.selectedKeys.add(k);
+      else row.selectedKeys.delete(k);
+    }
     row.amountPaid = this._computeAmountPaid(row);
     this.cdr.markForCheck();
   }
 
   private _computeAmountPaid(row: PaymentRowState): number {
     const sum = row.workDays
-      .filter(w => row.selectedDays.has(w.date))
-      .reduce((s, w) => s + w.amount, 0);
+      .flatMap(w => w.companies.map(c => ({ key: dayCompanyKey(w.date, c.name), amount: c.amount })))
+      .filter(x => row.selectedKeys.has(x.key))
+      .reduce((s, x) => s + x.amount, 0);
     return Math.round(sum * 100) / 100;
   }
 
@@ -206,8 +233,9 @@ export class EmployeePaymentsComponent {
 
   weekTotal(row: PaymentRowState, block: WeekBlock): number {
     const sum = block.days
-      .filter(w => row.selectedDays.has(w.date))
-      .reduce((s, w) => s + w.amount, 0);
+      .flatMap(w => w.companies.map(c => ({ key: dayCompanyKey(w.date, c.name), amount: c.amount })))
+      .filter(x => row.selectedKeys.has(x.key))
+      .reduce((s, x) => s + x.amount, 0);
     return Math.round(sum * 100) / 100;
   }
 
@@ -224,6 +252,28 @@ export class EmployeePaymentsComponent {
     return Array.from(byCompany.values())
       .map(c => ({ ...c, total: Math.round(c.total * 100) / 100, days: c.days.sort((a, b) => a.date.localeCompare(b.date)) }))
       .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  isCompanySelected(row: PaymentRowState, c: CompanyBlock): boolean {
+    const keys = c.days.map(d => dayCompanyKey(d.date, c.name));
+    return keys.length > 0 && keys.every(k => row.selectedKeys.has(k));
+  }
+
+  isCompanyPartial(row: PaymentRowState, c: CompanyBlock): boolean {
+    const keys = c.days.map(d => dayCompanyKey(d.date, c.name));
+    const nSelected = keys.filter(k => row.selectedKeys.has(k)).length;
+    return nSelected > 0 && nSelected < keys.length;
+  }
+
+  toggleCompany(row: PaymentRowState, c: CompanyBlock): void {
+    const keys = c.days.map(d => dayCompanyKey(d.date, c.name));
+    const selectAll = !this.isCompanySelected(row, c);
+    for (const k of keys) {
+      if (selectAll) row.selectedKeys.add(k);
+      else row.selectedKeys.delete(k);
+    }
+    row.amountPaid = this._computeAmountPaid(row);
+    this.cdr.markForCheck();
   }
 
   companyTooltip(c: CompanyBlock): string {
