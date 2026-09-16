@@ -35,6 +35,7 @@
   background: var(--bg); border: 1px solid var(--border); border-radius: 22px; padding: 3px;
 }
 .mode-seg { min-width: 260px; }
+.view-seg { min-width: 320px; }
 .seg-opt {
   position: relative; z-index: 1; flex: 1; border: none; background: transparent;
   padding: 8px 18px; font-size: .85rem; color: var(--muted); cursor: pointer;
@@ -71,6 +72,12 @@
 .dd-empty { padding: 10px; font-size: 12.5px; color: var(--muted); }
 
 // ── Résultats ────────────────────────────────────────────────────────────
+.results-hdr {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;
+  gap: 14px; margin-bottom: 14px;
+}
+.results-title { font-size: 15px; font-weight: 700; color: var(--text); }
+
 .card {
   background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
   padding: 4px 20px;
@@ -125,6 +132,12 @@
   &.unchecked {
     opacity: .45;
     .day-amount { text-decoration: line-through; }
+  }
+
+  &.company-chip {
+    cursor: default;
+    .day-name { text-transform: none; }
+    &:hover { border-color: var(--border); }
   }
 }
 .week-empty { font-size: 12.5px; color: var(--muted); }

@@ -6,6 +6,7 @@ import { EmployeesService } from '../../../state/employees/employees.service';
 import { EmployeePaymentsService, EmployeePaymentRow, EmployeePaymentWorkDay } from '../../../state/employee-payments/employee-payments.service';
 
 type FilterMode = 'period' | 'range';
+type ResultsView = 'daily' | 'company';
 
 interface PaymentRowState extends EmployeePaymentRow {
   saving: boolean;
@@ -17,6 +18,12 @@ interface WeekBlock {
   weekStart: string;
   weekEnd: string;
   days: EmployeePaymentWorkDay[];
+}
+
+interface CompanyBlock {
+  name: string;
+  total: number;
+  days: { date: string; amount: number }[];
 }
 
 @Component({
@@ -40,6 +47,7 @@ export class EmployeePaymentsComponent {
   error   = signal('');
   rows    = signal<PaymentRowState[]>([]);
   expanded = new Set<string>();
+  resultsView = signal<ResultsView>('daily');
 
   private destroyRef = inject(DestroyRef);
 
@@ -203,6 +211,25 @@ export class EmployeePaymentsComponent {
     return Math.round(sum * 100) / 100;
   }
 
+  companyBlocks(block: WeekBlock): CompanyBlock[] {
+    const byCompany = new Map<string, CompanyBlock>();
+    for (const w of block.days) {
+      for (const c of w.companies) {
+        if (!byCompany.has(c.name)) byCompany.set(c.name, { name: c.name, total: 0, days: [] });
+        const entry = byCompany.get(c.name)!;
+        entry.total += c.amount;
+        entry.days.push({ date: w.date, amount: c.amount });
+      }
+    }
+    return Array.from(byCompany.values())
+      .map(c => ({ ...c, total: Math.round(c.total * 100) / 100, days: c.days.sort((a, b) => a.date.localeCompare(b.date)) }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  companyTooltip(c: CompanyBlock): string {
+    return c.days.map(d => `${this.dayLabel(d.date)} — ${this.fmt(d.amount)}`).join('\n');
+  }
+
   dayTooltip(w: EmployeePaymentWorkDay): string {
     if (w.companies.length === 0) return '';
     return w.companies.map(c => `${c.name} — ${this.fmt(c.amount)}`).join('\n');
@@ -240,6 +267,7 @@ export class EmployeePaymentsComponent {
   trackByEmpId(_: number, e: { employeeId: string }): string { return e.employeeId; }
   trackByDate(_: number, w: EmployeePaymentWorkDay): string { return w.date; }
   trackByWeekStart(_: number, b: WeekBlock): string { return b.weekStart; }
+  trackByCompanyName(_: number, c: CompanyBlock): string { return c.name; }
 
   private _currentPeriod(): string {
     const d = new Date();

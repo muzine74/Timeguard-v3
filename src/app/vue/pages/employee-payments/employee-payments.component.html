@@ -59,6 +59,15 @@
   </div>
 
   <!-- ── Résultats ───────────────────────────────────────────────────────── -->
+  <div class="results-hdr" *ngIf="rows().length > 0">
+    <span class="results-title">Résultats</span>
+    <div class="seg-control view-seg">
+      <button type="button" class="seg-opt" [class.active]="resultsView() === 'daily'" (click)="resultsView.set('daily')">📆 Vue journalière</button>
+      <button type="button" class="seg-opt" [class.active]="resultsView() === 'company'" (click)="resultsView.set('company')">🏢 Vue par compagnie</button>
+      <div class="seg-thumb" [class.thumb-right]="resultsView() === 'company'"></div>
+    </div>
+  </div>
+
   <div class="card" *ngIf="rows().length > 0">
     <div *ngFor="let row of rows(); trackBy: trackByEmployeeId" class="payment-row" [class.mismatch]="hasMismatch(row)">
       <div class="payment-hdr">
@@ -76,7 +85,7 @@
             <span>{{ weekLabel(block) }}</span>
             <span class="week-total">{{ fmt(weekTotal(row, block)) }}</span>
           </div>
-          <div class="day-chips">
+          <div class="day-chips" *ngIf="resultsView() === 'daily'">
             <button type="button" class="day-chip" *ngFor="let w of block.days; trackBy: trackByDate"
                     [class.unchecked]="!isDaySelected(row, w.date)" (click)="toggleDay(row, w.date)"
                     [title]="dayTooltip(w)">
@@ -84,6 +93,14 @@
               <span class="day-name">{{ dayLabel(w.date) }}</span>
               <span class="day-amount">{{ fmt(w.amount) }}</span>
             </button>
+          </div>
+
+          <div class="day-chips" *ngIf="resultsView() === 'company'">
+            <span class="day-chip company-chip" *ngFor="let c of companyBlocks(block); trackBy: trackByCompanyName"
+                  [title]="companyTooltip(c)">
+              <span class="day-name">{{ c.name }}</span>
+              <span class="day-amount">{{ fmt(c.total) }}</span>
+            </span>
           </div>
         </div>
         <div class="week-empty" *ngIf="row.workDays.length === 0">Aucun jour travaillé sur cette période.</div>
