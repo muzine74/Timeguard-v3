@@ -16,6 +16,7 @@ interface PaymentRowState extends EmployeePaymentRow {
   // compagnie (pour une semaine) pareil. Ça permet aux deux vues (journalière / compagnie)
   // de partager exactement la même logique de sélection et de total.
   selectedKeys: Set<string>;
+  collapsedWeeks: Set<string>; // weekStart (yyyy-MM-dd) des semaines repliées
 }
 
 interface WeekBlock {
@@ -128,6 +129,8 @@ export class EmployeePaymentsComponent {
             selectedKeys: new Set(
               r.workDays.flatMap(w => w.companies.map(c => dayCompanyKey(w.date, c.name)))
             ),
+            // Toutes les semaines repliées par défaut
+            collapsedWeeks: new Set(r.workDays.map(w => this._mondayOf(w.date))),
           })));
           this.loading.set(false);
           this.cdr.markForCheck();
@@ -213,6 +216,16 @@ export class EmployeePaymentsComponent {
   toggleExpand(employeeId: string): void {
     if (this.expanded.has(employeeId)) this.expanded.delete(employeeId);
     else this.expanded.add(employeeId);
+  }
+
+  isWeekCollapsed(row: PaymentRowState, block: WeekBlock): boolean {
+    return row.collapsedWeeks.has(block.weekStart);
+  }
+
+  toggleWeek(row: PaymentRowState, block: WeekBlock): void {
+    if (row.collapsedWeeks.has(block.weekStart)) row.collapsedWeeks.delete(block.weekStart);
+    else row.collapsedWeeks.add(block.weekStart);
+    this.cdr.markForCheck();
   }
 
   weekBlocks(row: PaymentRowState): WeekBlock[] {

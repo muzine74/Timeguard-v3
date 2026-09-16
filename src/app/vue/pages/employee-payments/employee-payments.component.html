@@ -81,31 +81,37 @@
 
       <div class="week-blocks" *ngIf="isExpanded(row.employeeId)">
         <div class="week-block" *ngFor="let block of weekBlocks(row); trackBy: trackByWeekStart">
-          <div class="week-label">
-            <span>{{ weekLabel(block) }}</span>
+          <button type="button" class="week-label" (click)="toggleWeek(row, block)">
+            <span class="week-label-left">
+              <span class="chevron" [class.open]="!isWeekCollapsed(row, block)">▸</span>
+              {{ weekLabel(block) }}
+            </span>
             <span class="week-total">{{ fmt(weekTotal(row, block)) }}</span>
-          </div>
-          <div class="day-chips" *ngIf="resultsView() === 'daily'">
-            <button type="button" class="day-chip" *ngFor="let w of block.days; trackBy: trackByDate"
-                    [class.unchecked]="!isDaySelected(row, w) && !isDayPartial(row, w)"
-                    [class.partial]="isDayPartial(row, w)"
-                    (click)="toggleDay(row, w)" [title]="dayTooltip(w)">
-              <span class="chip-check">{{ isDaySelected(row, w) ? '✓' : (isDayPartial(row, w) ? '±' : '') }}</span>
-              <span class="day-name">{{ dayLabel(w.date) }}</span>
-              <span class="day-amount">{{ fmt(w.amount) }}</span>
-            </button>
-          </div>
+          </button>
 
-          <div class="day-chips" *ngIf="resultsView() === 'company'">
-            <button type="button" class="day-chip company-chip" *ngFor="let c of companyBlocks(block); trackBy: trackByCompanyName"
-                    [class.unchecked]="!isCompanySelected(row, c) && !isCompanyPartial(row, c)"
-                    [class.partial]="isCompanyPartial(row, c)"
-                    (click)="toggleCompany(row, c)" [title]="companyTooltip(c)">
-              <span class="chip-check">{{ isCompanySelected(row, c) ? '✓' : (isCompanyPartial(row, c) ? '±' : '') }}</span>
-              <span class="day-name">{{ c.name }}</span>
-              <span class="day-amount">{{ fmt(c.total) }}</span>
-            </button>
-          </div>
+          <ng-container *ngIf="!isWeekCollapsed(row, block)">
+            <div class="day-chips" *ngIf="resultsView() === 'daily'">
+              <button type="button" class="day-chip" *ngFor="let w of block.days; trackBy: trackByDate"
+                      [class.unchecked]="!isDaySelected(row, w) && !isDayPartial(row, w)"
+                      [class.partial]="isDayPartial(row, w)"
+                      (click)="toggleDay(row, w)" [title]="dayTooltip(w)">
+                <span class="chip-check">{{ isDaySelected(row, w) ? '✓' : (isDayPartial(row, w) ? '±' : '') }}</span>
+                <span class="day-name">{{ dayLabel(w.date) }}</span>
+                <span class="day-amount">{{ fmt(w.amount) }}</span>
+              </button>
+            </div>
+
+            <div class="day-chips" *ngIf="resultsView() === 'company'">
+              <button type="button" class="day-chip company-chip" *ngFor="let c of companyBlocks(block); trackBy: trackByCompanyName"
+                      [class.unchecked]="!isCompanySelected(row, c) && !isCompanyPartial(row, c)"
+                      [class.partial]="isCompanyPartial(row, c)"
+                      (click)="toggleCompany(row, c)" [title]="companyTooltip(c)">
+                <span class="chip-check">{{ isCompanySelected(row, c) ? '✓' : (isCompanyPartial(row, c) ? '±' : '') }}</span>
+                <span class="day-name">{{ c.name }}</span>
+                <span class="day-amount">{{ fmt(c.total) }}</span>
+              </button>
+            </div>
+          </ng-container>
         </div>
         <div class="week-empty" *ngIf="row.workDays.length === 0">Aucun jour travaillé sur cette période.</div>
       </div>
