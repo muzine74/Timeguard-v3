@@ -234,6 +234,7 @@ export class EmployeePaymentsComponent {
   trackByEmployeeId(_: number, r: PaymentRowState): string { return r.employeeId; }
   trackByEmpId(_: number, e: { employeeId: string }): string { return e.employeeId; }
   trackByDate(_: number, w: EmployeePaymentWorkDay): string { return w.date; }
+  trackByWeekStart(_: number, b: WeekBlock): string { return b.weekStart; }
 
   private _currentPeriod(): string {
     const d = new Date();
