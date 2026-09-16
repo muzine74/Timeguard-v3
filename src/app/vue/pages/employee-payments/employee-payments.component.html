@@ -68,7 +68,7 @@
     </div>
   </div>
 
-  <div class="card" *ngIf="rows().length > 0">
+  <div class="results-list" *ngIf="rows().length > 0">
     <div *ngFor="let row of rows(); trackBy: trackByEmployeeId" class="payment-row" [class.mismatch]="hasMismatch(row)">
       <div class="payment-hdr">
         <button type="button" class="emp-name-btn" (click)="toggleExpand(row.employeeId)">
