@@ -3,19 +3,20 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EmployeesService } from '../../../state/employees/employees.service';
-import { EmployeePaymentsService, EmployeePaymentRow } from '../../../state/employee-payments/employee-payments.service';
+import { EmployeePaymentsService, EmployeePaymentRow, EmployeePaymentWorkDay } from '../../../state/employee-payments/employee-payments.service';
 
 type FilterMode = 'period' | 'range';
 
 interface PaymentRowState extends EmployeePaymentRow {
   saving: boolean;
   saveMessage: string;
+  selectedDays: Set<string>; // dates (yyyy-MM-dd) cochées comme "à payer"
 }
 
 interface WeekBlock {
   weekStart: string;
   weekEnd: string;
-  dates: string[];
+  days: EmployeePaymentWorkDay[];
 }
 
 @Component({
@@ -102,7 +103,13 @@ export class EmployeePaymentsComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: data => {
-          this.rows.set(data.map(r => ({ ...r, saving: false, saveMessage: '' })));
+          this.rows.set(data.map(r => ({
+            ...r,
+            saving: false,
+            saveMessage: '',
+            // Par défaut, toutes les journées travaillées sont cochées (= montant payé = gain cumulé)
+            selectedDays: new Set(r.workDays.map(w => w.date)),
+          })));
           this.loading.set(false);
           this.cdr.markForCheck();
         },
@@ -116,6 +123,24 @@ export class EmployeePaymentsComponent {
 
   hasMismatch(row: PaymentRowState): boolean {
     return Math.round(row.amountPaid * 100) !== Math.round(row.gainCumule * 100);
+  }
+
+  isDaySelected(row: PaymentRowState, date: string): boolean {
+    return row.selectedDays.has(date);
+  }
+
+  toggleDay(row: PaymentRowState, date: string): void {
+    if (row.selectedDays.has(date)) row.selectedDays.delete(date);
+    else row.selectedDays.add(date);
+    row.amountPaid = this._computeAmountPaid(row);
+    this.cdr.markForCheck();
+  }
+
+  private _computeAmountPaid(row: PaymentRowState): number {
+    const sum = row.workDays
+      .filter(w => row.selectedDays.has(w.date))
+      .reduce((s, w) => s + w.amount, 0);
+    return Math.round(sum * 100) / 100;
   }
 
   saveRow(row: PaymentRowState): void {
@@ -156,19 +181,26 @@ export class EmployeePaymentsComponent {
   }
 
   weekBlocks(row: PaymentRowState): WeekBlock[] {
-    const byWeek = new Map<string, string[]>();
-    for (const d of row.workDates) {
-      const start = this._mondayOf(d);
+    const byWeek = new Map<string, EmployeePaymentWorkDay[]>();
+    for (const w of row.workDays) {
+      const start = this._mondayOf(w.date);
       if (!byWeek.has(start)) byWeek.set(start, []);
-      byWeek.get(start)!.push(d);
+      byWeek.get(start)!.push(w);
     }
     return Array.from(byWeek.entries())
       .sort(([a], [b]) => a.localeCompare(b))
-      .map(([weekStart, dates]) => ({
+      .map(([weekStart, days]) => ({
         weekStart,
         weekEnd: this._addDays(weekStart, 6),
-        dates: dates.sort(),
+        days: days.sort((a, b) => a.date.localeCompare(b.date)),
       }));
+  }
+
+  weekTotal(row: PaymentRowState, block: WeekBlock): number {
+    const sum = block.days
+      .filter(w => row.selectedDays.has(w.date))
+      .reduce((s, w) => s + w.amount, 0);
+    return Math.round(sum * 100) / 100;
   }
 
   dayLabel(dateStr: string): string {
@@ -201,6 +233,7 @@ export class EmployeePaymentsComponent {
 
   trackByEmployeeId(_: number, r: PaymentRowState): string { return r.employeeId; }
   trackByEmpId(_: number, e: { employeeId: string }): string { return e.employeeId; }
+  trackByDate(_: number, w: EmployeePaymentWorkDay): string { return w.date; }
 
   private _currentPeriod(): string {
     const d = new Date();

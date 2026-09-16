@@ -1,13 +1,18 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
+export interface EmployeePaymentWorkDay {
+  date: string; // yyyy-MM-dd
+  amount: number;
+}
+
 export interface EmployeePaymentRow {
   employeeId: string;
   employeeName: string;
   gainCumule: number;
   amountPaid: number;
   note: string | null;
-  workDates: string[]; // yyyy-MM-dd, un par jour travaillé
+  workDays: EmployeePaymentWorkDay[];
 }
 
 export interface EmployeePaymentSavePayload {
