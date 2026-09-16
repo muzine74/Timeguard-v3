@@ -29,6 +29,8 @@
   outline: none; transition: border-color .2s;
   &:focus { border-color: var(--accent); }
 }
+// Sans ça, l'icône du calendrier natif (date/month) reste noire sur fond sombre -- quasi invisible
+input[type="date"].inp, input[type="month"].inp { color-scheme: dark; }
 
 .seg-control {
   position: relative; display: inline-flex;
