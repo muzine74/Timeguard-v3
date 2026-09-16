@@ -1,9 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
+export interface EmployeePaymentDayCompany {
+  name: string;
+  amount: number;
+}
+
 export interface EmployeePaymentWorkDay {
   date: string; // yyyy-MM-dd
   amount: number;
+  companies: EmployeePaymentDayCompany[];
 }
 
 export interface EmployeePaymentRow {

@@ -78,7 +78,8 @@
           </div>
           <div class="day-chips">
             <button type="button" class="day-chip" *ngFor="let w of block.days; trackBy: trackByDate"
-                    [class.unchecked]="!isDaySelected(row, w.date)" (click)="toggleDay(row, w.date)">
+                    [class.unchecked]="!isDaySelected(row, w.date)" (click)="toggleDay(row, w.date)"
+                    [title]="dayTooltip(w)">
               <span class="chip-check">{{ isDaySelected(row, w.date) ? '✓' : '' }}</span>
               <span class="day-name">{{ dayLabel(w.date) }}</span>
               <span class="day-amount">{{ fmt(w.amount) }}</span>

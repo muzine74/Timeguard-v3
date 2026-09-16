@@ -203,6 +203,11 @@ export class EmployeePaymentsComponent {
     return Math.round(sum * 100) / 100;
   }
 
+  dayTooltip(w: EmployeePaymentWorkDay): string {
+    if (w.companies.length === 0) return '';
+    return w.companies.map(c => `${c.name} — ${this.fmt(c.amount)}`).join('\n');
+  }
+
   dayLabel(dateStr: string): string {
     const d = new Date(dateStr + 'T00:00:00');
     return d.toLocaleDateString('fr-CA', { weekday: 'long', day: 'numeric', month: 'short' });
