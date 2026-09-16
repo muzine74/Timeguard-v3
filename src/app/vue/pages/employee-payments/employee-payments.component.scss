@@ -104,17 +104,18 @@
 
 .week-blocks { margin: 4px 0 16px; display: flex; flex-direction: column; gap: 10px; }
 .week-block {
-  display: flex; flex-direction: column; gap: 8px;
+  display: flex; flex-direction: column;
   background: var(--surface2); border: 1px solid rgba(255,255,255,.14); border-radius: 10px;
-  padding: 10px 12px;
+  overflow: hidden;
 }
 .week-label {
   display: flex; align-items: center; justify-content: space-between;
-  font-size: 13.5px; font-weight: 700; color: var(--muted);
-  padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,.1);
+  font-size: 13.5px; font-weight: 700; color: var(--text);
+  background: var(--bg);
+  padding: 9px 14px;
 }
 .week-total { color: var(--accent); font-weight: 700; }
-.day-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.day-chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 12px; }
 .day-chip {
   display: flex; align-items: center; gap: 7px;
   background: #1b2438; border: 1px solid rgba(255,255,255,.16); border-radius: 6px;
