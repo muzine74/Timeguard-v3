@@ -9,6 +9,7 @@ import {
   GroupsService, GroupSummary, GroupDetail, PermissionDef,
 } from '../../../state/groups/groups.service';
 import { EmployeesService } from '../../../state/employees/employees.service';
+import { AuthService } from '../../../state/auth/auth.service';
 
 @Component({
   selector: 'app-groups-manage',
@@ -75,6 +76,8 @@ export class GroupsManageComponent implements OnInit {
   constructor(
     private groupsSvc:   GroupsService,
     private employeesSvc: EmployeesService,
+    /** Le catalogue de permissions est commun à toutes les entreprises : seul le super-administrateur le modifie. */
+    public  auth:         AuthService,
   ) {}
 
   ngOnInit(): void {

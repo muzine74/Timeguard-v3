@@ -1,0 +1,54 @@
+<aside class="sidebar" aria-label="Employés">
+  <div class="sidebar-hdr">
+    <span class="sidebar-title">Employés</span>
+    <span class="sidebar-count" *ngIf="!loading">{{ filteredEmployees.length }}</span>
+  </div>
+  <div class="search-box">
+    <span class="search-icon" aria-hidden="true">🔍</span>
+    <input type="search" class="search-inp" placeholder="Rechercher un employé…"
+           aria-label="Rechercher un employé"
+           [value]="searchQuery()" (input)="onSearch($event)" />
+  </div>
+
+  <!-- Filtre par statut (combiné avec la recherche) -->
+  <div class="status-filter" role="group" aria-label="Filtrer par statut de validation">
+    <button type="button" class="sf-chip" [class.active]="statusFilter() === 'all'"
+            [attr.aria-pressed]="statusFilter() === 'all'" (click)="statusFilter.set('all')">
+      Tous <span class="sf-count">{{ statusCounts.all }}</span>
+    </button>
+    <button type="button" class="sf-chip sf-pending" [class.active]="statusFilter() === 'pending'"
+            [attr.aria-pressed]="statusFilter() === 'pending'" (click)="statusFilter.set('pending')">
+      À valider <span class="sf-count">{{ statusCounts.pending }}</span>
+    </button>
+    <button type="button" class="sf-chip sf-validated" [class.active]="statusFilter() === 'validated'"
+            [attr.aria-pressed]="statusFilter() === 'validated'" (click)="statusFilter.set('validated')">
+      Validés <span class="sf-count">{{ statusCounts.validated }}</span>
+    </button>
+  </div>
+
+  <div class="emp-list" *ngIf="!loading; else listSkeleton">
+    <button type="button" *ngFor="let emp of filteredEmployees; trackBy: trackByEmployee"
+            class="emp-item"
+            [class.active]="emp.employeeId === selectedId"
+            [attr.aria-current]="emp.employeeId === selectedId ? 'true' : null"
+            (click)="employeeSelect.emit(emp.employeeId)">
+      <span class="emp-avatar" aria-hidden="true">{{ emp.employeeName | initials }}</span>
+      <span class="emp-meta">
+        <span class="emp-name">{{ emp.employeeName }}</span>
+        <span class="emp-dept" *ngIf="emp.employeeMail">{{ emp.employeeMail }}</span>
+      </span>
+      <span class="val-pill val-ok"  *ngIf=" isValidated(emp.employeeId)">✓ Validé</span>
+      <span class="val-pill val-nok" *ngIf="!isValidated(emp.employeeId)">À valider</span>
+    </button>
+    <p class="empty-list" *ngIf="filteredEmployees.length === 0">
+      Aucun employé ne correspond
+      <ng-container *ngIf="statusFilter() !== 'all'"> — <button type="button" class="link-btn" (click)="statusFilter.set('all')">afficher tous</button></ng-container>
+    </p>
+  </div>
+
+  <ng-template #listSkeleton>
+    <div class="skeleton-list" aria-label="Chargement des employés">
+      <div class="skeleton-item" *ngFor="let i of [1,2,3,4,5]"></div>
+    </div>
+  </ng-template>
+</aside>

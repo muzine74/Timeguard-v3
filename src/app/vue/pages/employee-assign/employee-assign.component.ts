@@ -1,4 +1,5 @@
 import { Component, OnInit, signal, computed, ChangeDetectionStrategy, DestroyRef, inject } from '@angular/core';
+import { NoteAlertService } from '../../../state/notes/note-alert.service';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -15,6 +16,7 @@ import { CompanyService, CompanySummary } from '../../../state/compagny/Company.
   styleUrls: ['./employee-assign.component.scss'],
 })
 export class EmployeeAssignComponent implements OnInit {
+  private readonly noteAlerts = inject(NoteAlertService);
 
   // ── Compagnies (sidebar) ─────────────────────────────
   companies    = signal<CompanySummary[]>([]);
@@ -85,6 +87,7 @@ export class EmployeeAssignComponent implements OnInit {
   // ── Sélection compagnie → recalcule les assignations ─
   selectCompany(co: CompanySummary): void {
     if (this.selectedCo()?.companyId === co.companyId) return;
+    this.noteAlerts.check({ companyIds: [co.companyId] }, `Affectation — ${co.companyName}`);
     this.selectedCo.set(co);
     this.saved.set(false);
     this.error.set('');

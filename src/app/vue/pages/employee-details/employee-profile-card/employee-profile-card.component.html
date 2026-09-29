@@ -1,0 +1,29 @@
+<div class="profile-card">
+  <div class="profile-hdr">
+    <div class="profile-avatar" aria-hidden="true">{{ employee.employeeName | initials }}</div>
+    <div class="profile-info">
+      <h2 class="profile-name">{{ employee.employeeName }}</h2>
+      <p class="profile-pos" *ngIf="location">{{ location }}</p>
+      <p class="profile-contact">
+        <span *ngIf="employee.employeeMail">✉ {{ employee.employeeMail }}</span>
+        <span *ngIf="employee.employeePhone">☎ {{ employee.employeePhone }}</span>
+      </p>
+      <div class="profile-companies" *ngIf="employee.employeeCompagnies?.length; else noCompany">
+        <span class="co-chip" *ngFor="let c of employee.employeeCompagnies">{{ c.compagnieName }}</span>
+      </div>
+      <ng-template #noCompany><p class="profile-warn">⚠ Aucune compagnie affectée</p></ng-template>
+    </div>
+    <div class="profile-actions">
+      <span class="status-badge" [class.active-badge]="employee.isActive" [class.inactive-badge]="!employee.isActive">
+        {{ employee.isActive ? '● Actif' : '● Inactif' }}
+      </span>
+      <span class="type-badge" [class.type-permanent]="isPermanent" [class.type-task]="!isPermanent">
+        {{ employee.employeeType || 'Permanent' }}
+      </span>
+      <span class="week-badge" [class.week-locked]="weekLocked">
+        {{ weekLocked ? '🔒 Semaine validée' : '⏳ Semaine à valider' }}
+      </span>
+      <a class="btn btn-outline btn-sm" *ngIf="canEdit" [routerLink]="['/employees', employee.employeeId, 'edit']">✎ Modifier la fiche</a>
+    </div>
+  </div>
+</div>

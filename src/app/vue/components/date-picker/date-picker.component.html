@@ -1,10 +1,10 @@
-<div class="dp">
+<div class="dp" role="group" aria-label="Choix de la semaine">
 
   <div class="dp-label">Journée cible</div>
 
   <div class="dp-sep"></div>
 
-  <div class="dp-display">
+  <div class="dp-display" aria-live="polite">
     <div class="dp-dayname">{{ dayName }}</div>
     <div class="dp-full">{{ d.getDate() }} {{ monthName }} {{ d.getFullYear() }}</div>
   </div>
@@ -12,11 +12,11 @@
   <div class="dp-sep"></div>
 
   <div class="dp-selects">
-    <input class="dp-num" type="number"
+    <input class="dp-num" type="number" aria-label="Jour"
            [value]="d.getDate()" min="1" [max]="isCurrentWeek ? _currentWeekStart().getDate() : 31"
            (change)="setDay(+$any($event.target).value)" />
 
-    <select class="dp-select"
+    <select class="dp-select" aria-label="Mois"
             [(ngModel)]="currentMonth"
             [disabled]="isCurrentWeek && currentMonth >= maxMonth">
       <option *ngFor="let m of months; let i = index"
@@ -24,15 +24,15 @@
               [disabled]="isMonthDisabled(i)">{{ m }}</option>
     </select>
 
-    <input class="dp-num dp-year" type="number"
+    <input class="dp-num dp-year" type="number" aria-label="Année"
            [value]="d.getFullYear()" min="2020" [max]="maxYear"
            (change)="setYear(+$any($event.target).value)" />
   </div>
 
   <div class="dp-nav">
-    <button class="dp-btn" (click)="prevWeek()">◀</button>
-    <button class="dp-btn dp-today" (click)="today()">Aujourd'hui</button>
-    <button class="dp-btn" (click)="nextWeek()" [disabled]="isCurrentWeek" [class.dp-disabled]="isCurrentWeek">▶</button>
+    <button class="dp-btn" type="button" aria-label="Semaine précédente" (click)="prevWeek()"><span aria-hidden="true">◀</span></button>
+    <button class="dp-btn dp-today" type="button" (click)="today()">Aujourd'hui</button>
+    <button class="dp-btn" type="button" aria-label="Semaine suivante" (click)="nextWeek()" [disabled]="isCurrentWeek" [class.dp-disabled]="isCurrentWeek"><span aria-hidden="true">▶</span></button>
   </div>
 
 </div>

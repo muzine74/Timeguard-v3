@@ -1,4 +1,5 @@
 import { Component, OnInit, signal, isDevMode, ChangeDetectionStrategy, ChangeDetectorRef, DestroyRef, inject } from '@angular/core';
+import { NoteAlertService } from '../../../state/notes/note-alert.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -16,6 +17,7 @@ import { Employee, EmployeeFile, EmployeeForm } from '../../../models';
   styleUrls: ['./employee-edit.component.scss'],
 })
 export class EmployeeEditComponent implements OnInit {
+  private readonly noteAlerts = inject(NoteAlertService);
   saved          = signal(false);
   error          = signal('');
   saving         = signal(false);
@@ -28,6 +30,7 @@ export class EmployeeEditComponent implements OnInit {
   sendingResetLink = signal(false);
   resetLinkSent    = signal(false);
   resetLinkError   = signal('');
+  resetNeedsCredential = signal(false);
 
   // Fichiers
   files        = signal<EmployeeFile[]>([]);
@@ -84,6 +87,7 @@ export class EmployeeEditComponent implements OnInit {
     this.resetLinkError.set('');
     this.loadingForm.set(true);
     this.log(`selectEmployee(${id})`);
+    this.noteAlerts.check({ employeeIds: [id] }, 'Modification de l\'employé');
 
     this.empSvc.getOne(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: emp => {
@@ -202,6 +206,7 @@ export class EmployeeEditComponent implements OnInit {
     this.sendingResetLink.set(true);
     this.resetLinkSent.set(false);
     this.resetLinkError.set('');
+    this.resetNeedsCredential.set(false);
 
     this.credSvc.sendResetLink(this.employeeId()).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
@@ -213,10 +218,13 @@ export class EmployeeEditComponent implements OnInit {
       error: err => {
         this.sendingResetLink.set(false);
         this.resetLinkError.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.resetNeedsCredential.set(err?.error?.code === 'NO_CREDENTIAL');
         this.cdr.markForCheck();
       },
     });
   }
+
+  goToCredentials(): void { this.router.navigate(['/employees/credentials']); }
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;

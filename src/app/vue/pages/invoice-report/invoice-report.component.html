@@ -24,12 +24,12 @@
     <!-- ── Filtre par date ──────────────────────────────────────────── -->
     <div class="filter-row" *ngIf="filterMode() === 'date'">
       <div class="field-group">
-        <label>Du</label>
-        <input type="date" [(ngModel)]="dateFrom" />
+        <label for="invoice-report-du">Du</label>
+        <input id="invoice-report-du" type="date" [(ngModel)]="dateFrom" />
       </div>
       <div class="field-group">
-        <label>Au</label>
-        <input type="date" [(ngModel)]="dateTo" />
+        <label for="invoice-report-au">Au</label>
+        <input id="invoice-report-au" type="date" [(ngModel)]="dateTo" />
       </div>
     </div>
 
@@ -37,9 +37,9 @@
     <div class="filter-section" *ngIf="filterMode() === 'period'">
       <div class="filter-row">
         <div class="field-group">
-          <label>Période(s) — sélectionnez et cliquez Appliquer</label>
+          <label for="invoice-report-periode-s-selectionnez-et-cliquez-appliq">Période(s) — sélectionnez et cliquez Appliquer</label>
           <div class="period-input-row">
-            <input type="month" [(ngModel)]="periodInput"
+            <input id="invoice-report-periode-s-selectionnez-et-cliquez-appliq" type="month" [(ngModel)]="periodInput"
                    (keydown.enter)="addPeriod()" />
             <button class="btn-add" type="button" (click)="addPeriod()">+ Ajouter</button>
           </div>

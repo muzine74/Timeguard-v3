@@ -38,7 +38,7 @@ import { CommonModule } from '@angular/common';
       &.employee { color: rgba(201,162,39,.9); }
       &.admin    { color: rgba(224,82,82,.9);  }
     }
-    .sec-sub     { font-size: 11px; color: #6278a0; margin-top: 2px; }
+    .sec-sub     { font-size: 11px; color: var(--muted); margin-top: 2px; }
     .sec-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
   `]
 })

@@ -2,6 +2,8 @@ import {
   Component, OnInit, OnDestroy, signal, computed,
   ChangeDetectionStrategy, ChangeDetectorRef, DestroyRef, inject,
 } from '@angular/core';
+import { NoteAlertService } from '../../../state/notes/note-alert.service';
+import { NoteInlineComponent } from '../../components/note-inline/note-inline.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -18,11 +20,12 @@ const E = (msg: string, ...args: unknown[]) => console.error(`[InvoiceSend] ✗ 
   selector: 'app-invoice-send',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NoteInlineComponent],
   templateUrl: './invoice-send.component.html',
   styleUrls: ['./invoice-send.component.scss'],
 })
 export class InvoiceSendComponent implements OnInit, OnDestroy {
+  private readonly noteAlerts = inject(NoteAlertService);
   // ── État global ──────────────────────────────────────────────────────────
   loading        = signal(false);
   sending        = signal(false);
@@ -151,6 +154,7 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
     }
 
     this._sent = false;
+    this.noteAlerts.check({ billIds: [bill.billId], companyIds: [bill.companyId] }, `Envoi de la facture ${bill.billNumber}`);
     this.selected.set(bill);
     this.detail.set(null);
     this.unpaidBills.set([]);
@@ -447,6 +451,7 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
     }
 
     L('send() — POST /api/bills/%d/send-email | vers: %o', d.billIdentifier, this.recipients);
+    this.noteAlerts.check({ billIds: [d.billId], companyIds: [d.companyId] }, `Envoi de la facture ${d.billNumber}`);
     this.error.set('');
     this.success.set('');
     this.sending.set(true);

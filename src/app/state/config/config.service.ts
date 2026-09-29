@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { tap } from 'rxjs';
 
 export interface AppConfigDto {
   logoPath:        string | null;
@@ -47,13 +48,35 @@ export function emptyConfig(): AppConfigDto {
 
 @Injectable({ providedIn: 'root' })
 export class ConfigService {
+  /** Version affichée dans la navbar = Configuration → Application → Version (null = non renseignée). */
+  private _appVersion = signal<string | null>(null);
+  readonly appVersion = this._appVersion.asReadonly();
+
   constructor(private http: HttpClient) {}
 
   get() {
     return this.http.get<AppConfigResponse>('/api/config');
   }
 
+  /** Lecture de la seule version (tout utilisateur connecté — /api/config est réservé à config.manage). */
+  loadVersion(): void {
+    this.http.get<{ appVersion: string | null }>('/api/config/version').subscribe({
+      next:  r => this._appVersion.set(ConfigService.normalizeVersion(r?.appVersion)),
+      error: () => this._appVersion.set(null),
+    });
+  }
+
+  clearVersion(): void { this._appVersion.set(null); }
+
   save(config: AppConfigDto) {
-    return this.http.put<{ message: string }>('/api/config', { config });
+    return this.http.put<{ message: string }>('/api/config', { config }).pipe(
+      tap(() => this._appVersion.set(ConfigService.normalizeVersion(config.appVersion))),
+    );
+  }
+
+  /** « 2.1 », « v2.1 » ou « V 2.1 » → « 2.1 » (la navbar ajoute le préfixe « v »). */
+  static normalizeVersion(v: string | null | undefined): string | null {
+    const t = (v ?? '').trim().replace(/^v\s*/i, '');
+    return t || null;
   }
 }

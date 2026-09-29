@@ -25,16 +25,16 @@
     <label class="filter-chk"><input type="checkbox" [(ngModel)]="onlyUnpaid"  (change)="loadBills()" /> Impayées</label>
 
     <div class="filter-dates">
-      <input class="inp inp-date" type="date" [(ngModel)]="dateFrom" (change)="loadBills()" />
+      <input class="inp inp-date" type="date" aria-label="Date de début" [(ngModel)]="dateFrom" (change)="loadBills()" />
       <span class="date-sep">→</span>
-      <input class="inp inp-date" type="date" [(ngModel)]="dateTo"   (change)="loadBills()" />
+      <input class="inp inp-date" type="date" aria-label="Date de fin" [(ngModel)]="dateTo"   (change)="loadBills()" />
     </div>
 
     <button class="btn btn-outline btn-sm" (click)="loadBills()">🔍 Filtrer</button>
 
     <div class="page-size-wrap">
       <span class="page-size-lbl">Afficher</span>
-      <select class="page-size-sel" [ngModel]="pageSize()" (ngModelChange)="setPageSize($event)">
+      <select class="page-size-sel" aria-label="Factures par page" [ngModel]="pageSize()" (ngModelChange)="setPageSize($event)">
         <option [value]="25">25</option>
         <option [value]="50">50</option>
         <option [value]="75">75</option>
@@ -339,24 +339,24 @@
         <!-- Paramètres -->
         <div class="avoir-params">
           <div class="field">
-            <label>Période (AAAA-MM)</label>
-            <input class="inp" [(ngModel)]="aPeriod" placeholder="2025-04" />
+            <label for="invoice-manage-periode-aaaa-mm">Période (AAAA-MM)</label>
+            <input id="invoice-manage-periode-aaaa-mm" class="inp" [(ngModel)]="aPeriod" placeholder="2025-04" />
           </div>
           <div class="field">
-            <label>Date de facturation</label>
-            <input class="inp" type="date" [(ngModel)]="aBilledDate" />
+            <label for="invoice-manage-date-de-facturation">Date de facturation</label>
+            <input id="invoice-manage-date-de-facturation" class="inp" type="date" [(ngModel)]="aBilledDate" />
           </div>
           <div class="field">
-            <label>Nombre de visites</label>
-            <input class="inp" type="number" min="0" [(ngModel)]="aNumberOfVisits" />
+            <label for="invoice-manage-nombre-de-visites">Nombre de visites</label>
+            <input id="invoice-manage-nombre-de-visites" class="inp" type="number" min="0" [(ngModel)]="aNumberOfVisits" />
           </div>
           <div class="field avoir-span-full">
-            <label>Note</label>
-            <input class="inp" [(ngModel)]="aNote" placeholder="Raison de l'avoir..." />
+            <label for="invoice-manage-note">Note</label>
+            <input id="invoice-manage-note" class="inp" [(ngModel)]="aNote" placeholder="Raison de l'avoir..." />
           </div>
           <div class="field avoir-span-full">
-            <label>Coordonnées de paiement</label>
-            <textarea class="inp inp-textarea" [(ngModel)]="aPaymentInfo" rows="2"></textarea>
+            <label for="invoice-manage-coordonnees-de-paiement">Coordonnées de paiement</label>
+            <textarea id="invoice-manage-coordonnees-de-paiement" class="inp inp-textarea" [(ngModel)]="aPaymentInfo" rows="2"></textarea>
           </div>
         </div>
 

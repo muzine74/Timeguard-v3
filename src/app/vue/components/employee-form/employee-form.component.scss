@@ -147,16 +147,17 @@ label {
   .nas-mask { letter-spacing: 3px; color: var(--muted); }
 }
 
-.placeholder-text { color: rgba(255,255,255,.15); font-style: italic; }
+// Champ vide : gris secondaire (contraste AA) — blanc 15 % était illisible (1,5:1)
+.placeholder-text { color: var(--muted); font-style: italic; }
 
 .badge-masked {
-  font-size: 8px; font-weight: 700; color: rgba(201,162,39,.5);
+  font-size: 9.5px; font-weight: 700; color: var(--accent);
   text-transform: uppercase; margin-left: auto;
 }
 
 .badge-conf {
-  position: absolute; right: 8px; font-size: 8px; font-weight: 700;
-  color: rgba(201,162,39,.45); text-transform: uppercase; pointer-events: none;
+  position: absolute; right: 8px; font-size: 9.5px; font-weight: 700;
+  color: var(--accent); text-transform: uppercase; pointer-events: none;
 }
 
 // ── Collapse (mobile/tablette uniquement) ────────────────

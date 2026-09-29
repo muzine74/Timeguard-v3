@@ -1,0 +1,98 @@
+.help-wrap {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 32px;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+// ── Sommaire ─────────────────────────────────────────────────────────────
+.toc {
+  position: sticky;
+  top: 74px;   // sous la barre de navigation collante (58 px) + marge
+  align-self: start;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 10px;
+
+  .toc-title {
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 8px 8px;
+  }
+
+  a {
+    display: block;
+    padding: 7px 8px;
+    border-radius: 7px;
+    font-size: .85rem;
+    color: var(--text);
+    text-decoration: none;
+
+    &:hover { background: rgba(255,255,255,.04); color: var(--accent); }
+  }
+}
+
+// ── Contenu ──────────────────────────────────────────────────────────────
+.guide {
+  min-width: 0;
+  color: var(--text);
+  font-size: .92rem;
+  line-height: 1.6;
+
+  h1 { font-size: 1.6rem; margin: 0 0 6px; }
+  .lead { color: var(--muted); margin: 0 0 28px; }
+
+  section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    scroll-margin-top: 74px;   // le titre ne passe pas sous la barre de navigation
+  }
+
+  h2 { font-size: 1.2rem; margin: 0 0 10px; color: var(--accent); }
+  h3 { font-size: .98rem; margin: 20px 0 6px; }
+  p  { margin: 0 0 10px; }
+  ol, ul { margin: 0 0 12px; padding-left: 22px; }
+  li { margin-bottom: 4px; }
+  b  { font-weight: 600; }
+
+  code {
+    font-size: .8rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 1px 5px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 6px 0 12px;
+    font-size: .85rem;
+  }
+  th, td {
+    text-align: left;
+    vertical-align: top;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  th { color: var(--muted); font-weight: 600; font-size: .78rem; text-transform: uppercase; letter-spacing: .03em; }
+
+  .diagram { width: 100%; height: auto; margin: 8px 0 6px; }
+  .caption { font-size: .8rem; color: var(--muted); margin-bottom: 14px; }
+}
+
+@media (max-width: 860px) {
+  .help-wrap { grid-template-columns: 1fr; padding: 16px 12px; }
+  .toc { position: static; }
+  .guide section { padding: 16px; }
+  .guide table { display: block; overflow-x: auto; }
+}

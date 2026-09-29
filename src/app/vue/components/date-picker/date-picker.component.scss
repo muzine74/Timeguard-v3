@@ -39,6 +39,7 @@
   font-family: 'JetBrains Mono', monospace; font-size: 12px;
   outline: none; transition: border-color .18s;
   &:focus { border-color: var(--accent); }
+  &:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 }
 
 .dp-num    { width: 44px; text-align: center; }
@@ -56,6 +57,7 @@
 
   &:hover { border-color: var(--accent); color: var(--accent); background: rgba(201,162,39,.08); }
   &.dp-today { font-size: 11px; font-weight: 600; }
+  &:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 }
 
 .dp-btn:disabled,

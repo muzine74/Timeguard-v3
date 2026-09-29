@@ -101,6 +101,8 @@ export interface BillableCompanyItem {
   plannedDays:   number;
   /** Montant total attendu selon le calendrier de tarification pour la période. */
   plannedAmount: number;
+  /** Bi-hebdomadaire sans date de début de Semaine 1 : jours planifiés non calculables. */
+  planningIncomplete?: boolean;
 }
 
 export interface BillableCompanies {

@@ -72,24 +72,24 @@
       <div class="params-card no-print">
         <div class="params-grid">
           <div class="field">
-            <label>Période (AAAA-MM)</label>
-            <input class="inp" [(ngModel)]="period" placeholder="2025-04" />
+            <label for="invoice-generate-periode-aaaa-mm">Période (AAAA-MM)</label>
+            <input id="invoice-generate-periode-aaaa-mm" class="inp" [(ngModel)]="period" placeholder="2025-04" />
           </div>
           <div class="field">
-            <label>Date de facturation</label>
-            <input class="inp" type="date" [(ngModel)]="billedDate" />
+            <label for="invoice-generate-date-de-facturation">Date de facturation</label>
+            <input id="invoice-generate-date-de-facturation" class="inp" type="date" [(ngModel)]="billedDate" />
           </div>
           <div class="field">
-            <label>Nombre de visites</label>
-            <input class="inp" type="number" min="0" [(ngModel)]="numberOfVisits" />
+            <label for="invoice-generate-nombre-de-visites">Nombre de visites</label>
+            <input id="invoice-generate-nombre-de-visites" class="inp" type="number" min="0" [(ngModel)]="numberOfVisits" />
           </div>
           <div class="field span-full">
-            <label>Note</label>
-            <input class="inp" [(ngModel)]="note" placeholder="Informations supplémentaires..." />
+            <label for="invoice-generate-note">Note</label>
+            <input id="invoice-generate-note" class="inp" [(ngModel)]="note" placeholder="Informations supplémentaires..." />
           </div>
           <div class="field span-full">
-            <label>Coordonnées de paiement</label>
-            <textarea class="inp inp-textarea" [(ngModel)]="paymentInfo" rows="3"
+            <label for="invoice-generate-coordonnees-de-paiement">Coordonnées de paiement</label>
+            <textarea id="invoice-generate-coordonnees-de-paiement" class="inp inp-textarea" [(ngModel)]="paymentInfo" rows="3"
               placeholder="Ex: Virement bancaire — Transit: 00123  Institution: 815  Compte: 1234567&#10;Chèque à l'ordre de : TimeGuard Inc."></textarea>
           </div>
         </div>
@@ -139,15 +139,15 @@
           <tbody>
             <tr *ngFor="let l of lines; let i = index">
               <td>
-                <input class="inv-inp no-print" [(ngModel)]="l.description" placeholder="Description du service..." />
+                <input class="inv-inp no-print" [attr.aria-label]="'Description — ligne ' + (i + 1)" [(ngModel)]="l.description" placeholder="Description du service..." />
                 <span class="print-only">{{ l.description }}</span>
               </td>
               <td>
-                <input class="inv-inp inv-inp-num no-print" type="number" min="1" [(ngModel)]="l.quantity" (ngModelChange)="recalcLine(i)" />
+                <input class="inv-inp inv-inp-num no-print" type="number" min="1" [attr.aria-label]="'Quantité — ligne ' + (i + 1)" [(ngModel)]="l.quantity" (ngModelChange)="recalcLine(i)" />
                 <span class="print-only">{{ l.quantity }}</span>
               </td>
               <td>
-                <input class="inv-inp inv-inp-num no-print" type="number" min="0" step="0.01" [(ngModel)]="l.unitPrice" (ngModelChange)="recalcLine(i)" />
+                <input class="inv-inp inv-inp-num no-print" type="number" min="0" step="0.01" [attr.aria-label]="'Prix unitaire — ligne ' + (i + 1)" [(ngModel)]="l.unitPrice" (ngModelChange)="recalcLine(i)" />
                 <span class="print-only">{{ l.unitPrice | number:'1.2-2' }} $</span>
               </td>
               <td class="col-total-val">{{ l.subTotal | number:'1.2-2' }} $</td>

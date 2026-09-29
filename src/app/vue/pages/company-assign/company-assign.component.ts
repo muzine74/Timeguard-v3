@@ -1,4 +1,5 @@
-import { Component, OnInit, computed, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, computed, signal, ChangeDetectionStrategy, inject } from '@angular/core';
+import { NoteAlertService } from '../../../state/notes/note-alert.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
@@ -15,6 +16,7 @@ import { Employee } from '../../../models';
   styleUrls: ['./company-assign.component.scss'],
 })
 export class CompanyAssignComponent implements OnInit {
+  private readonly noteAlerts = inject(NoteAlertService);
 
   // ── Service signals passés directement ────────────────
   readonly employees  = this.empSvc.list;
@@ -75,6 +77,7 @@ export class CompanyAssignComponent implements OnInit {
   // ── Sélection employé → récupère les compagnies à jour ─
   select(emp: Employee): void {
     if (this.selected()?.employeeId === emp.employeeId) return;
+    this.noteAlerts.check({ employeeIds: [emp.employeeId] }, `Affectation — ${emp.employeeName}`);
     this.selected.set(emp);
     this.assigned.set(new Set());
     this.original.set(new Set());

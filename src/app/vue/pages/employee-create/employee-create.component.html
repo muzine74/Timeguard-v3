@@ -35,8 +35,8 @@
           </div>
           <div class="fields-grid">
             <div class="field span-full">
-              <label>Nom complet <span class="req">*</span></label>
-              <input class="inp" [(ngModel)]="form.employeeName"
+              <label for="employee-create-nom-complet">Nom complet <span class="req">*</span></label>
+              <input id="employee-create-nom-complet" class="inp" [(ngModel)]="form.employeeName"
                      [class.inp-error]="fieldErrors()['employeeName']"
                      placeholder="Sophie Martin" />
               <span class="field-err" *ngIf="fieldErrors()['employeeName']">
@@ -44,8 +44,8 @@
               </span>
             </div>
             <div class="field">
-              <label>NAS</label>
-              <input class="inp" [(ngModel)]="form.nas"
+              <label for="employee-create-nas">NAS</label>
+              <input id="employee-create-nas" class="inp" [(ngModel)]="form.nas"
                      [class.inp-error]="fieldErrors()['nas']"
                      placeholder="123 456 789" />
               <span class="field-err" *ngIf="fieldErrors()['nas']">{{ fieldErrors()['nas'] }}</span>
@@ -62,8 +62,8 @@
               </div>
             </div>
             <div class="field">
-              <label>Courriel</label>
-              <input class="inp" type="email" [(ngModel)]="form.employeeMail"
+              <label for="employee-create-courriel">Courriel</label>
+              <input id="employee-create-courriel" class="inp" type="email" [(ngModel)]="form.employeeMail"
                      [class.inp-error]="fieldErrors()['employeeMail']"
                      placeholder="sophie@exemple.com" />
               <span class="field-err" *ngIf="fieldErrors()['employeeMail']">
@@ -71,8 +71,8 @@
               </span>
             </div>
             <div class="field">
-              <label>Téléphone</label>
-              <input class="inp" [(ngModel)]="form.employeePhone"
+              <label for="employee-create-telephone">Téléphone</label>
+              <input id="employee-create-telephone" class="inp" [(ngModel)]="form.employeePhone"
                      [class.inp-error]="fieldErrors()['employeePhone']"
                      placeholder="514-555-0001" />
               <span class="field-err" *ngIf="fieldErrors()['employeePhone']">
@@ -80,8 +80,8 @@
               </span>
             </div>
             <div class="field span-full">
-              <label>Note</label>
-              <textarea class="inp inp-ta" [(ngModel)]="form.employeeNote" rows="3"></textarea>
+              <label for="employee-create-note">Note</label>
+              <textarea id="employee-create-note" class="inp inp-ta" [(ngModel)]="form.employeeNote" rows="3"></textarea>
             </div>
           </div>
         </div>
@@ -98,32 +98,32 @@
           </div>
           <div class="fields-grid">
             <div class="field">
-              <label>N° civique</label>
-              <input class="inp" [(ngModel)]="form.employeeCivicNumber" placeholder="123" />
+              <label for="employee-create-n-civique">N° civique</label>
+              <input id="employee-create-n-civique" class="inp" [(ngModel)]="form.employeeCivicNumber" placeholder="123" />
             </div>
             <div class="field">
-              <label>Suite / App</label>
-              <input class="inp" [(ngModel)]="form.employeeSuite" placeholder="App 2" />
+              <label for="employee-create-suite-app">Suite / App</label>
+              <input id="employee-create-suite-app" class="inp" [(ngModel)]="form.employeeSuite" placeholder="App 2" />
             </div>
             <div class="field">
-              <label>Ville</label>
-              <input class="inp" [(ngModel)]="form.employeeCity" placeholder="Montréal" />
+              <label for="employee-create-ville">Ville</label>
+              <input id="employee-create-ville" class="inp" [(ngModel)]="form.employeeCity" placeholder="Montréal" />
             </div>
             <div class="field">
-              <label>Province</label>
-              <input class="inp" [(ngModel)]="form.employeeState" />
+              <label for="employee-create-province">Province</label>
+              <input id="employee-create-province" class="inp" [(ngModel)]="form.employeeState" />
             </div>
             <div class="field">
-              <label>Code postal</label>
-              <input class="inp" [(ngModel)]="form.employeeZipCode" placeholder="H1A 1A1" />
+              <label for="employee-create-code-postal">Code postal</label>
+              <input id="employee-create-code-postal" class="inp" [(ngModel)]="form.employeeZipCode" placeholder="H1A 1A1" />
             </div>
             <div class="field">
-              <label>Pays</label>
-              <input class="inp" [(ngModel)]="form.employeeCountry" />
+              <label for="employee-create-pays">Pays</label>
+              <input id="employee-create-pays" class="inp" [(ngModel)]="form.employeeCountry" />
             </div>
             <div class="field span-full">
-              <label>Note adresse</label>
-              <input class="inp" [(ngModel)]="form.employeeAdressNote" placeholder="Porte bleue, 2e étage..." />
+              <label for="employee-create-note-adresse">Note adresse</label>
+              <input id="employee-create-note-adresse" class="inp" [(ngModel)]="form.employeeAdressNote" placeholder="Porte bleue, 2e étage..." />
             </div>
           </div>
         </div>

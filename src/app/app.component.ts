@@ -2,12 +2,13 @@ import { Component } from '@angular/core';
 import { RouterOutlet, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from './vue/components/navbar/navbar.component';
+import { NoteAlertComponent } from './vue/components/note-alert/note-alert.component';
 import { AuthService } from './state/auth/auth.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NavbarComponent, CommonModule, RouterLink],
+  imports: [RouterOutlet, NavbarComponent, NoteAlertComponent, CommonModule, RouterLink],
   template: `
     <app-navbar *ngIf="auth.loggedIn()"></app-navbar>
     <div class="super-bar" *ngIf="auth.isImpersonating()">
@@ -16,6 +17,7 @@ import { AuthService } from './state/auth/auth.service';
       <span class="super-label">Mode aperçu</span>
     </div>
     <router-outlet></router-outlet>
+    <app-note-alert *ngIf="auth.loggedIn()"></app-note-alert>
   `,
   styles: [`
     .super-bar {

@@ -1,3 +1,10 @@
+:host {
+  // Le « sticky » doit porter sur l'hôte : sur .navbar seul, il est borné par <app-navbar>
+  // (même hauteur que la barre) et la barre défilait avec la page.
+  display: block;
+  position: sticky; top: 0; z-index: 200;
+}
+
 .navbar {
   position: sticky; top: 0; z-index: 200;
   background: rgba(8,11,20,.96);

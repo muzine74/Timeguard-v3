@@ -1,4 +1,5 @@
 import { Component, OnInit, signal, isDevMode, ChangeDetectionStrategy, ChangeDetectorRef, DestroyRef, inject } from '@angular/core';
+import { NoteAlertService } from '../../../state/notes/note-alert.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -29,6 +30,7 @@ interface CompanyPricing {
   styleUrls: ['./invoice-generate.component.scss'],
 })
 export class InvoiceGenerateComponent implements OnInit {
+  private readonly noteAlerts = inject(NoteAlertService);
   saved      = signal(false);
   sent       = signal(false);
   error      = signal('');
@@ -138,6 +140,7 @@ export class InvoiceGenerateComponent implements OnInit {
           this.editId.set(id);
           this.invoiceSvc.getById(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: d => {
+              this.noteAlerts.check({ billIds: [d.billId] }, `Ouverture de la facture ${d.billNumber}`);
               this.editNumber.set(d.billNumber);
               this.period         = d.period;
               this.billedDate     = d.billedDate.split('T')[0];
@@ -164,6 +167,7 @@ export class InvoiceGenerateComponent implements OnInit {
   }
 
   selectCompany(co: CompanySummary): void {
+    this.noteAlerts.check({ companyIds: [co.companyId] }, `Facture — ${co.companyName}`);
     this.selectedCo.set(co);
     this.companyDetail.set(null);
     this.companyPricing.set(null);

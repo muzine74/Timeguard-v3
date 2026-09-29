@@ -27,19 +27,19 @@
     <div class="filter-section filter-fields">
       <ng-container *ngIf="mode === 'period'">
         <div class="filter-field">
-          <label>Mois</label>
-          <input class="inp" type="month" [(ngModel)]="period" />
+          <label for="stats-mois">Mois</label>
+          <input id="stats-mois" class="inp" type="month" [(ngModel)]="period" />
         </div>
       </ng-container>
 
       <ng-container *ngIf="mode === 'range'">
         <div class="filter-field">
-          <label>Du</label>
-          <input class="inp" type="date" [(ngModel)]="dateFrom" />
+          <label for="stats-du">Du</label>
+          <input id="stats-du" class="inp" type="date" [(ngModel)]="dateFrom" />
         </div>
         <div class="filter-field">
-          <label>Au</label>
-          <input class="inp" type="date" [(ngModel)]="dateTo" />
+          <label for="stats-au">Au</label>
+          <input id="stats-au" class="inp" type="date" [(ngModel)]="dateTo" />
         </div>
       </ng-container>
 

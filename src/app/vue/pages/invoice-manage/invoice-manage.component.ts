@@ -1,4 +1,5 @@
-import { Component, OnInit, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, signal, computed, ChangeDetectionStrategy, inject } from '@angular/core';
+import { NoteAlertService } from '../../../state/notes/note-alert.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -205,8 +206,15 @@ export class InvoiceManageComponent implements OnInit {
     });
   }
 
+  // ── Notes actives liées à la facture ou à sa compagnie ─
+  private readonly noteAlerts = inject(NoteAlertService);
+  private alertNotes(bill: BillSummary, action: string): void {
+    this.noteAlerts.check({ billIds: [bill.billId], companyIds: [bill.companyId] }, `${action} ${bill.billNumber}`);
+  }
+
   // ── Détail (modal) ────────────────────────────────────
   openDetail(bill: BillSummary): void {
+    this.alertNotes(bill, 'Ouverture de la facture');
     this.selectedBill.set(bill);
     this.modalMode.set('detail');
     this.loadingDetail.set(true);
@@ -222,6 +230,7 @@ export class InvoiceManageComponent implements OnInit {
   // ── Choix : mettre à jour le statut ou envoyer réellement ─────────────
   openSend(bill: BillSummary, e: Event): void {
     e.stopPropagation();
+    this.alertNotes(bill, 'Envoi de la facture');
     this.selectedBill.set(bill);
     this.modalMode.set('send');
   }
@@ -254,6 +263,7 @@ export class InvoiceManageComponent implements OnInit {
   // ── Supprimer ─────────────────────────────────────────
   openDelete(bill: BillSummary, e: Event): void {
     e.stopPropagation();
+    this.alertNotes(bill, 'Suppression de la facture');
     this.selectedBill.set(bill);
     this.modalMode.set('delete');
   }
@@ -349,6 +359,7 @@ export class InvoiceManageComponent implements OnInit {
   // ── Avoir ─────────────────────────────────────────────
   openAvoir(bill: BillSummary, e: Event): void {
     e.stopPropagation();
+    this.alertNotes(bill, 'Création d\'un avoir');
     if (!bill.isSent) return;
     this.selectedBill.set(bill);
     this.aNote           = `AVOIR — Réf. ${bill.billNumber}`;
@@ -429,6 +440,7 @@ export class InvoiceManageComponent implements OnInit {
   // ── Marquer payée ─────────────────────────────────────
   togglePaid(bill: BillSummary, e: Event): void {
     e.stopPropagation();
+    this.alertNotes(bill, 'Paiement de la facture');
     this.invoiceSvc.markPaid(bill.billIdentifier, !bill.isPaid).subscribe({
       next: () => {
         bill.isPaid = !bill.isPaid;

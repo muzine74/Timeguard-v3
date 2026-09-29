@@ -86,6 +86,9 @@
       </div>
       <div class="reset-link-banner reset-link-error" *ngIf="resetLinkError()">
         ⚠ {{ resetLinkError() }}
+        <div *ngIf="resetNeedsCredential()" class="reset-link-action">
+          <button class="btn btn-outline" (click)="goToCredentials()">🔑 Aller à Identifiants</button>
+        </div>
       </div>
 
       <div class="form-layout">
@@ -102,8 +105,8 @@
             </div>
             <div class="fields-grid">
               <div class="field span-full">
-                <label>Nom complet <span class="req">*</span></label>
-                <input class="inp" [(ngModel)]="form.employeeName"
+                <label for="employee-edit-nom-complet">Nom complet <span class="req">*</span></label>
+                <input id="employee-edit-nom-complet" class="inp" [(ngModel)]="form.employeeName"
                        [class.inp-error]="fieldErrors()['employeeName']"
                        placeholder="Sophie Martin" />
                 <span class="field-err" *ngIf="fieldErrors()['employeeName']">
@@ -111,8 +114,8 @@
                 </span>
               </div>
               <div class="field">
-                <label>NAS</label>
-                <input class="inp" [(ngModel)]="form.nas"
+                <label for="employee-edit-nas">NAS</label>
+                <input id="employee-edit-nas" class="inp" [(ngModel)]="form.nas"
                        [class.inp-error]="fieldErrors()['nas']"
                        placeholder="123 456 789" />
                 <span class="field-err" *ngIf="fieldErrors()['nas']">{{ fieldErrors()['nas'] }}</span>
@@ -129,24 +132,24 @@
                 </div>
               </div>
               <div class="field">
-                <label>Courriel</label>
-                <input class="inp" type="email" [(ngModel)]="form.employeeMail"
+                <label for="employee-edit-courriel">Courriel</label>
+                <input id="employee-edit-courriel" class="inp" type="email" [(ngModel)]="form.employeeMail"
                        [class.inp-error]="fieldErrors()['employeeMail']" />
                 <span class="field-err" *ngIf="fieldErrors()['employeeMail']">
                   {{ fieldErrors()['employeeMail'] }}
                 </span>
               </div>
               <div class="field">
-                <label>Téléphone</label>
-                <input class="inp" [(ngModel)]="form.employeePhone"
+                <label for="employee-edit-telephone">Téléphone</label>
+                <input id="employee-edit-telephone" class="inp" [(ngModel)]="form.employeePhone"
                        [class.inp-error]="fieldErrors()['employeePhone']" />
                 <span class="field-err" *ngIf="fieldErrors()['employeePhone']">
                   {{ fieldErrors()['employeePhone'] }}
                 </span>
               </div>
               <div class="field span-full">
-                <label>Note</label>
-                <textarea class="inp inp-ta" [(ngModel)]="form.employeeNote" rows="3"></textarea>
+                <label for="employee-edit-note">Note</label>
+                <textarea id="employee-edit-note" class="inp inp-ta" [(ngModel)]="form.employeeNote" rows="3"></textarea>
               </div>
             </div>
           </div>
@@ -164,32 +167,32 @@
             </div>
             <div class="fields-grid">
               <div class="field">
-                <label>N° civique</label>
-                <input class="inp" [(ngModel)]="form.employeeCivicNumber" />
+                <label for="employee-edit-n-civique">N° civique</label>
+                <input id="employee-edit-n-civique" class="inp" [(ngModel)]="form.employeeCivicNumber" />
               </div>
               <div class="field">
-                <label>Suite / App</label>
-                <input class="inp" [(ngModel)]="form.employeeSuite" />
+                <label for="employee-edit-suite-app">Suite / App</label>
+                <input id="employee-edit-suite-app" class="inp" [(ngModel)]="form.employeeSuite" />
               </div>
               <div class="field">
-                <label>Ville</label>
-                <input class="inp" [(ngModel)]="form.employeeCity" />
+                <label for="employee-edit-ville">Ville</label>
+                <input id="employee-edit-ville" class="inp" [(ngModel)]="form.employeeCity" />
               </div>
               <div class="field">
-                <label>Province</label>
-                <input class="inp" [(ngModel)]="form.employeeState" />
+                <label for="employee-edit-province">Province</label>
+                <input id="employee-edit-province" class="inp" [(ngModel)]="form.employeeState" />
               </div>
               <div class="field">
-                <label>Code postal</label>
-                <input class="inp" [(ngModel)]="form.employeeZipCode" />
+                <label for="employee-edit-code-postal">Code postal</label>
+                <input id="employee-edit-code-postal" class="inp" [(ngModel)]="form.employeeZipCode" />
               </div>
               <div class="field">
-                <label>Pays</label>
-                <input class="inp" [(ngModel)]="form.employeeCountry" />
+                <label for="employee-edit-pays">Pays</label>
+                <input id="employee-edit-pays" class="inp" [(ngModel)]="form.employeeCountry" />
               </div>
               <div class="field span-full">
-                <label>Note adresse</label>
-                <input class="inp" [(ngModel)]="form.employeeAdressNote" />
+                <label for="employee-edit-note-adresse">Note adresse</label>
+                <input id="employee-edit-note-adresse" class="inp" [(ngModel)]="form.employeeAdressNote" />
               </div>
             </div>
           </div>

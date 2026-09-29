@@ -1,4 +1,7 @@
 import { Component, OnInit, signal, ChangeDetectionStrategy, ChangeDetectorRef, DestroyRef, inject } from '@angular/core';
+import { NoteAlertService } from '../../../state/notes/note-alert.service';
+import { NotesService, NoteItem } from '../../../state/notes/notes.service';
+import { NoteInlineComponent } from '../../components/note-inline/note-inline.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -18,11 +21,12 @@ export interface EligibleRow extends BillableCompanyItem {
   selector: 'app-invoice-from-timesheets',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NoteInlineComponent],
   templateUrl: './invoice-from-timesheets.component.html',
   styleUrls: ['./invoice-from-timesheets.component.scss'],
 })
 export class InvoiceFromTimesheetsComponent implements OnInit {
+  private readonly noteAlerts = inject(NoteAlertService);
   loading    = signal(false);
   generating = signal(false);
   error      = signal('');
@@ -32,6 +36,11 @@ export class InvoiceFromTimesheetsComponent implements OnInit {
 
   rows:    EligibleRow[]       = [];
   pending: BillableCompanyItem[] = [];
+
+  /** Notes actives par compagnie (clé = companyId en minuscules), chargées en une requête. */
+  private notesByCompany = new Map<string, NoteItem[]>();
+  private static readonly NO_NOTES: NoteItem[] = [];
+  private notesSvc = inject(NotesService);
 
   get allChecked(): boolean  { return this.rows.length > 0 && this.rows.every(r => r.checked); }
   get noneChecked(): boolean { return this.rows.every(r => !r.checked); }
@@ -75,12 +84,44 @@ export class InvoiceFromTimesheetsComponent implements OnInit {
         this.pending = data.pending;
         this.loading.set(false);
         this.cdr.markForCheck();
+        this._loadCompanyNotes();
       },
       error: (err: any) => {
         this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
         this.loading.set(false);
         this.cdr.markForCheck();
       },
+    });
+  }
+
+  notesFor(co: BillableCompanyItem): NoteItem[] {
+    return this.notesByCompany.get(co.companyId?.toLowerCase()) ?? InvoiceFromTimesheetsComponent.NO_NOTES;
+  }
+
+  /** Cocher une compagnie = préparer sa facture → afficher ses notes actives. */
+  onRowToggle(row: EligibleRow): void {
+    if (row.checked) this.noteAlerts.show(this.notesFor(row), `Facturation — ${row.companyName}`);
+  }
+
+  private _loadCompanyNotes(): void {
+    this.notesByCompany = new Map();
+    const companyIds = [...this.rows, ...this.pending].map(c => c.companyId);
+    if (!companyIds.length) return;
+
+    this.notesSvc.getAlerts({ companyIds }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: notes => {
+        const map = new Map<string, NoteItem[]>();
+        for (const n of notes) {
+          for (const l of n.links) {
+            if (l.entityType !== 'company') continue;
+            const key = l.entityId.toLowerCase();
+            map.set(key, [...(map.get(key) ?? []), n]);
+          }
+        }
+        this.notesByCompany = map;
+        this.cdr.markForCheck();
+      },
+      error: () => {},
     });
   }
 
@@ -93,6 +134,7 @@ export class InvoiceFromTimesheetsComponent implements OnInit {
     const selected = this.checkedRows; // snapshot avant tout await
     if (!selected.length) return;
 
+    this.noteAlerts.check({ companyIds: selected.map(r => r.companyId) }, 'Facturation depuis les pointages');
     this.generating.set(true);
     this.error.set('');
     this.success.set('');
@@ -172,6 +214,7 @@ export class InvoiceFromTimesheetsComponent implements OnInit {
 
   /** Écart entre le montant planifié (calendrier tarifaire) et le montant réel (pointages). */
   hasDiscrepancy(row: EligibleRow): boolean {
+    if (row.planningIncomplete) return false;   // rien à comparer sans planning calculable
     return Math.abs(row.plannedAmount - row.totalAmount) > 0.01;
   }
 

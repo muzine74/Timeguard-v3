@@ -12,8 +12,8 @@
     </div>
     <div class="hdr-right">
       <div class="period-wrap">
-        <label class="period-label">Période</label>
-        <input class="inp inp-month" type="month" [(ngModel)]="period" (change)="load()" />
+        <label for="invoice-from-timesheets-periode" class="period-label">Période</label>
+        <input id="invoice-from-timesheets-periode" class="inp inp-month" type="month" [(ngModel)]="period" (change)="load()" />
       </div>
       <button class="btn btn-generate"
               [disabled]="noneChecked || generating()"
@@ -74,11 +74,12 @@
                 [class.row-ok]="r.genResult?.ok === true"
                 [class.row-err]="r.genResult?.ok === false">
               <td class="col-chk">
-                <input type="checkbox" [(ngModel)]="r.checked" [disabled]="generating()" />
+                <input type="checkbox" [(ngModel)]="r.checked" (ngModelChange)="onRowToggle(r)" [disabled]="generating()" />
               </td>
               <td class="co-name" [class.mismatch-text]="hasDiscrepancy(r)">
                 {{ r.companyName }}
                 <span class="co-code" *ngIf="r.companyCode">{{ r.companyCode }}</span>
+                <app-note-inline [compact]="true" [notes]="notesFor(r)"></app-note-inline>
               </td>
               <td class="col-groups" [class.mismatch-text]="hasDiscrepancy(r)"
                   [title]="hasDiscrepancy(r) ? 'Diffère du montant planifié' : ''">
@@ -113,10 +114,14 @@
               </td>
               <td class="col-groups" [class.mismatch-text]="hasDiscrepancy(r)"
                   [title]="hasDiscrepancy(r) ? 'Diffère du montant réel des visites' : ''">
-                <div class="price-group">
+                <div class="price-group" *ngIf="!r.planningIncomplete">
                   <span class="pg-visits">{{ r.plannedDays }}×</span>
                   <span class="pg-sub">= {{ r.plannedAmount | number:'1.2-2' }}&nbsp;$</span>
                 </div>
+                <span class="planning-missing" *ngIf="r.planningIncomplete"
+                      title="Renseignez « La Semaine 1 commence le » dans le planning de la compagnie">
+                  ⚠ Date de début Semaine 1 manquante
+                </span>
               </td>
             </tr>
           </tbody>
@@ -157,6 +162,7 @@
               <td class="co-name">
                 {{ co.companyName }}
                 <span class="co-code" *ngIf="co.companyCode">{{ co.companyCode }}</span>
+                <app-note-inline [compact]="true" [notes]="notesFor(co)"></app-note-inline>
               </td>
               <td class="col-num">{{ co.totalVisits }}</td>
               <td class="col-num">{{ co.totalAmount | number:'1.2-2' }} $</td>

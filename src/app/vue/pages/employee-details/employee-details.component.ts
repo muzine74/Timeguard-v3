@@ -1,7 +1,6 @@
 import { Component, OnInit, signal, effect, Injector, Signal, isDevMode, ChangeDetectionStrategy, DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService }             from '../../../state/auth/auth.service';
 import { EmployeesService }        from '../../../state/employees/employees.service';
@@ -15,41 +14,63 @@ import { StatsBarComponent }       from '../../components/stats-bar/stats-bar.co
 import { DatePickerComponent }     from '../../components/date-picker/date-picker.component';
 import { PointageTableComponent }  from '../../components/pointage-table/pointage-table.component';
 import { LoadingSpinnerComponent } from '../../components/loading-spinner/loading-spinner.component';
+import { NoteInlineComponent } from '../../components/note-inline/note-inline.component';
+import { NoteAlertService } from '../../../state/notes/note-alert.service';
+import { NoteAlertRefs } from '../../../state/notes/notes.service';
+import { EmployeeListPanelComponent }   from './employee-list-panel/employee-list-panel.component';
+import { EmployeeProfileCardComponent } from './employee-profile-card/employee-profile-card.component';
+import { WeekHistoryPanelComponent, WeekHistoryItem } from './week-history-panel/week-history-panel.component';
 
+/**
+ * Page Employés (conteneur) : chargement des données, employé sélectionné, semaine affichée
+ * et actions du pointage (sauvegarder / valider / annuler). L'affichage de la liste, de la
+ * carte de profil et de l'historique est délégué aux sous-composants.
+ */
 @Component({
   selector: 'app-employee-details',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule, FormsModule,
+    CommonModule,
     SectionHeaderComponent, StatsBarComponent, DatePickerComponent,
-    PointageTableComponent, LoadingSpinnerComponent,
+    PointageTableComponent, LoadingSpinnerComponent, NoteInlineComponent,
+    EmployeeListPanelComponent, EmployeeProfileCardComponent, WeekHistoryPanelComponent,
   ],
   templateUrl: './employee-details.component.html',
   styleUrls: ['./employee-details.component.scss'],
 })
 export class EmployeeDetailsComponent implements OnInit {
-  employees     = signal<Employee[]>([]);
+  // ── Données ─────────────────────────────────────────────────────────────
+  readonly employees   = this.empSvc.list;
+  readonly loadingList = this.empSvc.loading;
   selected      = signal<Employee | null>(null);
-  loadingList   = signal(true);
-  loadingDetail = signal(false);
   selectedId    = signal<string | null>(null);
-  searchQuery   = signal('');
+  loadingDetail = signal(false);
+  /** Erreur de chargement de l'employé sélectionné (affichée à la place de la fiche). */
+  detailError   = signal('');
+  /** employeeId (minuscules) → toutes ses semaines sont validées. */
+  allValidated  = signal<Map<string, boolean>>(new Map());
+  weekHistory   = signal<WeekHistoryItem[]>([]);
+  /** Notes actives de l'employé sélectionné et de ses compagnies. */
+  noteRefs      = signal<NoteAlertRefs | null>(null);
 
-  isSaving!: Signal<boolean>;
-  progress!: Signal<number>;
-  isLocked!: Signal<boolean>;
-  lockedAt!: Signal<string | null>;
-  validating   = signal(false);
-  hasSaved     = signal(false);
-  saved        = signal(false);
-  toast        = '';
-  allValidated = signal<Map<string, boolean>>(new Map());
-  weekHistory  = signal<{ weekStart: string; isLocked: boolean }[]>([]);
+  // ── État du pointage ────────────────────────────────────────────────────
+  readonly isSaving: Signal<boolean>        = this.saveSvc.isSaving;
+  readonly progress: Signal<number>         = this.saveSvc.progress;
+  readonly isLocked: Signal<boolean>        = this.saveSvc.isLocked;
+  readonly lockedAt: Signal<string | null>  = this.saveSvc.lockedAt;
+  validating = signal(false);
+
+  // ── Message temporaire ──────────────────────────────────────────────────
+  saved      = signal(false);
+  toast      = '';
+  toastError = signal(false);
+  private _toastTimer?: ReturnType<typeof setTimeout>;
 
   private _lastWeek  = '';
   private _lastEmpId = '';
   private destroyRef = inject(DestroyRef);
+  private readonly noteAlerts = inject(NoteAlertService);
 
   private get _dev(): boolean { return isDevMode(); }
   private warn(...a: unknown[]) { if (this._dev) console.warn('[EmployeeDetails]', ...a); }
@@ -64,28 +85,17 @@ export class EmployeeDetailsComponent implements OnInit {
     public  admSvc:   PointageAdminService,
     public  weekSvc:  WeekService,
     public  saveSvc:  SaveStateService,
-  ) {
-    this.isSaving = saveSvc.isSaving;
-    this.progress = saveSvc.progress;
-    this.isLocked = saveSvc.isLocked;
-    this.lockedAt = saveSvc.lockedAt;
-  }
+  ) {}
 
   ngOnInit(): void {
     this.empSvc.loadList(true);
-
-    effect(() => {
-      const list    = this.empSvc.list();
-      const loading = this.empSvc.loading();
-      this.employees.set(list);
-      this.loadingList.set(loading);
-      if (list.length) this._loadWeekStatuses();
-    }, { injector: this.injector, allowSignalWrites: true });
+    this._loadWeekStatuses();
 
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.selectEmployee(id);
     } else {
+      // Sans employé dans l'URL : ouvre le premier de la liste dès qu'elle est chargée
       effect(() => {
         const list = this.empSvc.list();
         if (list.length && !this.selectedId()) this.selectEmployee(list[0].employeeId);
@@ -93,11 +103,14 @@ export class EmployeeDetailsComponent implements OnInit {
     }
   }
 
+  // ── Sélection / semaine ─────────────────────────────────────────────────
+
   selectEmployee(id: string): void {
     if (id === this._lastEmpId) return;
     this._lastEmpId = id;
     this.selectedId.set(id);
-    this.hasSaved.set(false);
+    this.noteRefs.set({ employeeIds: [id] });
+    this.detailError.set('');
     this.loadingDetail.set(true);
     this.router.navigate(['/employees', id]);
 
@@ -111,6 +124,7 @@ export class EmployeeDetailsComponent implements OnInit {
         this.warn(`✕ getOne(${id}) — status: ${err.status}`);
         const found = this.employees().find(e => e.employeeId === id);
         if (found) this.selected.set(found);
+        else { this.selected.set(null); this.detailError.set(`Impossible de charger cet employé (erreur ${err.status || 'réseau'}). Réessayez ou choisissez un autre employé.`); }
         this.loadingDetail.set(false);
       }
     });
@@ -118,48 +132,19 @@ export class EmployeeDetailsComponent implements OnInit {
     const week = this.weekSvc.weekKey();
     this._lastWeek = week;
     this.ptEmpSvc.clearCache();
-    this.saveSvc.loadStatus(id, week);
-    this.saveSvc.loadEarnings(id, week);
-    this.saveSvc.loadCumulativeEarnings(id);
+    this._loadWeekData(id, week);
     this.ptEmpSvc.load(week, id, () => this.admSvc.load(week, id));
   }
 
   onWeekChange(): void {
     const week = this.weekSvc.weekKey();
     const id   = this.selectedId();
-    const weekChanged = week !== this._lastWeek;
+    if (week === this._lastWeek) return;
 
-    if (weekChanged) {
-      this._lastWeek = week;
-      this.hasSaved.set(false);
-      if (id) this.saveSvc.loadStatus(id, week);
-      if (id) this.saveSvc.loadEarnings(id, week);
-      if (id) this.saveSvc.loadCumulativeEarnings(id);
-      this._loadWeekStatuses();
-      this.ptEmpSvc.load(week, id ?? undefined, () => this.admSvc.load(week, id ?? undefined));
-    }
-  }
-
-  onSearch(event: Event): void {
-    this.searchQuery.set((event.target as HTMLInputElement).value);
-  }
-
-  get filteredEmployees(): Employee[] {
-    const q      = this.searchQuery().toLowerCase();
-    const status = this.allValidated();
-    const list   = this.employees().filter(e =>
-      e.isActive && (!q || e.employeeName.toLowerCase().includes(q))
-    );
-    return [...list].sort((a, b) => {
-      const aOk = status.get(a.employeeId.toLowerCase()) ?? false;
-      const bOk = status.get(b.employeeId.toLowerCase()) ?? false;
-      if (aOk !== bOk) return aOk ? 1 : -1;
-      return a.employeeName.localeCompare(b.employeeName);
-    });
-  }
-
-  isAllValidated$(empId: string): boolean {
-    return this.allValidated().get(empId.toLowerCase()) ?? false;
+    this._lastWeek = week;
+    if (id) this._loadWeekData(id, week);
+    this._loadWeekStatuses();
+    this.ptEmpSvc.load(week, id ?? undefined, () => this.admSvc.load(week, id ?? undefined));
   }
 
   goToWeek(weekStart: string): void {
@@ -167,19 +152,39 @@ export class EmployeeDetailsComponent implements OnInit {
     this.onWeekChange();
   }
 
-  initials(e: Employee): string {
-    const parts = (e.employeeName ?? '').trim().split(' ');
-    return ((parts[0]?.[0] ?? '') + (parts[1]?.[0] ?? '')).toUpperCase() || '?';
+  // ── Actions du pointage ─────────────────────────────────────────────────
+
+  /** Validation possible : rien en cours et aucune modification non sauvegardée. */
+  get canValidateNow(): boolean {
+    return !this.validating() && !this.isSaving() && !this.ptEmpSvc.isDirty();
   }
 
   async save(): Promise<void> {
     const empId = this.selectedId();
     if (empId) this.ptEmpSvc.setEmployeeId(empId);
     const ok = await this.saveSvc.save();
-    if (ok) this.hasSaved.set(true);
-    this.toast = ok ? '✓ Sauvegardé avec succès' : '✕ Erreur lors de la sauvegarde';
-    this.saved.set(true);
-    setTimeout(() => this.saved.set(false), 3000);
+    this.showToast(ok ? '✓ Sauvegardé avec succès' : '✕ Erreur lors de la sauvegarde', !ok);
+  }
+
+  validateWeek(): void {
+    const empId   = this.selectedId();
+    const week    = this.weekSvc.weekKey();
+    const adminId = this.auth.employeeId() ?? '';
+    if (!empId || !adminId) return;
+
+    this.validating.set(true);
+    this.noteAlerts.check({ employeeIds: [empId] }, `Validation du pointage — ${this.selected()?.employeeName ?? ''}`);
+    this.saveSvc.validateWeek(empId, week, adminId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this._refreshAfterValidationChange(empId, week);
+        this.showToast('✓ Semaine validée — pointage verrouillé.', false, 4000);
+        this.validating.set(false);
+      },
+      error: (err: any) => {
+        this.showToast(err?.error?.message ?? '✕ Erreur lors de la validation.', true, 4000);
+        this.validating.set(false);
+      },
+    });
   }
 
   unvalidateWeek(): void {
@@ -190,53 +195,35 @@ export class EmployeeDetailsComponent implements OnInit {
     this.validating.set(true);
     this.saveSvc.unvalidateWeek(empId, week).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
-        this.saveSvc.loadStatus(empId, week);
-        this.saveSvc.loadEarnings(empId, week);
-        this._loadWeekStatuses();
-        this._loadWeekHistory(empId);
-        this.hasSaved.set(false);
+        this._refreshAfterValidationChange(empId, week);
+        // Semaine rouverte : recharge ses pointages (la version en cache était verrouillée)
         this.ptEmpSvc.clearCache();
         this.ptEmpSvc.load(week, empId, () => this.admSvc.load(week, empId));
-        this.toast = '🔓 Validation annulée.';
-        this.saved.set(true);
+        this.showToast('🔓 Validation annulée.', false, 4000);
         this.validating.set(false);
-        setTimeout(() => this.saved.set(false), 4000);
       },
       error: (err: any) => {
-        this.toast = err?.error?.message ?? '✕ Erreur lors de l\'annulation.';
-        this.saved.set(true);
+        this.showToast(err?.error?.message ?? '✕ Erreur lors de l\'annulation.', true, 4000);
         this.validating.set(false);
-        setTimeout(() => this.saved.set(false), 4000);
       },
     });
   }
 
-  validateWeek(): void {
-    const empId   = this.selectedId();
-    const week    = this.weekSvc.weekKey();
-    const adminId = this.auth.employeeId() ?? '';
-    if (!empId || !adminId) return;
+  // ── Chargements ─────────────────────────────────────────────────────────
 
-    this.validating.set(true);
-    this.saveSvc.validateWeek(empId, week, adminId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        this.saveSvc.loadStatus(empId, week);
-        this.saveSvc.loadEarnings(empId, week);
-        this._loadWeekStatuses();
-        this._loadWeekHistory(empId);
-        this.hasSaved.set(false);
-        this.toast = '✓ Semaine validée — pointage verrouillé.';
-        this.saved.set(true);
-        this.validating.set(false);
-        setTimeout(() => this.saved.set(false), 4000);
-      },
-      error: (err: any) => {
-        this.toast = err?.error?.message ?? '✕ Erreur lors de la validation.';
-        this.saved.set(true);
-        this.validating.set(false);
-        setTimeout(() => this.saved.set(false), 4000);
-      },
-    });
+  /** Statut, gains de la semaine et gains cumulés de l'employé. */
+  private _loadWeekData(empId: string, week: string): void {
+    this.saveSvc.loadStatus(empId, week);
+    this.saveSvc.loadEarnings(empId, week);
+    this.saveSvc.loadCumulativeEarnings(empId);
+  }
+
+  /** Après validation / annulation : statut de la semaine, pastilles de la liste, historique. */
+  private _refreshAfterValidationChange(empId: string, week: string): void {
+    this.saveSvc.loadStatus(empId, week);
+    this.saveSvc.loadEarnings(empId, week);
+    this._loadWeekStatuses();
+    this._loadWeekHistory(empId);
   }
 
   private _loadWeekStatuses(): void {
@@ -255,5 +242,14 @@ export class EmployeeDetailsComponent implements OnInit {
       next: list => this.weekHistory.set(list),
       error: ()  => this.weekHistory.set([]),
     });
+  }
+
+  /** Message temporaire en bas à droite (succès ou erreur). */
+  private showToast(message: string, isError = false, ms = 3000): void {
+    this.toast = message;
+    this.toastError.set(isError);
+    this.saved.set(true);
+    clearTimeout(this._toastTimer);
+    this._toastTimer = setTimeout(() => this.saved.set(false), ms);
   }
 }

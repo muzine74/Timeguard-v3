@@ -32,44 +32,44 @@
       <div class="cfg-card-hdr">Compagnie</div>
       <div class="cfg-card-body">
         <div class="field">
-          <label>Logo (chemin ou URL)</label>
-          <input class="inp" [(ngModel)]="form.logoPath" placeholder="/assets/logo.png" />
+          <label for="app-config-logo-chemin-ou-url">Logo (chemin ou URL)</label>
+          <input id="app-config-logo-chemin-ou-url" class="inp" [(ngModel)]="form.logoPath" placeholder="/assets/logo.png" />
         </div>
         <div class="field">
-          <label>Nom</label>
-          <input class="inp" [(ngModel)]="form.companyName" placeholder="Rammsis Cleaning..." />
+          <label for="app-config-nom">Nom</label>
+          <input id="app-config-nom" class="inp" [(ngModel)]="form.companyName" placeholder="Rammsis Cleaning..." />
         </div>
         <div class="field field-full">
-          <label>Adresse civique</label>
-          <input class="inp" [(ngModel)]="form.companyAddress" placeholder="123 rue Principale" />
+          <label for="app-config-adresse-civique">Adresse civique</label>
+          <input id="app-config-adresse-civique" class="inp" [(ngModel)]="form.companyAddress" placeholder="123 rue Principale" />
         </div>
         <div class="field">
-          <label>Ville</label>
-          <input class="inp" [(ngModel)]="form.companyCity" placeholder="Montréal" />
+          <label for="app-config-ville">Ville</label>
+          <input id="app-config-ville" class="inp" [(ngModel)]="form.companyCity" placeholder="Montréal" />
         </div>
         <div class="field">
-          <label>Code postal</label>
-          <input class="inp" [(ngModel)]="form.companyPostalCode" placeholder="H2X 1Y6" />
+          <label for="app-config-code-postal">Code postal</label>
+          <input id="app-config-code-postal" class="inp" [(ngModel)]="form.companyPostalCode" placeholder="H2X 1Y6" />
         </div>
         <div class="field">
-          <label>Province</label>
-          <input class="inp" [(ngModel)]="form.companyProvince" placeholder="QC" />
+          <label for="app-config-province">Province</label>
+          <input id="app-config-province" class="inp" [(ngModel)]="form.companyProvince" placeholder="QC" />
         </div>
         <div class="field">
-          <label>Pays</label>
-          <input class="inp" [(ngModel)]="form.companyCountry" placeholder="Canada" />
+          <label for="app-config-pays">Pays</label>
+          <input id="app-config-pays" class="inp" [(ngModel)]="form.companyCountry" placeholder="Canada" />
         </div>
         <div class="field">
-          <label>Numéro de compte de programme du payeur</label>
-          <input class="inp" [(ngModel)]="form.payerAccountNumber" placeholder="123456789RP0001" />
+          <label for="app-config-numero-de-compte-de-programme-du-payeur">Numéro de compte de programme du payeur</label>
+          <input id="app-config-numero-de-compte-de-programme-du-payeur" class="inp" [(ngModel)]="form.payerAccountNumber" placeholder="123456789RP0001" />
         </div>
         <div class="field">
-          <label>Téléphone</label>
-          <input class="inp" [(ngModel)]="form.companyPhone" placeholder="514-555-0000" />
+          <label for="app-config-telephone">Téléphone</label>
+          <input id="app-config-telephone" class="inp" [(ngModel)]="form.companyPhone" placeholder="514-555-0000" />
         </div>
         <div class="field">
-          <label>Courriel</label>
-          <input class="inp" [(ngModel)]="form.companyEmail" placeholder="info@compagnie.com" />
+          <label for="app-config-courriel">Courriel</label>
+          <input id="app-config-courriel" class="inp" [(ngModel)]="form.companyEmail" placeholder="info@compagnie.com" />
         </div>
       </div>
     </section>
@@ -79,20 +79,20 @@
       <div class="cfg-card-hdr">Courriel (SMTP)</div>
       <div class="cfg-card-body">
         <div class="field">
-          <label>Serveur</label>
-          <input class="inp" [(ngModel)]="form.smtpServer" placeholder="smtp.gmail.com" />
+          <label for="app-config-serveur">Serveur</label>
+          <input id="app-config-serveur" class="inp" [(ngModel)]="form.smtpServer" placeholder="smtp.gmail.com" />
         </div>
         <div class="field">
-          <label>Port</label>
-          <input class="inp" type="number" [(ngModel)]="form.smtpPort" placeholder="587" />
+          <label for="app-config-port">Port</label>
+          <input id="app-config-port" class="inp" type="number" [(ngModel)]="form.smtpPort" placeholder="587" />
         </div>
         <div class="field">
-          <label>Utilisateur</label>
-          <input class="inp" [(ngModel)]="form.smtpUser" placeholder="user@domaine.com" />
+          <label for="app-config-utilisateur">Utilisateur</label>
+          <input id="app-config-utilisateur" class="inp" [(ngModel)]="form.smtpUser" placeholder="user@domaine.com" />
         </div>
         <div class="field">
-          <label>Mot de passe</label>
-          <input class="inp" type="password" [(ngModel)]="form.smtpPassword" placeholder="••••••••" />
+          <label for="app-config-mot-de-passe">Mot de passe</label>
+          <input id="app-config-mot-de-passe" class="inp" type="password" [(ngModel)]="form.smtpPassword" placeholder="••••••••" />
         </div>
       </div>
     </section>
@@ -102,20 +102,20 @@
       <div class="cfg-card-hdr">Taxes</div>
       <div class="cfg-card-body">
         <div class="field">
-          <label>N° TPS</label>
-          <input class="inp" [(ngModel)]="form.tpsNumber" placeholder="123456789 RT0001" />
+          <label for="app-config-n-tps">N° TPS</label>
+          <input id="app-config-n-tps" class="inp" [(ngModel)]="form.tpsNumber" placeholder="123456789 RT0001" />
         </div>
         <div class="field">
-          <label>N° TVQ</label>
-          <input class="inp" [(ngModel)]="form.tvqNumber" placeholder="1234567890 TQ0001" />
+          <label for="app-config-n-tvq">N° TVQ</label>
+          <input id="app-config-n-tvq" class="inp" [(ngModel)]="form.tvqNumber" placeholder="1234567890 TQ0001" />
         </div>
         <div class="field">
-          <label>Taux TPS (%)</label>
-          <input class="inp" type="number" step="0.001" [(ngModel)]="form.tpsRate" />
+          <label for="app-config-taux-tps">Taux TPS (%)</label>
+          <input id="app-config-taux-tps" class="inp" type="number" step="0.001" [(ngModel)]="form.tpsRate" />
         </div>
         <div class="field">
-          <label>Taux TVQ (%)</label>
-          <input class="inp" type="number" step="0.001" [(ngModel)]="form.tvqRate" />
+          <label for="app-config-taux-tvq">Taux TVQ (%)</label>
+          <input id="app-config-taux-tvq" class="inp" type="number" step="0.001" [(ngModel)]="form.tvqRate" />
         </div>
       </div>
     </section>
@@ -125,8 +125,8 @@
       <div class="cfg-card-hdr">Coordonnées bancaires</div>
       <div class="cfg-card-body">
         <div class="field field-full">
-          <label>Coordonnées de paiement</label>
-          <textarea class="inp inp-textarea" rows="4" [(ngModel)]="form.bankCoordinates"
+          <label for="app-config-coordonnees-de-paiement">Coordonnées de paiement</label>
+          <textarea id="app-config-coordonnees-de-paiement" class="inp inp-textarea" rows="4" [(ngModel)]="form.bankCoordinates"
                     placeholder="Banque : ...&#10;Transit : ...&#10;Folio : ..."></textarea>
         </div>
       </div>
@@ -137,16 +137,16 @@
       <div class="cfg-card-hdr">Contact</div>
       <div class="cfg-card-body">
         <div class="field">
-          <label>Nom</label>
-          <input class="inp" [(ngModel)]="form.contactName" placeholder="Jean Dupont" />
+          <label for="app-config-nom-2">Nom</label>
+          <input id="app-config-nom-2" class="inp" [(ngModel)]="form.contactName" placeholder="Jean Dupont" />
         </div>
         <div class="field">
-          <label>Téléphone</label>
-          <input class="inp" [(ngModel)]="form.contactPhone" placeholder="514-555-0000" />
+          <label for="app-config-telephone-2">Téléphone</label>
+          <input id="app-config-telephone-2" class="inp" [(ngModel)]="form.contactPhone" placeholder="514-555-0000" />
         </div>
         <div class="field">
-          <label>Courriel</label>
-          <input class="inp" [(ngModel)]="form.contactEmail" placeholder="contact@compagnie.com" />
+          <label for="app-config-courriel-2">Courriel</label>
+          <input id="app-config-courriel-2" class="inp" [(ngModel)]="form.contactEmail" placeholder="contact@compagnie.com" />
         </div>
       </div>
     </section>
@@ -156,8 +156,8 @@
       <div class="cfg-card-hdr">Application</div>
       <div class="cfg-card-body">
         <div class="field">
-          <label>Version</label>
-          <input class="inp" [(ngModel)]="form.appVersion" placeholder="2.0.0" />
+          <label for="app-config-version">Version</label>
+          <input id="app-config-version" class="inp" [(ngModel)]="form.appVersion" placeholder="2.0.0" />
         </div>
       </div>
     </section>

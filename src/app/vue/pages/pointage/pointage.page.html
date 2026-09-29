@@ -49,6 +49,8 @@
     </div>
   </header>
 
+  <app-note-inline [refs]="noteRefs()"></app-note-inline>
+
   <app-employee-form
     [employee]="employee()"
     (weekChange)="onWeekChange()"

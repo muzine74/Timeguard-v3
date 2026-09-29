@@ -169,6 +169,7 @@ export class SaveStateService {
       this._progress.set(40);
       await lastValueFrom(this.http.post('/api/save', payload));
       this._ptEmp.clearCache();
+      this._ptEmp.markSaved();   // l'état affiché est maintenant l'état enregistré
       this.loadEarnings(payload.employeeId, payload.week);
       this._progress.set(100);
       await new Promise(r => setTimeout(r, 400));

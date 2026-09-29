@@ -357,7 +357,7 @@
 .sidebar-badge {
   font-size: 9px; font-weight: 700; text-transform: uppercase;
   letter-spacing: .5px; color: var(--muted);
-  &.badge-active { color: #27500A; }
+  &.badge-active { color: #4ecb80; }   // vert « positif » du SaaS (ancien #27500A : 1,7:1 sur fond sombre)
 }
 
 .sidebar-loading { display: flex; justify-content: center; padding: 24px; }
@@ -521,5 +521,5 @@
   font-size: 9px; font-weight: 700; text-transform: uppercase;
   letter-spacing: .5px; color: var(--muted);
   margin-left: 6px; vertical-align: middle;
-  &.badge-active { color: #27500A; }
+  &.badge-active { color: #4ecb80; }   // vert « positif » du SaaS (ancien #27500A : 1,7:1 sur fond sombre)
 }

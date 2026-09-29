@@ -13,15 +13,15 @@
     <div class="card-header">Employé et année</div>
     <div class="params-grid">
       <div class="field">
-        <label>Employé</label>
-        <select class="inp" [(ngModel)]="employeeId">
+        <label for="t4a-generate-employe">Employé</label>
+        <select id="t4a-generate-employe" class="inp" [(ngModel)]="employeeId">
           <option value="" disabled selected>Choisir un employé...</option>
           <option *ngFor="let e of employeesSvc.list()" [value]="e.employeeId">{{ e.employeeName }}</option>
         </select>
       </div>
       <div class="field">
-        <label>Année</label>
-        <input class="inp" type="number" [(ngModel)]="year" />
+        <label for="t4a-generate-annee">Année</label>
+        <input id="t4a-generate-annee" class="inp" type="number" [(ngModel)]="year" />
       </div>
       <div class="field field-btn">
         <button class="btn btn-primary" [disabled]="loading()" (click)="suggest()">
@@ -53,8 +53,8 @@
           <div class="value-label">{{ data.payerAccountNumber }}</div>
         </div>
         <div class="field">
-          <label>Case 015 — Code prestations dentaires (payeur)</label>
-          <input class="inp" [(ngModel)]="data.dentalBenefitsCode" placeholder="1 à 5, laisser vide si non applicable" />
+          <label for="t4a-generate-case-015-code-prestations-dentaires-paye">Case 015 — Code prestations dentaires (payeur)</label>
+          <input id="t4a-generate-case-015-code-prestations-dentaires-paye" class="inp" [(ngModel)]="data.dentalBenefitsCode" placeholder="1 à 5, laisser vide si non applicable" />
         </div>
       </div>
     </div>
@@ -71,8 +71,8 @@
           <div class="value-label">{{ data.firstName }}</div>
         </div>
         <div class="field">
-          <label>Initiale</label>
-          <input class="inp" [(ngModel)]="data.initials" maxlength="1" />
+          <label for="t4a-generate-initiale">Initiale</label>
+          <input id="t4a-generate-initiale" class="inp" [(ngModel)]="data.initials" maxlength="1" />
         </div>
         <div class="field span-full" *ngIf="data.addressLine1 || data.addressLine2 || data.addressLine3">
           <label>Adresse</label>
@@ -85,8 +85,8 @@
           <div class="value-label">{{ data.sin }}</div>
         </div>
         <div class="field">
-          <label>Case 013 — N° de compte du bénéficiaire</label>
-          <input class="inp" [(ngModel)]="data.recipientAccountNumber" />
+          <label for="t4a-generate-case-013-n-de-compte-du-beneficiaire">Case 013 — N° de compte du bénéficiaire</label>
+          <input id="t4a-generate-case-013-n-de-compte-du-beneficiaire" class="inp" [(ngModel)]="data.recipientAccountNumber" />
         </div>
       </div>
     </div>
@@ -95,28 +95,28 @@
       <div class="card-header">Montants</div>
       <div class="params-grid">
         <div class="field">
-          <label>Case 016 — Prestations de retraite ou de pension</label>
-          <input class="inp" type="number" step="0.01" [(ngModel)]="data.pension" />
+          <label for="t4a-generate-case-016-prestations-de-retraite-ou-de-p">Case 016 — Prestations de retraite ou de pension</label>
+          <input id="t4a-generate-case-016-prestations-de-retraite-ou-de-p" class="inp" type="number" step="0.01" [(ngModel)]="data.pension" />
         </div>
         <div class="field">
-          <label>Case 018 — Paiement forfaitaire</label>
-          <input class="inp" type="number" step="0.01" [(ngModel)]="data.lumpSum" />
+          <label for="t4a-generate-case-018-paiement-forfaitaire">Case 018 — Paiement forfaitaire</label>
+          <input id="t4a-generate-case-018-paiement-forfaitaire" class="inp" type="number" step="0.01" [(ngModel)]="data.lumpSum" />
         </div>
         <div class="field">
-          <label>Case 020 — Commissions</label>
-          <input class="inp" type="number" step="0.01" [(ngModel)]="data.commissions" />
+          <label for="t4a-generate-case-020-commissions">Case 020 — Commissions</label>
+          <input id="t4a-generate-case-020-commissions" class="inp" type="number" step="0.01" [(ngModel)]="data.commissions" />
         </div>
         <div class="field">
-          <label>Case 022 — Impôt sur le revenu retenu</label>
-          <input class="inp" type="number" step="0.01" [(ngModel)]="data.incomeTaxDeducted" />
+          <label for="t4a-generate-case-022-impot-sur-le-revenu-retenu">Case 022 — Impôt sur le revenu retenu</label>
+          <input id="t4a-generate-case-022-impot-sur-le-revenu-retenu" class="inp" type="number" step="0.01" [(ngModel)]="data.incomeTaxDeducted" />
         </div>
         <div class="field">
-          <label>Case 024 — Rentes</label>
-          <input class="inp" type="number" step="0.01" [(ngModel)]="data.annuities" />
+          <label for="t4a-generate-case-024-rentes">Case 024 — Rentes</label>
+          <input id="t4a-generate-case-024-rentes" class="inp" type="number" step="0.01" [(ngModel)]="data.annuities" />
         </div>
         <div class="field">
-          <label>Case 048 — Honoraires pour services rendus</label>
-          <input class="inp" type="number" step="0.01" [(ngModel)]="data.feesForServices" />
+          <label for="t4a-generate-case-048-honoraires-pour-services-rendus">Case 048 — Honoraires pour services rendus</label>
+          <input id="t4a-generate-case-048-honoraires-pour-services-rendus" class="inp" type="number" step="0.01" [(ngModel)]="data.feesForServices" />
         </div>
       </div>
       <div class="total-row">

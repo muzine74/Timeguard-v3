@@ -1,0 +1,26 @@
+<section class="week-history-section" aria-labelledby="wh-title">
+  <div class="week-history-hdr">
+    <span class="wh-title" id="wh-title">📅 Historique des semaines</span>
+    <span class="wh-count" *ngIf="weeks.length">{{ weeks.length }}</span>
+  </div>
+  <div class="week-history-list">
+    <div *ngIf="weeks.length === 0" class="wh-empty">Aucun pointage enregistré</div>
+    <button type="button" *ngFor="let w of visibleWeeks; trackBy: trackByWeek"
+            class="wh-item"
+            [class.wh-locked]="w.isLocked"
+            [class.wh-current]="w.weekStart === currentWeek"
+            [attr.aria-current]="w.weekStart === currentWeek ? 'true' : null"
+            (click)="openWeek.emit(w.weekStart)">
+      <span class="wh-date">
+        Semaine du {{ w.weekStart | date:'dd/MM/yyyy' }}
+        <span class="wh-here" *ngIf="w.weekStart === currentWeek">· affichée</span>
+      </span>
+      <span class="wh-badge wh-ok"  *ngIf=" w.isLocked">✓ Validé</span>
+      <span class="wh-badge wh-nok" *ngIf="!w.isLocked">À valider</span>
+    </button>
+    <button type="button" class="wh-more" *ngIf="weeks.length > previewSize"
+            (click)="showAll.set(!showAll())">
+      {{ showAll() ? 'Réduire' : 'Voir les ' + weeks.length + ' semaines' }}
+    </button>
+  </div>
+</section>

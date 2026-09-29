@@ -29,9 +29,9 @@
           <label class="toggle-wrap"><input type="checkbox" [(ngModel)]="form.isActive"><span class="toggle-lbl">Actif</span></label>
         </div>
         <div class="fields-grid">
-          <div class="field span-full"><label>Nom <span class="req">*</span></label><input class="inp" [(ngModel)]="form.companyName" placeholder="Acme Construction inc." /></div>
-          <div class="field"><label>Code</label><input class="inp" [(ngModel)]="form.companyCode" placeholder="ACME-001" /></div>
-          <div class="field span-full"><label>Note</label><textarea class="inp inp-ta" [(ngModel)]="form.note" rows="3"></textarea></div>
+          <div class="field span-full"><label for="company-form-nom">Nom <span class="req">*</span></label><input id="company-form-nom" class="inp" [(ngModel)]="form.companyName" placeholder="Acme Construction inc." /></div>
+          <div class="field"><label for="company-form-code">Code</label><input id="company-form-code" class="inp" [(ngModel)]="form.companyCode" placeholder="ACME-001" /></div>
+          <div class="field span-full"><label for="company-form-note">Note</label><textarea id="company-form-note" class="inp inp-ta" [(ngModel)]="form.note" rows="3"></textarea></div>
         </div>
       </div>
 
@@ -41,13 +41,13 @@
           <div><div class="card-title">Adresse</div><div class="card-sub">Localisation</div></div>
         </div>
         <div class="fields-grid">
-          <div class="field"><label>N° civique</label><input class="inp" [(ngModel)]="form.civicNumber" placeholder="123" /></div>
-          <div class="field"><label>Suite</label><input class="inp" [(ngModel)]="form.suite" /></div>
-          <div class="field"><label>Ville</label><input class="inp" [(ngModel)]="form.city" placeholder="Montréal" /></div>
-          <div class="field"><label>Province</label><input class="inp" [(ngModel)]="form.state" /></div>
-          <div class="field"><label>Code postal</label><input class="inp" [(ngModel)]="form.zipCode" placeholder="H1A 1A1" /></div>
-          <div class="field"><label>Pays</label><input class="inp" [(ngModel)]="form.country" /></div>
-          <div class="field span-full"><label>Note adresse</label><input class="inp" [(ngModel)]="form.addressNote" /></div>
+          <div class="field"><label for="company-form-n-civique">N° civique</label><input id="company-form-n-civique" class="inp" [(ngModel)]="form.civicNumber" placeholder="123" /></div>
+          <div class="field"><label for="company-form-suite">Suite</label><input id="company-form-suite" class="inp" [(ngModel)]="form.suite" /></div>
+          <div class="field"><label for="company-form-ville">Ville</label><input id="company-form-ville" class="inp" [(ngModel)]="form.city" placeholder="Montréal" /></div>
+          <div class="field"><label for="company-form-province">Province</label><input id="company-form-province" class="inp" [(ngModel)]="form.state" /></div>
+          <div class="field"><label for="company-form-code-postal">Code postal</label><input id="company-form-code-postal" class="inp" [(ngModel)]="form.zipCode" placeholder="H1A 1A1" /></div>
+          <div class="field"><label for="company-form-pays">Pays</label><input id="company-form-pays" class="inp" [(ngModel)]="form.country" /></div>
+          <div class="field span-full"><label for="company-form-note-adresse">Note adresse</label><input id="company-form-note-adresse" class="inp" [(ngModel)]="form.addressNote" /></div>
         </div>
       </div>
 
@@ -57,8 +57,8 @@
           <div><div class="card-title">Taxes</div><div class="card-sub">Numéros applicables</div></div>
         </div>
         <div class="fields-grid">
-          <div class="field"><label>TPS</label><input class="inp" [(ngModel)]="form.tps" /></div>
-          <div class="field"><label>TVQ</label><input class="inp" [(ngModel)]="form.tvq" /></div>
+          <div class="field"><label for="company-form-tps">TPS</label><input id="company-form-tps" class="inp" [(ngModel)]="form.tps" /></div>
+          <div class="field"><label for="company-form-tvq">TVQ</label><input id="company-form-tvq" class="inp" [(ngModel)]="form.tvq" /></div>
         </div>
       </div>
 
@@ -73,10 +73,10 @@
           <div><div class="card-title">Contact</div><div class="card-sub">Personne responsable</div></div>
         </div>
         <div class="fields-grid">
-          <div class="field span-full"><label>Nom</label><input class="inp" [(ngModel)]="contact.name" placeholder="Jean Dupont" /></div>
-          <div class="field"><label>Courriel</label><input class="inp" type="email" [(ngModel)]="contact.mail" placeholder="jean@exemple.com" /></div>
-          <div class="field"><label>Téléphone</label><input class="inp" [(ngModel)]="contact.phone" placeholder="514-000-0000" /></div>
-          <div class="field span-full"><label>Notes</label><textarea class="inp inp-ta" [(ngModel)]="contact.notes" rows="2"></textarea></div>
+          <div class="field span-full"><label for="company-form-nom-2">Nom</label><input id="company-form-nom-2" class="inp" [(ngModel)]="contact.name" placeholder="Jean Dupont" /></div>
+          <div class="field"><label for="company-form-courriel">Courriel</label><input id="company-form-courriel" class="inp" type="email" [(ngModel)]="contact.mail" placeholder="jean@exemple.com" /></div>
+          <div class="field"><label for="company-form-telephone">Téléphone</label><input id="company-form-telephone" class="inp" [(ngModel)]="contact.phone" placeholder="514-000-0000" /></div>
+          <div class="field span-full"><label for="company-form-notes">Notes</label><textarea id="company-form-notes" class="inp inp-ta" [(ngModel)]="contact.notes" rows="2"></textarea></div>
         </div>
       </div>
 
@@ -87,14 +87,14 @@
         </div>
         <div class="fields-grid">
           <div class="field">
-            <label>Fréquence de paiement</label>
-            <select class="inp inp-sel" [(ngModel)]="form.frequencePaiement">
+            <label for="company-form-frequence-de-paiement">Fréquence de paiement</label>
+            <select id="company-form-frequence-de-paiement" class="inp inp-sel" [(ngModel)]="form.frequencePaiement">
               <option *ngFor="let f of freqOptions" [value]="f.value">{{ f.label }}</option>
             </select>
           </div>
           <div class="field">
-            <label>Fréquence de travail</label>
-            <select class="inp inp-sel" [(ngModel)]="form.frequenceTravail" (change)="onFreqTravailChange()">
+            <label for="company-form-frequence-de-travail">Fréquence de travail</label>
+            <select id="company-form-frequence-de-travail" class="inp inp-sel" [(ngModel)]="form.frequenceTravail" (change)="onFreqTravailChange()">
               <option *ngFor="let f of freqOptions" [value]="f.value">{{ f.label }}</option>
             </select>
           </div>
@@ -117,6 +117,12 @@
         <div class="card-header">
           <span class="card-icon">📋</span>
           <div><div class="card-title">Planning — Bi-hebdomadaire</div><div class="card-sub">Deux semaines alternées</div></div>
+        </div>
+        <div class="bi-start">
+          <label for="company-form-la-semaine-1-commence-le" class="bi-start-label">La Semaine 1 commence le</label>
+          <input id="company-form-la-semaine-1-commence-le" class="bi-start-input" type="date" [(ngModel)]="form.debutSemaine1" />
+          <span class="bi-start-hint bi-start-warn" *ngIf="!form.debutSemaine1">⚠ À renseigner : sans cette date, les jours planifiés ne peuvent pas être calculés.</span>
+          <span class="bi-start-hint" *ngIf="form.debutSemaine1">Puis une semaine sur deux, à partir du lundi de cette semaine.</span>
         </div>
         <div class="bi-hebdo-wrap">
           <div class="semaine-col">
@@ -153,10 +159,10 @@
               <div class="step-val">{{ j.jour }}</div>
               <button class="step-btn" (click)="stepJourLigne(i, 1)">▶</button>
             </div>
-            <input type="checkbox" [(ngModel)]="j.actif" />
-            <input class="inp-num" type="number" min="0" step="0.01"
+            <input [attr.aria-label]="'Travail le jour ' + j.jour" type="checkbox" [(ngModel)]="j.actif" />
+            <input [attr.aria-label]="'Prix compagnie — jour ' + j.jour" class="inp-num" type="number" min="0" step="0.01"
                    [(ngModel)]="j.compagnie" [disabled]="!j.actif" placeholder="Cie $" />
-            <input class="inp-num" type="number" min="0" step="0.01"
+            <input [attr.aria-label]="'Paiement employé — jour ' + j.jour" class="inp-num" type="number" min="0" step="0.01"
                    [(ngModel)]="j.employe" [disabled]="!j.actif" placeholder="Emp $" />
             <button class="btn-remove" (click)="removeJourMensuel(i)">✕</button>
           </div>
@@ -177,11 +183,11 @@
     <tbody>
       <tr *ngFor="let jour of jours; let i = index">
         <td class="jour-lbl">{{ joursLabels[i] }}</td>
-        <td><input type="checkbox" [(ngModel)]="getJour(s, jour).actif" /></td>
-        <td><input class="inp-num" type="number" min="0" step="0.01"
+        <td><input [attr.aria-label]="'Travail le ' + joursLabels[i]" type="checkbox" [(ngModel)]="getJour(s, jour).actif" /></td>
+        <td><input [attr.aria-label]="'Prix compagnie — ' + joursLabels[i]" class="inp-num" type="number" min="0" step="0.01"
                    [(ngModel)]="getJour(s, jour).compagnie"
                    [disabled]="!getJour(s, jour).actif" placeholder="0.00" /></td>
-        <td><input class="inp-num" type="number" min="0" step="0.01"
+        <td><input [attr.aria-label]="'Paiement employé — ' + joursLabels[i]" class="inp-num" type="number" min="0" step="0.01"
                    [(ngModel)]="getJour(s, jour).employe"
                    [disabled]="!getJour(s, jour).actif" placeholder="0.00" /></td>
       </tr>
@@ -199,9 +205,9 @@
         <tbody>
           <tr *ngFor="let j of jours.slice(0,8)">
             <td class="jour-num">{{ j.jour }}</td>
-            <td><input type="checkbox" [(ngModel)]="j.actif" /></td>
-            <td><input class="inp-num" type="number" min="0" step="0.01" [(ngModel)]="j.compagnie" [disabled]="!j.actif" placeholder="0.00" /></td>
-            <td><input class="inp-num" type="number" min="0" step="0.01" [(ngModel)]="j.employe"    [disabled]="!j.actif" placeholder="0.00" /></td>
+            <td><input [attr.aria-label]="'Travail le jour ' + j.jour" type="checkbox" [(ngModel)]="j.actif" /></td>
+            <td><input [attr.aria-label]="'Prix compagnie — jour ' + j.jour" class="inp-num" type="number" min="0" step="0.01" [(ngModel)]="j.compagnie" [disabled]="!j.actif" placeholder="0.00" /></td>
+            <td><input [attr.aria-label]="'Paiement employé — jour ' + j.jour" class="inp-num" type="number" min="0" step="0.01" [(ngModel)]="j.employe"    [disabled]="!j.actif" placeholder="0.00" /></td>
           </tr>
         </tbody>
       </table>
@@ -213,9 +219,9 @@
         <tbody>
           <tr *ngFor="let j of jours.slice(8,15)">
             <td class="jour-num">{{ j.jour }}</td>
-            <td><input type="checkbox" [(ngModel)]="j.actif" /></td>
-            <td><input class="inp-num" type="number" min="0" step="0.01" [(ngModel)]="j.compagnie" [disabled]="!j.actif" placeholder="0.00" /></td>
-            <td><input class="inp-num" type="number" min="0" step="0.01" [(ngModel)]="j.employe"    [disabled]="!j.actif" placeholder="0.00" /></td>
+            <td><input [attr.aria-label]="'Travail le jour ' + j.jour" type="checkbox" [(ngModel)]="j.actif" /></td>
+            <td><input [attr.aria-label]="'Prix compagnie — jour ' + j.jour" class="inp-num" type="number" min="0" step="0.01" [(ngModel)]="j.compagnie" [disabled]="!j.actif" placeholder="0.00" /></td>
+            <td><input [attr.aria-label]="'Paiement employé — jour ' + j.jour" class="inp-num" type="number" min="0" step="0.01" [(ngModel)]="j.employe"    [disabled]="!j.actif" placeholder="0.00" /></td>
           </tr>
         </tbody>
       </table>

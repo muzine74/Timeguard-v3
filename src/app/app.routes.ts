@@ -181,6 +181,11 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./vue/pages/notes/notes.component').then(m => m.NotesComponent)
   },
+  {
+    path: 'aide',
+    canActivate: [authGuard],
+    loadComponent: () => import('./vue/pages/help/help.component').then(m => m.HelpComponent)
+  },
 
   // ── Groupes & accès ───────────────────────────────────────────────────────
   {

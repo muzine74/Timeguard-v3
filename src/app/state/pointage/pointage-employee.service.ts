@@ -3,9 +3,12 @@ import { HttpClient } from '@angular/common/http';
 import { Compagnie, WeekDay, TimeLogQueryResultDto } from '../../models';
 import { WeekService } from './week.service';
 
+/** État d'une semaine : ses lignes de compagnies (propres à la semaine — une semaine validée
+ *  a ses compagnies figées) avec leurs coches et prix. */
 interface WeekCache {
-  pointages: Record<string, Record<string, boolean>>;
-  prices:    Record<string, Record<string, number>>;
+  rows: Compagnie[];
+  /** Signature des coches telles qu'enregistrées en base (détection des modifications non sauvegardées). */
+  savedSig: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -23,6 +26,11 @@ export class PointageEmployeeService {
   private _pricingMap  = new Map<string, Record<string, number>>();
 
   readonly compagnies = this._compagnies.asReadonly();
+
+  /** Coches telles qu'enregistrées en base pour la semaine affichée. */
+  private _savedSig = signal('');
+  /** true si les coches affichées diffèrent de ce qui est enregistré (modifications non sauvegardées). */
+  readonly isDirty  = computed(() => this._sig(this._compagnies()) !== this._savedSig());
   readonly isLoading  = this._loading.asReadonly();
   readonly error      = this._error.asReadonly();
 
@@ -57,11 +65,9 @@ export class PointageEmployeeService {
     const cached   = this._cache.get(cacheKey);
     if (cached && !employeeChanged) {
       this.log(`cache hit → ${cacheKey}`);
-      this._compagnies.update(l => l.map(c => ({
-        ...c,
-        pointages: cached.pointages[c.companyId] ?? {},
-        prices:    cached.prices[c.companyId]    ?? {},
-      })));
+      // Restaure les lignes DE CETTE SEMAINE (et non celles de la semaine affichée juste avant)
+      this._compagnies.set(this._cloneRows(cached.rows));
+      this._savedSig.set(cached.savedSig);
       onLoaded?.();
       return;
     }
@@ -69,6 +75,7 @@ export class PointageEmployeeService {
     if (!employeeId) {
       this.warn('employeeId manquant — aucun pointage chargé');
       this._compagnies.set([]);
+      this._savedSig.set('');
       onLoaded?.();
       return;
     }
@@ -83,13 +90,15 @@ export class PointageEmployeeService {
         this.log(`✓ ${logs.length} timelog(s)`);
         if (!logs || logs.length === 0) {
           this._compagnies.set([]);
-          this._cache.set(cacheKey, { pointages: {}, prices: {} });
+          this._savedSig.set('');
+          this._cache.set(cacheKey, { rows: [], savedSig: '' });
           this._loading.set(false);
           onLoaded?.();
           return;
         }
         const compagnies = this._fromTimeLogs(logs);
         this._compagnies.set(compagnies);
+        this._savedSig.set(this._sig(compagnies));
         this._cache.set(cacheKey, this._snapshotFull());
         this._loading.set(false);
         onLoaded?.();
@@ -98,6 +107,7 @@ export class PointageEmployeeService {
         this.warn(`✕ GET ${url} échoué (${err.status})`);
         this._error.set(`Impossible de charger les pointages — HTTP ${err.status}`);
         this._compagnies.set([]);
+        this._savedSig.set('');
         this._loading.set(false);
         onLoaded?.();
       }
@@ -189,6 +199,7 @@ export class PointageEmployeeService {
       prices:    {},
       selected:  false,
     })));
+    this._savedSig.set(this._sig(this._compagnies()));
     this.log(`initFromEmployee() → ${empCompanies.length} compagnie(s)`);
   }
 
@@ -212,10 +223,25 @@ export class PointageEmployeeService {
 
   /** Snapshot complet pour le cache interne (pointages + prix). */
   private _snapshotFull(): WeekCache {
-    return {
-      pointages: Object.fromEntries(this._compagnies().map(c => [c.companyId, { ...c.pointages }])),
-      prices:    Object.fromEntries(this._compagnies().map(c => [c.companyId, { ...c.prices }])),
-    };
+    return { rows: this._cloneRows(this._compagnies()), savedSig: this._savedSig() };
+  }
+
+  /** À appeler après une sauvegarde réussie : l'état affiché devient l'état enregistré. */
+  markSaved(): void {
+    this._savedSig.set(this._sig(this._compagnies()));
+    if (this._currentWeek) this._cache.set(this._cacheKey(this._currentWeek), this._snapshotFull());
+  }
+
+  /** Signature stable des jours cochés par compagnie (l'ordre des lignes est ignoré). */
+  private _sig(rows: Compagnie[]): string {
+    return rows
+      .map(c => `${c.companyId}:${Object.keys(c.pointages ?? {}).filter(k => c.pointages![k]).sort().join(',')}`)
+      .sort()
+      .join('|');
+  }
+
+  private _cloneRows(rows: Compagnie[]): Compagnie[] {
+    return rows.map(c => ({ ...c, pointages: { ...c.pointages }, prices: { ...c.prices } }));
   }
 
   getEmployeeId(): string { return this._employeeId; }

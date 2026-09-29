@@ -2,6 +2,7 @@ import {
   Component, OnInit, signal, computed,
   ChangeDetectionStrategy, DestroyRef, inject,
 } from '@angular/core';
+import { NoteAlertService } from '../../../state/notes/note-alert.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -27,6 +28,7 @@ interface PricingRow {
   styleUrls: ['./employee-pricing.component.scss'],
 })
 export class EmployeePricingComponent implements OnInit {
+  private readonly noteAlerts = inject(NoteAlertService);
   private destroyRef = inject(DestroyRef);
 
   // ── Sidebar employés ─────────────────────────────────────────────────────
@@ -76,6 +78,7 @@ export class EmployeePricingComponent implements OnInit {
   // ── Sélection employé → charge la fiche complète (avec compagnies) ───────
   selectEmployee(emp: Employee): void {
     if (this.selectedEmployee()?.employeeId === emp.employeeId) return;
+    this.noteAlerts.check({ employeeIds: [emp.employeeId] }, `Tarification — ${emp.employeeName}`);
 
     this.selectedEmployee.set(null);
     this.companies.set([]);
@@ -103,6 +106,7 @@ export class EmployeePricingComponent implements OnInit {
   // ── Sélection compagnie → charge les tarifs ──────────────────────────────
   selectCompany(company: EmployeeCompagnie): void {
     if (this.selectedCompany()?.compagnieId === company.compagnieId) return;
+    this.noteAlerts.check({ companyIds: [company.compagnieId] }, 'Tarification');
 
     this.selectedCompany.set(company);
     this.rows.set([]);

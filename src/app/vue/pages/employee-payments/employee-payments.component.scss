@@ -51,27 +51,10 @@ input[type="date"].inp, input[type="month"].inp { color-scheme: dark; }
 }
 
 // ── Dropdown employés ───────────────────────────────────────────────────────
-.emp-dropdown { position: relative; }
-.dd-toggle {
-  background: var(--surface2); border: 1px solid var(--border); color: var(--text);
-  padding: 9px 14px; border-radius: 8px; font-size: 13px; cursor: pointer;
-  min-width: 220px; text-align: left; display: flex; align-items: center; justify-content: space-between; gap: 8px;
-  &:hover { border-color: var(--accent); }
+.emp-filter {
+  min-width: 240px;
+  app-multi-select { flex: none; }   // champ en colonne : ne pas étirer en hauteur
 }
-.dd-caret { color: var(--muted); font-size: 11px; }
-.dd-panel {
-  position: absolute; top: calc(100% + 6px); left: 0; z-index: 20;
-  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
-  padding: 8px; min-width: 260px; max-height: 320px; overflow-y: auto;
-  box-shadow: 0 8px 24px rgba(0,0,0,.35);
-}
-.dd-item {
-  display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 7px;
-  font-size: 13px; color: var(--text); cursor: pointer;
-  &:hover { background: var(--surface2); }
-  input { accent-color: var(--accent); }
-}
-.dd-empty { padding: 10px; font-size: 12.5px; color: var(--muted); }
 
 // ── Résultats ────────────────────────────────────────────────────────────
 .results-hdr {
@@ -188,5 +171,5 @@ input[type="date"].inp, input[type="month"].inp { color-scheme: dark; }
 
 @media (max-width: 640px) {
   .filter-card { flex-direction: column; align-items: stretch; }
-  .dd-toggle { min-width: 0; width: 100%; }
+  .emp-filter { min-width: 0; width: 100%; }
 }

@@ -44,6 +44,7 @@ export class CompanyFormComponent {
     semaine2:        this._emptySemaine(),
     joursBiMensuel:  this._makeJours(15),
     joursMensuel:    [],
+    debutSemaine1:   null,
   };
 
   contact: ContactRequest = { name: '', isActive: true };
@@ -91,17 +92,27 @@ export class CompanyFormComponent {
     this.companySvc.create(this.form).subscribe({
       next: () => {
         const companyId = this.companySvc.lastId();
+        // Après création : la fiche de la compagnie (contacts, employés associés…)
+        const openCompany = (delay: number) => setTimeout(() =>
+          this.router.navigate(companyId ? ['/companies', companyId, 'edit'] : ['/companies/edit']), delay);
+        this.saved.set(true);
+
         if (companyId && this.contact.name.trim()) {
           this.companySvc.addContact(companyId, this.contact).subscribe({
-            error: e => this.warn('Contact non sauvegardé:', e)
+            next: () => openCompany(1500),
+            error: e => {
+              // Ne jamais masquer l'échec : la compagnie existe, le contact est à ressaisir sur sa fiche
+              this.warn('Contact non sauvegardé:', e);
+              this.error.set(`Compagnie créée, mais le contact n'a pas été enregistré (${e?.error?.message ?? 'erreur ' + e?.status}). Ajoutez-le depuis la fiche.`);
+              openCompany(4000);
+            },
           });
+        } else {
+          openCompany(1500);
         }
-        this.saved.set(true);
-        this.log('✓ navigation vers /employees dans 1.5s');
-        setTimeout(() => this.router.navigate(['/employees']), 1500);
       },
       error: err => {
-        const msg = this.companySvc.error() ?? `Erreur ${err.status}`;
+        const msg = err?.error?.message ?? this.companySvc.error() ?? `Erreur ${err.status}`;
         this.warn('✕ submit() échoué:', msg);
         this.error.set(msg);
       }

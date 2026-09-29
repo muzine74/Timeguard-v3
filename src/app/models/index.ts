@@ -231,4 +231,6 @@ export interface CompanyForm {
   joursMensuel:       JourMensuel[];
   semaine1:           SemainePlanning;
   semaine2:           SemainePlanning;
+  /** Bi-hebdomadaire : date (yyyy-MM-dd) où commence la Semaine 1 ; null = non renseignée. */
+  debutSemaine1:      string | null;
 }

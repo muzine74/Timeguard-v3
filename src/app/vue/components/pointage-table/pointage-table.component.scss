@@ -22,7 +22,8 @@ th {
 .th-total  { width: 60px; }
 .th-day    { min-width: 100px; }
 .th-today  { color: var(--accent); }
-.th-weekend{ opacity: .5; }
+// Week-end : fond teinté plutôt qu'un texte estompé (opacité .5 → contraste 1,9:1, sous le seuil WCAG AA)
+.th-weekend{ background: rgba(255,255,255,.025); }
 
 .day-label-short { display: none; }
 
@@ -57,7 +58,9 @@ td { padding: 10px 8px; vertical-align: middle; }
   width: 28px; text-align: center; padding-left: 6px;
   font-size: 10px; color: var(--accent2);
 }
-.td-comp { padding: 10px 12px 10px 8px; }
+// En-tête de ligne (th scope=row) pour les lecteurs d'écran, rendu identique à une cellule
+.td-comp { padding: 10px 12px 10px 8px; vertical-align: middle; text-align: left; font-weight: inherit; }
+.chk:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 .comp-name {
   display: flex; align-items: center; gap: 8px;

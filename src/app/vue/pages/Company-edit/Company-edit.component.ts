@@ -1,4 +1,5 @@
-import { Component, OnInit, signal, computed, isDevMode, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, signal, computed, isDevMode, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
+import { NoteAlertService } from '../../../state/notes/note-alert.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -22,6 +23,7 @@ export interface CompanySummary {
   styleUrls: ['./company-edit.component.scss'],
 })
 export class CompanyEditComponent implements OnInit {
+  private readonly noteAlerts = inject(NoteAlertService);
   saved       = signal(false);
   error       = signal('');
   loadingList = signal(true);
@@ -153,7 +155,7 @@ export class CompanyEditComponent implements OnInit {
           this.showContactForm.set(false);
           this.editingContact.set(null);
         },
-        error: () => this.contactError.set('Erreur lors de la modification.')
+        error: err => this.contactError.set(err?.error?.message ?? 'Erreur lors de la modification.')
       });
     } else {
       this.companySvc.addContact(id, req).subscribe({
@@ -161,7 +163,7 @@ export class CompanyEditComponent implements OnInit {
           this._loadContacts(id);
           this.showContactForm.set(false);
         },
-        error: () => this.contactError.set('Erreur lors de l\'ajout.')
+        error: err => this.contactError.set(err?.error?.message ?? 'Erreur lors de l\'ajout.')
       });
     }
   }
@@ -171,16 +173,17 @@ export class CompanyEditComponent implements OnInit {
     if (!id) return;
     this.companySvc.toggleContact(id, c.contactId).subscribe({
       next: () => this._loadContacts(id),
-      error: () => this.contactError.set('Erreur lors du changement de statut.')
+      error: err => this.contactError.set(err?.error?.message ?? 'Erreur lors du changement de statut.')
     });
   }
 
   deleteContact(c: ContactItem): void {
     const id = this.companyId();
     if (!id) return;
+    if (!confirm(`Supprimer le contact « ${c.name} » ? Il ne recevra plus les factures.`)) return;
     this.companySvc.deleteContact(id, c.contactId).subscribe({
       next: () => this._loadContacts(id),
-      error: () => this.contactError.set('Erreur lors de la suppression.')
+      error: err => this.contactError.set(err?.error?.message ?? 'Erreur lors de la suppression.')
     });
   }
 
@@ -208,6 +211,7 @@ export class CompanyEditComponent implements OnInit {
     this.saved.set(false);
     this.loadingForm.set(true);
     this.log(`selectCompany(${id})`);
+    this.noteAlerts.check({ companyIds: [id] }, 'Modification de la compagnie');
 
     this.companySvc.getById(id).subscribe({
       next: data => {
@@ -306,6 +310,7 @@ export class CompanyEditComponent implements OnInit {
       frequencePaiement: 'hebdomadaire', frequenceTravail: 'hebdomadaire',
       semaine1: this._emptySemaine(), semaine2: this._emptySemaine(),
       joursBiMensuel: this._makeJours(15), joursMensuel: [],
+      debutSemaine1: null,
     };
   }
 

@@ -83,6 +83,7 @@ export class CompanyService {
         semaine2:          d.planning?.semaine2    ?? d.semaine2    ?? this._emptySemaine(),
         joursBiMensuel:    d.planning?.joursBiMensuel ?? d.joursBiMensuel ?? [],
         joursMensuel:      d.planning?.joursMensuel   ?? d.joursMensuel   ?? [],
+        debutSemaine1:     d.planning?.debutSemaine1  ?? d.debutSemaine1  ?? null,
       }))
     );
   }
@@ -118,7 +119,8 @@ export class CompanyService {
         },
         error: err => {
           this.warn(`✕ POST échoué (${err.status})`, err.error);
-          this._error.set(`HTTP ${err.status} — ${err.message}`);
+          // Message du serveur (ex. code déjà utilisé) plutôt que le statut HTTP brut
+          this._error.set(err?.error?.message ?? `HTTP ${err.status} — ${err.message}`);
           this._saving.set(false);
         }
       })
@@ -139,7 +141,8 @@ export class CompanyService {
         },
         error: err => {
           this.warn(`✕ PUT /api/companies/${id} échoué (${err.status})`, err.error);
-          this._error.set(`HTTP ${err.status} — ${err.message}`);
+          // Message du serveur (ex. code déjà utilisé) plutôt que le statut HTTP brut
+          this._error.set(err?.error?.message ?? `HTTP ${err.status} — ${err.message}`);
           this._saving.set(false);
         }
       })

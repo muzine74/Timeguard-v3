@@ -12,18 +12,10 @@
   <!-- ── Filtres ─────────────────────────────────────────────────────────── -->
   <div class="filter-card">
 
-    <div class="filter-field emp-dropdown">
+    <div class="filter-field emp-filter">
       <label>Employés</label>
-      <button type="button" class="dd-toggle" (click)="toggleDropdown()">
-        {{ selectedLabel() }} <span class="dd-caret">▾</span>
-      </button>
-      <div class="dd-panel" *ngIf="dropdownOpen()">
-        <label class="dd-item" *ngFor="let e of employeesSvc.list(); trackBy: trackByEmpId">
-          <input type="checkbox" [checked]="isSelected(e.employeeId)" (change)="toggleEmployee(e.employeeId)" />
-          {{ e.employeeName }}
-        </label>
-        <div class="dd-empty" *ngIf="employeesSvc.list().length === 0">Aucun employé disponible</div>
-      </div>
+      <app-multi-select [options]="employeeOptions()" [(selected)]="selected"
+                        placeholder="Choisir des employés…" plural="employés sélectionnés"></app-multi-select>
     </div>
 
     <div class="seg-control mode-seg">
@@ -34,19 +26,19 @@
 
     <ng-container *ngIf="mode === 'period'">
       <div class="filter-field">
-        <label>Mois</label>
-        <input class="inp" type="month" [(ngModel)]="period" />
+        <label for="employee-payments-mois">Mois</label>
+        <input id="employee-payments-mois" class="inp" type="month" [(ngModel)]="period" />
       </div>
     </ng-container>
 
     <ng-container *ngIf="mode === 'range'">
       <div class="filter-field">
-        <label>Du</label>
-        <input class="inp" type="date" [(ngModel)]="dateFrom" />
+        <label for="employee-payments-du">Du</label>
+        <input id="employee-payments-du" class="inp" type="date" [(ngModel)]="dateFrom" />
       </div>
       <div class="filter-field">
-        <label>Au</label>
-        <input class="inp" type="date" [(ngModel)]="dateTo" />
+        <label for="employee-payments-au">Au</label>
+        <input id="employee-payments-au" class="inp" type="date" [(ngModel)]="dateTo" />
       </div>
     </ng-container>
 
@@ -133,8 +125,8 @@
         </div>
       </div>
       <div class="field span-full" *ngIf="hasMismatch(row)">
-        <label>⚠ Montant payé ≠ gain cumulé — note explicative</label>
-        <textarea class="inp note-area" rows="2" [(ngModel)]="row.note" placeholder="Expliquer l'écart…"></textarea>
+        <label [attr.for]="'pay-note-' + row.employeeId">⚠ Montant payé ≠ gain cumulé — note explicative</label>
+        <textarea [attr.id]="'pay-note-' + row.employeeId" class="inp note-area" rows="2" [(ngModel)]="row.note" placeholder="Expliquer l'écart…"></textarea>
       </div>
     </div>
   </div>

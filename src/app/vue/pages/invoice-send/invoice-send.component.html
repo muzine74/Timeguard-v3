@@ -60,6 +60,8 @@
         </button>
       </div>
 
+      <app-note-inline [refs]="{ billIds: [selected()!.billId], companyIds: [selected()!.companyId] }"></app-note-inline>
+
       <!-- Chargement du détail -->
       <div class="detail-loading" *ngIf="detailLoading()">
         <div class="mini-spinner"></div>

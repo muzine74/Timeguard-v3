@@ -1,4 +1,6 @@
 import { Component, OnInit, signal, isDevMode, ChangeDetectionStrategy, DestroyRef, inject } from '@angular/core';
+import { NoteAlertService } from '../../../state/notes/note-alert.service';
+import { NoteAlertRefs } from '../../../state/notes/notes.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -7,6 +9,7 @@ import { StatsBarComponent }      from '../../components/stats-bar/stats-bar.com
 import { SectionHeaderComponent } from '../../components/section-header/section-header.component';
 import { PointageTableComponent } from '../../components/pointage-table/pointage-table.component';
 import { DatePickerComponent }    from '../../components/date-picker/date-picker.component';
+import { NoteInlineComponent } from '../../components/note-inline/note-inline.component';
 import { WeekService }             from '../../../state/pointage/week.service';
 import { PointageEmployeeService } from '../../../state/pointage/pointage-employee.service';
 import { PointageAdminService }    from '../../../state/pointage/pointage-admin.service';
@@ -26,10 +29,12 @@ import { Employee, EmployeeForm }  from '../../../models';
     SectionHeaderComponent,
     PointageTableComponent,
     DatePickerComponent,
+    NoteInlineComponent,
   ],
   templateUrl: './pointage.page.html',
 })
 export class PointagePage implements OnInit {
+  private readonly noteAlerts = inject(NoteAlertService);
   // Angular #8 : DestroyRef pour takeUntilDestroyed
   private readonly destroyRef = inject(DestroyRef);
 
@@ -46,6 +51,8 @@ export class PointagePage implements OnInit {
   employee   = signal<Employee | null>(null);
   empLoading = signal(false);
   empError   = signal<string | null>(null);
+  /** Notes actives de l'employé et de ses compagnies (l'API inclut les compagnies associées). */
+  noteRefs   = signal<NoteAlertRefs | null>(null);
 
   isError(): boolean { return this.saveSvc.isError(); }
 
@@ -84,6 +91,8 @@ export class PointagePage implements OnInit {
           this.employee.set(emp);
           this.empLoading.set(false);
           this.log(`✓ employé chargé: ${emp.employeeName}`);
+          this.noteRefs.set({ employeeIds: [emp.employeeId] });
+          this.noteAlerts.check({ employeeIds: [emp.employeeId] }, `Pointage — ${emp.employeeName}`);
           // Initialise les compagnies depuis l'employé — visible même si aucun timelog pour la semaine
           this.ptEmpSvc.initFromEmployee(emp.employeeCompagnies ?? []);
           // Charge le calendrier tarifaire → prix injectés automatiquement à chaque case cochée
@@ -208,6 +217,7 @@ export class PointagePage implements OnInit {
     const week    = this.weekSvc.weekKey();
     const adminId = this.auth.employeeId() ?? '';
     this.validating.set(true);
+    this.noteAlerts.check({ employeeIds: [empId] }, `Validation du pointage — ${this.employee()?.employeeName ?? ''}`);
 
     this.saveSvc.validateWeek(empId, week, adminId)
       .pipe(takeUntilDestroyed(this.destroyRef))

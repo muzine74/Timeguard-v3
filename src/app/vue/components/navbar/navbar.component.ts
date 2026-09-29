@@ -1,7 +1,8 @@
-import { Component, signal, ChangeDetectionStrategy, HostListener } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy, HostListener, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../state/auth/auth.service';
+import { ConfigService } from '../../../state/config/config.service';
 
 @Component({
   selector: 'app-navbar',
@@ -13,7 +14,7 @@ import { AuthService } from '../../../state/auth/auth.service';
       <div class="brand">
         <span class="dot"></span>
         <span>TimeGuard</span>
-        <span class="brand-ver">v2.0</span>
+        <span class="brand-ver" *ngIf="config.appVersion() as ver" title="Version de l'application">v{{ ver }}</span>
       </div>
 
       <div class="nav-links" *ngIf="!auth.isSuperUser()">
@@ -38,7 +39,7 @@ import { AuthService } from '../../../state/auth/auth.service';
               <a class="dropdown-item" routerLink="/employees/edit"       routerLinkActive="active" *ngIf="auth.hasPerm('employees.edit')" (click)="closeDrop()">
                 <span class="di-icon">✎</span> Modifier employé
               </a>
-              <a class="dropdown-item" routerLink="/employees/validation" routerLinkActive="active" (click)="closeDrop()">
+              <a class="dropdown-item" routerLink="/employees/validation" routerLinkActive="active" *ngIf="auth.hasPerm('pointage.validate')" (click)="closeDrop()">
                 <span class="di-icon">✅</span> Profil Employé
               </a>
               <a class="dropdown-item" routerLink="/companies/assign"    routerLinkActive="active" *ngIf="auth.hasPerm('companies.edit')" (click)="closeDrop()">
@@ -141,6 +142,8 @@ import { AuthService } from '../../../state/auth/auth.service';
       </div>
 
       <div class="nav-right">
+        <!-- Aide (guide utilisateur, accessible à tous) — à gauche de « En ligne » -->
+        <a class="nav-link" routerLink="/aide" routerLinkActive="active">❓ Aide</a>
         <span class="badge badge-online">● En ligne</span>
         <div class="avatar">{{ initials() }}</div>
         <span class="nav-username">{{ auth.user()?.username }}</span>
@@ -160,7 +163,7 @@ import { AuthService } from '../../../state/auth/auth.service';
           <a class="mobile-link mobile-sub" routerLink="/employees" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMenu()">Liste employés</a>
           <a class="mobile-link mobile-sub" routerLink="/employees/new"         routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('employees.create')">Nouvel employé</a>
           <a class="mobile-link mobile-sub" routerLink="/employees/edit"        routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('employees.edit')">Modifier employé</a>
-          <a class="mobile-link mobile-sub" routerLink="/employees/validation"  routerLinkActive="active" (click)="closeMenu()">Profil Employé</a>
+          <a class="mobile-link mobile-sub" routerLink="/employees/validation"  routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('pointage.validate')">Profil Employé</a>
           <a class="mobile-link mobile-sub" routerLink="/companies/assign"     routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('companies.edit')">Assigner compagnies</a>
           <a class="mobile-link mobile-sub" routerLink="/employees/pricing"     routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('employees.edit')">Tarifs employés</a>
           <a class="mobile-link mobile-sub" routerLink="/employees/t4a"         routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('employees.edit')">Feuillet T4A</a>
@@ -195,6 +198,7 @@ import { AuthService } from '../../../state/auth/auth.service';
 
       <!-- Notes (accessible à tous les utilisateurs connectés) — en dernier -->
       <a class="mobile-link" routerLink="/notes" routerLinkActive="active" (click)="closeMenu()">📝 Notes</a>
+      <a class="mobile-link" routerLink="/aide" routerLinkActive="active" (click)="closeMenu()">❓ Aide</a>
 
       <div class="mobile-footer">
         <span class="badge badge-admin" *ngIf="auth.canManage()">ADMIN</span>
@@ -208,7 +212,14 @@ export class NavbarComponent {
   open     = signal(false);
   openMenu = signal<string | null>(null);
 
-  constructor(public auth: AuthService, private router: Router) {}
+  constructor(public auth: AuthService, public config: ConfigService, private router: Router) {
+    // Version = Configuration → Application → Version du tenant courant : rechargée à la connexion
+    // et au changement de session (aperçu super-admin), effacée à la déconnexion.
+    effect(() => {
+      const u = this.auth.user();
+      if (u) this.config.loadVersion(); else this.config.clearVersion();
+    });
+  }
 
   toggleMenu(): void { this.open.update(v => !v); }
   closeMenu():  void { this.open.set(false); }

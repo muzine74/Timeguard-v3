@@ -1,8 +1,9 @@
-import { Component, DestroyRef, HostListener, inject, signal, computed, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, DestroyRef, inject, signal, computed, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EmployeesService } from '../../../state/employees/employees.service';
+import { MultiSelectComponent, MultiSelectOption } from '../../components/multi-select/multi-select.component';
 import { EmployeePaymentsService, EmployeePaymentRow, EmployeePaymentWorkDay } from '../../../state/employee-payments/employee-payments.service';
 
 type FilterMode = 'period' | 'range';
@@ -39,7 +40,7 @@ function dayCompanyKey(date: string, company: string): string {
   selector: 'app-employee-payments',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MultiSelectComponent],
   templateUrl: './employee-payments.component.html',
   styleUrls: ['./employee-payments.component.scss'],
 })
@@ -49,8 +50,10 @@ export class EmployeePaymentsComponent {
   dateFrom = '';
   dateTo   = '';
 
-  selected = new Set<string>();
-  dropdownOpen = signal(false);
+  /** Employés cochés dans le filtre (menu à cases partagé, avec « Tout sélectionner »). */
+  selected: string[] = [];
+  employeeOptions = computed<MultiSelectOption[]>(() =>
+    this.employeesSvc.list().map(e => ({ id: e.employeeId, label: e.employeeName })));
 
   loading = signal(false);
   error   = signal('');
@@ -68,33 +71,6 @@ export class EmployeePaymentsComponent {
     this.employeesSvc.loadList(true);
   }
 
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(ev: MouseEvent): void {
-    if (!(ev.target as HTMLElement).closest('.emp-dropdown')) this.dropdownOpen.set(false);
-  }
-
-  toggleDropdown(): void {
-    this.dropdownOpen.set(!this.dropdownOpen());
-  }
-
-  isSelected(employeeId: string): boolean {
-    return this.selected.has(employeeId);
-  }
-
-  toggleEmployee(employeeId: string): void {
-    if (this.selected.has(employeeId)) this.selected.delete(employeeId);
-    else this.selected.add(employeeId);
-  }
-
-  selectedCount = computed(() => this.selected.size);
-
-  selectedLabel(): string {
-    const n = this.selected.size;
-    if (n === 0) return 'Choisir des employés…';
-    if (n === 1) return '1 employé sélectionné';
-    return `${n} employés sélectionnés`;
-  }
-
   private _periodDates(): { from: string; to: string } | null {
     if (this.mode === 'period') {
       if (!this.period) return null;
@@ -110,13 +86,13 @@ export class EmployeePaymentsComponent {
 
   load(): void {
     this.error.set('');
-    if (this.selected.size === 0) { this.error.set('Sélectionnez au moins un employé.'); return; }
+    if (this.selected.length === 0) { this.error.set('Sélectionnez au moins un employé.'); return; }
     const range = this._periodDates();
     if (!range) { this.error.set('Sélectionnez une période valide.'); return; }
     if (range.from > range.to) { this.error.set('La date de début doit être avant la date de fin.'); return; }
 
     this.loading.set(true);
-    this.paymentsSvc.getSummary(Array.from(this.selected), range.from, range.to)
+    this.paymentsSvc.getSummary(this.selected, range.from, range.to)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: data => {
@@ -327,7 +303,6 @@ export class EmployeePaymentsComponent {
   }
 
   trackByEmployeeId(_: number, r: PaymentRowState): string { return r.employeeId; }
-  trackByEmpId(_: number, e: { employeeId: string }): string { return e.employeeId; }
   trackByDate(_: number, w: EmployeePaymentWorkDay): string { return w.date; }
   trackByWeekStart(_: number, b: WeekBlock): string { return b.weekStart; }
   trackByCompanyName(_: number, c: CompanyBlock): string { return c.name; }

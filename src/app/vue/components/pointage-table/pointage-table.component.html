@@ -2,16 +2,17 @@
   <table class="ptable">
     <thead>
       <tr>
-        <th class="th-arrow"></th>
-        <th class="th-comp">Compagnie</th>
-        <th class="th-total">Total</th>
+        <th class="th-arrow" scope="col"><span class="sr-only">Ligne sélectionnée</span></th>
+        <th class="th-comp" scope="col">Compagnie</th>
+        <th class="th-total" scope="col">Total</th>
         <th *ngFor="let day of weekDays; trackBy: trackByKey"
+            scope="col"
             class="th-day"
             [class.th-today]="day.isToday"
             [class.th-weekend]="day.isWeekend">
           <span class="day-label-full">{{ day.labelFull }}</span>
           <span class="day-label-short">{{ day.labelShort }}</span>
-          <span *ngIf="day.isToday" class="today-badge">Auj.</span>
+          <span *ngIf="day.isToday" class="today-badge"><span aria-hidden="true">Auj.</span><span class="sr-only">(aujourd'hui)</span></span>
         </th>
       </tr>
     </thead>
@@ -22,14 +23,14 @@
           [class.row-odd]="odd"
           (click)="select(c)">
         <td class="td-arrow">
-          <span *ngIf="c.selected">▶</span>
+          <span *ngIf="c.selected" aria-hidden="true">▶</span>
         </td>
-        <td class="td-comp">
+        <th class="td-comp" scope="row">
           <div class="comp-name">
             <div class="comp-dot" [class.dot-sel]="c.selected"></div>
             {{ c.nom }}
           </div>
-        </td>
+        </th>
         <td class="td-total">
           <span class="total-badge" [class.total-nz]="count(c) > 0">
             {{ count(c) }}/7
@@ -47,8 +48,10 @@
                     [class.chk-admin]="isAdmin"
                     [class.chk-locked]="locked && !isAdmin"
                     [disabled]="!canEdit"
+                    [attr.aria-label]="c.nom + ' — ' + day.labelFull"
+                    [attr.aria-pressed]="isChecked(c, day.dateKey)"
                     type="button">
-              <span *ngIf="isChecked(c, day.dateKey)">✓</span>
+              <span *ngIf="isChecked(c, day.dateKey)" aria-hidden="true">✓</span>
             </button>
             <span class="cell-price" *ngIf="isChecked(c, day.dateKey) && c.prices?.[day.dateKey]">
               {{ c.prices![day.dateKey] | number:'1.2-2' }}&nbsp;$

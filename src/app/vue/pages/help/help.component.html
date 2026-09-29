@@ -1,0 +1,404 @@
+<div class="help-wrap">
+
+  <!-- ── Sommaire ─────────────────────────────────────────────────────────── -->
+  <nav class="toc">
+    <div class="toc-title">Sommaire</div>
+    <a *ngFor="let s of sections" href="#{{ s.id }}" (click)="goTo(s.id, $event)">{{ s.title }}</a>
+  </nav>
+
+  <article class="guide">
+    <h1>Guide utilisateur TimeGuard</h1>
+    <p class="lead">
+      TimeGuard gère le pointage de vos employés, sa validation, la facturation de vos compagnies clientes
+      et le paiement de vos employés. Ce guide suit l'ordre d'une semaine type : les employés pointent,
+      l'administrateur valide, puis facture et paie.
+    </p>
+
+    <!-- ── Premiers pas ───────────────────────────────────────────────────── -->
+    <section id="premiers-pas">
+      <h2>Premiers pas</h2>
+      <p>Pour vous connecter, il faut trois informations : l'identifiant de votre entreprise, votre nom d'utilisateur et votre mot de passe.</p>
+
+      <h3>Créer votre espace entreprise</h3>
+      <ol>
+        <li>Sur la page de connexion, cliquez sur <b>Créer un espace entreprise</b>. L'essai est gratuit et ne demande aucune carte bancaire.</li>
+        <li>Remplissez <b>Nom de l'entreprise</b>, <b>Identifiant unique</b> (lettres, chiffres et tirets, par exemple <code>ramssis</code>), <b>Courriel propriétaire</b>, <b>Nom d'utilisateur admin</b> et <b>Mot de passe admin</b>.</li>
+        <li>Cliquez sur <b>Créer mon espace</b>, puis sur <b>Se connecter</b>.</li>
+      </ol>
+      <p>Notez bien l'identifiant unique : tous vos employés le saisiront à chaque connexion.</p>
+
+      <h3>Se connecter</h3>
+      <ol>
+        <li>Saisissez l'<b>Identifiant entreprise</b>, votre <b>Identifiant</b> et votre <b>Mot de passe</b>.</li>
+        <li>Cliquez sur <b>Se connecter</b>. Vous arrivez directement sur l'écran qui correspond à vos droits : la Feuille de temps pour un employé, la Liste employés pour un administrateur.</li>
+      </ol>
+      <p>La session dure 8 heures, après quoi il faut se reconnecter. Le bouton <b>Déconnexion</b> est en haut à droite.</p>
+
+      <h3>Mot de passe oublié</h3>
+      <p>Il n'y a pas de lien « mot de passe oublié » sur la page de connexion : c'est l'administrateur qui envoie le lien.</p>
+      <ol>
+        <li>L'administrateur ouvre <b>Employés → Modifier employé</b>, choisit l'employé et clique sur <b>Envoyer lien de réinitialisation</b>.</li>
+        <li>L'employé reçoit un courriel. Le lien est valable <b>24 heures</b> et ne sert qu'une fois.</li>
+        <li>Il choisit son <b>Nouveau mot de passe</b>, le confirme, puis clique sur <b>Mettre à jour le mot de passe</b>.</li>
+      </ol>
+      <p>Si l'employé n'a pas encore de compte de connexion, l'écran le signale et propose d'aller dans <b>Administration → Identifiants</b> pour le créer.</p>
+
+      <h3>Qui voit quoi</h3>
+      <p>Chaque menu n'apparaît que si vous avez la permission correspondante. Les permissions sont regroupées dans des <b>groupes</b> (voir Administration), et un employé cumule les permissions de tous ses groupes.</p>
+      <table>
+        <thead><tr><th>Permission</th><th>Ce qu'elle ouvre</th></tr></thead>
+        <tbody>
+          <tr><td><code>pointage.view</code></td><td>Feuille de temps (son propre pointage)</td></tr>
+          <tr><td><code>pointage.validate</code></td><td>Valider ou annuler la validation d'une semaine</td></tr>
+          <tr><td><code>employees.view</code> / <code>create</code> / <code>edit</code></td><td>Liste, création et modification des employés, tarifs, T4A</td></tr>
+          <tr><td><code>companies.edit</code></td><td>Compagnies et affectations</td></tr>
+          <tr><td><code>invoices.view</code> / <code>edit</code> / <code>send</code></td><td>Consulter, créer et envoyer les factures ; rapports ; charges</td></tr>
+          <tr><td><code>payments.manage</code></td><td>Paiements employés</td></tr>
+          <tr><td><code>stats.view</code></td><td>Statistiques</td></tr>
+          <tr><td><code>groups.manage</code> / <code>credentials.manage</code> / <code>config.manage</code></td><td>Groupes, identifiants de connexion, configuration</td></tr>
+        </tbody>
+      </table>
+      <p>Les pages <b>Notes</b> et <b>Aide</b> sont ouvertes à tous les utilisateurs connectés.</p>
+    </section>
+
+    <!-- ── Pointage employé ───────────────────────────────────────────────── -->
+    <section id="pointage">
+      <h2>Pour les employés : saisir son pointage</h2>
+      <p>Chaque semaine, l'employé coche ses jours de travail pour chaque compagnie, puis clique sur <b>Sauvegarder</b>.</p>
+      <ol>
+        <li>Ouvrez <b>Feuille de temps</b>. La semaine en cours s'affiche, avec une ligne par compagnie qui vous est affectée.</li>
+        <li>Cochez les jours travaillés dans chaque ligne. <b>Tout ✓</b> coche toute la semaine, <b>Effacer</b> vide tout.</li>
+        <li>Changez de semaine avec le sélecteur de date si besoin. Vos coches non sauvegardées sont gardées quand vous passez d'une semaine à l'autre.</li>
+        <li>Cliquez sur <b>💾 Sauvegarder</b>. Un message confirme l'enregistrement.</li>
+      </ol>
+      <p>Le prix de chaque visite est calculé automatiquement à partir du calendrier tarifaire de la compagnie, et des tarifs propres à l'employé s'il y en a. La barre du haut affiche vos gains de la semaine et vos gains cumulés.</p>
+      <p>Le panneau <b>⏳ Semaines non validées</b> liste vos semaines déjà saisies mais pas encore validées. Cliquez sur une semaine pour y aller.</p>
+
+      <h3>Quand la semaine est validée</h3>
+      <p>Une fois que l'administrateur a validé votre semaine, un bandeau <b>🔒 Semaine validée par l'admin</b> apparaît avec la date. La semaine est verrouillée : vous ne pouvez plus la modifier. Pour corriger une erreur, demandez à l'administrateur d'annuler la validation.</p>
+    </section>
+
+    <!-- ── Employés ───────────────────────────────────────────────────────── -->
+    <section id="employes">
+      <h2>Gérer les employés</h2>
+      <p>Un employé est prêt à pointer quand il a une fiche, au moins une compagnie affectée et un identifiant de connexion. Tout se fait depuis le menu <b>Employés</b>.</p>
+
+      <h3>Créer un employé</h3>
+      <ol>
+        <li><b>Employés → Nouvel employé</b>.</li>
+        <li>Renseignez le <b>Nom complet</b>, le <b>NAS</b>, le <b>Courriel</b>, le <b>Téléphone</b> et le <b>Type d'emploi</b> : <b>💼 Permanent</b> ou <b>🔧 À la tâche</b>.</li>
+        <li>Complétez l'adresse : <b>N° civique</b>, <b>Suite / App</b>, <b>Ville</b>, <b>Province</b>, <b>Code postal</b>, <b>Pays</b>.</li>
+        <li>Cliquez sur <b>Terminer →</b>. Vous pouvez ensuite joindre des documents (contrat, pièce d'identité…) dans <b>Documents</b>, avec <b>+ Ajouter</b>.</li>
+      </ol>
+      <p>Le NAS est masqué par défaut à l'écran.</p>
+
+      <h3>Modifier, désactiver</h3>
+      <ol>
+        <li><b>Employés → Modifier employé</b>, puis choisissez l'employé dans la liste de gauche. Le filtre <b>Actif / Inactif / Tous</b> et la recherche aident à le trouver.</li>
+        <li>Modifiez les champs, puis cliquez sur <b>✓ Enregistrer</b>.</li>
+        <li><b>⛔ Désactiver</b> retire l'employé des listes actives sans rien effacer ; <b>✅ Activer</b> le rétablit.</li>
+      </ol>
+      <p><b>Employés → Profil Employé</b> affiche la même fiche en lecture seule.</p>
+
+      <h3>Affecter des compagnies</h3>
+      <ol>
+        <li><b>Employés → Assigner compagnies</b> (permission <code>companies.edit</code>).</li>
+        <li>Choisissez l'employé, puis cochez les compagnies où il travaille.</li>
+        <li>Cliquez sur <b>✓ Sauvegarder</b>. Tant que ce n'est pas fait, l'écran indique <b>● Non sauvegardé</b>.</li>
+      </ol>
+      <p>Un changement d'affectation ne touche que les semaines <b>non validées</b>. Les semaines déjà validées gardent les compagnies du moment de leur validation (voir « Valider le pointage »). Pour affecter plusieurs employés à une même compagnie, utilisez plutôt <b>Compagnies → Assigner employés</b>.</p>
+
+      <h3>Tarifs propres à un employé</h3>
+      <p>Par défaut, un employé est payé selon le tarif du calendrier de la compagnie. Vous pouvez fixer un tarif différent, jour par jour.</p>
+      <ol>
+        <li><b>Employés → Tarifs employés</b>, choisissez l'employé, puis la compagnie.</li>
+        <li>Pour chaque jour, la colonne <b>Tarif compagnie</b> montre le tarif par défaut ; saisissez <b>Votre tarif</b> pour le remplacer.</li>
+        <li>Cliquez sur <b>✓ Sauvegarder</b>.</li>
+      </ol>
+      <p>Le bouton <b>Historique des changements de tarif</b> montre chaque modification. Un nouveau tarif s'applique aux prochains pointages ; les visites déjà enregistrées gardent leur prix.</p>
+
+      <h3>Donner un accès de connexion</h3>
+      <ol>
+        <li><b>Administration → Identifiants</b>, puis <b>＋ Nouvel identifiant</b>.</li>
+        <li>Choisissez l'<b>Employé</b>, saisissez un <b>Nom d'utilisateur</b> (par exemple <code>jdupont</code>) et un <b>Mot de passe</b> d'au moins 4 caractères.</li>
+        <li>Cochez ses <b>Groupes</b> : ils déterminent ce qu'il pourra voir.</li>
+        <li>Communiquez-lui l'identifiant de l'entreprise, son nom d'utilisateur et son mot de passe.</li>
+      </ol>
+      <p>Dans la même liste, <b>Réinitialiser le mot de passe</b> en fixe un nouveau directement, et la suppression d'un identifiant empêche l'employé de se connecter.</p>
+    </section>
+
+    <!-- ── Compagnies ─────────────────────────────────────────────────────── -->
+    <section id="compagnies">
+      <h2>Gérer les compagnies</h2>
+      <p>Une compagnie est un client chez qui vos employés travaillent. Son planning fixe deux prix par jour de travail : ce que vous facturez au client et ce que vous payez à l'employé.</p>
+
+      <h3>Créer une compagnie</h3>
+      <ol>
+        <li><b>Compagnies → Nouvelle compagnie</b>.</li>
+        <li><b>Identification</b> : <b>Nom</b> (par exemple « Acme Construction inc. »), <b>Code</b> (par exemple <code>ACME-001</code>), téléphone, courriel et adresse.</li>
+        <li><b>Taxes</b> : les <b>Numéros applicables</b> de TPS et de TVQ du client, s'il y a lieu.</li>
+        <li><b>Paiement et travail</b> : la <b>Fréquence de paiement</b> et la <b>Fréquence de travail</b>.</li>
+        <li><b>Jours de travail</b> : le planning selon la fréquence choisie (voir le tableau). Pour chaque jour, saisissez <b>Compagnie $</b>, le prix facturé au client, et <b>Employé $</b>, le montant payé à l'employé. <b>+ Jour</b> ajoute une ligne.</li>
+        <li><b>Contact</b> : la <b>Personne responsable</b> chez le client, qui recevra les factures.</li>
+      </ol>
+      <table>
+        <thead><tr><th>Fréquence de travail</th><th>Planning à remplir</th></tr></thead>
+        <tbody>
+          <tr><td>Hebdomadaire</td><td>Une semaine type</td></tr>
+          <tr><td>Bi-hebdomadaire</td><td>Deux semaines alternées : Semaine 1 et Semaine 2</td></tr>
+          <tr><td>Bi-mensuel</td><td>Jours 1 — 8 et Jours 9 — 15</td></tr>
+          <tr><td>Mensuel</td><td>Jours 1 à 15 du mois</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Modifier une compagnie et ses contacts</h3>
+      <ol>
+        <li><b>Compagnies → Liste compagnies</b>, puis choisissez la compagnie. Le filtre <b>Actif / Inactif / Tous</b> aide à la retrouver.</li>
+        <li>Modifiez les informations et enregistrez.</li>
+        <li>Dans <b>Contacts</b>, <b>+ Contact</b> ajoute une personne. Seuls les contacts cochés <b>Actif (inclus dans les envois)</b> reçoivent les factures par courriel.</li>
+      </ol>
+      <p>La section <b>Employés associés</b> montre qui travaille actuellement pour cette compagnie. Une compagnie inactive disparaît des feuilles de temps, sauf pour les semaines où elle a déjà des visites.</p>
+
+      <h3>Affecter des employés à une compagnie</h3>
+      <ol>
+        <li><b>Compagnies → Assigner employés</b>, puis choisissez la compagnie.</li>
+        <li>Cochez les employés qui y travaillent, puis cliquez sur <b>✓ Sauvegarder</b>.</li>
+      </ol>
+      <p>C'est la même affectation que <b>Employés → Assigner compagnies</b>, vue depuis la compagnie.</p>
+    </section>
+
+    <!-- ── Validation ─────────────────────────────────────────────────────── -->
+    <section id="validation">
+      <h2>Valider le pointage</h2>
+      <p>La validation verrouille la semaine d'un employé et fige son historique. Seules les semaines validées peuvent être facturées et payées.</p>
+
+      <svg class="diagram" viewBox="0 0 760 290" role="img" aria-label="Seule une semaine validée est facturée et payée" font-size="13">
+        <defs>
+          <marker id="help-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0 0L10 5L0 10z" fill="var(--muted)"/>
+          </marker>
+        </defs>
+        <text x="24" y="34" font-size="15" font-weight="600" fill="var(--text)">Seule une semaine validée est facturée et payée</text>
+        <g fill="none" stroke="var(--muted)" stroke-width="1.25">
+          <path d="M184 110H210" marker-end="url(#help-arrow)"/>
+          <path d="M370 110H396" marker-end="url(#help-arrow)"/>
+          <path d="M556 110H576" marker-end="url(#help-arrow)"/>
+          <path d="M476 138V204" marker-end="url(#help-arrow)"/>
+          <path d="M381 232H104V138" marker-end="url(#help-arrow)"/>
+        </g>
+        <rect x="24"  y="82"  width="160" height="56" rx="8" fill="none" stroke="var(--muted)" stroke-width="1.25"/>
+        <rect x="210" y="82"  width="160" height="56" rx="8" fill="none" stroke="var(--muted)" stroke-width="1.25"/>
+        <rect x="396" y="82"  width="160" height="56" rx="8" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-width="2"/>
+        <rect x="576" y="82"  width="160" height="56" rx="8" fill="none" stroke="var(--muted)" stroke-width="1.25"/>
+        <rect x="381" y="204" width="190" height="56" rx="8" fill="none" stroke="var(--muted)" stroke-width="1.25"/>
+        <text x="104" y="106" text-anchor="middle" font-weight="600" fill="var(--text)">Employé</text>
+        <text x="104" y="124" text-anchor="middle" font-size="11.5" fill="var(--muted)">coche et sauvegarde</text>
+        <text x="290" y="106" text-anchor="middle" font-weight="600" fill="var(--text)">Administrateur</text>
+        <text x="290" y="124" text-anchor="middle" font-size="11.5" fill="var(--muted)">vérifie et sauvegarde</text>
+        <text x="476" y="106" text-anchor="middle" font-weight="600" fill="var(--text)">Valider la semaine</text>
+        <text x="476" y="124" text-anchor="middle" font-size="11.5" fill="var(--text)">semaine verrouillée</text>
+        <text x="656" y="106" text-anchor="middle" font-weight="600" fill="var(--text)">Facturer et payer</text>
+        <text x="656" y="124" text-anchor="middle" font-size="11.5" fill="var(--muted)">à partir des visites</text>
+        <text x="476" y="236" text-anchor="middle" fill="var(--text)">Annuler la validation</text>
+        <text x="486" y="175" font-size="11.5" fill="var(--muted)">erreur trouvée</text>
+        <text x="242" y="224" text-anchor="middle" font-size="11.5" fill="var(--muted)">semaine rouverte, à corriger</text>
+      </svg>
+      <p class="caption">Une erreur trouvée après validation se corrige en annulant la validation : la semaine redevient modifiable, puis on la valide de nouveau.</p>
+
+      <h3>Valider une semaine</h3>
+      <ol>
+        <li><b>Employés → Liste employés</b>. Les employés qui ont encore des semaines non validées apparaissent en premier.</li>
+        <li>Choisissez l'employé, puis la semaine avec le sélecteur de date ou dans <b>📅 Historique des semaines</b>.</li>
+        <li>Vérifiez les coches, corrigez si besoin, puis cliquez sur <b>💾 Sauvegarder</b>.</li>
+        <li>Cliquez sur <b>✅ Valider la semaine</b>. Le bouton ne s'active qu'après la sauvegarde, et demande la permission <code>pointage.validate</code>.</li>
+      </ol>
+      <p>Si une note active concerne l'employé ou l'une de ses compagnies, elle s'affiche au moment de valider (voir « Notes et alertes »).</p>
+
+      <h3>Corriger une semaine déjà validée</h3>
+      <ol>
+        <li>Ouvrez la semaine, puis cliquez sur <b>🔓 Annuler la validation</b>.</li>
+        <li>Corrigez les coches et cliquez sur <b>💾 Sauvegarder</b>.</li>
+        <li>Cliquez de nouveau sur <b>✅ Valider la semaine</b>.</li>
+      </ol>
+
+      <h3>Ce que garde une semaine validée</h3>
+      <ul>
+        <li><b>Ses compagnies</b> : toutes celles affectées à l'employé au moment de la validation, même sans aucune visite, avec leur nom et leur note de l'époque.</li>
+        <li><b>Ses visites et leurs prix</b> : ils ne changent plus, même si les tarifs changent ensuite.</li>
+        <li><b>Aucun effet des changements ultérieurs</b> : une nouvelle affectation, un retrait ou un renommage de compagnie ne s'applique qu'aux semaines non validées.</li>
+      </ul>
+    </section>
+
+    <!-- ── Facturation ────────────────────────────────────────────────────── -->
+    <section id="facturation">
+      <h2>Facturer vos compagnies</h2>
+      <p>Le plus rapide est de facturer directement à partir des pointages validés. On peut aussi créer une facture à la main. Les taux de TPS et de TVQ viennent de <b>Administration → Configuration</b>.</p>
+
+      <h3>Facturer par pointages</h3>
+      <ol>
+        <li><b>Facturation → Facturer par pointages</b>, puis choisissez la <b>Période</b> (mois).</li>
+        <li>Le tableau <b>Compagnies éligibles</b> liste les compagnies dont toutes les semaines sont validées, avec leurs visites, le sous-total, les taxes et le <b>Total TTC</b>. Un montant qui s'écarte du planning de la compagnie est signalé.</li>
+        <li>Cochez les compagnies à facturer, puis cliquez sur <b>⚡ Générer</b>. Chaque ligne affiche le numéro de facture créé ou l'erreur.</li>
+      </ol>
+      <p>La section <b>Semaines non validées</b> montre les compagnies bloquées (🔒 <b>Facturation bloquée</b>) et les semaines à valider d'abord.</p>
+
+      <h3>Créer une facture à la main</h3>
+      <ol>
+        <li><b>Facturation → Nouvelle facture</b>, puis choisissez la compagnie dans <b>Compagnies actives</b>.</li>
+        <li>Renseignez la <b>Période (AAAA-MM)</b>, la <b>Date de facturation</b> et le <b>Nombre de visites</b>. Le bouton de préremplissage calcule les lignes depuis le tarif de la compagnie.</li>
+        <li>Ajustez les lignes (<b>Qté</b>, <b>Description</b>, <b>Prix unit.</b>) avec <b>+ Ajouter une ligne</b>. Les taxes et le total se calculent seuls.</li>
+        <li><b>🖨 Aperçu PDF</b> pour vérifier, puis <b>💾 Enregistrer</b>, ou <b>📤 Enregistrer et envoyer</b> pour la marquer envoyée.</li>
+      </ol>
+
+      <h3>Gérer les factures</h3>
+      <p><b>Facturation → Gérer les factures</b> liste toutes les factures, avec les filtres <b>Envoyées</b>, <b>Non envoyées</b>, <b>Payées</b> et <b>Impayées</b>. Cliquez sur une facture pour ouvrir son détail.</p>
+      <table>
+        <thead><tr><th>Action</th><th>Bouton</th></tr></thead>
+        <tbody>
+          <tr><td>Modifier</td><td><b>✎ Modifier</b></td></tr>
+          <tr><td>Envoyer par courriel</td><td><b>📧 Envoyer la facture</b></td></tr>
+          <tr><td>Marquer envoyée sans courriel</td><td><b>🔄 Statut seulement</b></td></tr>
+          <tr><td>Marquer payée ou impayée</td><td>le bouton de paiement de la ligne</td></tr>
+          <tr><td>Joindre un fichier (preuve, bon de commande…)</td><td><b>📎</b></td></tr>
+          <tr><td>Télécharger le PDF</td><td><b>⬇ Télécharger</b></td></tr>
+          <tr><td>Créer une note de crédit</td><td><b>📋 Avoir</b></td></tr>
+          <tr><td>Supprimer</td><td><b>🗑 Supprimer</b> (irréversible)</td></tr>
+        </tbody>
+      </table>
+      <p>Un <b>avoir</b> corrige une facture sans la modifier : il s'affiche sous la facture d'origine, avec son <b>TOTAL AVOIR</b>.</p>
+
+      <h3>Envoyer les factures par courriel</h3>
+      <ol>
+        <li><b>Facturation → ✉ Envoyer les factures</b>. La liste montre les <b>Factures non envoyées</b>.</li>
+        <li>Choisissez une facture. Les <b>Destinataires</b> sont préremplis avec les contacts actifs de la compagnie. Ajoutez une adresse avec <b>Entrée</b>.</li>
+        <li>Relisez le <b>Sujet</b> et le message. Les factures encore impayées du client y sont rappelées automatiquement.</li>
+        <li>Ajoutez des pièces jointes si besoin, puis cliquez sur <b>Envoyer</b>. Le PDF de la facture est joint automatiquement.</li>
+      </ol>
+
+      <h3>Télécharger et faire des rapports</h3>
+      <ul>
+        <li><b>Facturation → 📥 Téléchargement des factures</b> : choisissez une période (sur la date d'envoi ou de paiement) et un statut, <b>Rechercher</b>, puis <b>Télécharger</b>. Une facture donne un PDF ; plusieurs donnent un ZIP. Les avoirs sont fusionnés avec leur facture.</li>
+        <li><b>Rapports → 📋 Rapports</b> : filtrez par date, période ou compagnies, cochez les factures, puis <b>Exporter ▾</b> : <b>PDF Récapitulatif</b> (un tableau consolidé), <b>PDFs fusionnés</b> (un seul fichier) ou <b>PDFs séparés (ZIP)</b>.</li>
+        <li><b>Facturation → 💰 Charges</b> : vos dépenses partagées entre plusieurs compagnies (assurance, loyer…), réparties en pourcentage, avec leurs justificatifs.</li>
+      </ul>
+    </section>
+
+    <!-- ── Paiements ──────────────────────────────────────────────────────── -->
+    <section id="paiements">
+      <h2>Payer vos employés</h2>
+      <p>La page Paiements employés compare ce que chaque employé a gagné selon ses pointages et ce que vous lui avez réellement payé.</p>
+
+      <h3>Rapprocher les paiements</h3>
+      <ol>
+        <li><b>Employés → Paiements employés</b> (permission <code>payments.manage</code>).</li>
+        <li>Dans <b>Employés</b>, cochez un ou plusieurs employés. <b>Tout sélectionner</b> les coche tous d'un coup.</li>
+        <li>Choisissez <b>📅 Période</b> (un mois) ou <b>📆 Intervalle</b> (du… au…), puis cliquez sur <b>⚡ Charger</b>.</li>
+        <li>Pour chaque employé, les jours travaillés s'affichent par semaine, en <b>📆 Vue journalière</b> ou en <b>🏢 Vue par compagnie</b>. Cochez les jours que vous avez payés : le <b>Montant payé (jours cochés)</b> se met à jour face au <b>Gain cumulé</b>.</li>
+        <li>Si les deux montants diffèrent, un champ vous demande d'<b>expliquer l'écart</b>. Cliquez sur <b>💾 Enregistrer</b>.</li>
+      </ol>
+
+      <h3>Feuillet T4A</h3>
+      <p>Pour un travailleur à la tâche, TimeGuard prépare le feuillet T4A de l'année.</p>
+      <ol>
+        <li><b>Employés → Feuillet T4A</b>, puis choisissez l'<b>Employé</b> et l'<b>Année</b>.</li>
+        <li><b>⚡ Suggérer les montants</b> préremplit le nom, l'adresse, le NAS et la <b>Case 048 — Honoraires pour services rendus</b> à partir des factures de l'année. Vérifiez et corrigez : c'est une suggestion.</li>
+        <li>Complétez les autres cases au besoin (020 commissions, 022 impôt retenu…). Les informations du <b>Payeur</b> viennent de la configuration de votre entreprise.</li>
+        <li><b>👁 Visualiser PDF</b> pour relire, puis <b>💾 Enregistrer</b>, <b>📄 Générer le PDF</b> ou <b>📧 Enregistrer et envoyer</b> au courriel de l'employé.</li>
+      </ol>
+      <p>Le <b>Numéro de compte de programme du payeur</b> (case 061) se règle une fois dans <b>Administration → Configuration</b>.</p>
+    </section>
+
+    <!-- ── Notes ──────────────────────────────────────────────────────────── -->
+    <section id="notes">
+      <h2>Notes et alertes</h2>
+      <p>Une note active liée à un employé, une compagnie ou une facture s'affiche automatiquement chaque fois qu'on agit sur cet élément. Une note inactive ne s'affiche jamais.</p>
+
+      <h3>Créer une note</h3>
+      <ol>
+        <li>Ouvrez <b>📝 Notes</b>.</li>
+        <li>Saisissez un <b>titre</b> et, si besoin, une <b>description</b>.</li>
+        <li>Liez-la à ce qu'elle concerne avec les trois menus à cocher : <b>Lier à des employés…</b>, <b>Lier à des compagnies…</b>, <b>Lier à des factures…</b>. Vous pouvez cocher plusieurs éléments dans chacun ; chaque lien apparaît en étiquette, avec un ✕ pour le retirer.</li>
+        <li>Laissez <b>Active</b> coché pour qu'elle déclenche des alertes, puis cliquez sur <b>+ Ajouter</b>.</li>
+      </ol>
+      <p>Une note sans lien est un simple mémo : elle ne déclenche aucune alerte. Le crayon <b>✎</b> modifie une note (titre, texte, liens) ; la case <b>Active</b> l'active ou la désactive en un clic.</p>
+
+      <h3>Quand l'alerte s'affiche</h3>
+      <table>
+        <thead><tr><th>La note est liée à…</th><th>Elle s'affiche…</th></tr></thead>
+        <tbody>
+          <tr><td>Un employé</td><td>à l'ouverture de son pointage, à la validation de sa semaine, dans sa fiche, ses tarifs et ses affectations</td></tr>
+          <tr><td>Une compagnie</td><td>pour tout employé qui y est affecté (pointage, validation), dans sa fiche, et à chaque facture de cette compagnie (création, facturation par pointages, envoi, paiement)</td></tr>
+          <tr><td>Une facture</td><td>à chaque ouverture de la facture, et à son envoi, son paiement, sa suppression ou la création d'un avoir</td></tr>
+        </tbody>
+      </table>
+      <p>L'alerte apparaît dans une fenêtre à fermer avec <b>J'ai compris</b>. Une même note n'y figure qu'une fois, même si l'action touche plusieurs de ses liens. Sur la feuille de temps, la fiche employé, l'envoi de facture et la facturation par pointages, un encadré orange rappelle aussi les notes actives en permanence.</p>
+      <p>Un administrateur (permission <code>employees.edit</code>) voit les alertes de toutes les notes. Les autres utilisateurs ne voient que celles des notes qu'ils ont écrites.</p>
+
+      <h3>Retrouver une note</h3>
+      <p>Les notes actives sont en haut de la page ; les inactives sont regroupées et repliées en bas, sous <b>Notes inactives</b>. La zone de filtres combine plusieurs critères :</p>
+      <ul>
+        <li><b>Employés</b>, <b>Compagnies</b>, <b>Factures</b>, <b>Types de lien</b> : cochez une ou plusieurs valeurs, ou <b>Tout sélectionner</b>. Dans un même filtre, une note doit correspondre à l'une des valeurs cochées.</li>
+        <li><b>Statut</b>, <b>Du / Au</b> (date de création) et la <b>recherche</b> texte.</li>
+        <li>Entre filtres différents, une note doit tous les respecter. Le compteur montre combien de notes correspondent ; <b>Réinitialiser</b> efface tout.</li>
+      </ul>
+      <p>Le filtre Employés retrouve aussi les notes des compagnies de l'employé, et le filtre Compagnies celles de ses employés.</p>
+    </section>
+
+    <!-- ── Administration ─────────────────────────────────────────────────── -->
+    <section id="administration">
+      <h2>Statistiques et administration</h2>
+      <p>Avant la première facture, réglez la <b>Configuration</b> : vos taxes, vos coordonnées et votre serveur de courriel apparaissent sur chaque facture et chaque envoi.</p>
+
+      <h3>Configuration de l'entreprise</h3>
+      <p><b>Administration → ⚙ Configuration</b> (permission <code>config.manage</code>) :</p>
+      <table>
+        <thead><tr><th>Section</th><th>À renseigner</th></tr></thead>
+        <tbody>
+          <tr><td>Compagnie</td><td>Nom, adresse civique, ville, province, code postal, pays, téléphone, courriel, logo</td></tr>
+          <tr><td>Taxes</td><td><b>Taux TPS (%)</b>, <b>Taux TVQ (%)</b>, <b>N° TPS</b>, <b>N° TVQ</b></td></tr>
+          <tr><td>Coordonnées de paiement</td><td>Coordonnées bancaires imprimées sur les factures (banque, transit, folio)</td></tr>
+          <tr><td>Courriel (SMTP)</td><td><b>Serveur</b>, <b>Port</b>, <b>Utilisateur</b>, <b>Mot de passe</b> du compte qui envoie les factures</td></tr>
+          <tr><td>T4A</td><td><b>Numéro de compte de programme du payeur</b></td></tr>
+        </tbody>
+      </table>
+      <p>À l'enregistrement, un récapitulatif montre l'<b>Ancienne valeur</b> et la <b>Nouvelle valeur</b> de chaque champ modifié ; cliquez sur <b>Confirmer les modifications</b>.</p>
+
+      <h3>Groupes et permissions</h3>
+      <ol>
+        <li><b>Administration → 🔐 Groupes</b> (permission <code>groups.manage</code>), puis <b>＋ Nouveau</b>.</li>
+        <li>Donnez un <b>Nom du groupe</b> (par exemple « Superviseurs ») et cochez ses <b>Permissions</b>.</li>
+        <li>Ajoutez les employés membres avec la recherche.</li>
+      </ol>
+      <p>Un employé cumule les permissions de tous ses groupes. Créez peu de groupes, par rôle : par exemple « Employés » (feuille de temps seulement), « Superviseurs » (validation du pointage), « Administrateurs » (tout).</p>
+
+      <h3>Statistiques</h3>
+      <p><b>Rapports → 📊 Statistiques</b> (permission <code>stats.view</code>) : choisissez un <b>Mois</b> ou un intervalle <b>Du / Au</b>, filtrez les compagnies si besoin, puis cliquez sur <b>🔍 Calculer</b>. Vous obtenez :</p>
+      <ul>
+        <li>les <b>Revenus par employé et par compagnie</b> : visites, montant facturé, charge employé ;</li>
+        <li>les <b>Factures émises</b>, avec les avoirs déduits et ce qui reste <b>En attente de paiement</b> ;</li>
+        <li>les <b>Paiements employés</b> : total payé et en attente.</li>
+      </ul>
+      <p><b>Regrouper (totaux seuls)</b> masque le détail. Cliquez sur un employé ou une compagnie pour voir son détail.</p>
+    </section>
+
+    <!-- ── FAQ ────────────────────────────────────────────────────────────── -->
+    <section id="faq">
+      <h2>Questions fréquentes</h2>
+      <table>
+        <thead><tr><th>Problème</th><th>Cause et solution</th></tr></thead>
+        <tbody>
+          <tr><td>Je ne peux pas me connecter</td><td>Vérifiez l'<b>Identifiant entreprise</b> en plus de votre identifiant. Mot de passe oublié : demandez un lien de réinitialisation à votre administrateur (valable 24 heures).</td></tr>
+          <tr><td>Un menu n'apparaît pas</td><td>Il vous manque la permission : demandez à l'administrateur de vous ajouter au bon groupe, puis reconnectez-vous.</td></tr>
+          <tr><td>Je ne peux plus modifier ma semaine</td><td>Elle est validée (🔒). Demandez à l'administrateur d'annuler la validation.</td></tr>
+          <tr><td><b>Valider la semaine</b> reste grisé</td><td>Cliquez d'abord sur <b>💾 Sauvegarder</b>.</td></tr>
+          <tr><td>Une compagnie manque sur la feuille de temps</td><td>Elle n'est pas affectée à l'employé, ou elle est inactive. Vérifiez <b>Assigner compagnies</b> et le statut de la compagnie.</td></tr>
+          <tr><td>J'ai changé une affectation, mais une ancienne semaine n'a pas changé</td><td>C'est voulu : une semaine validée garde les compagnies du moment de sa validation. Le changement s'applique aux semaines non validées.</td></tr>
+          <tr><td>Une compagnie n'apparaît pas dans <b>Facturer par pointages</b></td><td>Au moins une semaine de la période n'est pas validée : voir <b>Semaines non validées</b> sur la même page.</td></tr>
+          <tr><td>La facture n'est pas partie par courriel</td><td>Vérifiez le serveur <b>Courriel (SMTP)</b> dans la Configuration et qu'au moins un contact de la compagnie est <b>Actif (inclus dans les envois)</b>.</td></tr>
+          <tr><td>Une alerte de note s'affiche trop souvent</td><td>Décochez <b>Active</b> sur la note dans <b>📝 Notes</b> : elle reste consultable mais ne s'affiche plus.</td></tr>
+          <tr><td>L'écran n'affiche pas la dernière version</td><td>Rechargez la page avec <b>Ctrl+F5</b>, ou fermez l'onglet et rouvrez le site.</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </article>
+</div>
