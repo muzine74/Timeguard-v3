@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EmployeesService } from '../../../state/employees/employees.service';
 import { MultiSelectComponent, MultiSelectOption } from '../../components/multi-select/multi-select.component';
+import { ExportButtonsComponent } from '../../components/export-buttons/export-buttons.component';
+import { ExportDoc, ExportRow, TableExportService } from '../../../state/export/table-export.service';
 import { EmployeePaymentsService, EmployeePaymentRow, EmployeePaymentWorkDay } from '../../../state/employee-payments/employee-payments.service';
 
 type FilterMode = 'period' | 'range';
@@ -40,7 +42,7 @@ function dayCompanyKey(date: string, company: string): string {
   selector: 'app-employee-payments',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, MultiSelectComponent],
+  imports: [CommonModule, FormsModule, MultiSelectComponent, ExportButtonsComponent],
   templateUrl: './employee-payments.component.html',
   styleUrls: ['./employee-payments.component.scss'],
 })
@@ -83,6 +85,42 @@ export class EmployeePaymentsComponent {
     if (!this.dateFrom || !this.dateTo) return null;
     return { from: this.dateFrom, to: this.dateTo };
   }
+
+  /** Export : par employé, gain cumulé / montant payé / note, puis chaque (jour, compagnie) et s'il est compté. */
+  exportPayments = (): ExportDoc => {
+    const range = this._periodDates();
+    const rows: ExportRow[] = [];
+    let gain = 0, paid = 0;
+    for (const r of this.rows()) {
+      gain += r.gainCumule; paid += r.amountPaid;
+      rows.push({ kind: 'group', cells: [r.employeeName, '', '', '', r.gainCumule, r.amountPaid, this.hasMismatch(r) ? (r.note ?? '') : ''] });
+      for (const w of r.workDays) {
+        for (const c of w.companies) {
+          rows.push({ kind: 'detail', cells: [
+            `${w.date} (${new Date(w.date + 'T00:00:00').toLocaleDateString('fr-CA', { weekday: 'long' })})`, c.name, c.amount,
+            r.selectedKeys.has(dayCompanyKey(w.date, c.name)) ? 'Oui' : 'Non', null, null, '',
+          ] });
+        }
+      }
+    }
+    rows.push({ kind: 'total', cells: [`Total : ${this.rows().length} employé(s)`, '', null, '', Math.round(gain * 100) / 100, Math.round(paid * 100) / 100, ''] });
+    const label = range ? `${range.from} au ${range.to}` : '';
+    return {
+      fileName: TableExportService.fileName('Paiements_employes', range?.from, range?.to),
+      title: 'Paiements employés',
+      subtitle: `Période : du ${label}`,
+      landscape: true,
+      tables: [{
+        title: 'Paiements employés',
+        columns: [
+          { header: 'Employé / jour', width: 28 }, { header: 'Compagnie', width: 30 }, { header: 'Montant', type: 'money' },
+          { header: 'Inclus au paiement', width: 12 }, { header: 'Gain cumulé', type: 'money' }, { header: 'Montant payé', type: 'money' },
+          { header: 'Note (écart)', width: 36 },
+        ],
+        rows,
+      }],
+    };
+  };
 
   load(): void {
     this.error.set('');

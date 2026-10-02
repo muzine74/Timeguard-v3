@@ -10,13 +10,16 @@ import { PointageAdminService } from './pointage-admin.service';
 export interface DashStats    { emp: number; adm: number; companies: number; days: number; weekTotal: number; }
 export interface PointageStatus { isLocked: boolean; validatedAt?: string; validatedById?: string; }
 
-export interface CompanyEarnings { companyId: string; companyName: string; visits: number; subtotal: number; unitPrice: number; }
+export interface CompanyEarnings { companyId: string; companyName: string; visits: number; subtotal: number; unitPrice: number; isHourly?: boolean; hours?: number; }
 export interface WeekEarnings    { totalGain: number; isLocked: boolean; validatedAt?: string; companies: CompanyEarnings[]; }
 
 @Injectable({ providedIn: 'root' })
 export class SaveStateService {
   private _saving           = signal(false);
   private _error            = signal(false);
+  /** Message d'erreur précis (serveur ou saisie horaire) de la dernière sauvegarde ; null = message générique. */
+  private _errorMessage     = signal<string | null>(null);
+  readonly errorMessage     = this._errorMessage.asReadonly();
   private _progress         = signal(0);
   private _locked           = signal(false);
   private _lockedAt         = signal<string | null>(null);
@@ -158,12 +161,20 @@ export class SaveStateService {
 
   async save(): Promise<boolean> {
     this.log('save() → début');
+    this._errorMessage.set(null);
+    const hoursError = this._ptEmp.hoursError();
+    if (hoursError) {
+      this._error.set(true);
+      this._errorMessage.set(hoursError);
+      return false;
+    }
     this._saving.set(true); this._error.set(false); this._progress.set(10);
     try {
       const payload: SavePayload = {
         employeeId:        this._ptEmp.getEmployeeId(),
         week:              this._week.weekKey(),
         pointagesEmployee: this._ptEmp.snapshot(),
+        plagesEmployee:    this._ptEmp.hoursSnapshot(),
       };
       this.log('payload:', payload);
       this._progress.set(40);
@@ -179,6 +190,7 @@ export class SaveStateService {
     } catch (err: any) {
       this.warn('✕ save() échoué', err);
       this._error.set(true);
+      this._errorMessage.set(err?.error?.message ?? null);
       this._progress.set(100);
       await new Promise(r => setTimeout(r, 400));
       this._saving.set(false); this._progress.set(0);

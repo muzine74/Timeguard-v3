@@ -143,6 +143,20 @@
             <small>Tableau consolidé de toutes les factures sélectionnées</small>
           </span>
         </button>
+        <button class="export-item" (click)="exportAs('excel')">
+          <span class="ei-icon">📊</span>
+          <span>
+            <strong>Excel récapitulatif</strong>
+            <small>Tableau des factures sélectionnées, modifiable dans Excel</small>
+          </span>
+        </button>
+        <button class="export-item" (click)="exportAs('csv')">
+          <span class="ei-icon">🧾</span>
+          <span>
+            <strong>CSV récapitulatif</strong>
+            <small>Données brutes des factures sélectionnées (séparateur ;)</small>
+          </span>
+        </button>
         <div class="export-divider"></div>
         <button class="export-item" (click)="exportAs('merged')">
           <span class="ei-icon">📑</span>

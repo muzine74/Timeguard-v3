@@ -53,8 +53,9 @@ import { SaveStateService } from '../../../state/pointage/save-state.service';
           <div class="earn-rows" *ngIf="showDetail()">
             <div class="earn-row" *ngFor="let co of svc.earnings()!.companies">
               <span class="earn-co">{{ co.companyName }}</span>
-              <span class="earn-visits">{{ co.visits }} visite{{ co.visits > 1 ? 's' : '' }}</span>
-              <span class="earn-unit" *ngIf="co.unitPrice > 0">{{ co.unitPrice | number:'1.2-2' }}&nbsp;$/v</span>
+              <span class="earn-visits" *ngIf="!co.isHourly">{{ co.visits }} visite{{ co.visits > 1 ? 's' : '' }}</span>
+              <span class="earn-visits" *ngIf="co.isHourly">{{ co.hours | number:'1.0-2' }}&nbsp;h</span>
+              <span class="earn-unit" *ngIf="co.unitPrice > 0">{{ co.unitPrice | number:'1.2-2' }}&nbsp;$/{{ co.isHourly ? 'h' : 'v' }}</span>
               <span class="earn-sub">{{ co.subtotal | number:'1.2-2' }}&nbsp;$</span>
             </div>
             <div class="earn-row earn-total">

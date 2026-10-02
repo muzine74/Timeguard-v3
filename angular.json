@@ -28,6 +28,7 @@
               { "glob": "pdf.worker.min.js", "input": "node_modules/pdfjs-dist/build", "output": "/assets/" }
             ],
             "styles": ["src/styles.scss"],
+            "allowedCommonJsDependencies": ["exceljs", "html2canvas", "canvg", "core-js", "raf", "rgbcolor"],
             "scripts": []
           },
           "configurations": {
@@ -38,6 +39,19 @@
                 { "type": "anyComponentStyle", "maximumWarning": "8kb", "maximumError": "20kb" }
               ],
               "outputHashing": "all"
+            },
+            "staging": {
+              "outputPath": "\\\\Win-va4kca4qn9m\\d$\\www\\TimeGuardStaging\\TimeGuards",
+              "budgets": [
+                { "type": "initial", "maximumWarning": "500kb", "maximumError": "1mb" },
+                { "type": "anyComponentStyle", "maximumWarning": "8kb", "maximumError": "20kb" }
+              ],
+              "outputHashing": "all",
+              "assets": [
+                "src/favicon.ico",
+                { "glob": "web.config", "input": "src/env/staging", "output": "/" },
+                { "glob": "pdf.worker.min.js", "input": "node_modules/pdfjs-dist/build", "output": "/assets/" }
+              ]
             },
             "development": {
               "optimization": false,

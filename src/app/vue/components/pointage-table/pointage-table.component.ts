@@ -29,6 +29,11 @@ export class PointageTableComponent {
       : this.ptEmpSvc.compagnies();
   }
 
+  /** Blocs séparés : compagnies pointées par visite (cases) / à l'heure (début-fin). */
+  get visitRows():  Compagnie[] { return this.compagnies.filter(c => !c.hourly); }
+  get hourlyRows(): Compagnie[] { return this.compagnies.filter(c => !!c.hourly); }
+  get hasHourly():  boolean     { return this.compagnies.some(c => !!c.hourly); }
+
   get weekDays(): WeekDay[] { return this.weekSvc.weekDays(); }
   get isAdmin(): boolean    { return this.mode === 'admin'; }
 
@@ -49,6 +54,19 @@ export class PointageTableComponent {
       : this.ptEmpSvc.toggle(c.id, dk);
   }
 
+  // ── Lignes horaires ───────────────────────────────────────────────────
+  hoursOf(c: Compagnie, dk: string) { return this.ptEmpSvc.hoursOf(c, dk); }
+  addRange(c: Compagnie, dk: string): void    { if (this.canEdit) this.ptEmpSvc.addRange(c.id, dk); }
+  removeRange(c: Compagnie, dk: string, i: number): void { if (this.canEdit) this.ptEmpSvc.removeRange(c.id, dk, i); }
+  duration(c: Compagnie, dk: string): number | null { return PointageEmployeeService.duration(c.hours?.[dk]); }
+  invalid(c: Compagnie, dk: string): boolean { return PointageEmployeeService.isInvalid(c.hours?.[dk]); }
+  totalHours(c: Compagnie): number { return this.ptEmpSvc.totalHours(c, this.weekDays); }
+
+  setHours(c: Compagnie, dk: string, index: number, field: 'begin' | 'end', e: Event): void {
+    if (!this.canEdit) return;
+    this.ptEmpSvc.setHours(c.id, dk, index, field, (e.target as HTMLInputElement).value);
+  }
+
   count(c: Compagnie): number {
     return this.isAdmin
       ? this.admSvc.count(c, this.weekDays)
@@ -61,4 +79,5 @@ export class PointageTableComponent {
 
   trackById(_: number, c: Compagnie): number { return c.id; }
   trackByKey(_: number, d: WeekDay):  string  { return d.dateKey; }
+  trackByIndex(i: number): number { return i; }
 }

@@ -41,7 +41,7 @@ export interface MultiSelectOption { id: string; label: string; }
       background: var(--bg); color: var(--muted); font-size: .9rem; font-family: inherit; cursor: pointer; text-align: left;
     }
     .ms-toggle:hover, .ms-toggle:focus { border-color: var(--accent); outline: none; }
-    .ms-active { color: var(--text); border-color: rgba(201,162,39,.5); }
+    .ms-active { color: var(--text); border-color: rgba(var(--accent-rgb), .5); }
     .ms-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .ms-caret { font-size: .7rem; flex-shrink: 0; }
     .ms-panel {
@@ -59,7 +59,7 @@ export interface MultiSelectOption { id: string; label: string; }
       display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 7px;
       font-size: .85rem; color: var(--text); cursor: pointer;
     }
-    .ms-item:hover { background: rgba(255,255,255,.04); }
+    .ms-item:hover { background: rgba(var(--overlay-rgb), .04); }
     .ms-item input { accent-color: var(--accent); }
     .ms-empty { padding: 8px 10px; font-size: .8rem; color: var(--muted); }
     .ms-all {

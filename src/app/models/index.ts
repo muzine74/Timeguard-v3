@@ -50,6 +50,12 @@ export interface Employee {
   nas?:                 string;
   isActive:             boolean;
   employeeType?:        string;   // 'Permanent' | 'À la tâche'
+  /** Rémunération : 'Visite' (planning) ou 'Heure' (heures × taux horaire). */
+  modeRemuneration?:    'Visite' | 'Heure';
+  /** Hiérarchie : chef d'équipe, et son chef / responsable direct (null = sans chef). */
+  isTeamLead?:          boolean;
+  managerId?:           string | null;
+  managerName?:         string | null;
   employeeCivicNumber?: string;
   employeeSuite?:       string;
   employeeZipCode?:     string;
@@ -96,6 +102,25 @@ export interface Compagnie {
   selected?:  boolean;
   pointages?: Record<string, boolean>;
   prices?:    Record<string, number>;  // prix employé par dateKey (depuis timelogs)
+  /** Saisie en heures : compagnie facturée à l'heure OU employé payé à l'heure. */
+  hourly?:     boolean;
+  /** Taux horaire payé applicable (aperçu du montant avant enregistrement). */
+  hourlyRate?: number;
+  /** Plages horaires saisies par dateKey (plusieurs par jour ; total du jour = somme). */
+  hours?:      Record<string, HourEntry[]>;
+}
+
+export interface HourEntry { begin: string; end: string; }
+
+/** Taux horaire payé d'un employé pour une compagnie « par heure » (GET /api/employee/{id}/hourly-rate/{companyId}). */
+export interface EmployeeHourlyRate {
+  isHourlyCompany:  boolean;
+  isHourlyEmployee: boolean;                            // payé à l'heure chez cette compagnie (effectif)
+  modeRemunerationCompagnie: 'Defaut' | 'Visite' | 'Heure';  // réglage de l'affectation
+  modeRemunerationEmploye:   'Visite' | 'Heure';        // défaut de la fiche employé
+  defaultRate:      number | null;
+  specificRate:     number | null;
+  effectiveRate:    number | null;
 }
 
 export interface WeekDay {
@@ -111,6 +136,8 @@ export interface SavePayload {
   employeeId:        string;
   week:              string;
   pointagesEmployee: Record<string, Record<string, boolean>>;
+  /** Pointages horaires : companyId → dateKey → plages début/fin (HH:mm), plusieurs par jour. */
+  plagesEmployee?:   Record<string, Record<string, HourEntry[]>>;
 }
 
 // ── TimeLog (retour API pointage) ─────────────────────────
@@ -127,6 +154,10 @@ export interface TimeLogQueryResultDto {
   endWork:     string | null;
   clientPrice: number;
   workType:    WorkType;
+  isHourly?:   boolean;
+  hourlyRate?: number | null;
+  /** Plages horaires de la journée (pointage en heures). */
+  ranges?:     HourEntry[] | null;
 }
 
 // ── Compagnie (formulaire création) ──────────────────────
@@ -170,6 +201,11 @@ export interface EmployeeForm {
   employeeNote:        string;
   nas:                 string;
   employeeType:        string;   // 'Permanent' | 'À la tâche'
+  modeRemuneration:    'Visite' | 'Heure';
+  /** Chef d'équipe (peut superviser des employés et d'autres chefs). */
+  isTeamLead:          boolean;
+  /** Chef d'équipe / responsable direct — obligatoire sauf chef au sommet. */
+  managerId:           string | null;
   employeeCivicNumber: string;
   employeeSuite:       string;
   employeeZipCode:     string;
@@ -233,4 +269,10 @@ export interface CompanyForm {
   semaine2:           SemainePlanning;
   /** Bi-hebdomadaire : date (yyyy-MM-dd) où commence la Semaine 1 ; null = non renseignée. */
   debutSemaine1:      string | null;
+  /** Facturation client : « Visite » (prix du planning) ou « Heure » (heures × taux horaire client). */
+  modeFacturation:    'Visite' | 'Heure';
+  /** Par heure : taux horaire facturé au client. */
+  tauxHoraireClient:  number | null;
+  /** Taux horaire payé par défaut aux employés rémunérés à l'heure (facultatif). */
+  tauxHoraireEmploye: number | null;
 }

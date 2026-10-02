@@ -98,6 +98,24 @@
               <option *ngFor="let f of freqOptions" [value]="f.value">{{ f.label }}</option>
             </select>
           </div>
+          <div class="field">
+            <label for="company-form-mode-facturation">Mode de facturation</label>
+            <select id="company-form-mode-facturation" class="inp inp-sel" [(ngModel)]="form.modeFacturation">
+              <option value="Visite">Par visite (prix du planning)</option>
+              <option value="Heure">Par heure (heures pointées × taux client)</option>
+            </select>
+          </div>
+          <div class="field" *ngIf="form.modeFacturation === 'Heure'">
+            <label for="company-form-taux-client">Taux horaire client ($/h) <span aria-hidden="true">*</span></label>
+            <input id="company-form-taux-client" class="inp" type="number" min="0" step="0.01" required aria-required="true"
+                   [attr.aria-invalid]="!(form.tauxHoraireClient! > 0)" [attr.aria-describedby]="hourlyRatesError ? 'company-form-taux-error' : null" [(ngModel)]="form.tauxHoraireClient" />
+          </div>
+          <div class="field">
+            <label for="company-form-taux-employe">Taux horaire employé par défaut ($/h)</label>
+            <input id="company-form-taux-employe" class="inp" type="number" min="0" step="0.01" placeholder="Facultatif" [(ngModel)]="form.tauxHoraireEmploye" />
+          </div>
+          <p class="field span-full hourly-error" id="company-form-taux-error" role="alert" *ngIf="hourlyRatesError">⚠ {{ hourlyRatesError }}</p>
+          <p class="field span-full hourly-hint">Dès que la compagnie est facturée à l'heure <b>ou</b> que l'employé est payé à l'heure, le pointage se fait en heures (début / fin). Le taux employé par défaut sert aux employés payés à l'heure sans taux spécifique (<b>Employés → Tarifs employés</b>). Les tarifs à la visite restent ceux du planning ci-dessous.</p>
         </div>
       </div>
 

@@ -15,6 +15,7 @@
         <label for="invoice-from-timesheets-periode" class="period-label">Période</label>
         <input id="invoice-from-timesheets-periode" class="inp inp-month" type="month" [(ngModel)]="period" (change)="load()" />
       </div>
+      <app-export-buttons [build]="exportEligible" [disabled]="loading() || (rows.length === 0 && pending.length === 0)" label="la facturation par pointages"></app-export-buttons>
       <button class="btn btn-generate"
               [disabled]="noneChecked || generating()"
               (click)="generateSelected()">
@@ -53,28 +54,28 @@
           <thead>
             <tr>
               <th class="col-chk">
-                <input type="checkbox"
+                <input type="checkbox" aria-label="Sélectionner toutes les compagnies éligibles"
                        [checked]="allChecked"
                        [indeterminate]="!allChecked && !noneChecked"
                        (change)="toggleAll($any($event.target).checked)" />
               </th>
-              <th>Compagnie</th>
-              <th>Visites / Prix</th>
-              <th class="col-num">Sous-total</th>
-              <th class="col-num">TPS (5 %)</th>
-              <th class="col-num">TVQ (9,975 %)</th>
-              <th class="col-num">Total TTC</th>
-              <th class="col-status">Résultat</th>
-              <th>Jours planifiés / Prix</th>
+              <th scope="col" [attr.aria-sort]="sort.aria('name')"><button type="button" class="th-sort" (click)="sort.toggle('name')">Compagnie <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('name') }}</span></button></th>
+              <th scope="col" [attr.aria-sort]="sort.aria('visits')"><button type="button" class="th-sort" (click)="sort.toggle('visits')">Visites / Prix <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('visits') }}</span></button></th>
+              <th scope="col" class="col-num" [attr.aria-sort]="sort.aria('subtotal')"><button type="button" class="th-sort" (click)="sort.toggle('subtotal')">Sous-total <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('subtotal') }}</span></button></th>
+              <th scope="col" class="col-num" [attr.aria-sort]="sort.aria('tps')"><button type="button" class="th-sort" (click)="sort.toggle('tps')">TPS (5 %) <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('tps') }}</span></button></th>
+              <th scope="col" class="col-num" [attr.aria-sort]="sort.aria('tvq')"><button type="button" class="th-sort" (click)="sort.toggle('tvq')">TVQ (9,975 %) <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('tvq') }}</span></button></th>
+              <th scope="col" class="col-num" [attr.aria-sort]="sort.aria('ttc')"><button type="button" class="th-sort" (click)="sort.toggle('ttc')">Total TTC <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('ttc') }}</span></button></th>
+              <th scope="col" class="col-status" [attr.aria-sort]="sort.aria('result')"><button type="button" class="th-sort" (click)="sort.toggle('result')">Résultat <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('result') }}</span></button></th>
+              <th scope="col" [attr.aria-sort]="sort.aria('planned')"><button type="button" class="th-sort" (click)="sort.toggle('planned')">Jours planifiés / Prix <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('planned') }}</span></button></th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let r of rows"
+            <tr *ngFor="let r of sortedRows"
                 [class.row-checked]="r.checked"
                 [class.row-ok]="r.genResult?.ok === true"
                 [class.row-err]="r.genResult?.ok === false">
               <td class="col-chk">
-                <input type="checkbox" [(ngModel)]="r.checked" (ngModelChange)="onRowToggle(r)" [disabled]="generating()" />
+                <input type="checkbox" [(ngModel)]="r.checked" (ngModelChange)="onRowToggle(r)" [disabled]="generating()" [attr.aria-label]="'Sélectionner ' + r.companyName" />
               </td>
               <td class="co-name" [class.mismatch-text]="hasDiscrepancy(r)">
                 {{ r.companyName }}
@@ -84,8 +85,9 @@
               <td class="col-groups" [class.mismatch-text]="hasDiscrepancy(r)"
                   [title]="hasDiscrepancy(r) ? 'Diffère du montant planifié' : ''">
                 <div class="price-group" *ngFor="let g of r.priceGroups">
-                  <span class="pg-visits">{{ g.visits }}×</span>
-                  <span class="pg-price">{{ g.unitPrice | number:'1.2-2' }}&nbsp;$</span>
+                  <span class="pg-visits" *ngIf="!g.isHourly">{{ g.visits }}×</span>
+                  <span class="pg-visits" *ngIf="g.isHourly">{{ g.hours | number:'1.0-2' }}&nbsp;h ×</span>
+                  <span class="pg-price">{{ g.unitPrice | number:'1.2-2' }}&nbsp;$<ng-container *ngIf="g.isHourly">/h</ng-container></span>
                   <span class="pg-sub">= {{ g.subtotal | number:'1.2-2' }}&nbsp;$</span>
                 </div>
                 <div class="price-group" *ngIf="!r.priceGroups?.length">
@@ -114,11 +116,14 @@
               </td>
               <td class="col-groups" [class.mismatch-text]="hasDiscrepancy(r)"
                   [title]="hasDiscrepancy(r) ? 'Diffère du montant réel des visites' : ''">
-                <div class="price-group" *ngIf="!r.planningIncomplete">
+                <span class="planning-missing" *ngIf="r.hourlyBilling" title="Compagnie facturée par heure : montant = heures pointées × taux horaire client">
+                  Facturé à l'heure
+                </span>
+                <div class="price-group" *ngIf="!r.planningIncomplete && !r.hourlyBilling">
                   <span class="pg-visits">{{ r.plannedDays }}×</span>
                   <span class="pg-sub">= {{ r.plannedAmount | number:'1.2-2' }}&nbsp;$</span>
                 </div>
-                <span class="planning-missing" *ngIf="r.planningIncomplete"
+                <span class="planning-missing" *ngIf="r.planningIncomplete && !r.hourlyBilling"
                       title="Renseignez « La Semaine 1 commence le » dans le planning de la compagnie">
                   ⚠ Date de début Semaine 1 manquante
                 </span>

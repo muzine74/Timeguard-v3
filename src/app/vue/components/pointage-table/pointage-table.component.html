@@ -1,5 +1,30 @@
-<div class="table-scroll">
+<!-- Deux blocs séparés dès qu'au moins une compagnie se pointe à l'heure :
+     « par visite » (cases à cocher) puis « à l'heure » (début / fin). Sinon : un seul tableau, sans titre. -->
+<ng-container *ngIf="hasHourly; else single">
+  <section class="pt-block" *ngIf="visitRows.length" aria-labelledby="pt-title-visit">
+    <h3 class="pt-title" id="pt-title-visit">
+      Compagnies par visite <span class="pt-count">{{ visitRows.length }}</span>
+      <span class="pt-sub">Cochez les jours travaillés</span>
+    </h3>
+    <ng-container *ngTemplateOutlet="tableTpl; context: { rows: visitRows, caption: 'Compagnies par visite' }"></ng-container>
+  </section>
+  <section class="pt-block" aria-labelledby="pt-title-hourly">
+    <h3 class="pt-title" id="pt-title-hourly">
+      Compagnies à l'heure <span class="pt-count">{{ hourlyRows.length }}</span>
+      <span class="pt-sub">Indiquez l'heure de début et de fin — « + plage » pour plusieurs plages dans la journée (total = somme)</span>
+    </h3>
+    <ng-container *ngTemplateOutlet="tableTpl; context: { rows: hourlyRows, caption: 'Compagnies à l\'heure' }"></ng-container>
+  </section>
+</ng-container>
+<ng-template #single>
+  <ng-container *ngTemplateOutlet="tableTpl; context: { rows: compagnies, caption: null }"></ng-container>
+</ng-template>
+
+<ng-template #tableTpl let-rows="rows" let-caption="caption">
+<!-- Zone défilante focalisable : défilement au clavier même quand le tableau est en lecture seule (WCAG 2.1.1) -->
+<div class="table-scroll" tabindex="0" role="region" [attr.aria-label]="caption || 'Pointage de la semaine'">
   <table class="ptable">
+    <caption class="sr-only" *ngIf="caption">{{ caption }}</caption>
     <thead>
       <tr>
         <th class="th-arrow" scope="col"><span class="sr-only">Ligne sélectionnée</span></th>
@@ -17,7 +42,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let c of compagnies; let odd = odd; trackBy: trackById"
+      <tr *ngFor="let c of rows; let odd = odd; trackBy: trackById"
           class="row"
           [class.row-sel]="c.selected"
           [class.row-odd]="odd"
@@ -32,10 +57,45 @@
           </div>
         </th>
         <td class="td-total">
-          <span class="total-badge" [class.total-nz]="count(c) > 0">
-            {{ count(c) }}/7
+          <span class="total-badge" [class.total-nz]="c.hourly ? totalHours(c) > 0 : count(c) > 0">
+            <ng-container *ngIf="!c.hourly">{{ count(c) }}/7</ng-container>
+            <ng-container *ngIf="c.hourly">{{ totalHours(c) | number:'1.0-2' }}&nbsp;h</ng-container>
           </span>
         </td>
+        <ng-container *ngIf="c.hourly">
+          <td *ngFor="let day of weekDays; trackBy: trackByKey"
+              class="td-hours"
+              [class.td-today]="day.isToday"
+              [class.td-weekend]="day.isWeekend"
+              [class.td-locked]="locked && !isAdmin"
+              [class.td-invalid]="invalid(c, day.dateKey)">
+            <div class="hours-wrap">
+              <div class="range" *ngFor="let r of hoursOf(c, day.dateKey); let i = index; let n = count; trackBy: trackByIndex">
+                <input class="time-inp" type="time" step="900"
+                       [value]="r.begin"
+                       [disabled]="!canEdit"
+                       [attr.aria-label]="c.nom + ' — ' + day.labelFull + ' — plage ' + (i + 1) + ' — heure de début'"
+                       (change)="setHours(c, day.dateKey, i, 'begin', $event)" />
+                <input class="time-inp" type="time" step="900"
+                       [value]="r.end"
+                       [disabled]="!canEdit"
+                       [attr.aria-label]="c.nom + ' — ' + day.labelFull + ' — plage ' + (i + 1) + ' — heure de fin'"
+                       (change)="setHours(c, day.dateKey, i, 'end', $event)" />
+                <button type="button" class="range-btn range-del" *ngIf="canEdit && (n > 1 || r.begin || r.end)"
+                        [attr.aria-label]="'Retirer la plage ' + (i + 1) + ' — ' + c.nom + ' — ' + day.labelFull"
+                        title="Retirer cette plage" (click)="removeRange(c, day.dateKey, i)">×</button>
+              </div>
+              <button type="button" class="range-btn range-add" *ngIf="canEdit"
+                      [attr.aria-label]="'Ajouter une plage horaire — ' + c.nom + ' — ' + day.labelFull"
+                      title="Ajouter une plage (ex. après la pause)" (click)="addRange(c, day.dateKey)">+ plage</button>
+              <span class="cell-price" *ngIf="duration(c, day.dateKey) as h">
+                {{ h | number:'1.0-2' }}&nbsp;h<ng-container *ngIf="c.prices?.[day.dateKey]"> · {{ c.prices![day.dateKey] | number:'1.2-2' }}&nbsp;$</ng-container>
+              </span>
+              <span class="cell-err" *ngIf="invalid(c, day.dateKey)" role="alert">Plage incomplète, inversée ou qui chevauche une autre</span>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container *ngIf="!c.hourly">
         <td *ngFor="let day of weekDays; trackBy: trackByKey"
             class="td-check"
             [class.td-today]="day.isToday"
@@ -58,7 +118,9 @@
             </span>
           </div>
         </td>
+        </ng-container>
       </tr>
     </tbody>
   </table>
 </div>
+</ng-template>

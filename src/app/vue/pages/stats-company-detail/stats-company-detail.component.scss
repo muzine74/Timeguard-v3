@@ -58,7 +58,7 @@
     &.num { text-align: right; white-space: nowrap; }
   }
 
-  tbody tr:hover { background: var(--hover, rgba(255,255,255,.03)); }
+  tbody tr:hover { background: var(--hover, rgba(var(--overlay-rgb), .03)); }
 }
 
 .dates-cell {
@@ -89,7 +89,7 @@
 .spinner {
   width: 24px;
   height: 24px;
-  border: 3px solid rgba(255,255,255,.2);
+  border: 3px solid rgba(var(--overlay-rgb), .2);
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin .7s linear infinite;

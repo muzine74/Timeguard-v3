@@ -53,6 +53,7 @@
   <!-- ── Résultats ───────────────────────────────────────────────────────── -->
   <div class="results-hdr" *ngIf="rows().length > 0">
     <span class="results-title">Résultats</span>
+    <app-export-buttons [build]="exportPayments" label="les paiements employés"></app-export-buttons>
     <div class="seg-control view-seg">
       <button type="button" class="seg-opt" [class.active]="resultsView() === 'daily'" (click)="resultsView.set('daily')">📆 Vue journalière</button>
       <button type="button" class="seg-opt" [class.active]="resultsView() === 'company'" (click)="resultsView.set('company')">🏢 Vue par compagnie</button>

@@ -37,6 +37,7 @@
         <span class="emp-name">{{ emp.employeeName }}</span>
         <span class="emp-dept" *ngIf="emp.employeeMail">{{ emp.employeeMail }}</span>
       </span>
+      <span class="val-pill val-warn" *ngIf="!emp.isTeamLead && !emp.managerId" title="Aucun chef d'équipe : à compléter dans la fiche">Sans chef</span>
       <span class="val-pill val-ok"  *ngIf=" isValidated(emp.employeeId)">✓ Validé</span>
       <span class="val-pill val-nok" *ngIf="!isValidated(emp.employeeId)">À valider</span>
     </button>

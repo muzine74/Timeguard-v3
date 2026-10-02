@@ -22,6 +22,25 @@ export interface StatsCompanyRow {
   totalAvoirs:  number;
   montantPaye:  number;
   aPayee:       boolean;
+  factures:     StatsInvoiceRow[];
+}
+
+/** Facture (ou avoir : montants négatifs) d'une compagnie sur la période. */
+export interface StatsInvoiceRow {
+  billIdentifier:       number;
+  billNumber:           string;
+  period:               string;
+  billedDate:           string;
+  nbVisites:            number;
+  totalHT:              number;
+  totalTPS:             number;
+  totalTVQ:             number;
+  totalTTC:             number;
+  isAvoir:              boolean;
+  parentBillIdentifier: number | null;
+  isSent:               boolean;
+  isPaid:               boolean;
+  paidDate:             string | null;
 }
 
 export interface StatsResponse {

@@ -4,9 +4,10 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule }  from '@angular/forms';
 import { InvoiceService, BillSummary } from '../../../state/invoice/invoice.service';
+import { ExportDoc, TableExportService } from '../../../state/export/table-export.service';
 
 type FilterMode = 'date' | 'period';
-type ExportType = 'summary' | 'merged' | 'zip';
+type ExportType = 'summary' | 'merged' | 'zip' | 'excel' | 'csv';
 
 @Component({
   selector: 'app-invoice-report',
@@ -96,7 +97,7 @@ export class InvoiceReportComponent {
   exporting  = signal(false);
   exportOpen = signal(false);
 
-  constructor(private invoiceSvc: InvoiceService) {}
+  constructor(private invoiceSvc: InvoiceService, private tableExport: TableExportService) {}
 
   // ── Actions filtre ────────────────────────────────────────────────────
 
@@ -220,6 +221,8 @@ export class InvoiceReportComponent {
     this.exporting.set(true);
     this.error.set('');
 
+    if (type === 'excel' || type === 'csv') { this._exportTable(type); return; }
+
     this.invoiceSvc.exportReport(ids, type, this._buildFilterLabel()).subscribe({
       next: blob => {
         this.exporting.set(false);
@@ -235,6 +238,44 @@ export class InvoiceReportComponent {
         this.error.set(`Erreur export : HTTP ${e.status}`);
       },
     });
+  }
+
+  /** Excel / CSV récapitulatif des factures sélectionnées, générés dans le navigateur (même contenu que le tableau). */
+  private _summaryDoc(): ExportDoc {
+    const sel = this.selectedList();
+    const t = this.totals();
+    const r2 = (v: number) => Math.round(v * 100) / 100;
+    return {
+      fileName: TableExportService.fileName('rapport', this._fileNameSuffix()),
+      title: 'Rapport de factures',
+      subtitle: this._buildFilterLabel(),
+      tables: [{
+        title: 'Factures',
+        columns: [
+          { header: 'N° facture', width: 18 }, { header: 'Type', width: 9 }, { header: 'Compagnie', width: 32 }, { header: 'Période', width: 10 },
+          { header: 'Montant HT', type: 'money' }, { header: 'TPS', type: 'money' }, { header: 'TVQ', type: 'money' }, { header: 'Total TTC', type: 'money' },
+        ],
+        rows: [
+          ...sel.map(b => ({ cells: [b.billNumber, b.parentBillIdentifier !== null ? 'Avoir' : 'Facture', b.companyName, b.period,
+                                     +b.totalBeforeTax, +b.tps, +b.tvq, +b.totalWithTax] })),
+          { kind: 'total' as const, cells: [`Totaux : ${sel.length} facture(s)`, '', '', '', r2(t.ht), r2(t.tps), r2(t.tvq), r2(t.ttc)] },
+        ],
+      }],
+    };
+  }
+
+  private async _exportTable(type: 'excel' | 'csv'): Promise<void> {
+    try {
+      const doc = this._summaryDoc();
+      if (type === 'excel') await this.tableExport.toExcel(doc);
+      else this.tableExport.toCsv(doc);
+      this.success.set(`Export "${this._exportLabel(type)}" téléchargé.`);
+      setTimeout(() => this.success.set(''), 4000);
+    } catch {
+      this.error.set(`Erreur export ${type === 'excel' ? 'Excel' : 'CSV'}.`);
+    } finally {
+      this.exporting.set(false);
+    }
   }
 
   toggleExportMenu(e: MouseEvent): void {
@@ -269,6 +310,8 @@ export class InvoiceReportComponent {
   private _exportLabel(type: ExportType): string {
     return type === 'summary' ? 'PDF Récapitulatif'
          : type === 'merged'  ? 'PDFs fusionnés'
+         : type === 'excel'   ? 'Excel récapitulatif'
+         : type === 'csv'     ? 'CSV récapitulatif'
          :                      'PDFs séparés (ZIP)';
   }
 

@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EmployeesService } from '../../../state/employees/employees.service';
 import { PricingService } from '../../../state/employees/pricing.service';
-import { DayPricingHistory, Employee, EmployeeCompagnie } from '../../../models';
+import { DayPricingHistory, Employee, EmployeeCompagnie, EmployeeHourlyRate } from '../../../models';
 
 interface PricingRow {
   calendarId:    string;
@@ -51,6 +51,15 @@ export class EmployeePricingComponent implements OnInit {
 
   // ── Tableau des tarifs ───────────────────────────────────────────────────
   rows    = signal<PricingRow[]>([]);
+
+  // ── Taux horaire (compagnie « par heure ») ─────────────────────────────
+  hourly        = signal<EmployeeHourlyRate | null>(null);
+  hourlyInput: number | null = null;
+  /** Mode de rémunération chez la compagnie sélectionnée : 'Defaut' suit la fiche employé. */
+  payModeInput: 'Defaut' | 'Visite' | 'Heure' = 'Defaut';
+  hourlySaving  = signal(false);
+  hourlyMessage = signal('');
+  hourlyError   = signal('');
   loading = signal(false);
   saving  = signal(false);
   saved   = signal(false);
@@ -110,6 +119,7 @@ export class EmployeePricingComponent implements OnInit {
 
     this.selectedCompany.set(company);
     this.rows.set([]);
+    this._loadHourly(company.compagnieId);
     this.history.set([]);
     this.showHistory.set(false);
     this.saved.set(false);
@@ -135,6 +145,52 @@ export class EmployeePricingComponent implements OnInit {
         error: err => {
           this.error.set(`Erreur chargement tarifs (HTTP ${err.status})`);
           this.loading.set(false);
+        },
+      });
+  }
+
+  /** keepMessage : rechargement après un enregistrement → garder la confirmation affichée. */
+  private _loadHourly(companyId: string, keepMessage = false): void {
+    this.hourly.set(null);
+    this.hourlyInput = null;
+    if (!keepMessage) this.hourlyMessage.set('');
+    this.hourlyError.set('');
+    const empId = this.selectedEmployee()!.employeeId;
+    this.pricingSvc.getHourlyRate(empId, companyId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: r => { this.hourly.set(r); this.hourlyInput = r.specificRate; this.payModeInput = r.modeRemunerationCompagnie ?? 'Defaut'; },
+        error: () => this.hourly.set(null),
+      });
+  }
+
+  /** Payé à l'heure chez cette compagnie avec le mode choisi (avant enregistrement). */
+  get paysHourlyHere(): boolean {
+    const h = this.hourly();
+    if (!h) return false;
+    return this.payModeInput === 'Heure' || (this.payModeInput === 'Defaut' && h.modeRemunerationEmploye === 'Heure');
+  }
+
+  saveHourly(): void {
+    const emp = this.selectedEmployee();
+    const co  = this.selectedCompany();
+    if (!emp || !co) return;
+    const value = this.hourlyInput === null || (this.hourlyInput as unknown) === '' ? null : +this.hourlyInput;
+    if (value !== null && (isNaN(value) || value < 0)) { this.hourlyError.set('Taux invalide.'); return; }
+    this.hourlySaving.set(true);
+    this.hourlyMessage.set('');
+    this.hourlyError.set('');
+    this.pricingSvc.saveHourlyRate(emp.employeeId, co.compagnieId, value, this.payModeInput)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.hourlySaving.set(false);
+          this.hourlyMessage.set('Rémunération enregistrée pour cette compagnie.');
+          this._loadHourly(co.compagnieId, true);
+        },
+        error: err => {
+          this.hourlySaving.set(false);
+          this.hourlyError.set(err?.error?.message ?? `Erreur (HTTP ${err.status})`);
         },
       });
   }

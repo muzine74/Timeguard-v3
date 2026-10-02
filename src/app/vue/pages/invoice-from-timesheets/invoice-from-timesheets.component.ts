@@ -7,6 +7,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { InvoiceService, BillableCompanies, BillableCompanyItem, BillablePriceGroup, BillCreatePayload } from '../../../state/invoice/invoice.service';
 import { ConfigService } from '../../../state/config/config.service';
+import { TableSort, SortValue } from '../../shared/table-sort';
+import { ExportButtonsComponent } from '../../components/export-buttons/export-buttons.component';
+import { ExportDoc, TableExportService } from '../../../state/export/table-export.service';
+
+type EligibleSortKey = 'name' | 'visits' | 'subtotal' | 'tps' | 'tvq' | 'ttc' | 'result' | 'planned';
 
 export interface EligibleRow extends BillableCompanyItem {
   checked:      boolean;
@@ -21,7 +26,7 @@ export interface EligibleRow extends BillableCompanyItem {
   selector: 'app-invoice-from-timesheets',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, NoteInlineComponent],
+  imports: [CommonModule, FormsModule, NoteInlineComponent, ExportButtonsComponent],
   templateUrl: './invoice-from-timesheets.component.html',
   styleUrls: ['./invoice-from-timesheets.component.scss'],
 })
@@ -46,6 +51,71 @@ export class InvoiceFromTimesheetsComponent implements OnInit {
   get noneChecked(): boolean { return this.rows.every(r => !r.checked); }
   get checkedRows(): EligibleRow[] { return this.rows.filter(r => r.checked); }
   get hasAnyDiscrepancy(): boolean { return this.rows.some(r => this.hasDiscrepancy(r)); }
+
+  /** Tri des compagnies éligibles au clic sur l'en-tête (montants : décroissant au 1er clic). */
+  readonly sort = new TableSort<EligibleSortKey>(['visits', 'subtotal', 'tps', 'tvq', 'ttc', 'result', 'planned']);
+  get sortedRows(): EligibleRow[] { return this.sort.apply(this.rows, (r, k) => this._sortValue(r, k)); }
+
+  /** Export : compagnies éligibles (ordre du tri affiché) + compagnies en attente de validation. */
+  exportEligible = (): ExportDoc => {
+    const money = (v: number) => v.toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' $';
+    const detail = (r: BillableCompanyItem) => r.priceGroups?.length
+      ? r.priceGroups.map(g => g.isHourly
+          ? `${g.hours ?? 0} h x ${money(g.unitPrice)}/h = ${money(g.subtotal)}`
+          : `${g.visits} x ${money(g.unitPrice)} = ${money(g.subtotal)}`).join(' ; ')
+      : `${r.totalVisits} visite(s)`;
+    const rows = this.sortedRows;
+    const sum = (k: 'totalAmount' | 'tps' | 'tvq' | 'totalWithTax') => Math.round(rows.reduce((t, r) => t + r[k], 0) * 100) / 100;
+    return {
+      fileName: TableExportService.fileName('Facturation_par_pointages', this.period),
+      title: 'Facturation par pointages',
+      subtitle: `Période : ${this.period}`,
+      landscape: true,
+      tables: [
+        {
+          title: 'Compagnies éligibles',
+          columns: [
+            { header: 'Compagnie', width: 30 }, { header: 'Code', width: 12 }, { header: 'Visites / prix', width: 34 },
+            { header: 'Sous-total', type: 'money' }, { header: 'TPS', type: 'money' }, { header: 'TVQ', type: 'money' },
+            { header: 'Total TTC', type: 'money' }, { header: 'Écart planning', width: 12 },
+            { header: 'Jours planifiés', width: 16 }, { header: 'Montant planifié', type: 'money', width: 16 },
+          ],
+          rows: [
+            ...rows.map(r => ({ cells: [
+              r.companyName, r.companyCode, detail(r), r.totalAmount, r.tps, r.tvq, r.totalWithTax,
+              this.hasDiscrepancy(r) ? 'Oui' : 'Non',
+              r.hourlyBilling ? "Facturé à l'heure" : r.planningIncomplete ? 'Planning incomplet' : r.plannedDays,
+              r.hourlyBilling || r.planningIncomplete ? null : r.plannedAmount,
+            ] })),
+            { kind: 'total' as const, cells: [`Total : ${rows.length} compagnie(s)`, '', '', sum('totalAmount'), sum('tps'), sum('tvq'), sum('totalWithTax'), '', '', null] },
+          ],
+        },
+        {
+          title: 'En attente de validation',
+          columns: [
+            { header: 'Compagnie', width: 30 }, { header: 'Code', width: 12 }, { header: 'Visites', type: 'int' },
+            { header: 'Montant brut', type: 'money' }, { header: 'Semaines non validées', width: 40 },
+          ],
+          rows: this.pending.length
+            ? this.pending.map(c => ({ cells: [c.companyName, c.companyCode, c.totalVisits, c.totalAmount, c.pendingWeeks.join(', ')] }))
+            : [{ cells: ['Aucune compagnie en attente', '', null, null, ''] }],
+        },
+      ],
+    };
+  };
+
+  private _sortValue(r: EligibleRow, k: EligibleSortKey): SortValue {
+    switch (k) {
+      case 'name':     return r.companyName;
+      case 'visits':   return r.totalVisits;
+      case 'subtotal': return r.totalAmount;
+      case 'tps':      return r.tps;
+      case 'tvq':      return r.tvq;
+      case 'ttc':      return r.totalWithTax;
+      case 'result':   return this.hasDiscrepancy(r);              // écarts d'abord au 1er clic
+      case 'planned':  return r.hourlyBilling || r.planningIncomplete ? null : r.plannedAmount;
+    }
+  }
 
   private _tpsRate   = 0.05;
   private _tvqRate   = 0.09975;
@@ -172,8 +242,10 @@ export class InvoiceFromTimesheetsComponent implements OnInit {
       subtotal:  row.totalAmount,
     } as BillablePriceGroup]).map(g => ({
       id:          crypto.randomUUID(),
-      quantity:    g.visits,
-      description: `Services de nettoyage — ${this.period}`,
+      quantity:    g.isHourly ? +(g.hours ?? 0) : g.visits,
+      description: g.isHourly
+        ? `Services de nettoyage — ${this.period} (heures)`
+        : `Services de nettoyage — ${this.period}`,
       unitPrice:   +g.unitPrice,
       subTotal:    +g.subtotal,
     }));
@@ -215,6 +287,7 @@ export class InvoiceFromTimesheetsComponent implements OnInit {
   /** Écart entre le montant planifié (calendrier tarifaire) et le montant réel (pointages). */
   hasDiscrepancy(row: EligibleRow): boolean {
     if (row.planningIncomplete) return false;   // rien à comparer sans planning calculable
+    if (row.hourlyBilling) return false;        // facturée à l'heure : pas de jours planifiés
     return Math.abs(row.plannedAmount - row.totalAmount) > 0.01;
   }
 

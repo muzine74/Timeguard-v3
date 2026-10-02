@@ -6,7 +6,7 @@
   padding: 10px 18px; border-radius: 10px;
   font-size: 13px; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity .3s;
   &.toast-show    { opacity: 1; }
-  &.toast-success { background: rgba(30,200,100,.15); border: 1px solid rgba(30,200,100,.35); color: #4ecb80; }
+  &.toast-success { background: rgba(30,200,100,.15); border: 1px solid rgba(30,200,100,.35); color: var(--success-text); }
   &.toast-error   { background: rgba(224,82,82,.12);  border: 1px solid rgba(224,82,82,.3);   color: var(--danger); }
 }
 
@@ -29,7 +29,7 @@
   &:focus { border-color: var(--accent); }
 
   // Le picker natif "month" rend son icône en sombre, invisible sur fond sombre
-  color-scheme: dark;
+  color-scheme: var(--color-scheme);
   &::-webkit-calendar-picker-indicator { cursor: pointer; }
 }
 
@@ -37,7 +37,7 @@
 .btn-generate {
   padding: 10px 22px; border-radius: 9px; font-size: 13px; font-weight: 700;
   border: 1px solid rgba(30,200,100,.4); cursor: pointer; font-family: inherit;
-  background: rgba(30,200,100,.12); color: #4ecb80; transition: all .15s;
+  background: rgba(30,200,100,.12); color: var(--success-text); transition: all .15s;
   display: flex; align-items: center; gap: 7px;
   &:hover:not(:disabled) { background: rgba(30,200,100,.22); }
   &:disabled { opacity: .4; cursor: not-allowed; }
@@ -50,7 +50,7 @@
 }
 .loading-spinner {
   width: 24px; height: 24px;
-  border: 3px solid rgba(201,162,39,.2); border-top-color: var(--accent);
+  border: 3px solid rgba(var(--accent-rgb), .2); border-top-color: var(--accent);
   border-radius: 50%; animation: spin .7s linear infinite;
 }
 
@@ -64,12 +64,12 @@
   background: var(--surface);
 }
 .section-hdr-eligible { border-top-color: rgba(30,200,100,.3); }
-.section-hdr-pending  { border-top-color: rgba(201,162,39,.3); }
+.section-hdr-pending  { border-top-color: rgba(var(--accent-rgb), .3); }
 
 .section-dot {
   width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0;
 }
-.dot-eligible { background: #4ecb80; }
+.dot-eligible { background: var(--success-text); }
 .dot-pending  { background: var(--accent); }
 
 .section-title { font-size: 13px; font-weight: 700; }
@@ -82,9 +82,9 @@
 }
 .section-count {
   padding: 2px 9px; border-radius: 12px; font-size: 11px; font-weight: 700;
-  background: rgba(30,200,100,.12); color: #4ecb80;
+  background: rgba(30,200,100,.12); color: var(--success-text);
 }
-.count-pending { background: rgba(201,162,39,.12); color: var(--accent); }
+.count-pending { background: rgba(var(--accent-rgb), .12); color: var(--accent); }
 
 // ── Table ─────────────────────────────────────────────────
 .table-wrap { overflow-x: auto; width: 100%; }
@@ -98,7 +98,7 @@
   th {
     padding: 10px 14px; text-align: left;
     font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px;
-    color: var(--muted); background: rgba(201,162,39,.04);
+    color: var(--muted); background: rgba(var(--accent-rgb), .04);
     border-bottom: 1px solid var(--border);
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
@@ -129,7 +129,7 @@
 
 // Écart planifié / réel — texte des cellules concernées en rouge
 .mismatch-text {
-  color: #e05252;
+  color: var(--danger-text);
   .pg-visits, .pg-price, .pg-sub { color: inherit; }
 }
 .row-pending     { opacity: .7; }
@@ -146,7 +146,7 @@
   display: inline-block; padding: 3px 10px; border-radius: 12px;
   font-size: 11px; font-weight: 700;
 }
-.result-ok  { background: rgba(30,200,100,.12);  color: #4ecb80; }
+.result-ok  { background: rgba(30,200,100,.12);  color: var(--success-text); }
 .result-err { background: rgba(224,82,82,.12); color: var(--danger); }
 
 // ── Symbole planifié vs réel ────────────────────────────────
@@ -155,14 +155,14 @@
   width: 20px; height: 20px; border-radius: 50%;
   font-size: 12px; font-weight: 700; margin-right: 6px;
 }
-.match-ok  { background: rgba(30,200,100,.15); color: #4ecb80; }
+.match-ok  { background: rgba(30,200,100,.15); color: var(--success-text); }
 .match-err { background: rgba(224,82,82,.15);  color: var(--danger); }
 
 // ── Groupes de prix ───────────────────────────────────────
 .price-group {
   display: flex; align-items: center; gap: 6px;
   font-size: 12px; padding: 1px 0;
-  & + .price-group { border-top: 1px solid rgba(255,255,255,.04); margin-top: 2px; padding-top: 3px; }
+  & + .price-group { border-top: 1px solid rgba(var(--overlay-rgb), .04); margin-top: 2px; padding-top: 3px; }
 }
 .pg-visits { color: var(--muted); font-weight: 600; min-width: 24px; text-align: right; }
 .pg-price  { color: var(--text);  font-family: 'JetBrains Mono', monospace; min-width: 72px; }
@@ -173,7 +173,7 @@
 .week-chip {
   display: inline-block; margin: 2px 3px;
   padding: 2px 8px; border-radius: 10px; font-size: 11px; font-family: monospace;
-  background: rgba(201,162,39,.12); color: var(--accent); border: 1px solid rgba(201,162,39,.25);
+  background: rgba(var(--accent-rgb), .12); color: var(--accent); border: 1px solid rgba(var(--accent-rgb), .25);
 }
 
 .lock-icon { font-size: 14px; }
@@ -190,7 +190,7 @@
 // ── Spinner inline ────────────────────────────────────────
 .spinner {
   display: inline-block; width: 14px; height: 14px;
-  border: 2px solid rgba(30,200,100,.3); border-top-color: #4ecb80;
+  border: 2px solid rgba(30,200,100,.3); border-top-color: var(--success-text);
   border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle;
 }
 

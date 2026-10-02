@@ -37,7 +37,7 @@ import { MultiSelectComponent } from '../multi-select/multi-select.component';
     .nle-chips { display: flex; flex-wrap: wrap; gap: 6px; }
     .nle-chip {
       display: inline-flex; align-items: center; gap: 6px; max-width: 100%;
-      background: rgba(201,162,39,.12); border: 1px solid rgba(201,162,39,.3); color: var(--text);
+      background: rgba(var(--accent-rgb), .12); border: 1px solid rgba(var(--accent-rgb), .3); color: var(--text);
       border-radius: 14px; padding: 3px 4px 3px 10px; font-size: .8rem;
     }
     .nle-type { color: var(--accent); font-weight: 600; font-size: .72rem; }

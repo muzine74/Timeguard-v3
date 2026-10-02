@@ -21,16 +21,16 @@
 
 .btn-primary {
   padding: .6rem 1.4rem;
-  background: rgba(201, 162, 39, .15);
+  background: rgba(var(--accent-rgb), .15);
   color: var(--accent);
-  border: 1px solid rgba(201, 162, 39, .4);
+  border: 1px solid rgba(var(--accent-rgb), .4);
   border-radius: 8px;
   font-weight: 700;
   font-size: .9rem;
   cursor: pointer;
   white-space: nowrap;
   transition: background .15s;
-  &:hover { background: rgba(201, 162, 39, .25); }
+  &:hover { background: rgba(var(--accent-rgb), .25); }
 }
 
 // ── Alertes ───────────────────────────────────────────────────────────────
@@ -81,8 +81,8 @@
   display: inline-block;
   margin: .1rem .3rem .1rem 0;
   padding: .1rem .5rem;
-  background: rgba(201, 162, 39, .12);
-  border: 1px solid rgba(201, 162, 39, .3);
+  background: rgba(var(--accent-rgb), .12);
+  border: 1px solid rgba(var(--accent-rgb), .3);
   color: var(--accent);
   border-radius: 20px;
   font-size: .75rem;
@@ -154,7 +154,7 @@
     color: var(--text);
     background: var(--surface2);
     font-family: inherit;
-    color-scheme: dark;
+    color-scheme: var(--color-scheme);
     &:focus { outline: none; border-color: var(--accent); }
   }
   textarea { resize: vertical; }
@@ -169,12 +169,12 @@
   padding: .35rem .9rem;
   background: var(--surface2);
   color: var(--accent);
-  border: 1px solid rgba(201, 162, 39, .4);
+  border: 1px solid rgba(var(--accent-rgb), .4);
   border-radius: 6px;
   font-weight: 700;
   font-size: .8rem;
   cursor: pointer;
-  &:hover { background: rgba(201, 162, 39, .15); }
+  &:hover { background: rgba(var(--accent-rgb), .15); }
 }
 
 .company-checklist {
@@ -348,9 +348,9 @@
 
 .btn-popup-confirm {
   padding: .5rem 1.6rem;
-  background: rgba(201, 162, 39, .15);
+  background: rgba(var(--accent-rgb), .15);
   color: var(--accent);
-  border: 1px solid rgba(201, 162, 39, .4);
+  border: 1px solid rgba(var(--accent-rgb), .4);
   border-radius: 6px;
   font-weight: 700;
   font-size: .9rem;
@@ -358,7 +358,7 @@
   font-family: inherit;
   transition: background .15s;
   &:disabled { opacity: .55; cursor: default; }
-  &:hover:not(:disabled) { background: rgba(201, 162, 39, .25); }
+  &:hover:not(:disabled) { background: rgba(var(--accent-rgb), .25); }
 }
 
 // ── Responsive ────────────────────────────────────────────────────────────

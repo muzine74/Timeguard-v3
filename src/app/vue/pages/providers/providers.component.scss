@@ -12,7 +12,7 @@
 .toast {
   position: fixed; top: 18px; right: 24px; z-index: 999;
   background: rgba(30,200,100,.15); border: 1px solid rgba(30,200,100,.3);
-  color: #4ecb80; padding: 10px 18px; border-radius: 10px;
+  color: var(--success-text); padding: 10px 18px; border-radius: 10px;
   font-size: 13px; font-weight: 600; opacity: 0; pointer-events: none;
   transition: opacity .3s;
   &.toast-show { opacity: 1; }
@@ -30,12 +30,12 @@
 .sidebar-hdr {
   padding: 18px 16px 14px;
   border-bottom: 1px solid var(--border);
-  background: rgba(201,162,39,.03);
+  background: rgba(var(--accent-rgb), .03);
 }
 .sidebar-brand { display: flex; align-items: center; gap: 12px; }
 .brand-icon {
   width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
-  background: rgba(201,162,39,.15); border: 1px solid rgba(201,162,39,.3);
+  background: rgba(var(--accent-rgb), .15); border: 1px solid rgba(var(--accent-rgb), .3);
   display: flex; align-items: center; justify-content: center; font-size: 16px;
 }
 .sidebar-title { font-size: 13px; font-weight: 700; color: var(--accent); }
@@ -79,13 +79,13 @@
   padding: 9px 10px; border-radius: 9px; border: 1px solid transparent;
   background: none; cursor: pointer; width: 100%; text-align: left;
   color: var(--text); transition: all .15s;
-  &:hover { background: rgba(201,162,39,.05); border-color: rgba(201,162,39,.15); }
-  &.provider-selected { background: rgba(201,162,39,.1); border-color: rgba(201,162,39,.3); }
+  &:hover { background: rgba(var(--accent-rgb), .05); border-color: rgba(var(--accent-rgb), .15); }
+  &.provider-selected { background: rgba(var(--accent-rgb), .1); border-color: rgba(var(--accent-rgb), .3); }
   &.provider-inactive { opacity: .55; }
 }
 .provider-avatar {
   width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
-  background: rgba(201,162,39,.15); border: 1px solid rgba(201,162,39,.2);
+  background: rgba(var(--accent-rgb), .15); border: 1px solid rgba(var(--accent-rgb), .2);
   display: flex; align-items: center; justify-content: center;
   font-size: 11px; font-weight: 700; color: var(--accent);
 }
@@ -107,7 +107,7 @@
   width: 100%; padding: 9px; border-radius: 9px; border: 1px dashed var(--border);
   background: none; color: var(--muted); font-size: 13px; font-weight: 600;
   cursor: pointer; transition: all .15s;
-  &:hover { border-color: var(--accent); color: var(--accent); background: rgba(201,162,39,.05); }
+  &:hover { border-color: var(--accent); color: var(--accent); background: rgba(var(--accent-rgb), .05); }
 }
 
 // ── Zone principale ──────────────────────────────────────────────────────────
@@ -136,11 +136,11 @@
 .form-card-hdr {
   display: flex; align-items: center; gap: 12px;
   padding: 16px 20px; border-bottom: 1px solid var(--border);
-  background: rgba(201,162,39,.03);
+  background: rgba(var(--accent-rgb), .03);
 }
 .form-card-icon {
   width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
-  background: rgba(201,162,39,.1); border: 1px solid rgba(201,162,39,.2);
+  background: rgba(var(--accent-rgb), .1); border: 1px solid rgba(var(--accent-rgb), .2);
   display: flex; align-items: center; justify-content: center; font-size: 16px;
 }
 .form-card-title { font-size: 14px; font-weight: 700; }
@@ -173,7 +173,7 @@
 .detail-actions { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; flex-shrink: 0; }
 .detail-avatar {
   width: 52px; height: 52px; border-radius: 12px; flex-shrink: 0;
-  background: rgba(201,162,39,.15); border: 1px solid rgba(201,162,39,.25);
+  background: rgba(var(--accent-rgb), .15); border: 1px solid rgba(var(--accent-rgb), .25);
   display: flex; align-items: center; justify-content: center;
   font-size: 16px; font-weight: 700; color: var(--accent);
 }
@@ -186,7 +186,7 @@
   padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;
   background: var(--surface2); color: var(--muted); border: 1px solid var(--border);
 }
-.chip-plan    { background: rgba(36,87,197,.1); color: #6b9ef5; border-color: rgba(36,87,197,.3); }
+.chip-plan    { background: rgba(36,87,197,.1); color: var(--info-text); border-color: rgba(36,87,197,.3); }
 .chip-active  { background: rgba(30,200,100,.1); color: var(--success); border-color: rgba(30,200,100,.3); }
 .chip-inactive{ background: rgba(224,82,82,.1);  color: var(--danger);  border-color: rgba(224,82,82,.3); }
 
@@ -216,7 +216,7 @@
 
 .admin-form {
   padding: 16px 18px; border-bottom: 1px solid var(--border);
-  background: rgba(201,162,39,.02);
+  background: rgba(var(--accent-rgb), .02);
 }
 .admin-form-fields {
   display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px;
@@ -233,7 +233,7 @@
 }
 .admin-avatar {
   width: 30px; height: 30px; border-radius: 7px; flex-shrink: 0;
-  background: rgba(201,162,39,.12); border: 1px solid rgba(201,162,39,.2);
+  background: rgba(var(--accent-rgb), .12); border: 1px solid rgba(var(--accent-rgb), .2);
   display: flex; align-items: center; justify-content: center;
   font-size: 10px; font-weight: 700; color: var(--accent);
 }
@@ -241,16 +241,16 @@
 .admin-name { font-size: 13px; font-weight: 600; }
 .admin-user { font-size: 11px; color: var(--muted); }
 .btn-open-admin {
-  background: rgba(201,162,39,.08); border: 1px solid rgba(201,162,39,.3);
+  background: rgba(var(--accent-rgb), .08); border: 1px solid rgba(var(--accent-rgb), .3);
   color: var(--accent); border-radius: 6px; padding: 3px 10px;
   cursor: pointer; font-size: 11px; font-weight: 600; white-space: nowrap;
   transition: all .15s;
-  &:hover:not(:disabled) { background: rgba(201,162,39,.18); }
+  &:hover:not(:disabled) { background: rgba(var(--accent-rgb), .18); }
   &:disabled { opacity: .45; cursor: not-allowed; }
 }
 .spinner-sm {
   display: inline-block; width: 10px; height: 10px;
-  border: 2px solid rgba(201,162,39,.3); border-top-color: var(--accent);
+  border: 2px solid rgba(var(--accent-rgb), .3); border-top-color: var(--accent);
   border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle;
 }
 .btn-rm {
@@ -270,11 +270,11 @@
        border: 1px solid var(--border); cursor: pointer; font-family: inherit; transition: all .18s; }
 .btn-sm { padding: 5px 12px; font-size: 11px; }
 .btn-outline { background: transparent; color: var(--muted); &:hover { color: var(--text); background: var(--surface2); } }
-.btn-primary { background: rgba(201,162,39,.85); border-color: #c9a227; color: #fff;
-               &:hover:not(:disabled) { background: #c9a227; } &:disabled { opacity: .45; cursor: not-allowed; } }
-.btn-open { background: rgba(201,162,39,.1); color: var(--accent); border-color: rgba(201,162,39,.35);
+.btn-primary { background: rgba(var(--accent-rgb), .85); border-color: var(--accent); color: var(--on-accent);
+               &:hover:not(:disabled) { background: var(--accent); } &:disabled { opacity: .45; cursor: not-allowed; } }
+.btn-open { background: rgba(var(--accent-rgb), .1); color: var(--accent); border-color: rgba(var(--accent-rgb), .35);
             font-size: 12px; padding: 5px 13px;
-            &:hover:not(:disabled) { background: rgba(201,162,39,.2); }
+            &:hover:not(:disabled) { background: rgba(var(--accent-rgb), .2); }
             &:disabled { opacity: .35; cursor: not-allowed; } }
 .btn-danger-sm { background: rgba(224,82,82,.1); color: var(--danger); border-color: rgba(224,82,82,.3);
                  font-size: 12px; padding: 5px 12px; &:hover { background: rgba(224,82,82,.2); } }
@@ -282,10 +282,10 @@
                  font-size: 12px; padding: 5px 12px; &:hover { background: rgba(30,200,100,.2); } }
 
 .spinner { display: inline-block; width: 14px; height: 14px;
-  border: 2px solid rgba(255,255,255,.3); border-top-color: #fff;
+  border: 2px solid rgba(var(--overlay-rgb), .3); border-top-color: var(--on-accent);
   border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .mini-spinner { width: 18px; height: 18px;
-  border: 2px solid rgba(201,162,39,.2); border-top-color: var(--accent);
+  border: 2px solid rgba(var(--accent-rgb), .2); border-top-color: var(--accent);
   border-radius: 50%; animation: spin .7s linear infinite; }

@@ -110,7 +110,51 @@
       <!-- Tableau des tarifs -->
       <ng-container *ngIf="selectedCompany() && !loading()">
 
-        <div class="no-days" *ngIf="rows().length === 0">
+        <!-- Taux horaire : compagnie facturée par heure -->
+        <div class="pricing-card hourly-card" *ngIf="hourly() as h">
+          <div class="pricing-legend">
+            <b>Compagnie facturée {{ h.isHourlyCompany ? "à l'heure" : 'à la visite' }}.</b>
+            Choisissez comment cet employé est payé <b>chez cette compagnie</b> (un employé peut être payé à la visite chez une compagnie et à l'heure chez une autre, dans la même semaine).
+          </div>
+          <div class="hourly-row">
+            <div class="hourly-field">
+              <label class="hourly-label" for="employee-pricing-pay-mode">Mode de rémunération chez cette compagnie</label>
+              <select id="employee-pricing-pay-mode" class="inp inp-sel hourly-select" [(ngModel)]="payModeInput">
+                <option value="Defaut">Par défaut de l'employé ({{ h.modeRemunerationEmploye === 'Heure' ? 'par heure' : 'par visite' }})</option>
+                <option value="Visite">Par visite (tarifs ci-dessous)</option>
+                <option value="Heure">Par heure</option>
+              </select>
+            </div>
+            <ng-container *ngIf="paysHourlyHere">
+              <div class="hourly-field">
+                <span class="hourly-label">Taux par défaut de la compagnie</span>
+                <span class="hourly-value">{{ h.defaultRate != null ? (h.defaultRate | number:'1.2-2') + ' $/h' : '—' }}</span>
+              </div>
+              <div class="hourly-field">
+                <label class="hourly-label" for="employee-pricing-hourly-rate">Taux spécifique de l'employé ($/h)</label>
+                <input id="employee-pricing-hourly-rate" class="inp hourly-inp" type="number" min="0" step="0.01"
+                       [(ngModel)]="hourlyInput" placeholder="Taux par défaut" />
+              </div>
+              <div class="hourly-field">
+                <span class="hourly-label">Taux appliqué</span>
+                <span class="hourly-value hourly-effective">{{ (hourlyInput ?? h.defaultRate) != null ? ((hourlyInput ?? h.defaultRate) | number:'1.2-2') + ' $/h' : 'Aucun taux' }}</span>
+              </div>
+            </ng-container>
+            <button class="btn btn-primary btn-sm" type="button" (click)="saveHourly()" [disabled]="hourlySaving()">
+              {{ hourlySaving() ? 'Enregistrement…' : 'Enregistrer' }}
+            </button>
+          </div>
+          <div class="pricing-legend">
+            <ng-container *ngIf="paysHourlyHere || h.isHourlyCompany">Pointage en heures (début / fin) chez cette compagnie. </ng-container>
+            <ng-container *ngIf="paysHourlyHere">Paie = heures × taux appliqué ; laissez le taux vide pour utiliser celui de la compagnie. </ng-container>
+            <ng-container *ngIf="!paysHourlyHere">Paie = tarifs à la visite ci-dessous. </ng-container>
+            S'applique aux pointages enregistrés ensuite (les montants déjà pointés ne sont pas recalculés).
+          </div>
+          <div class="hourly-msg" *ngIf="hourlyMessage()" role="status">{{ hourlyMessage() }}</div>
+          <div class="hourly-err" *ngIf="hourlyError()" role="alert">{{ hourlyError() }}</div>
+        </div>
+
+        <div class="no-days" *ngIf="rows().length === 0 && !paysHourlyHere">
           Aucun jour de travail actif défini pour cette compagnie.
         </div>
 

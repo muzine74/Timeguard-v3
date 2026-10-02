@@ -4,13 +4,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EmployeesService } from '../../../state/employees/employees.service';
+import { TeamAssignmentComponent } from '../../components/team-assignment/team-assignment.component';
 import { EmployeeFile, EmployeeForm } from '../../../models';
 
 @Component({
   selector: 'app-employee-create',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TeamAssignmentComponent],
   templateUrl: './employee-create.component.html',
   styleUrls: ['./employee-create.component.scss'],
 })
@@ -41,6 +42,8 @@ export class EmployeeCreateComponent {
 
   submit(): void {
     if (!this._validate()) return;
+    const teamError = TeamAssignmentComponent.validate(this.form);
+    if (teamError) { this.error.set(teamError); return; }
 
     this.error.set('');
     this.saving.set(true);
@@ -164,6 +167,9 @@ export class EmployeeCreateComponent {
     return {
       employeeName: '', employeeMail: '', employeePhone: '', employeeNote: '', nas: '',
       employeeType: 'Permanent',
+      modeRemuneration: 'Visite',
+      isTeamLead: false,
+      managerId: null,
       employeeCivicNumber: '', employeeSuite: '', employeeZipCode: '',
       employeeCity: '', employeeState: 'QC', employeeCountry: 'Canada', employeeAdressNote: '',
     };

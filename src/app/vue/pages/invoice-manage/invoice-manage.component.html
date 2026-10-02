@@ -11,6 +11,7 @@
       <p class="page-sub">{{ rootNodes().length }} facture(s) — {{ bills().length - rootNodes().length }} avoir(s) — page {{ currentPage() }}/{{ totalPages() }}</p>
     </div>
     <div class="page-actions">
+      <app-export-buttons [build]="exportBills" [disabled]="loading() || rootNodes().length === 0" label="la liste des factures"></app-export-buttons>
       <button class="btn btn-primary" (click)="navigateGenerate()">+ Nouvelle facture</button>
     </div>
   </header>
@@ -55,14 +56,14 @@
     <table class="bills-table">
       <thead>
         <tr>
-          <th>N° Facture</th>
-          <th>Compagnie</th>
-          <th>Période</th>
-          <th>Date</th>
-          <th class="col-right">Total TTC</th>
-          <th class="col-center">Statut envoi</th>
-          <th class="col-center">Paiement</th>
-          <th class="col-actions">Actions</th>
+          <th scope="col" [attr.aria-sort]="sort.aria('num')"><button type="button" class="th-sort" (click)="sortBy('num')">N° Facture <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('num') }}</span></button></th>
+          <th scope="col" [attr.aria-sort]="sort.aria('company')"><button type="button" class="th-sort" (click)="sortBy('company')">Compagnie <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('company') }}</span></button></th>
+          <th scope="col" [attr.aria-sort]="sort.aria('period')"><button type="button" class="th-sort" (click)="sortBy('period')">Période <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('period') }}</span></button></th>
+          <th scope="col" [attr.aria-sort]="sort.aria('date')"><button type="button" class="th-sort" (click)="sortBy('date')">Date <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('date') }}</span></button></th>
+          <th scope="col" class="col-right" [attr.aria-sort]="sort.aria('ttc')"><button type="button" class="th-sort" (click)="sortBy('ttc')">Total TTC <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('ttc') }}</span></button></th>
+          <th scope="col" class="col-center" [attr.aria-sort]="sort.aria('sent')"><button type="button" class="th-sort" (click)="sortBy('sent')">Statut envoi <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('sent') }}</span></button></th>
+          <th scope="col" class="col-center" [attr.aria-sort]="sort.aria('paid')"><button type="button" class="th-sort" (click)="sortBy('paid')">Paiement <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('paid') }}</span></button></th>
+          <th scope="col" class="col-actions">Actions</th>
         </tr>
       </thead>
       <tbody>

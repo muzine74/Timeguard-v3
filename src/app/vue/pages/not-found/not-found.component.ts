@@ -28,9 +28,9 @@ import { RouterLink } from '@angular/router';
     .nf-sub   { font-size: .875rem; color: var(--muted); max-width: 340px; }
     .btn-home {
       margin-top: 8px; padding: 10px 22px;
-      background: rgba(201,162,39,.12); border: 1px solid rgba(201,162,39,.3);
+      background: rgba(var(--accent-rgb), .12); border: 1px solid rgba(var(--accent-rgb), .3);
       color: var(--accent); border-radius: 9px; font-size: 13px; font-weight: 700;
-      &:hover { background: rgba(201,162,39,.22); }
+      &:hover { background: rgba(var(--accent-rgb), .22); }
     }
   `]
 })

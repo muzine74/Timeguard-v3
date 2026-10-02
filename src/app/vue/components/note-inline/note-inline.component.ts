@@ -47,7 +47,7 @@ import { NotesService, NoteItem, NoteAlertRefs, NOTE_LINK_LABELS } from '../../.
     .ni-compact .ni-title { font-size: .78rem; }
     .ni-link {
       margin-left: 6px; font-weight: 600; font-size: .7rem; color: var(--accent);
-      background: rgba(201,162,39,.12); border: 1px solid rgba(201,162,39,.3);
+      background: rgba(var(--accent-rgb), .12); border: 1px solid rgba(var(--accent-rgb), .3);
       border-radius: 10px; padding: 1px 7px;
     }
     .ni-desc { font-size: .8rem; color: var(--text); opacity: .85; white-space: pre-wrap; margin-top: 2px; }

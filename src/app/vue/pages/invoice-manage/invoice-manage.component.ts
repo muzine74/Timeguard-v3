@@ -5,6 +5,14 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { InvoiceService, BillSummary, BillDetail, BillLine, BillFilter, BillCreatePayload } from '../../../state/invoice/invoice.service';
 import { ConfigService } from '../../../state/config/config.service';
+import { TableSort, SortValue } from '../../shared/table-sort';
+import { ExportButtonsComponent } from '../../components/export-buttons/export-buttons.component';
+import { ExportCell, ExportDoc, ExportRow, TableExportService } from '../../../state/export/table-export.service';
+
+type BillSortKey = 'num' | 'company' | 'period' | 'date' | 'ttc' | 'sent' | 'paid';
+const SORT_LABELS: Record<BillSortKey, string> = {
+  num: 'N° facture', company: 'Compagnie', period: 'Période', date: 'Date', ttc: 'Total TTC', sent: 'Statut envoi', paid: 'Paiement',
+};
 
 type ModalMode = 'delete' | 'avoir' | 'detail' | 'send' | null;
 
@@ -22,7 +30,7 @@ interface FlatRow {
   selector: 'app-invoice-manage',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ExportButtonsComponent],
   templateUrl: './invoice-manage.component.html',
   styleUrls: ['./invoice-manage.component.scss'],
 })
@@ -51,9 +59,81 @@ export class InvoiceManageComponent implements OnInit {
     return map;
   });
 
-  rootNodes = computed(() =>
+  private _unsortedRoots = computed(() =>
     [...this._nodeMap().values()].filter(n => !n.data.parentBillIdentifier)
   );
+
+  /** Tri au clic sur l'en-tête, appliqué à toute la liste avant la pagination.
+   *  Les avoirs restent sous leur facture d'origine. */
+  readonly sort = new TableSort<BillSortKey>(['date', 'ttc']);
+
+  rootNodes = computed(() =>
+    this.sort.apply(this._unsortedRoots(), (n, k) => this._sortValue(n.data, k))
+  );
+
+  private _sortValue(b: BillSummary, k: BillSortKey): SortValue {
+    switch (k) {
+      case 'num':     return b.billNumber;
+      case 'company': return b.companyName;
+      case 'period':  return b.period;
+      case 'date':    return b.billedDate;
+      case 'ttc':     return b.totalWithTax;
+      case 'sent':    return b.isSent;   // non envoyées d'abord au 1er clic
+      case 'paid':    return b.isPaid;   // impayées d'abord au 1er clic
+    }
+  }
+
+  /** Export : toutes les factures filtrées (toutes les pages), dans l'ordre du tri, avoirs sous leur facture. */
+  exportBills = (): ExportDoc => {
+    const rows: ExportRow[] = [];
+    const line = (b: BillSummary): ExportCell[] => [
+      b.billNumber, b.companyName, b.period, (b.billedDate ?? '').slice(0, 10),
+      b.totalBeforeTax, b.tps, b.tvq, b.totalWithTax,
+      b.isSent ? 'Envoyée' : 'Non envoyée', b.parentBillIdentifier !== null ? '' : b.isPaid ? 'Payée' : 'Impayée',
+    ];
+    const walk = (nodes: BillTreeNode[], depth: number) => {
+      for (const n of nodes) {
+        rows.push({ kind: depth > 0 ? 'detail' : undefined, cells: line(n.data) });
+        walk(n.children, depth + 1);
+      }
+    };
+    walk(this.rootNodes(), 0);
+    const all = this.bills();
+    const sum = (k: 'totalBeforeTax' | 'tps' | 'tvq' | 'totalWithTax') => Math.round(all.reduce((t, b) => t + b[k], 0) * 100) / 100;
+    const nf = this.rootNodes().length, na = all.length - nf;
+    rows.push({ kind: 'total', cells: [`Total : ${nf} facture(s), ${na} avoir(s)`, '', '', '', sum('totalBeforeTax'), sum('tps'), sum('tvq'), sum('totalWithTax'), '', ''] });
+    return {
+      fileName: TableExportService.fileName('Gestion_des_factures', this.dateFrom, this.dateTo),
+      title: 'Gestion des factures',
+      subtitle: this._filterLabel(),
+      landscape: true,
+      tables: [{
+        title: 'Factures',
+        columns: [
+          { header: 'N° facture', width: 18 }, { header: 'Compagnie', width: 32 }, { header: 'Période', width: 10 }, { header: 'Date', width: 12 },
+          { header: 'Total HT', type: 'money' }, { header: 'TPS', type: 'money' }, { header: 'TVQ', type: 'money' }, { header: 'Total TTC', type: 'money' },
+          { header: 'Envoi', width: 13 }, { header: 'Paiement', width: 11 },
+        ],
+        rows,
+      }],
+    };
+  };
+
+  private _filterLabel(): string {
+    const parts: string[] = [];
+    if (this.search?.trim()) parts.push(`Recherche « ${this.search.trim()} »`);
+    const st = [this.onlyNotSent && 'non envoyées', this.onlySent && 'envoyées', this.onlyPaid && 'payées', this.onlyUnpaid && 'impayées'].filter(Boolean);
+    if (st.length) parts.push(`Statut : ${st.join(', ')}`);
+    if (this.dateFrom || this.dateTo) parts.push(`Du ${this.dateFrom || '…'} au ${this.dateTo || '…'}`);
+    const k = this.sort.key();
+    if (k) parts.push(`Tri : ${SORT_LABELS[k]} ${this.sort.dir() === 'asc' ? 'croissant' : 'décroissant'}`);
+    return parts.length ? parts.join(' — ') : 'Toutes les factures';
+  }
+
+  sortBy(k: BillSortKey): void {
+    this.sort.toggle(k);
+    this.currentPage.set(1);
+  }
 
   // ── Pagination ────────────────────────────────────────────────────────────
   pageSize    = signal(25);

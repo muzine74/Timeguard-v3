@@ -47,7 +47,7 @@
 
 .success-banner {
   background: rgba(70,170,110,.12); border: 1px solid rgba(70,170,110,.3);
-  border-radius: 9px; padding: 10px 14px; font-size: 12.5px; color: #3a9e6c;
+  border-radius: 9px; padding: 10px 14px; font-size: 12.5px; color: var(--success-text);
   margin-bottom: 16px;
 }
 
@@ -59,14 +59,14 @@
   &:disabled { opacity: .5; cursor: not-allowed; }
 }
 .btn-primary {
-  background: rgba(201,162,39,.15); border-color: rgba(201,162,39,.4); color: var(--accent);
-  &:hover:not(:disabled) { background: rgba(201,162,39,.25); }
+  background: rgba(var(--accent-rgb), .15); border-color: rgba(var(--accent-rgb), .4); color: var(--accent);
+  &:hover:not(:disabled) { background: rgba(var(--accent-rgb), .25); }
   &:disabled { opacity: .5; cursor: not-allowed; }
 }
 
 .spinner {
   display: inline-block; width: 14px; height: 14px;
-  border: 2px solid rgba(201,162,39,.3); border-top-color: var(--accent);
+  border: 2px solid rgba(var(--accent-rgb), .3); border-top-color: var(--accent);
   border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle;
 }
 @keyframes spin { to { transform: rotate(360deg); } }

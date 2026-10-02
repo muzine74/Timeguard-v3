@@ -1,6 +1,6 @@
 import { Injectable, signal, computed, isDevMode } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Compagnie, WeekDay, TimeLogQueryResultDto } from '../../models';
+import { Compagnie, WeekDay, TimeLogQueryResultDto, HourEntry } from '../../models';
 import { WeekService } from './week.service';
 
 /** État d'une semaine : ses lignes de compagnies (propres à la semaine — une semaine validée
@@ -120,19 +120,118 @@ export class PointageEmployeeService {
   }
 
   private _fromTimeLogs(logs: TimeLogQueryResultDto[]): Compagnie[] {
-    const map = new Map<string, { id: number; companyId: string; nom: string; pointages: Record<string, boolean>; prices: Record<string, number> }>();
+    const map = new Map<string, Compagnie & { pointages: Record<string, boolean>; prices: Record<string, number>; hours: Record<string, HourEntry[]> }>();
     let idCounter = 1;
     for (const log of logs) {
       if (!map.has(log.companyId)) {
-        map.set(log.companyId, { id: idCounter++, companyId: log.companyId, nom: log.companyName, pointages: {}, prices: {} });
+        map.set(log.companyId, { id: idCounter++, companyId: log.companyId, nom: log.companyName, pointages: {}, prices: {}, hours: {} });
       }
       const comp = map.get(log.companyId)!;
+      if (log.isHourly) {
+        comp.hourly = true;
+        if (log.hourlyRate != null) comp.hourlyRate = log.hourlyRate;
+      }
       if (log.workDate && log.workDate !== '0001-01-01') {
         comp.pointages[log.workDate] = true;
         if (log.clientPrice > 0) comp.prices[log.workDate] = log.clientPrice;
+        if (log.ranges?.length)
+          comp.hours[log.workDate] = log.ranges.map(r => ({ begin: r.begin, end: r.end }));
+        else if (log.beginWork && log.endWork)
+          comp.hours[log.workDate] = [{ begin: log.beginWork.slice(11, 16), end: log.endWork.slice(11, 16) }];
       }
     }
     return Array.from(map.values()).map(c => ({ ...c, selected: false }));
+  }
+
+  // ── Pointage horaire : plusieurs plages (début / fin) par jour ──────────
+  /** Plages du jour (au moins une ligne, vide, pour la saisie). */
+  hoursOf(c: Compagnie, dk: string): HourEntry[] {
+    const r = c.hours?.[dk];
+    return r?.length ? r : [{ begin: '', end: '' }];
+  }
+
+  private static _min(t: string): number { const [h, m] = t.split(':').map(Number); return h * 60 + m; }
+
+  /** Durée d'une plage en heures (2 décimales) ; null si incomplète ou fin ≤ début. */
+  static rangeDuration(e: HourEntry | undefined): number | null {
+    if (!e?.begin || !e?.end) return null;
+    const d = PointageEmployeeService._min(e.end) - PointageEmployeeService._min(e.begin);
+    return d > 0 ? Math.round(d / 60 * 100) / 100 : null;
+  }
+
+  /** Total de la journée = somme des plages valides ; null si aucune. */
+  static duration(ranges: HourEntry[] | undefined): number | null {
+    const total = (ranges ?? []).reduce((s, r) => s + (PointageEmployeeService.rangeDuration(r) ?? 0), 0);
+    return total > 0 ? Math.round(total * 100) / 100 : null;
+  }
+
+  /** Une plage incomplète (une seule heure), fin ≤ début, ou deux plages qui se chevauchent. */
+  static isInvalid(ranges: HourEntry[] | undefined): boolean {
+    const filled = (ranges ?? []).filter(r => r.begin || r.end);
+    if (filled.some(r => PointageEmployeeService.rangeDuration(r) === null)) return true;
+    const sorted = [...filled].sort((a, b) => a.begin.localeCompare(b.begin));
+    return sorted.some((r, i) => i > 0 && PointageEmployeeService._min(r.begin) < PointageEmployeeService._min(sorted[i - 1].end));
+  }
+
+  setHours(compId: number, dk: string, index: number, field: 'begin' | 'end', value: string): void {
+    this._updateRanges(compId, dk, (c, ranges) => ranges.map((r, i) => i === index ? { ...r, [field]: value } : r));
+  }
+
+  /** Ajoute une plage vide à la journée. */
+  addRange(compId: number, dk: string): void {
+    this._updateRanges(compId, dk, (c, ranges) => [...ranges, { begin: '', end: '' }]);
+  }
+
+  /** Retire une plage (la dernière restante est vidée plutôt que supprimée). */
+  removeRange(compId: number, dk: string, index: number): void {
+    this._updateRanges(compId, dk, (c, ranges) => {
+      const next = ranges.filter((_, i) => i !== index);
+      return next.length ? next : [{ begin: '', end: '' }];
+    });
+  }
+
+  private _updateRanges(compId: number, dk: string, fn: (c: Compagnie, ranges: HourEntry[]) => HourEntry[]): void {
+    this._compagnies.update(l => l.map(c => {
+      if (c.id !== compId) return c;
+      const ranges = fn(c, this.hoursOf(c, dk).map(r => ({ ...r })));
+      const hours  = { ...c.hours, [dk]: ranges };
+      const dur    = PointageEmployeeService.duration(ranges);
+      const prices = { ...c.prices };
+      // Aperçu de la paie (le serveur recalcule et fige le montant à l'enregistrement) :
+      // payé à l'heure → heures × taux ; payé à la visite → prix du planning pour ce jour
+      const visitPrice = this._pricingMap.get(c.companyId)?.[this._toDayName(dk)];
+      if (dur !== null && c.hourlyRate != null) prices[dk] = Math.round(dur * c.hourlyRate * 100) / 100;
+      else if (dur !== null && c.hourlyRate == null && visitPrice !== undefined) prices[dk] = visitPrice;
+      else delete prices[dk];
+      return { ...c, hours, prices, pointages: { ...c.pointages, [dk]: dur !== null } };
+    }));
+    if (this._currentWeek) this._cache.set(this._cacheKey(this._currentWeek), this._snapshotFull());
+  }
+
+
+  totalHours(c: Compagnie, days: WeekDay[]): number {
+    return Math.round(days.reduce((s, d) => s + (PointageEmployeeService.duration(c.hours?.[d.dateKey]) ?? 0), 0) * 100) / 100;
+  }
+
+  /** Premier problème de saisie horaire, ou null. */
+  readonly hoursError = computed(() => {
+    const days = this._week.weekDays();
+    for (const c of this._compagnies()) {
+      if (!c.hourly) continue;
+      const bad = days.find(d => PointageEmployeeService.isInvalid(c.hours?.[d.dateKey]));
+      if (bad) return `${c.nom} — ${bad.labelFull} : chaque plage doit avoir un début et une fin (fin après le début), sans chevauchement.`;
+    }
+    return null;
+  });
+
+  /** Payload des pointages horaires : chaque ligne horaire est envoyée (même vide → suppression des heures retirées). */
+  hoursSnapshot(): Record<string, Record<string, HourEntry[]>> {
+    return Object.fromEntries(this._compagnies()
+      .filter(c => c.hourly)
+      .map(c => [c.companyId, Object.fromEntries(
+        Object.entries(c.hours ?? {})
+          .map(([k, rs]) => [k, rs.filter(r => r.begin || r.end).map(r => ({ ...r }))] as [string, HourEntry[]])
+          .filter(([, rs]) => rs.length))]));
   }
 
   toggle(compId: number, dateKey: string): void {
@@ -175,14 +274,15 @@ export class PointageEmployeeService {
   }
 
   selectAll(days: WeekDay[]): void {
-    this._compagnies.update(l => l.map(c => ({
+    // Les lignes horaires se saisissent heure par heure : « tout cocher » ne les touche pas
+    this._compagnies.update(l => l.map(c => c.hourly ? c : ({
       ...c, pointages: Object.fromEntries(days.map(d => [d.dateKey, true]))
     })));
     if (this._currentWeek) this._cache.set(this._cacheKey(this._currentWeek), this._snapshotFull());
   }
 
   clearAll(): void {
-    this._compagnies.update(l => l.map(c => ({ ...c, pointages: {} })));
+    this._compagnies.update(l => l.map(c => c.hourly ? { ...c, pointages: {}, hours: {}, prices: {} } : { ...c, pointages: {} }));
     if (this._currentWeek) this._cache.set(this._cacheKey(this._currentWeek), this._snapshotFull());
   }
 
@@ -216,7 +316,7 @@ export class PointageEmployeeService {
   count(c: Compagnie, days: WeekDay[]): number  { return days.filter(d => !!c.pointages?.[d.dateKey]).length; }
   total(days: WeekDay[]): number { return this._compagnies().reduce((s, c) => s + this.count(c, days), 0); }
 
-  /** Payload pour l'API (pointages uniquement). */
+  /** Payload pour l'API (visites ; les lignes horaires passent par hoursSnapshot()). */
   snapshot(): Record<string, Record<string, boolean>> {
     return Object.fromEntries(this._compagnies().map(c => [c.companyId, { ...c.pointages }]));
   }
@@ -235,13 +335,21 @@ export class PointageEmployeeService {
   /** Signature stable des jours cochés par compagnie (l'ordre des lignes est ignoré). */
   private _sig(rows: Compagnie[]): string {
     return rows
-      .map(c => `${c.companyId}:${Object.keys(c.pointages ?? {}).filter(k => c.pointages![k]).sort().join(',')}`)
+      .map(c => c.hourly
+        ? `${c.companyId}:h:${Object.keys(c.hours ?? {}).sort()
+            .map(k => [k, c.hours![k].filter(r => r.begin || r.end).map(r => `${r.begin}-${r.end}`).join('+')])
+            .filter(([, v]) => v)
+            .map(([k, v]) => `${k}=${v}`).join(',')}`
+        : `${c.companyId}:${Object.keys(c.pointages ?? {}).filter(k => c.pointages![k]).sort().join(',')}`)
       .sort()
       .join('|');
   }
 
   private _cloneRows(rows: Compagnie[]): Compagnie[] {
-    return rows.map(c => ({ ...c, pointages: { ...c.pointages }, prices: { ...c.prices } }));
+    return rows.map(c => ({
+      ...c, pointages: { ...c.pointages }, prices: { ...c.prices },
+      hours: Object.fromEntries(Object.entries(c.hours ?? {}).map(([k, rs]) => [k, rs.map(r => ({ ...r }))])),
+    }));
   }
 
   getEmployeeId(): string { return this._employeeId; }

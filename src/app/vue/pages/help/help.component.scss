@@ -34,7 +34,7 @@
     color: var(--text);
     text-decoration: none;
 
-    &:hover { background: rgba(255,255,255,.04); color: var(--accent); }
+    &:hover { background: rgba(var(--overlay-rgb), .04); color: var(--accent); }
   }
 }
 
@@ -87,6 +87,34 @@
   th { color: var(--muted); font-weight: 600; font-size: .78rem; text-transform: uppercase; letter-spacing: .03em; }
 
   .diagram { width: 100%; height: auto; margin: 8px 0 6px; }
+
+  // ── Combinaisons employé × compagnie ──
+  h4 { font-size: .92rem; margin: 18px 0 2px; }
+  .svg-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+  .combo { margin: 0 0 6px; }
+  .combo-title { display: flex; align-items: center; gap: 8px; }
+  .steps {
+    margin: 4px 0 18px; padding: 10px 14px 4px; border-radius: 10px;
+    background: rgba(var(--overlay-rgb), .03); border: 1px solid var(--border); border-left: 3px solid var(--accent);
+    ol { margin: 0 0 6px; }
+    li { font-size: .86rem; }
+  }
+  .steps-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin: 0 0 6px; font-size: .86rem; color: var(--accent); }
+  .steps-result { font-weight: 400; color: var(--muted); font-size: .8rem; }
+  .cm-num {
+    display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+    width: 22px; height: 22px; border-radius: 50%; font-size: .75rem; font-weight: 700;
+    background: var(--accent); color: var(--on-accent);
+  }
+  .combo-matrix { display: grid; gap: 6px; margin: 6px 0 14px; }
+  .cm-row { display: grid; grid-template-columns: 170px 1fr 1fr; gap: 6px; }
+  .cm-corner { display: block; }
+  .cm-head { display: flex; flex-wrap: wrap; align-items: center; column-gap: .3em; padding: 8px 10px; font-size: .82rem; color: var(--muted); }
+  .cm-cell {
+    display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 10px; font-size: .82rem;
+    background: rgba(var(--accent-rgb), .06); border: 1px solid rgba(var(--accent-rgb), .3);
+    .cm-num { margin-bottom: 4px; }
+  }
   .caption { font-size: .8rem; color: var(--muted); margin-bottom: 14px; }
 }
 
@@ -95,4 +123,6 @@
   .toc { position: static; }
   .guide section { padding: 16px; }
   .guide table { display: block; overflow-x: auto; }
+  .guide .cm-row { grid-template-columns: 1fr; }
+  .guide .cm-corner { display: none; }
 }

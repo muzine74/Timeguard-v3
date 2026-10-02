@@ -2,19 +2,299 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-:root {
+/* ═══ Thèmes de couleurs ═══════════════════════════════════════════════════════════
+   12 designs choisis par l'utilisateur (ThemeService → <html data-theme="…">), enregistrés sur son compte.
+   Toute couleur de l'application passe par ces variables (aucune couleur d'accent codée en dur).
+   Contrastes vérifiés WCAG AA (texte ≥ 4,5:1) sur chaque fond.                                      */
+:root, [data-theme="nuit"] {          /* Nuit — sombre, doré (défaut, design d'origine) */
   --bg:       #080b14;
+  --bg-rgb:   8, 11, 20;      // fonds translucides (barre de navigation, menus)
   --surface:  #0d1120;
   --surface2: #111827;
   --border:   rgba(255,255,255,.08);
   --text:     #e8eaf6;
   --muted:    #7a8fb5;   // texte secondaire : contraste ≥ 4,5:1 (WCAG AA) sur tous les fonds sombres (ancien #6278a0 : 3,6 à 4,4:1)
   --accent:   #c9a227;
+  --accent-rgb:   201, 162, 39;
+  --accent-hover: #e6b82e;
+  --on-accent:    #000;          // texte posé sur l'accent (boutons primaires, cases cochées…)
   --accent2:  #2457c5;
   --success:  #3baa6e;
   --warning:  #e09a22;
   --danger:   #e05252;
+  --success-text: #4ecb80;       // texte « positif » sur fond du thème
+  --danger-text:  #f07070;
+  --info-text:    #60a5fa;
+  --purple-text:  #b48ef0;
+  --overlay-rgb:  255, 255, 255; // voiles de survol / lignes alternées
+  --color-scheme: dark;          // contrôles natifs (date, heure)
 }
+
+[data-theme="ocean"] {                /* Océan — sombre, bleu nuit et cyan */
+  --bg:       #061219;
+  --bg-rgb:   6, 18, 25;      // fonds translucides (barre de navigation, menus)
+  --surface:  #0a1a24;
+  --surface2: #0f2430;
+  --border:   rgba(255,255,255,.09);
+  --text:     #e4f1f7;
+  --muted:    #8aa9bb;
+  --accent:   #2cc4d8;
+  --accent-rgb:   44, 196, 216;
+  --accent-hover: #4fd3e4;
+  --on-accent:    #03161c;
+  --accent2:  #5b7cff;
+  --success:  #3baa6e;
+  --warning:  #e09a22;
+  --danger:   #e05252;
+  --success-text: #4ecb80;
+  --danger-text:  #f28b8b;
+  --info-text:    #7cc4ff;
+  --purple-text:  #b9a0ff;
+  --overlay-rgb:  255, 255, 255;
+  --color-scheme: dark;
+}
+
+[data-theme="jour"] {                 /* Jour — clair, ivoire et or bruni */
+  --bg:       #f5f3ee;
+  --bg-rgb:   245, 243, 238;      // fonds translucides (barre de navigation, menus)
+  --surface:  #ffffff;
+  --surface2: #efebe2;
+  --border:   rgba(30,35,50,.15);
+  --text:     #1c2230;
+  --muted:    #565e6f;
+  --accent:   #7a5a00;
+  --accent-rgb:   122, 90, 0;
+  --accent-hover: #8f6b06;
+  --on-accent:    #ffffff;
+  --accent2:  #1f55c4;
+  --success:  #1f8a52;
+  --warning:  #8f5400;
+  --danger:   #b42318;
+  --success-text: #146536;
+  --danger-text:  #b42318;
+  --info-text:    #1d4ed8;
+  --purple-text:  #6d28d9;
+  --overlay-rgb:  20, 25, 40;
+  --color-scheme: light;
+}
+
+[data-theme="ciel"] {                 /* Ciel — clair, bleu */
+  --bg:       #eef3fa;
+  --bg-rgb:   238, 243, 250;      // fonds translucides (barre de navigation, menus)
+  --surface:  #ffffff;
+  --surface2: #e5ecf7;
+  --border:   rgba(20,40,80,.15);
+  --text:     #142036;
+  --muted:    #4c5b76;
+  --accent:   #1747a6;
+  --accent-rgb:   23, 71, 166;
+  --accent-hover: #1d55c4;
+  --on-accent:    #ffffff;
+  --accent2:  #6d3fd1;
+  --success:  #1f8a52;
+  --warning:  #8f5400;
+  --danger:   #b42318;
+  --success-text: #146536;
+  --danger-text:  #b42318;
+  --info-text:    #1d4ed8;
+  --purple-text:  #6d28d9;
+  --overlay-rgb:  20, 40, 80;
+  --color-scheme: light;
+}
+
+[data-theme="foret"] {             /* Forêt — sombre, vert émeraude */
+  --bg: #07130d;
+  --bg-rgb: 7, 19, 13;
+  --surface: #0b1c14;
+  --surface2: #10261b;
+  --border: rgba(255,255,255,.09);
+  --text: #e6f2ea;
+  --muted: #8db09b;
+  --accent: #3ccf8e;
+  --accent-rgb: 60, 207, 142;
+  --accent-hover: #5edca3;
+  --on-accent: #04170e;
+  --accent2: #4f8cff;
+  --success-text: #5fe0a0;
+  --danger-text: #f28b8b;
+  --info-text: #7cc4ff;
+  --purple-text: #b9a0ff;
+  --success: #3baa6e;
+  --warning: #e09a22;
+  --danger: #e05252;
+  --overlay-rgb: 255, 255, 255;
+  --color-scheme: dark;
+}
+
+[data-theme="amethyste"] {         /* Améthyste — sombre, violet */
+  --bg: #0e0a17;
+  --bg-rgb: 14, 10, 23;
+  --surface: #150f22;
+  --surface2: #1c142d;
+  --border: rgba(255,255,255,.09);
+  --text: #ece6f7;
+  --muted: #a597c2;
+  --accent: #b48cff;
+  --accent-rgb: 180, 140, 255;
+  --accent-hover: #c6a6ff;
+  --on-accent: #170b2b;
+  --accent2: #4fb3ff;
+  --success-text: #4ecb80;
+  --danger-text: #f28b8b;
+  --info-text: #7cc4ff;
+  --purple-text: #d0b8ff;
+  --success: #3baa6e;
+  --warning: #e09a22;
+  --danger: #e05252;
+  --overlay-rgb: 255, 255, 255;
+  --color-scheme: dark;
+}
+
+[data-theme="rose"] {              /* Rosé — clair, rose framboise */
+  --bg: #fbf3f1;
+  --bg-rgb: 251, 243, 241;
+  --surface: #ffffff;
+  --surface2: #f5e8e5;
+  --border: rgba(60,20,20,.14);
+  --text: #2a1a1d;
+  --muted: #6a5257;
+  --accent: #a6324a;
+  --accent-rgb: 166, 50, 74;
+  --accent-hover: #bf3d58;
+  --on-accent: #ffffff;
+  --accent2: #2f5bd3;
+  --overlay-rgb: 60, 20, 20;
+  --success: #1f8a52;
+  --warning: #8f5400;
+  --danger: #b42318;
+  --success-text: #146536;
+  --danger-text: #b42318;
+  --info-text: #1d4ed8;
+  --purple-text: #6d28d9;
+  --color-scheme: light;
+}
+
+[data-theme="menthe"] {            /* Menthe — clair, vert d'eau */
+  --bg: #eef7f4;
+  --bg-rgb: 238, 247, 244;
+  --surface: #ffffff;
+  --surface2: #e2f0eb;
+  --border: rgba(10,50,40,.15);
+  --text: #10241e;
+  --muted: #4a6159;
+  --accent: #08695a;
+  --accent-rgb: 8, 105, 90;
+  --accent-hover: #0a7c6a;
+  --on-accent: #ffffff;
+  --accent2: #3157c8;
+  --overlay-rgb: 10, 50, 40;
+  --success: #1f8a52;
+  --warning: #8f5400;
+  --danger: #b42318;
+  --success-text: #146536;
+  --danger-text: #b42318;
+  --info-text: #1d4ed8;
+  --purple-text: #6d28d9;
+  --color-scheme: light;
+}
+
+[data-theme="braise"] {            /* Braise — sombre, orange braise */
+  --bg: #140b07;
+  --bg-rgb: 20, 11, 7;
+  --surface: #1d110b;
+  --surface2: #261710;
+  --border: rgba(255,255,255,.09);
+  --text: #f5e9e2;
+  --muted: #b39a8c;
+  --accent: #ff8a4c;
+  --accent-rgb: 255, 138, 76;
+  --accent-hover: #ffa06b;
+  --on-accent: #1f0d03;
+  --accent2: #5b8cff;
+  --success-text: #4ecb80;
+  --danger-text: #ff9b9b;
+  --info-text: #7cc4ff;
+  --purple-text: #c9a8ff;
+  --success: #3baa6e;
+  --warning: #e09a22;
+  --danger: #e05252;
+  --overlay-rgb: 255, 255, 255;
+  --color-scheme: dark;
+}
+
+[data-theme="graphite"] {          /* Graphite — sombre, gris neutre et vert citron */
+  --bg: #0c0d0f;
+  --bg-rgb: 12, 13, 15;
+  --surface: #131518;
+  --surface2: #1a1d21;
+  --border: rgba(255,255,255,.09);
+  --text: #eceef1;
+  --muted: #9aa3ad;
+  --accent: #c6e94d;
+  --accent-rgb: 198, 233, 77;
+  --accent-hover: #d4f06e;
+  --on-accent: #151a04;
+  --accent2: #5b8cff;
+  --success-text: #4ecb80;
+  --danger-text: #f28b8b;
+  --info-text: #7cc4ff;
+  --purple-text: #c3a6ff;
+  --success: #3baa6e;
+  --warning: #e09a22;
+  --danger: #e05252;
+  --overlay-rgb: 255, 255, 255;
+  --color-scheme: dark;
+}
+
+[data-theme="sable"] {             /* Sable — clair, beige et terre cuite */
+  --bg: #f7f1e8;
+  --bg-rgb: 247, 241, 232;
+  --surface: #ffffff;
+  --surface2: #efe5d6;
+  --border: rgba(60,40,20,.15);
+  --text: #2b2118;
+  --muted: #665748;
+  --accent: #93421a;
+  --accent-rgb: 147, 66, 26;
+  --accent-hover: #a84d1f;
+  --on-accent: #ffffff;
+  --accent2: #2f5bd3;
+  --purple-text: #6d28d9;
+  --overlay-rgb: 60, 40, 20;
+  --success: #1f8a52;
+  --warning: #8f5400;
+  --danger: #b42318;
+  --success-text: #146536;
+  --danger-text: #b42318;
+  --info-text: #1d4ed8;
+  --color-scheme: light;
+}
+
+[data-theme="lavande"] {           /* Lavande — clair, lilas et violet profond */
+  --bg: #f4f2fb;
+  --bg-rgb: 244, 242, 251;
+  --surface: #ffffff;
+  --surface2: #ebe7f7;
+  --border: rgba(40,30,80,.15);
+  --text: #1d1830;
+  --muted: #5a5470;
+  --accent: #5b3fb8;
+  --accent-rgb: 91, 63, 184;
+  --accent-hover: #6a4dcc;
+  --on-accent: #ffffff;
+  --accent2: #1d6fb8;
+  --purple-text: #5b21b6;
+  --overlay-rgb: 40, 30, 80;
+  --success: #1f8a52;
+  --warning: #8f5400;
+  --danger: #b42318;
+  --success-text: #146536;
+  --danger-text: #b42318;
+  --info-text: #1d4ed8;
+  --color-scheme: light;
+}
+
+html { color-scheme: var(--color-scheme); }
 
 html, body {
   height: 100%;
@@ -37,11 +317,16 @@ app-root { display: block; min-height: 100%; }
   .bi-start-label { font-size: 12px; font-weight: 600; color: var(--text); }
   .bi-start-input {
     padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px;
-    background: var(--bg); color: var(--text); font-family: inherit; color-scheme: dark;
+    background: var(--bg); color: var(--text); font-family: inherit; color-scheme: var(--color-scheme);
   }
   .bi-start-hint { font-size: 11.5px; color: var(--muted); }
   .bi-start-warn { color: var(--warning); }
 }
+
+// Textes d'aide / d'erreur des formulaires (compagnie, employé)
+.hourly-hint  { font-size: 11.5px; color: var(--muted); margin: 0; }
+.hourly-error { font-size: 12px; color: var(--danger-text); margin: 0; font-weight: 600; }
+.field-hint   { display: block; font-size: 11.5px; color: var(--muted); margin-top: 4px; }
 
 a { color: inherit; text-decoration: none; }
 button { font-family: inherit; cursor: pointer; }
@@ -61,8 +346,8 @@ input, select, textarea { font-family: inherit; }
   transition: all .18s; white-space: nowrap;
 
   &-primary {
-    background: var(--accent); color: #000; border-color: var(--accent);
-    &:hover:not(:disabled) { background: #e6b82e; }
+    background: var(--accent); color: var(--on-accent); border-color: var(--accent);
+    &:hover:not(:disabled) { background: var(--accent-hover); }
     &:disabled { opacity: .5; cursor: not-allowed; }
   }
   &-outline {
@@ -81,7 +366,7 @@ input, select, textarea { font-family: inherit; }
     &:hover { background: rgba(224,82,82,.2); }
   }
   &-validate {
-    background: rgba(30,200,100,.1); color: #4ecb80; border-color: rgba(30,200,100,.3);
+    background: rgba(30,200,100,.1); color: var(--success-text); border-color: rgba(30,200,100,.3);
     &:hover:not(:disabled) { background: rgba(30,200,100,.2); }
     &:disabled { opacity: .5; cursor: not-allowed; }
   }
@@ -91,7 +376,7 @@ input, select, textarea { font-family: inherit; }
 .lock-banner {
   display: flex; align-items: center; gap: 10px;
   padding: 10px 20px;
-  background: rgba(201,162,39,.07); border-bottom: 1px solid rgba(201,162,39,.2);
+  background: rgba(var(--accent-rgb), .07); border-bottom: 1px solid rgba(var(--accent-rgb), .2);
   font-size: 13px; font-weight: 600; color: var(--accent);
 }
 .lock-icon { font-size: 15px; }
@@ -115,7 +400,7 @@ input, select, textarea { font-family: inherit; }
 /* ── Progress bar ── */
 .progress-bar {
   position: fixed; top: 0; left: 0; right: 0; height: 3px;
-  background: rgba(201,162,39,.15); z-index: 9998;
+  background: rgba(var(--accent-rgb), .15); z-index: 9998;
 }
 .progress-fill {
   height: 100%; background: var(--accent);
@@ -154,7 +439,7 @@ input, select, textarea { font-family: inherit; }
 /* ── Spinner ── */
 .spinner {
   display: inline-block; width: 14px; height: 14px;
-  border: 2px solid rgba(0,0,0,.3); border-top-color: #000;
+  border: 2px solid rgba(0,0,0,.3); border-top-color: var(--on-accent);
   border-radius: 50%; animation: spin .7s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -204,12 +489,12 @@ input, select, textarea { font-family: inherit; }
   background: var(--surface2); color: var(--muted);
   font-family: inherit; font-size: 13px; font-weight: 600;
   cursor: pointer; transition: all .18s; text-align: center;
-  &:hover { border-color: rgba(201,162,39,.3); color: var(--text); }
+  &:hover { border-color: rgba(var(--accent-rgb), .3); color: var(--text); }
   &:disabled { opacity: .5; cursor: not-allowed; }
 }
 .emp-type-active {
-  background: rgba(201,162,39,.12);
-  border-color: rgba(201,162,39,.5);
+  background: rgba(var(--accent-rgb), .12);
+  border-color: rgba(var(--accent-rgb), .5);
   color: var(--accent);
 }
 
@@ -222,7 +507,7 @@ input, select, textarea { font-family: inherit; }
   background: var(--surface2); color: var(--muted);
 }
 .type-permanent {
-  background: rgba(36,87,197,.12); color: #6b9ef5;
+  background: rgba(36,87,197,.12); color: var(--info-text);
   border-color: rgba(36,87,197,.3);
 }
 .type-task {
@@ -292,6 +577,18 @@ input, select, textarea { font-family: inherit; }
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
 }
+
+/* ── En-tête de colonne triable (vue/shared/table-sort.ts) ── */
+.th-sort {
+  display: inline-flex; align-items: center; gap: 5px; padding: 2px 0; margin: 0;
+  background: none; border: none; cursor: pointer;
+  font: inherit; color: inherit; text-transform: inherit; letter-spacing: inherit; text-align: inherit;
+  &:hover { color: var(--text); }
+  &:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+}
+.th-sort-ind { font-size: .85em; opacity: .45; }
+[aria-sort="ascending"] .th-sort, [aria-sort="descending"] .th-sort { color: var(--text); }
+[aria-sort="ascending"] .th-sort-ind, [aria-sort="descending"] .th-sort-ind { opacity: 1; color: var(--accent); }
 
 /* ── Champ obligatoire ── */
 .req { color: var(--danger); }

@@ -237,9 +237,14 @@ export class CompanyEditComponent implements OnInit {
   }
 
   // ── Soumettre la mise à jour ───────────────────────────
+  /** Message affiché sous les taux tant qu'ils sont incomplets (mode « Heure »). */
+  get hourlyRatesError(): string | null { return CompanyService.hourlyRatesError(this.form); }
+
   submit(): void {
     if (!this.companyId()) { this.error.set('Aucune compagnie sélectionnée.'); return; }
     if (!this.form.companyName.trim()) { this.error.set('Le nom est requis.'); return; }
+    const ratesError = CompanyService.hourlyRatesError(this.form);
+    if (ratesError) { this.error.set(ratesError); return; }
 
     this.log(`submit() → companyId=${this.companyId()} form.name=${this.form.companyName}`);
     this.error.set('');
@@ -311,6 +316,9 @@ export class CompanyEditComponent implements OnInit {
       semaine1: this._emptySemaine(), semaine2: this._emptySemaine(),
       joursBiMensuel: this._makeJours(15), joursMensuel: [],
       debutSemaine1: null,
+      modeFacturation: 'Visite',
+      tauxHoraireClient:  null,
+      tauxHoraireEmploye: null,
     };
   }
 

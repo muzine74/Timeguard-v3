@@ -95,7 +95,7 @@
   cursor: pointer;
   margin-left: auto;
 
-  &.btn-primary { background: var(--accent); color: #000; }
+  &.btn-primary { background: var(--accent); color: var(--on-accent); }
   &.btn-primary:disabled { opacity: .5; cursor: not-allowed; }
   &.btn-ghost { background: transparent; border-color: var(--border); color: var(--text-muted); margin-left: 0; }
 }
@@ -147,7 +147,7 @@
   padding: 12px 16px;
   cursor: pointer;
 
-  &:hover { background: var(--hover, rgba(255,255,255,.03)); }
+  &:hover { background: var(--hover, rgba(var(--overlay-rgb), .03)); }
 }
 
 .expand-arrow {
@@ -188,8 +188,8 @@
   font-size: .72rem;
   font-weight: 600;
   color: var(--accent);
-  background: rgba(201,162,39,.12);
-  border: 1px solid rgba(201,162,39,.3);
+  background: rgba(var(--accent-rgb), .12);
+  border: 1px solid rgba(var(--accent-rgb), .3);
   border-radius: 10px;
   padding: 2px 8px;
   white-space: nowrap;
@@ -254,7 +254,7 @@
 
 .spinner {
   width: 16px; height: 16px;
-  border: 2px solid rgba(255,255,255,.3);
+  border: 2px solid rgba(var(--overlay-rgb), .3);
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin .7s linear infinite;

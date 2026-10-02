@@ -30,18 +30,28 @@
       <h3>Se connecter</h3>
       <ol>
         <li>Saisissez l'<b>Identifiant entreprise</b>, votre <b>Identifiant</b> et votre <b>Mot de passe</b>.</li>
-        <li>Cliquez sur <b>Se connecter</b>. Vous arrivez directement sur l'écran qui correspond à vos droits : la Feuille de temps pour un employé, la Liste employés pour un administrateur.</li>
+        <li>Cliquez sur <b>Se connecter</b>. Vous arrivez directement sur l'écran qui correspond à vos droits : la Feuille de temps pour un employé, le Pointage employé pour un administrateur.</li>
       </ol>
       <p>La session dure 8 heures, après quoi il faut se reconnecter. Le bouton <b>Déconnexion</b> est en haut à droite.</p>
 
       <h3>Mot de passe oublié</h3>
       <p>Il n'y a pas de lien « mot de passe oublié » sur la page de connexion : c'est l'administrateur qui envoie le lien.</p>
       <ol>
-        <li>L'administrateur ouvre <b>Employés → Modifier employé</b>, choisit l'employé et clique sur <b>Envoyer lien de réinitialisation</b>.</li>
+        <li>L'administrateur ouvre <b>Gestion → Modifier employé</b>, choisit l'employé et clique sur <b>Envoyer lien de réinitialisation</b>.</li>
         <li>L'employé reçoit un courriel. Le lien est valable <b>24 heures</b> et ne sert qu'une fois.</li>
         <li>Il choisit son <b>Nouveau mot de passe</b>, le confirme, puis clique sur <b>Mettre à jour le mot de passe</b>.</li>
       </ol>
       <p>Si l'employé n'a pas encore de compte de connexion, l'écran le signale et propose d'aller dans <b>Administration → Identifiants</b> pour le créer.</p>
+
+      <h3>Les menus</h3>
+      <p>La barre du haut est organisée en quatre menus, selon le rôle de chacun :</p>
+      <ul>
+        <li><b>Mon travail</b> — votre Feuille de temps, votre Équipe (si vous supervisez quelqu'un) et les Notes.</li>
+        <li><b>Gestion</b> — le personnel (nouvel employé, modification, tarifs), les clients (compagnies), le pointage des employés (consultation, validation) et les affectations employés ⇄ compagnies.</li>
+        <li><b>Finances</b> — la facturation, la paie (paiements, feuillets T4A, charges) et l'analyse (rapports, statistiques).</li>
+        <li><b>Administration</b> — groupes de permissions, identifiants de connexion et configuration.</li>
+      </ul>
+      <p>À droite : 🎨 pour choisir votre design de couleurs (enregistré sur votre compte) et ❓ Aide.</p>
 
       <h3>Qui voit quoi</h3>
       <p>Chaque menu n'apparaît que si vous avez la permission correspondante. Les permissions sont regroupées dans des <b>groupes</b> (voir Administration), et un employé cumule les permissions de tous ses groupes.</p>
@@ -81,11 +91,11 @@
     <!-- ── Employés ───────────────────────────────────────────────────────── -->
     <section id="employes">
       <h2>Gérer les employés</h2>
-      <p>Un employé est prêt à pointer quand il a une fiche, au moins une compagnie affectée et un identifiant de connexion. Tout se fait depuis le menu <b>Employés</b>.</p>
+      <p>Un employé est prêt à pointer quand il a une fiche, au moins une compagnie affectée et un identifiant de connexion. Tout se fait depuis le menu <b>Gestion</b>.</p>
 
       <h3>Créer un employé</h3>
       <ol>
-        <li><b>Employés → Nouvel employé</b>.</li>
+        <li><b>Gestion → Nouvel employé</b>.</li>
         <li>Renseignez le <b>Nom complet</b>, le <b>NAS</b>, le <b>Courriel</b>, le <b>Téléphone</b> et le <b>Type d'emploi</b> : <b>💼 Permanent</b> ou <b>🔧 À la tâche</b>.</li>
         <li>Complétez l'adresse : <b>N° civique</b>, <b>Suite / App</b>, <b>Ville</b>, <b>Province</b>, <b>Code postal</b>, <b>Pays</b>.</li>
         <li>Cliquez sur <b>Terminer →</b>. Vous pouvez ensuite joindre des documents (contrat, pièce d'identité…) dans <b>Documents</b>, avec <b>+ Ajouter</b>.</li>
@@ -94,24 +104,24 @@
 
       <h3>Modifier, désactiver</h3>
       <ol>
-        <li><b>Employés → Modifier employé</b>, puis choisissez l'employé dans la liste de gauche. Le filtre <b>Actif / Inactif / Tous</b> et la recherche aident à le trouver.</li>
+        <li><b>Gestion → Modifier employé</b>, puis choisissez l'employé dans la liste de gauche. Le filtre <b>Actif / Inactif / Tous</b> et la recherche aident à le trouver.</li>
         <li>Modifiez les champs, puis cliquez sur <b>✓ Enregistrer</b>.</li>
         <li><b>⛔ Désactiver</b> retire l'employé des listes actives sans rien effacer ; <b>✅ Activer</b> le rétablit.</li>
       </ol>
-      <p><b>Employés → Profil Employé</b> affiche la même fiche en lecture seule.</p>
+      <p><b>Gestion → Profil employé</b> affiche la même fiche en lecture seule.</p>
 
       <h3>Affecter des compagnies</h3>
       <ol>
-        <li><b>Employés → Assigner compagnies</b> (permission <code>companies.edit</code>).</li>
+        <li><b>Gestion → Assigner compagnies</b> (permission <code>companies.edit</code>).</li>
         <li>Choisissez l'employé, puis cochez les compagnies où il travaille.</li>
         <li>Cliquez sur <b>✓ Sauvegarder</b>. Tant que ce n'est pas fait, l'écran indique <b>● Non sauvegardé</b>.</li>
       </ol>
-      <p>Un changement d'affectation ne touche que les semaines <b>non validées</b>. Les semaines déjà validées gardent les compagnies du moment de leur validation (voir « Valider le pointage »). Pour affecter plusieurs employés à une même compagnie, utilisez plutôt <b>Compagnies → Assigner employés</b>.</p>
+      <p>Un changement d'affectation ne touche que les semaines <b>non validées</b>. Les semaines déjà validées gardent les compagnies du moment de leur validation (voir « Valider le pointage »). Pour affecter plusieurs employés à une même compagnie, utilisez plutôt <b>Gestion → Assigner employés</b>.</p>
 
       <h3>Tarifs propres à un employé</h3>
       <p>Par défaut, un employé est payé selon le tarif du calendrier de la compagnie. Vous pouvez fixer un tarif différent, jour par jour.</p>
       <ol>
-        <li><b>Employés → Tarifs employés</b>, choisissez l'employé, puis la compagnie.</li>
+        <li><b>Gestion → Tarifs employés</b>, choisissez l'employé, puis la compagnie.</li>
         <li>Pour chaque jour, la colonne <b>Tarif compagnie</b> montre le tarif par défaut ; saisissez <b>Votre tarif</b> pour le remplacer.</li>
         <li>Cliquez sur <b>✓ Sauvegarder</b>.</li>
       </ol>
@@ -134,7 +144,7 @@
 
       <h3>Créer une compagnie</h3>
       <ol>
-        <li><b>Compagnies → Nouvelle compagnie</b>.</li>
+        <li><b>Gestion → Nouvelle compagnie</b>.</li>
         <li><b>Identification</b> : <b>Nom</b> (par exemple « Acme Construction inc. »), <b>Code</b> (par exemple <code>ACME-001</code>), téléphone, courriel et adresse.</li>
         <li><b>Taxes</b> : les <b>Numéros applicables</b> de TPS et de TVQ du client, s'il y a lieu.</li>
         <li><b>Paiement et travail</b> : la <b>Fréquence de paiement</b> et la <b>Fréquence de travail</b>.</li>
@@ -153,7 +163,7 @@
 
       <h3>Modifier une compagnie et ses contacts</h3>
       <ol>
-        <li><b>Compagnies → Liste compagnies</b>, puis choisissez la compagnie. Le filtre <b>Actif / Inactif / Tous</b> aide à la retrouver.</li>
+        <li><b>Gestion → Liste compagnies</b>, puis choisissez la compagnie. Le filtre <b>Actif / Inactif / Tous</b> aide à la retrouver.</li>
         <li>Modifiez les informations et enregistrez.</li>
         <li>Dans <b>Contacts</b>, <b>+ Contact</b> ajoute une personne. Seuls les contacts cochés <b>Actif (inclus dans les envois)</b> reçoivent les factures par courriel.</li>
       </ol>
@@ -161,10 +171,129 @@
 
       <h3>Affecter des employés à une compagnie</h3>
       <ol>
-        <li><b>Compagnies → Assigner employés</b>, puis choisissez la compagnie.</li>
+        <li><b>Gestion → Assigner employés</b>, puis choisissez la compagnie.</li>
         <li>Cochez les employés qui y travaillent, puis cliquez sur <b>✓ Sauvegarder</b>.</li>
       </ol>
-      <p>C'est la même affectation que <b>Employés → Assigner compagnies</b>, vue depuis la compagnie.</p>
+      <p>C'est la même affectation que <b>Gestion → Assigner compagnies</b>, vue depuis la compagnie.</p>
+    </section>
+
+    <!-- ── Combinaisons employé × compagnie ───────────────────────────────── -->
+    <section id="combinaisons">
+      <h2>Employé et compagnie : toutes les combinaisons</h2>
+      <p>Deux réglages indépendants décident de la façon dont un employé pointe chez une compagnie, dont il est payé et dont la compagnie est facturée.</p>
+
+      <h3>Les réglages</h3>
+      <table>
+        <thead><tr><th>Réglage</th><th>Où</th><th>Valeurs</th></tr></thead>
+        <tbody>
+          <tr><td><b>Mode de facturation</b> de la compagnie</td><td>Gestion → Liste compagnies → la fiche, carte <b>Fréquences</b></td><td><b>Par visite</b> : prix du planning · <b>Par heure</b> : heures × taux horaire client</td></tr>
+          <tr><td><b>Mode de rémunération par défaut</b> de l'employé</td><td>Gestion → Modifier employé</td><td><b>Par visite</b> : tarifs du planning · <b>Par heure</b> : heures × taux horaire</td></tr>
+          <tr><td><b>Mode chez une compagnie</b> (remplace le défaut)</td><td>Gestion → Tarifs employés → l'employé → la compagnie</td><td>Par défaut de l'employé · Par visite · Par heure, avec un <b>taux spécifique</b> éventuel</td></tr>
+        </tbody>
+      </table>
+      <p><b>Règle de saisie :</b> dès que la compagnie facture à l'heure <b>ou</b> que l'employé y est payé à l'heure, l'employé saisit ses heures (début et fin). Sinon, il coche ses visites. Dans la Feuille de temps, les deux cas apparaissent dans deux blocs : <b>Compagnies par visite</b> et <b>Compagnies à l'heure</b>.</p>
+
+      <h3>Les quatre combinaisons</h3>
+      <div class="combo-matrix" role="table" aria-label="Les quatre combinaisons employé et compagnie">
+        <div role="row" class="cm-row">
+          <span role="columnheader" class="cm-corner"></span>
+          <span role="columnheader" class="cm-head">Compagnie facturée <b>à la visite</b></span>
+          <span role="columnheader" class="cm-head">Compagnie facturée <b>à l'heure</b></span>
+        </div>
+        <div role="row" class="cm-row" *ngFor="let row of comboRows">
+          <span role="rowheader" class="cm-head">Employé payé <b>{{ row.label }}</b></span>
+          <span role="cell" class="cm-cell" *ngFor="let c of row.cells">
+            <span class="cm-num">{{ c.n }}</span>
+            <span><b>Saisie :</b> {{ c.entryShort }}</span>
+            <span><b>Paie :</b> {{ c.payShort }}</span>
+            <span><b>Facture :</b> {{ c.billShort }}</span>
+          </span>
+        </div>
+      </div>
+
+      <h3>Exemple commun</h3>
+      <p>La compagnie a un planning le lundi (<b>80 $</b> facturés au client, <b>40 $</b> payés à l'employé), un taux horaire client de <b>50 $/h</b> et un taux horaire employé par défaut de <b>25 $/h</b>. L'employé travaille le lundi de <b>08:00 à 11:30</b>, soit 3,5 h.</p>
+
+      <svg width="0" height="0" class="svg-defs" aria-hidden="true" focusable="false">
+        <defs>
+          <marker id="combo-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0 0L10 5L0 10z" fill="var(--muted)"/>
+          </marker>
+        </defs>
+      </svg>
+
+      <figure class="combo" *ngFor="let c of combos">
+        <h4 class="combo-title"><span class="cm-num">{{ c.n }}</span> {{ c.title }}</h4>
+        <svg class="diagram" viewBox="0 0 760 210" role="img" font-size="13" [attr.aria-label]="c.aria">
+          <g fill="none" stroke="var(--muted)" stroke-width="1.25">
+            <path d="M166 105H262" marker-end="url(#combo-arrow)"/>
+            <path d="M456 92L516 50" marker-end="url(#combo-arrow)"/>
+            <path d="M456 118L516 160" marker-end="url(#combo-arrow)"/>
+          </g>
+          <!-- Employé -->
+          <rect x="16" y="70" width="150" height="70" rx="8" fill="none" stroke="var(--muted)" stroke-width="1.25"/>
+          <text x="91" y="98" text-anchor="middle" font-weight="600" fill="var(--text)">Employé</text>
+          <text x="91" y="118" text-anchor="middle" font-size="11.5" fill="var(--muted)">{{ c.employee }}</text>
+          <text x="216" y="95" text-anchor="middle" font-size="11" fill="var(--muted)">{{ c.entry }}</text>
+          <!-- Pointage -->
+          <rect x="266" y="70" width="190" height="70" rx="8" fill="var(--accent)" fill-opacity="0.08" stroke="var(--accent)" stroke-width="1.5"/>
+          <text x="361" y="98" text-anchor="middle" font-weight="600" fill="var(--text)">Pointage du lundi</text>
+          <text x="361" y="118" text-anchor="middle" font-size="11.5" fill="var(--text)">{{ c.entryDetail }}</text>
+          <!-- Paie -->
+          <rect x="520" y="14" width="226" height="70" rx="8" fill="none" stroke="var(--success-text)" stroke-width="1.5"/>
+          <text x="633" y="42" text-anchor="middle" font-weight="600" fill="var(--success-text)">Paie de l'employé</text>
+          <text x="633" y="62" text-anchor="middle" font-size="12" fill="var(--text)">{{ c.payCalc }}</text>
+          <!-- Facture -->
+          <rect x="520" y="126" width="226" height="70" rx="8" fill="none" stroke="var(--info-text)" stroke-width="1.5"/>
+          <text x="633" y="154" text-anchor="middle" font-weight="600" fill="var(--info-text)">Facture du client</text>
+          <text x="633" y="174" text-anchor="middle" font-size="12" fill="var(--text)">{{ c.billCalc }}</text>
+        </svg>
+        <figcaption class="caption">{{ c.note }}</figcaption>
+        <div class="steps">
+          <h5 class="steps-title">Démarche</h5>
+          <ol>
+            <li *ngFor="let st of c.steps"><b>{{ st.where }}</b> — {{ st.what }}</li>
+          </ol>
+        </div>
+      </figure>
+
+      <h3>Cas complémentaires</h3>
+      <table>
+        <thead><tr><th>Situation</th><th>Saisie</th><th>Paie</th><th>Facture</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><b>Taux spécifique</b> de l'employé à 30 $/h (cas 2 ou 4)</td>
+            <td>08:00 → 11:30</td>
+            <td>3,5 h × <b>30 $</b> = 105,00 $</td>
+            <td>Inchangée : le taux de l'employé ne change pas la facture</td>
+          </tr>
+          <tr>
+            <td><b>Plusieurs plages</b> dans la journée (cas 4) — bouton « + plage »</td>
+            <td>08:00 → 11:30 et 13:00 → 15:00 = <b>5,5 h</b></td>
+            <td>5,5 h × 25 $ = 137,50 $</td>
+            <td>5,5 h × 50 $ = 275,00 $</td>
+          </tr>
+          <tr>
+            <td>Plusieurs plages, mais <b>payé ou facturé à la visite</b> (cas 2 ou 3)</td>
+            <td>5,5 h sur deux plages</td>
+            <td colspan="2">La journée compte pour <b>une seule visite</b>, quel que soit le nombre de plages.</td>
+          </tr>
+          <tr>
+            <td><b>Même semaine, deux compagnies</b> : employé « par visite » par défaut, réglé « par heure » chez la compagnie B (Tarifs employés)</td>
+            <td>A : case cochée · B : 08:00 → 11:30</td>
+            <td>A : 40,00 $ · B : 87,50 $ · <b>semaine : 127,50 $</b></td>
+            <td>Chaque compagnie selon son propre mode de facturation</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="steps" *ngFor="let x of extras">
+        <h5 class="steps-title">Démarche — {{ x.title }} <span class="steps-result">{{ x.result }}</span></h5>
+        <ol>
+          <li *ngFor="let st of x.steps"><b>{{ st.where }}</b> — {{ st.what }}</li>
+        </ol>
+      </div>
+
+      <p>Les montants sont <b>figés au moment du pointage</b> : changer un taux ou un mode plus tard ne recalcule jamais les semaines déjà pointées. Le nouveau réglage s'applique aux pointages suivants.</p>
     </section>
 
     <!-- ── Validation ─────────────────────────────────────────────────────── -->
@@ -207,7 +336,7 @@
 
       <h3>Valider une semaine</h3>
       <ol>
-        <li><b>Employés → Liste employés</b>. Les employés qui ont encore des semaines non validées apparaissent en premier.</li>
+        <li><b>Gestion → Pointage employé</b>. Les employés qui ont encore des semaines non validées apparaissent en premier.</li>
         <li>Choisissez l'employé, puis la semaine avec le sélecteur de date ou dans <b>📅 Historique des semaines</b>.</li>
         <li>Vérifiez les coches, corrigez si besoin, puis cliquez sur <b>💾 Sauvegarder</b>.</li>
         <li>Cliquez sur <b>✅ Valider la semaine</b>. Le bouton ne s'active qu'après la sauvegarde, et demande la permission <code>pointage.validate</code>.</li>
@@ -236,7 +365,7 @@
 
       <h3>Facturer par pointages</h3>
       <ol>
-        <li><b>Facturation → Facturer par pointages</b>, puis choisissez la <b>Période</b> (mois).</li>
+        <li><b>Finances → Facturer par pointages</b>, puis choisissez la <b>Période</b> (mois).</li>
         <li>Le tableau <b>Compagnies éligibles</b> liste les compagnies dont toutes les semaines sont validées, avec leurs visites, le sous-total, les taxes et le <b>Total TTC</b>. Un montant qui s'écarte du planning de la compagnie est signalé.</li>
         <li>Cochez les compagnies à facturer, puis cliquez sur <b>⚡ Générer</b>. Chaque ligne affiche le numéro de facture créé ou l'erreur.</li>
       </ol>
@@ -244,14 +373,14 @@
 
       <h3>Créer une facture à la main</h3>
       <ol>
-        <li><b>Facturation → Nouvelle facture</b>, puis choisissez la compagnie dans <b>Compagnies actives</b>.</li>
+        <li><b>Finances → Nouvelle facture</b>, puis choisissez la compagnie dans <b>Compagnies actives</b>.</li>
         <li>Renseignez la <b>Période (AAAA-MM)</b>, la <b>Date de facturation</b> et le <b>Nombre de visites</b>. Le bouton de préremplissage calcule les lignes depuis le tarif de la compagnie.</li>
         <li>Ajustez les lignes (<b>Qté</b>, <b>Description</b>, <b>Prix unit.</b>) avec <b>+ Ajouter une ligne</b>. Les taxes et le total se calculent seuls.</li>
         <li><b>🖨 Aperçu PDF</b> pour vérifier, puis <b>💾 Enregistrer</b>, ou <b>📤 Enregistrer et envoyer</b> pour la marquer envoyée.</li>
       </ol>
 
       <h3>Gérer les factures</h3>
-      <p><b>Facturation → Gérer les factures</b> liste toutes les factures, avec les filtres <b>Envoyées</b>, <b>Non envoyées</b>, <b>Payées</b> et <b>Impayées</b>. Cliquez sur une facture pour ouvrir son détail.</p>
+      <p><b>Finances → Gérer les factures</b> liste toutes les factures, avec les filtres <b>Envoyées</b>, <b>Non envoyées</b>, <b>Payées</b> et <b>Impayées</b>. Cliquez sur une facture pour ouvrir son détail.</p>
       <table>
         <thead><tr><th>Action</th><th>Bouton</th></tr></thead>
         <tbody>
@@ -269,7 +398,7 @@
 
       <h3>Envoyer les factures par courriel</h3>
       <ol>
-        <li><b>Facturation → ✉ Envoyer les factures</b>. La liste montre les <b>Factures non envoyées</b>.</li>
+        <li><b>Finances → Envoyer les factures</b>. La liste montre les <b>Factures non envoyées</b>.</li>
         <li>Choisissez une facture. Les <b>Destinataires</b> sont préremplis avec les contacts actifs de la compagnie. Ajoutez une adresse avec <b>Entrée</b>.</li>
         <li>Relisez le <b>Sujet</b> et le message. Les factures encore impayées du client y sont rappelées automatiquement.</li>
         <li>Ajoutez des pièces jointes si besoin, puis cliquez sur <b>Envoyer</b>. Le PDF de la facture est joint automatiquement.</li>
@@ -277,9 +406,9 @@
 
       <h3>Télécharger et faire des rapports</h3>
       <ul>
-        <li><b>Facturation → 📥 Téléchargement des factures</b> : choisissez une période (sur la date d'envoi ou de paiement) et un statut, <b>Rechercher</b>, puis <b>Télécharger</b>. Une facture donne un PDF ; plusieurs donnent un ZIP. Les avoirs sont fusionnés avec leur facture.</li>
-        <li><b>Rapports → 📋 Rapports</b> : filtrez par date, période ou compagnies, cochez les factures, puis <b>Exporter ▾</b> : <b>PDF Récapitulatif</b> (un tableau consolidé), <b>PDFs fusionnés</b> (un seul fichier) ou <b>PDFs séparés (ZIP)</b>.</li>
-        <li><b>Facturation → 💰 Charges</b> : vos dépenses partagées entre plusieurs compagnies (assurance, loyer…), réparties en pourcentage, avec leurs justificatifs.</li>
+        <li><b>Finances → Téléchargement des factures</b> : choisissez une période (sur la date d'envoi ou de paiement) et un statut, <b>Rechercher</b>, puis <b>Télécharger</b>. Une facture donne un PDF ; plusieurs donnent un ZIP. Les avoirs sont fusionnés avec leur facture.</li>
+        <li><b>Finances → Rapports</b> : filtrez par date, période ou compagnies, cochez les factures, puis <b>Exporter ▾</b> : <b>PDF Récapitulatif</b> (un tableau consolidé), <b>PDFs fusionnés</b> (un seul fichier) ou <b>PDFs séparés (ZIP)</b>.</li>
+        <li><b>Finances → Charges</b> : vos dépenses partagées entre plusieurs compagnies (assurance, loyer…), réparties en pourcentage, avec leurs justificatifs.</li>
       </ul>
     </section>
 
@@ -290,7 +419,7 @@
 
       <h3>Rapprocher les paiements</h3>
       <ol>
-        <li><b>Employés → Paiements employés</b> (permission <code>payments.manage</code>).</li>
+        <li><b>Finances → Paiements employés</b> (permission <code>payments.manage</code>).</li>
         <li>Dans <b>Employés</b>, cochez un ou plusieurs employés. <b>Tout sélectionner</b> les coche tous d'un coup.</li>
         <li>Choisissez <b>📅 Période</b> (un mois) ou <b>📆 Intervalle</b> (du… au…), puis cliquez sur <b>⚡ Charger</b>.</li>
         <li>Pour chaque employé, les jours travaillés s'affichent par semaine, en <b>📆 Vue journalière</b> ou en <b>🏢 Vue par compagnie</b>. Cochez les jours que vous avez payés : le <b>Montant payé (jours cochés)</b> se met à jour face au <b>Gain cumulé</b>.</li>
@@ -300,7 +429,7 @@
       <h3>Feuillet T4A</h3>
       <p>Pour un travailleur à la tâche, TimeGuard prépare le feuillet T4A de l'année.</p>
       <ol>
-        <li><b>Employés → Feuillet T4A</b>, puis choisissez l'<b>Employé</b> et l'<b>Année</b>.</li>
+        <li><b>Finances → Feuillet T4A</b>, puis choisissez l'<b>Employé</b> et l'<b>Année</b>.</li>
         <li><b>⚡ Suggérer les montants</b> préremplit le nom, l'adresse, le NAS et la <b>Case 048 — Honoraires pour services rendus</b> à partir des factures de l'année. Vérifiez et corrigez : c'est une suggestion.</li>
         <li>Complétez les autres cases au besoin (020 commissions, 022 impôt retenu…). Les informations du <b>Payeur</b> viennent de la configuration de votre entreprise.</li>
         <li><b>👁 Visualiser PDF</b> pour relire, puis <b>💾 Enregistrer</b>, <b>📄 Générer le PDF</b> ou <b>📧 Enregistrer et envoyer</b> au courriel de l'employé.</li>
@@ -372,7 +501,7 @@
       <p>Un employé cumule les permissions de tous ses groupes. Créez peu de groupes, par rôle : par exemple « Employés » (feuille de temps seulement), « Superviseurs » (validation du pointage), « Administrateurs » (tout).</p>
 
       <h3>Statistiques</h3>
-      <p><b>Rapports → 📊 Statistiques</b> (permission <code>stats.view</code>) : choisissez un <b>Mois</b> ou un intervalle <b>Du / Au</b>, filtrez les compagnies si besoin, puis cliquez sur <b>🔍 Calculer</b>. Vous obtenez :</p>
+      <p><b>Finances → Statistiques</b> (permission <code>stats.view</code>) : choisissez un <b>Mois</b> ou un intervalle <b>Du / Au</b>, filtrez les compagnies si besoin, puis cliquez sur <b>🔍 Calculer</b>. Vous obtenez :</p>
       <ul>
         <li>les <b>Revenus par employé et par compagnie</b> : visites, montant facturé, charge employé ;</li>
         <li>les <b>Factures émises</b>, avec les avoirs déduits et ce qui reste <b>En attente de paiement</b> ;</li>

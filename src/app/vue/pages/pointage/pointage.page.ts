@@ -176,7 +176,7 @@ export class PointagePage implements OnInit {
       const empId = this._resolveEmployeeId();
       if (empId) this.saveSvc.loadCumulativeEarnings(empId);
     }
-    this.toast = ok ? '✓ Données sauvegardées' : '✕ Erreur lors de la sauvegarde';
+    this.toast = ok ? '✓ Données sauvegardées' : '✕ ' + (this.saveSvc.errorMessage() ?? 'Erreur lors de la sauvegarde');
     this.saved.set(true);
     setTimeout(() => this.saved.set(false), 3000);
   }

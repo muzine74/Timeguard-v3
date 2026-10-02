@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { EmployeesService } from '../../../state/employees/employees.service';
+import { TeamAssignmentComponent } from '../../components/team-assignment/team-assignment.component';
 import { CredentialsService } from '../../../state/auth/credentials.service';
 import { Employee, EmployeeFile, EmployeeForm } from '../../../models';
 
@@ -12,7 +13,7 @@ import { Employee, EmployeeFile, EmployeeForm } from '../../../models';
   selector: 'app-employee-edit',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TeamAssignmentComponent],
   templateUrl: './employee-edit.component.html',
   styleUrls: ['./employee-edit.component.scss'],
 })
@@ -109,6 +110,8 @@ export class EmployeeEditComponent implements OnInit {
   submit(): void {
     if (!this.employeeId()) { this.error.set('Aucun employé sélectionné.'); return; }
     if (!this._validate()) return;
+    const teamError = TeamAssignmentComponent.validate(this.form);
+    if (teamError) { this.error.set(teamError); return; }
 
     this.error.set('');
     this.saving.set(true);
@@ -288,6 +291,9 @@ export class EmployeeEditComponent implements OnInit {
       employeeNote:        e.employeeNote        ?? '',
       nas:                 e.nas                 ?? '',
       employeeType:        e.employeeType        ?? 'Permanent',
+      modeRemuneration:    e.modeRemuneration    ?? 'Visite',
+      isTeamLead:          !!e.isTeamLead,
+      managerId:           e.managerId ?? null,
       employeeCivicNumber: e.employeeCivicNumber ?? '',
       employeeSuite:       e.employeeSuite       ?? '',
       employeeZipCode:     e.employeeZipCode     ?? '',
@@ -302,6 +308,9 @@ export class EmployeeEditComponent implements OnInit {
     return {
       employeeName: '', employeeMail: '', employeePhone: '', employeeNote: '', nas: '',
       employeeType: 'Permanent',
+      modeRemuneration: 'Visite',
+      isTeamLead: false,
+      managerId: null,
       employeeCivicNumber: '', employeeSuite: '', employeeZipCode: '',
       employeeCity: '', employeeState: 'QC', employeeCountry: 'Canada', employeeAdressNote: '',
     };

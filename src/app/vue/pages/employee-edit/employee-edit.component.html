@@ -132,6 +132,16 @@
                 </div>
               </div>
               <div class="field">
+                <label for="employee-edit-mode-remuneration">Mode de rémunération par défaut</label>
+                <select id="employee-edit-mode-remuneration" class="inp inp-sel" [(ngModel)]="form.modeRemuneration"
+                        aria-describedby="employee-edit-mode-remuneration-hint">
+                  <option value="Visite">Par visite (tarifs du planning)</option>
+                  <option value="Heure">Par heure (heure de début / fin)</option>
+                </select>
+                <span class="field-hint" id="employee-edit-mode-remuneration-hint">S'applique à toutes ses compagnies, sauf réglage différent pour une compagnie dans Employés → Tarifs employés. Par heure : l'employé saisit ses heures et est payé heures × son taux, sinon le taux employé par défaut de la compagnie.</span>
+              </div>
+              <app-team-assignment class="team-assign-host" [form]="form" [selfId]="employeeId()" idPrefix="employee-edit"></app-team-assignment>
+              <div class="field">
                 <label for="employee-edit-courriel">Courriel</label>
                 <input id="employee-edit-courriel" class="inp" type="email" [(ngModel)]="form.employeeMail"
                        [class.inp-error]="fieldErrors()['employeeMail']" />

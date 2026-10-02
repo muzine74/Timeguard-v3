@@ -84,11 +84,24 @@ export class CompanyService {
         joursBiMensuel:    d.planning?.joursBiMensuel ?? d.joursBiMensuel ?? [],
         joursMensuel:      d.planning?.joursMensuel   ?? d.joursMensuel   ?? [],
         debutSemaine1:     d.planning?.debutSemaine1  ?? d.debutSemaine1  ?? null,
+        modeFacturation:   (d.planning?.modeFacturation ?? d.modeFacturation) === 'Heure' ? 'Heure' : 'Visite',
+        tauxHoraireClient:  d.planning?.tauxHoraireClient  ?? d.tauxHoraireClient  ?? null,
+        tauxHoraireEmploye: d.planning?.tauxHoraireEmploye ?? d.tauxHoraireEmploye ?? null,
       }))
     );
   }
 
   /** Convertit les chaînes vides en null pour les champs validés côté API ([EmailAddress], [Phone]). */
+  /** Même règle que l'API (CompanyService.HourlyRatesError) : en mode « Heure », taux client obligatoire (> 0) ;
+   *  taux employé par défaut facultatif ; jamais négatifs. */
+  static hourlyRatesError(form: CompanyForm): string | null {
+    const client = form.tauxHoraireClient, emp = form.tauxHoraireEmploye;
+    if ((client ?? 0) < 0 || (emp ?? 0) < 0) return 'Les taux horaires ne peuvent pas être négatifs.';
+    if (form.modeFacturation === 'Heure' && !(Number(client) > 0))
+      return 'Facturation par heure : indiquez le taux horaire client (supérieur à 0).';
+    return null;
+  }
+
   private _sanitize(form: CompanyForm): any {
     return { ...form };
   }

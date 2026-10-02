@@ -63,7 +63,7 @@ import { NoteLinkType, NOTE_LINK_LABELS } from '../../../state/notes/notes.servi
     .na-note { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
     .na-note-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 8px; font-size: .72rem; margin-bottom: 4px; }
     .na-badge {
-      background: rgba(201,162,39,.12); border: 1px solid rgba(201,162,39,.3); color: var(--accent);
+      background: rgba(var(--accent-rgb), .12); border: 1px solid rgba(var(--accent-rgb), .3); color: var(--accent);
       padding: 1px 8px; border-radius: 20px; font-weight: 600;
     }
     .na-author { color: var(--muted); margin-left: auto; }
@@ -72,7 +72,7 @@ import { NoteLinkType, NOTE_LINK_LABELS } from '../../../state/notes/notes.servi
     .na-ftr { display: flex; justify-content: flex-end; padding: 12px 18px; border-top: 1px solid var(--border); }
     .na-btn {
       padding: 8px 18px; border-radius: 8px; border: none; cursor: pointer;
-      background: var(--accent); color: #000; font-weight: 600; font-size: .85rem;
+      background: var(--accent); color: var(--on-accent); font-weight: 600; font-size: .85rem;
     }
   `],
 })

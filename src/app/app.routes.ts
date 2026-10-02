@@ -45,6 +45,8 @@ export const routes: Routes = [
     canActivate: [permGuard(PERM.pointageValidate)],
     loadComponent: () => import('./vue/pages/employee-validation/employee-validation.component').then(m => m.EmployeeValidationComponent)
   },
+  // Ancienne page « Hiérarchie » : fusionnée dans « Équipe » (/team)
+  { path: 'employees/hierarchy', redirectTo: 'team', pathMatch: 'full' },
   {
     path: 'employees/new',
     canActivate: [permGuard(PERM.employeesCreate)],
@@ -180,6 +182,11 @@ export const routes: Routes = [
     path: 'notes',
     canActivate: [authGuard],
     loadComponent: () => import('./vue/pages/notes/notes.component').then(m => m.NotesComponent)
+  },
+  {
+    path: 'team',
+    canActivate: [authGuard],
+    loadComponent: () => import('./vue/pages/team/team.component').then(m => m.TeamComponent)
   },
   {
     path: 'aide',

@@ -1,8 +1,14 @@
-import { Component, signal, ChangeDetectionStrategy, HostListener, effect } from '@angular/core';
+import { Component, signal, computed, ChangeDetectionStrategy, HostListener, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../state/auth/auth.service';
 import { ConfigService } from '../../../state/config/config.service';
+import { TeamService } from '../../../state/team/team.service';
+import { ThemeService } from '../../../state/theme/theme.service';
+
+interface NavItem    { label: string; icon: string; link: string; exact?: boolean; show: () => boolean; }
+interface NavSection { title?: string; items: NavItem[]; }
+interface NavMenu    { id: string; label: string; sections: NavSection[]; }
 
 @Component({
   selector: 'app-navbar',
@@ -19,186 +25,98 @@ import { ConfigService } from '../../../state/config/config.service';
 
       <div class="nav-links" *ngIf="!auth.isSuperUser()">
 
-        <!-- ── Feuille de temps ── -->
-        <a class="nav-link" routerLink="/pointage" routerLinkActive="active" *ngIf="auth.hasPerm('pointage.view')">
-          Feuille de temps
-        </a>
-
-          <!-- Dropdown Employés -->
-          <div class="nav-dropdown" [class.is-open]="openMenu() === 'emp'" *ngIf="auth.hasPerm('employees.view')">
-            <button class="nav-link dropdown-btn" (click)="toggleDrop('emp', $event)">
-              Employés <span class="dropdown-arrow">▾</span>
-            </button>
-            <div class="dropdown-panel">
-              <a class="dropdown-item" routerLink="/employees" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeDrop()">
-                <span class="di-icon">☰</span> Liste employés
+        <!-- Menus par rôle (Mon travail · Gestion · Finances · Administration) — voir NAV_MENUS -->
+        <div class="nav-dropdown" *ngFor="let m of menus(); trackBy: trackMenu" [class.is-open]="openMenu() === m.id">
+          <button class="nav-link dropdown-btn" type="button" (click)="toggleDrop(m.id, $event)"
+                  aria-haspopup="true" [attr.aria-expanded]="openMenu() === m.id">
+            {{ m.label }} <span class="dropdown-arrow" aria-hidden="true">▾</span>
+          </button>
+          <div class="dropdown-panel">
+            <ng-container *ngFor="let sec of m.sections">
+              <div class="dropdown-section" *ngIf="sec.title">{{ sec.title }}</div>
+              <a *ngFor="let it of sec.items" class="dropdown-item" [routerLink]="it.link" routerLinkActive="active"
+                 [routerLinkActiveOptions]="{ exact: !!it.exact }" (click)="closeDrop()">
+                <span class="di-icon" aria-hidden="true">{{ it.icon }}</span> {{ it.label }}
               </a>
-              <a class="dropdown-item" routerLink="/employees/new"        routerLinkActive="active" *ngIf="auth.hasPerm('employees.create')" (click)="closeDrop()">
-                <span class="di-icon">＋</span> Nouvel employé
-              </a>
-              <a class="dropdown-item" routerLink="/employees/edit"       routerLinkActive="active" *ngIf="auth.hasPerm('employees.edit')" (click)="closeDrop()">
-                <span class="di-icon">✎</span> Modifier employé
-              </a>
-              <a class="dropdown-item" routerLink="/employees/validation" routerLinkActive="active" *ngIf="auth.hasPerm('pointage.validate')" (click)="closeDrop()">
-                <span class="di-icon">✅</span> Profil Employé
-              </a>
-              <a class="dropdown-item" routerLink="/companies/assign"    routerLinkActive="active" *ngIf="auth.hasPerm('companies.edit')" (click)="closeDrop()">
-                <span class="di-icon">⇄</span> Assigner compagnies
-              </a>
-              <a class="dropdown-item" routerLink="/employees/pricing"    routerLinkActive="active" *ngIf="auth.hasPerm('employees.edit')" (click)="closeDrop()">
-                <span class="di-icon">$</span> Tarifs employés
-              </a>
-              <a class="dropdown-item" routerLink="/employees/t4a"    routerLinkActive="active" *ngIf="auth.hasPerm('employees.edit')" (click)="closeDrop()">
-                <span class="di-icon">📄</span> Feuillet T4A
-              </a>
-              <a class="dropdown-item" routerLink="/employees/payments"    routerLinkActive="active" *ngIf="auth.hasPerm('payments.manage')" (click)="closeDrop()">
-                <span class="di-icon">💰</span> Paiements employés
-              </a>
-            </div>
+            </ng-container>
           </div>
-
-          <!-- Dropdown Compagnies -->
-          <div class="nav-dropdown" [class.is-open]="openMenu() === 'co'" *ngIf="auth.hasPerm('companies.view')">
-            <button class="nav-link dropdown-btn" (click)="toggleDrop('co', $event)">
-              Compagnies <span class="dropdown-arrow">▾</span>
-            </button>
-            <div class="dropdown-panel">
-              <a class="dropdown-item" routerLink="/companies/edit"   routerLinkActive="active" *ngIf="auth.hasPerm('companies.edit')" (click)="closeDrop()">
-                <span class="di-icon">☰</span> Liste compagnies
-              </a>
-              <a class="dropdown-item" routerLink="/companies/new"    routerLinkActive="active" *ngIf="auth.hasPerm('companies.edit')" (click)="closeDrop()">
-                <span class="di-icon">＋</span> Nouvelle compagnie
-              </a>
-              <a class="dropdown-item" routerLink="/employees/assign"  routerLinkActive="active" *ngIf="auth.hasPerm('employees.edit')" (click)="closeDrop()">
-                <span class="di-icon">⇄</span> Assigner employés
-              </a>
-            </div>
-          </div>
-
-          <!-- Dropdown Facturation -->
-          <div class="nav-dropdown" [class.is-open]="openMenu() === 'inv'" *ngIf="auth.hasPerm('invoices.view') || auth.hasPerm('invoices.edit') || auth.hasPerm('invoices.send')">
-            <button class="nav-link dropdown-btn" (click)="toggleDrop('inv', $event)">
-              Facturation <span class="dropdown-arrow">▾</span>
-            </button>
-            <div class="dropdown-panel">
-              <a class="dropdown-item" routerLink="/invoices" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" *ngIf="auth.hasPerm('invoices.view')" (click)="closeDrop()">
-                <span class="di-icon">☰</span> Gérer les factures
-              </a>
-              <a class="dropdown-item" routerLink="/invoices/new"             routerLinkActive="active" *ngIf="auth.hasPerm('invoices.edit')" (click)="closeDrop()">
-                <span class="di-icon">＋</span> Nouvelle facture
-              </a>
-              <a class="dropdown-item" routerLink="/invoices/from-timesheets" routerLinkActive="active" *ngIf="auth.hasPerm('invoices.edit')" (click)="closeDrop()">
-                <span class="di-icon">🕐</span> Facturer par pointages
-              </a>
-              <a class="dropdown-item" routerLink="/invoices/send" routerLinkActive="active" *ngIf="auth.hasPerm('invoices.send')" (click)="closeDrop()">
-                <span class="di-icon">✉</span> Envoyer les factures
-              </a>
-              <a class="dropdown-item" routerLink="/invoices/download" routerLinkActive="active" *ngIf="auth.hasPerm('invoices.view')" (click)="closeDrop()">
-                <span class="di-icon">📥</span> Téléchargement des factures
-              </a>
-              <a class="dropdown-item" routerLink="/charges" routerLinkActive="active" *ngIf="auth.hasPerm('invoices.view')" (click)="closeDrop()">
-                <span class="di-icon">💰</span> Charges
-              </a>
-            </div>
-          </div>
-
-          <!-- Dropdown Rapports -->
-          <div class="nav-dropdown" [class.is-open]="openMenu() === 'rep'" *ngIf="auth.hasPerm('invoices.view') || auth.hasPerm('stats.view')">
-            <button class="nav-link dropdown-btn" (click)="toggleDrop('rep', $event)">
-              Rapports <span class="dropdown-arrow">▾</span>
-            </button>
-            <div class="dropdown-panel">
-              <a class="dropdown-item" routerLink="/invoices/report" routerLinkActive="active" *ngIf="auth.hasPerm('invoices.view')" (click)="closeDrop()">
-                <span class="di-icon">📋</span> Rapports
-              </a>
-              <a class="dropdown-item" routerLink="/stats" routerLinkActive="active" *ngIf="auth.hasPerm('stats.view')" (click)="closeDrop()">
-                <span class="di-icon">📊</span> Statistiques
-              </a>
-            </div>
-          </div>
-
-          <!-- Dropdown Administration -->
-          <div class="nav-dropdown" [class.is-open]="openMenu() === 'adm'" *ngIf="auth.hasPerm('groups.manage') || auth.hasPerm('employees.edit') || auth.hasPerm('config.manage') || auth.hasPerm('credentials.manage')">
-            <button class="nav-link dropdown-btn" (click)="toggleDrop('adm', $event)">
-              Administration <span class="dropdown-arrow">▾</span>
-            </button>
-            <div class="dropdown-panel">
-              <a class="dropdown-item" routerLink="/groups"                routerLinkActive="active" *ngIf="auth.hasPerm('groups.manage')" (click)="closeDrop()">
-                <span class="di-icon">🔐</span> Groupes
-              </a>
-              <a class="dropdown-item" routerLink="/employees/credentials" routerLinkActive="active" *ngIf="auth.hasPerm('credentials.manage')" (click)="closeDrop()">
-                <span class="di-icon">🔑</span> Identifiants
-              </a>
-              <a class="dropdown-item" routerLink="/config"                routerLinkActive="active" *ngIf="auth.hasPerm('config.manage')" (click)="closeDrop()">
-                <span class="di-icon">⚙</span> Configuration
-              </a>
-            </div>
-          </div>
-
-        <!-- ── Notes (accessible à tous les utilisateurs connectés) — en dernier ── -->
-        <a class="nav-link" routerLink="/notes" routerLinkActive="active">
-          📝 Notes
-        </a>
+        </div>
       </div>
 
       <div class="nav-right">
-        <!-- Aide (guide utilisateur, accessible à tous) — à gauche de « En ligne » -->
-        <a class="nav-link" routerLink="/aide" routerLinkActive="active">❓ Aide</a>
-        <span class="badge badge-online">● En ligne</span>
-        <div class="avatar">{{ initials() }}</div>
-        <span class="nav-username">{{ auth.user()?.username }}</span>
-        <span class="badge badge-admin" *ngIf="auth.canManage()">ADMIN</span>
-        <button class="btn-logout" (click)="logout()">✕</button>
-        <button class="hamburger" (click)="toggleMenu()">{{ open() ? '✕' : '☰' }}</button>
+        <!-- Aide (guide utilisateur, accessible à tous) -->
+        <a class="nav-link help-link" routerLink="/aide" routerLinkActive="active">
+          <span aria-hidden="true">❓</span><span class="help-txt">Aide</span>
+        </a>
+
+        <!-- Menu utilisateur : identité, statut, design de couleurs, déconnexion -->
+        <div class="nav-dropdown user-dd" [class.is-open]="openMenu() === 'user'">
+          <button type="button" class="user-btn" (click)="toggleDrop('user', $event)"
+                  aria-haspopup="true" [attr.aria-expanded]="openMenu() === 'user'"
+                  [attr.aria-label]="'Mon compte — ' + (auth.user()?.username ?? '')">
+            <span class="avatar">{{ initials() }}<span class="online-dot" title="En ligne" aria-hidden="true"></span></span>
+            <span class="nav-username">{{ auth.user()?.username }}</span>
+            <span class="badge badge-admin" *ngIf="auth.canManage()">ADMIN</span>
+            <span class="dropdown-arrow" aria-hidden="true">▾</span>
+          </button>
+          <div class="dropdown-panel user-panel" (click)="$event.stopPropagation()">
+            <div class="user-head">
+              <span class="avatar avatar-lg" aria-hidden="true">{{ initials() }}</span>
+              <div class="user-meta">
+                <b>{{ auth.user()?.username }}</b>
+                <span class="user-badges">
+                  <span class="badge badge-online">● En ligne</span>
+                  <span class="badge badge-admin" *ngIf="auth.canManage()">ADMIN</span>
+                </span>
+              </div>
+            </div>
+
+            <div class="dropdown-section">Design de couleurs</div>
+            <div class="theme-picker" role="radiogroup" aria-label="Design de couleurs">
+              <ng-container *ngFor="let g of theme.groups">
+                <div class="theme-group" aria-hidden="true">{{ g.label }}</div>
+                <div class="theme-grid">
+                  <button *ngFor="let t of g.themes" type="button" role="radio" class="theme-tile"
+                          [attr.aria-checked]="theme.current() === t.id" [class.active]="theme.current() === t.id"
+                          [attr.aria-label]="t.label + ' — ' + t.hint" [title]="t.hint" (click)="theme.choose(t.id)">
+                    <span class="theme-swatch" aria-hidden="true"><i [style.background]="t.swatch[0]"></i><i [style.background]="t.swatch[1]"></i><i [style.background]="t.swatch[2]"></i></span>
+                    <span class="theme-name">{{ t.label }}</span>
+                  </button>
+                </div>
+              </ng-container>
+            </div>
+
+            <button type="button" class="user-logout" (click)="logout()"><span aria-hidden="true">⎋</span> Se déconnecter</button>
+          </div>
+        </div>
+        <button class="hamburger" type="button" (click)="toggleMenu()" [attr.aria-expanded]="open()" aria-label="Menu">{{ open() ? '✕' : '☰' }}</button>
       </div>
     </nav>
 
     <div class="mobile-menu" *ngIf="open() && !auth.isSuperUser()">
 
-      <!-- Feuille de temps -->
-      <a class="mobile-link" routerLink="/pointage" routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('pointage.view')">Feuille de temps</a>
-
-        <ng-container *ngIf="auth.hasPerm('employees.view')">
-          <div class="mobile-section-label">Employés</div>
-          <a class="mobile-link mobile-sub" routerLink="/employees" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMenu()">Liste employés</a>
-          <a class="mobile-link mobile-sub" routerLink="/employees/new"         routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('employees.create')">Nouvel employé</a>
-          <a class="mobile-link mobile-sub" routerLink="/employees/edit"        routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('employees.edit')">Modifier employé</a>
-          <a class="mobile-link mobile-sub" routerLink="/employees/validation"  routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('pointage.validate')">Profil Employé</a>
-          <a class="mobile-link mobile-sub" routerLink="/companies/assign"     routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('companies.edit')">Assigner compagnies</a>
-          <a class="mobile-link mobile-sub" routerLink="/employees/pricing"     routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('employees.edit')">Tarifs employés</a>
-          <a class="mobile-link mobile-sub" routerLink="/employees/t4a"         routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('employees.edit')">Feuillet T4A</a>
-          <a class="mobile-link mobile-sub" routerLink="/employees/payments"    routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('payments.manage')">Paiements employés</a>
+      <ng-container *ngFor="let m of menus(); trackBy: trackMenu">
+        <div class="mobile-section-label">{{ m.label }}</div>
+        <ng-container *ngFor="let sec of m.sections">
+          <div class="mobile-subsection" *ngIf="sec.title">{{ sec.title }}</div>
+          <a *ngFor="let it of sec.items" class="mobile-link mobile-sub" [routerLink]="it.link" routerLinkActive="active"
+             [routerLinkActiveOptions]="{ exact: !!it.exact }" (click)="closeMenu()">
+            <span aria-hidden="true">{{ it.icon }}</span> {{ it.label }}
+          </a>
         </ng-container>
-        <ng-container *ngIf="auth.hasPerm('companies.view')">
-          <div class="mobile-section-label">Compagnies</div>
-          <a class="mobile-link mobile-sub" routerLink="/companies/edit"   routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('companies.edit')">Liste compagnies</a>
-          <a class="mobile-link mobile-sub" routerLink="/companies/new"    routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('companies.edit')">Nouvelle compagnie</a>
-          <a class="mobile-link mobile-sub" routerLink="/employees/assign" routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('employees.edit')">Assigner employés</a>
-        </ng-container>
-        <ng-container *ngIf="auth.hasPerm('invoices.view') || auth.hasPerm('invoices.edit') || auth.hasPerm('invoices.send')">
-          <div class="mobile-section-label">Facturation</div>
-          <a class="mobile-link mobile-sub" routerLink="/invoices" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMenu()" *ngIf="auth.hasPerm('invoices.view')">Gérer les factures</a>
-          <a class="mobile-link mobile-sub" routerLink="/invoices/new"             routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('invoices.edit')">Nouvelle facture</a>
-          <a class="mobile-link mobile-sub" routerLink="/invoices/from-timesheets" routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('invoices.edit')">Facturer par pointages</a>
-          <a class="mobile-link mobile-sub" routerLink="/invoices/send"            routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('invoices.send')">✉ Envoyer les factures</a>
-          <a class="mobile-link mobile-sub" routerLink="/invoices/download" routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('invoices.view')">📥 Téléchargement des factures</a>
-          <a class="mobile-link mobile-sub" routerLink="/charges" routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('invoices.view')">💰 Charges</a>
-        </ng-container>
-        <ng-container *ngIf="auth.hasPerm('invoices.view') || auth.hasPerm('stats.view')">
-          <div class="mobile-section-label">Rapports</div>
-          <a class="mobile-link mobile-sub" routerLink="/invoices/report" routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('invoices.view')">📋 Rapports</a>
-          <a class="mobile-link mobile-sub" routerLink="/stats" routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('stats.view')">📊 Statistiques</a>
-        </ng-container>
-        <ng-container *ngIf="auth.hasPerm('groups.manage') || auth.hasPerm('credentials.manage') || auth.hasPerm('config.manage')">
-          <div class="mobile-section-label">Administration</div>
-          <a class="mobile-link mobile-sub" routerLink="/groups"                routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('groups.manage')">🔐 Groupes</a>
-          <a class="mobile-link mobile-sub" routerLink="/employees/credentials" routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('credentials.manage')">🔑 Identifiants</a>
-          <a class="mobile-link mobile-sub" routerLink="/config"                routerLinkActive="active" (click)="closeMenu()" *ngIf="auth.hasPerm('config.manage')">⚙ Configuration</a>
-        </ng-container>
-
-      <!-- Notes (accessible à tous les utilisateurs connectés) — en dernier -->
-      <a class="mobile-link" routerLink="/notes" routerLinkActive="active" (click)="closeMenu()">📝 Notes</a>
+      </ng-container>
       <a class="mobile-link" routerLink="/aide" routerLinkActive="active" (click)="closeMenu()">❓ Aide</a>
+      <div class="mobile-section-label">Design de couleurs</div>
+      <div class="mobile-themes" role="radiogroup" aria-label="Design de couleurs">
+        <ng-container *ngFor="let g of theme.groups">
+          <div class="theme-group" aria-hidden="true">{{ g.label }}</div>
+          <button *ngFor="let t of g.themes" type="button" role="radio" class="mobile-link mobile-sub theme-opt"
+                  [attr.aria-checked]="theme.current() === t.id" [class.active]="theme.current() === t.id" (click)="theme.choose(t.id)">
+            <span class="theme-swatch" aria-hidden="true"><i [style.background]="t.swatch[0]"></i><i [style.background]="t.swatch[1]"></i><i [style.background]="t.swatch[2]"></i></span>
+            {{ t.label }} <small>· {{ t.hint }}</small>
+          </button>
+        </ng-container>
+      </div>
 
       <div class="mobile-footer">
         <span class="badge badge-admin" *ngIf="auth.canManage()">ADMIN</span>
@@ -212,12 +130,80 @@ export class NavbarComponent {
   open     = signal(false);
   openMenu = signal<string | null>(null);
 
-  constructor(public auth: AuthService, public config: ConfigService, private router: Router) {
+  /**
+   * Navigation PAR RÔLE — source unique pour la barre (ordinateur) et le menu mobile.
+   * Chaque entrée garde le droit d'accès de sa page ; un intertitre ou un menu sans entrée visible est masqué.
+   */
+  private readonly NAV_MENUS: NavMenu[] = [
+    { id: 'work', label: 'Mon travail', sections: [{ items: [
+      { label: 'Feuille de temps', icon: '🕐', link: '/pointage', show: () => this.has('pointage.view') },
+      { label: 'Équipe',           icon: '👥', link: '/team',     show: () => this.team.hasTeam() || this.has('employees.view') },
+      { label: 'Notes',            icon: '📝', link: '/notes',    show: () => true },
+    ] }] },
+    { id: 'manage', label: 'Gestion', sections: [
+      { title: 'Personnel', items: [
+        { label: 'Nouvel employé',     icon: '＋', link: '/employees/new',        show: () => this.has('employees.create') },
+        { label: 'Modifier employé',   icon: '✎',  link: '/employees/edit',       show: () => this.has('employees.edit') },
+        { label: 'Tarifs employés',    icon: '$',  link: '/employees/pricing',    show: () => this.has('employees.edit') },
+      ] },
+      { title: 'Clients', items: [
+        { label: 'Liste compagnies',   icon: '☰',  link: '/companies/edit',       show: () => this.has('companies.edit') },
+        { label: 'Nouvelle compagnie', icon: '＋', link: '/companies/new',        show: () => this.has('companies.edit') },
+      ] },
+      { title: 'Pointage', items: [
+        { label: 'Pointage employé',   icon: '☰',  link: '/employees', exact: true, show: () => this.has('employees.view') },
+        { label: 'Profil employé',     icon: '✅', link: '/employees/validation', show: () => this.has('pointage.validate') },
+      ] },
+      { title: 'Affectations', items: [
+        { label: 'Assigner compagnies', icon: '⇄', link: '/companies/assign',    show: () => this.has('companies.edit') },
+        { label: 'Assigner employés',   icon: '⇄', link: '/employees/assign',    show: () => this.has('employees.edit') },
+      ] },
+    ] },
+    { id: 'finance', label: 'Finances', sections: [
+      { title: 'Facturation', items: [
+        { label: 'Gérer les factures',     icon: '☰', link: '/invoices', exact: true, show: () => this.has('invoices.view') },
+        { label: 'Nouvelle facture',       icon: '＋', link: '/invoices/new',           show: () => this.has('invoices.edit') },
+        { label: 'Facturer par pointages', icon: '🕐', link: '/invoices/from-timesheets', show: () => this.has('invoices.edit') },
+        { label: 'Envoyer les factures',   icon: '✉', link: '/invoices/send',          show: () => this.has('invoices.send') },
+        { label: 'Téléchargement des factures', icon: '📥', link: '/invoices/download', show: () => this.has('invoices.view') },
+      ] },
+      { title: 'Paie', items: [
+        { label: 'Paiements employés', icon: '💰', link: '/employees/payments', show: () => this.has('payments.manage') },
+        { label: 'Feuillet T4A',       icon: '📄', link: '/employees/t4a',      show: () => this.has('employees.edit') },
+        { label: 'Charges',            icon: '🧾', link: '/charges',            show: () => this.has('invoices.view') },
+      ] },
+      { title: 'Analyse', items: [
+        { label: 'Rapports',     icon: '📋', link: '/invoices/report', show: () => this.has('invoices.view') },
+        { label: 'Statistiques', icon: '📊', link: '/stats',           show: () => this.has('stats.view') },
+      ] },
+    ] },
+    { id: 'admin', label: 'Administration', sections: [{ items: [
+      { label: 'Groupes',       icon: '🔐', link: '/groups',                show: () => this.has('groups.manage') },
+      { label: 'Identifiants',  icon: '🔑', link: '/employees/credentials', show: () => this.has('credentials.manage') },
+      { label: 'Configuration', icon: '⚙',  link: '/config',                show: () => this.has('config.manage') },
+    ] }] },
+  ];
+
+  /** Menus visibles pour l'utilisateur connecté (réévalués quand l'utilisateur ou son équipe change). */
+  readonly menus = computed<NavMenu[]>(() => {
+    this.auth.user(); this.team.hasTeam();   // dépendances réactives
+    return this.NAV_MENUS
+      .map(m => ({ ...m, sections: m.sections
+        .map(sec => ({ ...sec, items: sec.items.filter(it => it.show()) }))
+        .filter(sec => sec.items.length) }))
+      .filter(m => m.sections.length);
+  });
+
+  private has(p: string): boolean { return this.auth.hasPerm(p); }
+  trackMenu(_: number, m: NavMenu): string { return m.id; }
+
+  constructor(public auth: AuthService, public config: ConfigService, public team: TeamService, public theme: ThemeService, private router: Router) {
     // Version = Configuration → Application → Version du tenant courant : rechargée à la connexion
     // et au changement de session (aperçu super-admin), effacée à la déconnexion.
     effect(() => {
       const u = this.auth.user();
-      if (u) this.config.loadVersion(); else this.config.clearVersion();
+      if (u) { this.config.loadVersion(); this.team.load(); this.theme.syncFromAccount(); }   // design enregistré sur le compte
+      else   { this.config.clearVersion(); this.team.clear(); }
     });
   }
 

@@ -163,7 +163,7 @@ export class EmployeeDetailsComponent implements OnInit {
     const empId = this.selectedId();
     if (empId) this.ptEmpSvc.setEmployeeId(empId);
     const ok = await this.saveSvc.save();
-    this.showToast(ok ? '✓ Sauvegardé avec succès' : '✕ Erreur lors de la sauvegarde', !ok);
+    this.showToast(ok ? '✓ Sauvegardé avec succès' : '✕ ' + (this.saveSvc.errorMessage() ?? 'Erreur lors de la sauvegarde'), !ok);
   }
 
   validateWeek(): void {

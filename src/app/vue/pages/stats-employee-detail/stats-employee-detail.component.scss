@@ -21,7 +21,7 @@
   .card-val { font-size: 1.25rem; font-weight: 700; margin-bottom: 4px; }
   .card-lbl { font-size: .75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em; }
 
-  &.card-blue { background: rgba(66,133,244,.12); border-color: rgba(66,133,244,.3); .card-val { color: #4285f4; } }
+  &.card-blue { background: rgba(66,133,244,.12); border-color: rgba(66,133,244,.3); .card-val { color: var(--info-text); } }
   &.card-gray { background: var(--surface); }
 }
 
@@ -61,7 +61,7 @@
     &.gain { color: var(--accent); font-weight: 600; }
   }
 
-  tbody tr:hover { background: var(--hover, rgba(255,255,255,.03)); }
+  tbody tr:hover { background: var(--hover, rgba(var(--overlay-rgb), .03)); }
 }
 
 .dates-cell {
@@ -92,7 +92,7 @@
 .spinner {
   width: 24px;
   height: 24px;
-  border: 3px solid rgba(255,255,255,.2);
+  border: 3px solid rgba(var(--overlay-rgb), .2);
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin .7s linear infinite;

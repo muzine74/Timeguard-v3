@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { DayPricingHistory, EmployeePricingEntry, SavePricingPayload } from '../../models';
+import { DayPricingHistory, EmployeeHourlyRate, EmployeePricingEntry, SavePricingPayload } from '../../models';
 
 @Injectable({ providedIn: 'root' })
 export class PricingService {
@@ -18,6 +18,16 @@ export class PricingService {
       `/api/employee/${employeeId}/pricing/${companyId}`,
       payload
     );
+  }
+
+  getHourlyRate(employeeId: string, companyId: string): Observable<EmployeeHourlyRate> {
+    return this.http.get<EmployeeHourlyRate>(`/api/employee/${employeeId}/hourly-rate/${companyId}`);
+  }
+
+  /** hourlyRate = null → taux par défaut de la compagnie ; modeRemuneration : 'Defaut' | 'Visite' | 'Heure'. */
+  saveHourlyRate(employeeId: string, companyId: string, hourlyRate: number | null,
+                 modeRemuneration?: 'Defaut' | 'Visite' | 'Heure'): Observable<unknown> {
+    return this.http.put(`/api/employee/${employeeId}/hourly-rate/${companyId}`, { hourlyRate, modeRemuneration });
   }
 
   getHistory(employeeId: string, companyId: string): Observable<DayPricingHistory[]> {

@@ -83,9 +83,11 @@ export interface SendEmailRequest {
 }
 
 export interface BillablePriceGroup {
-  unitPrice: number;
+  unitPrice: number;      // par visite, ou par heure si isHourly
   visits:    number;
   subtotal:  number;
+  isHourly?: boolean;     // pointages horaires : quantité = hours
+  hours?:    number;
 }
 
 export interface BillableCompanyItem {
@@ -103,6 +105,8 @@ export interface BillableCompanyItem {
   plannedAmount: number;
   /** Bi-hebdomadaire sans date de début de Semaine 1 : jours planifiés non calculables. */
   planningIncomplete?: boolean;
+  /** Compagnie facturée par heure : pas de comparaison au planning. */
+  hourlyBilling?: boolean;
 }
 
 export interface BillableCompanies {

@@ -52,19 +52,19 @@
     <!-- Section 3 : statut compagnies + action -->
     <div class="filter-section filter-actions-row">
       <div class="statut-block" *ngIf="stats()">
-        <span class="statut-lbl">Compagnies :</span>
-        <div class="seg-control statut-seg statut-seg-3">
+        <span class="statut-lbl" id="stats-statut-lbl">Factures :</span>
+        <div class="seg-control statut-seg statut-seg-3" role="group" aria-labelledby="stats-statut-lbl">
           <button type="button"
                   class="seg-opt"
-                  [class.active]="statutFilter() === 'facturee'"
+                  [class.active]="statutFilter() === 'facturee'" [attr.aria-pressed]="statutFilter() === 'facturee'"
                   (click)="statutFilter.set('facturee')">Facturée</button>
           <button type="button"
                   class="seg-opt"
-                  [class.active]="statutFilter() === 'nonpayee'"
+                  [class.active]="statutFilter() === 'nonpayee'" [attr.aria-pressed]="statutFilter() === 'nonpayee'"
                   (click)="statutFilter.set('nonpayee')">Non payée</button>
           <button type="button"
                   class="seg-opt"
-                  [class.active]="statutFilter() === 'payee'"
+                  [class.active]="statutFilter() === 'payee'" [attr.aria-pressed]="statutFilter() === 'payee'"
                   (click)="statutFilter.set('payee')">Payée</button>
           <div class="seg-thumb seg-thumb-3"
                [class.thumb-mid]="statutFilter() === 'nonpayee'"
@@ -133,8 +133,14 @@
     <!-- ── Détails (masqués si regrouper) ── -->
     <ng-container *ngIf="!regrouper()">
 
-      <!-- ── Revenus par employé ── -->
-      <div class="section-title" *ngIf="s.parEmploye.length > 0">Paiements employés</div>
+      <!-- ── Section 1 : Paiements employés ── -->
+      <section class="stats-section" aria-labelledby="stats-sec-emp">
+        <header class="sec-hdr">
+          <h2 id="stats-sec-emp" class="sec-title">Paiements employés</h2>
+          <div class="sec-actions">
+            <app-export-buttons [build]="exportEmployees" [disabled]="s.parEmploye.length === 0" label="les paiements employés"></app-export-buttons>
+          </div>
+        </header>
       <div class="table-wrap" *ngIf="s.parEmploye.length > 0">
         <table class="stats-table">
           <thead>
@@ -161,81 +167,86 @@
         </table>
       </div>
       <div class="empty-msg" *ngIf="s.parEmploye.length === 0">Aucun pointage pour cette période.</div>
+      </section>
 
-      <!-- ── Revenus par compagnie ── -->
-      <div class="section-title" *ngIf="s.parCompagnie.length > 0">
-        Revenus par compagnie
-        <span class="section-sub">({{ statutLabel() }})</span>
-      </div>
-      <div class="table-wrap" *ngIf="filteredCompanies().length > 0">
-        <table class="stats-table">
+      <!-- ── Section 2 : Factures par compagnie (filtrées par statut, groupes repliés) ── -->
+      <section class="stats-section" aria-labelledby="stats-sec-inv">
+        <header class="sec-hdr">
+          <h2 id="stats-sec-inv" class="sec-title">Factures par compagnie <span class="section-sub">({{ statutLabel() }})</span></h2>
+          <div class="sec-actions">
+            <button type="button" class="btn btn-outline btn-sm" *ngIf="groups().length > 0" (click)="toggleAll()">
+              {{ allExpanded() ? 'Tout replier' : 'Tout déplier' }}
+            </button>
+            <app-export-buttons [build]="exportInvoices" [disabled]="groups().length === 0" label="les factures par compagnie"></app-export-buttons>
+          </div>
+        </header>
+      <div class="table-wrap" *ngIf="groups().length > 0">
+        <table class="stats-table inv-table">
+          <caption class="sr-only">Factures {{ statutLabel() }} regroupées par compagnie, avec le total de chaque compagnie</caption>
           <thead>
             <tr>
-              <th>Compagnie</th>
-              <th class="num">Fact.</th>
-              <th class="num">Avoirs</th>
-              <th class="num">Visites</th>
-              <th class="num">Total HT</th>
-              <th class="num">TPS</th>
-              <th class="num">TVQ</th>
-              <th class="num">Total TTC net</th>
-              <th class="num">Avoirs déduits</th>
-              <th class="num">Payé</th>
-              <th class="num">En attente</th>
+              <th scope="col" [attr.aria-sort]="sort.aria('num')"><button type="button" class="th-sort" (click)="sort.toggle('num')">Compagnie / N° facture <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('num') }}</span></button></th>
+              <th scope="col" [attr.aria-sort]="sort.aria('period')"><button type="button" class="th-sort" (click)="sort.toggle('period')">Période <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('period') }}</span></button></th>
+              <th scope="col" [attr.aria-sort]="sort.aria('date')"><button type="button" class="th-sort" (click)="sort.toggle('date')">Émise le <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('date') }}</span></button></th>
+              <th scope="col" class="num" [attr.aria-sort]="sort.aria('visits')"><button type="button" class="th-sort" (click)="sort.toggle('visits')">Visites <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('visits') }}</span></button></th>
+              <th scope="col" class="num" [attr.aria-sort]="sort.aria('ht')"><button type="button" class="th-sort" (click)="sort.toggle('ht')">Total HT <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('ht') }}</span></button></th>
+              <th scope="col" class="num" [attr.aria-sort]="sort.aria('tps')"><button type="button" class="th-sort" (click)="sort.toggle('tps')">TPS <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('tps') }}</span></button></th>
+              <th scope="col" class="num" [attr.aria-sort]="sort.aria('tvq')"><button type="button" class="th-sort" (click)="sort.toggle('tvq')">TVQ <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('tvq') }}</span></button></th>
+              <th scope="col" [attr.aria-sort]="sort.aria('status')"><button type="button" class="th-sort" (click)="sort.toggle('status')">Statut <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('status') }}</span></button></th>
+              <th scope="col" class="num" [attr.aria-sort]="sort.aria('ttc')"><button type="button" class="th-sort" (click)="sort.toggle('ttc')">Total TTC <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('ttc') }}</span></button></th>
             </tr>
           </thead>
-          <tbody>
-            <tr *ngFor="let row of filteredCompanies(); trackBy: trackByCode"
-                class="row-clickable"
-                (click)="openCompany(row)"
-                title="Voir le détail de la compagnie (nouvel onglet)"
-                [class.row-paid]="row.aPayee"
-                [class.row-unpaid]="!row.aPayee && row.totalTTC > 0"
-                [class.row-avoir]="row.nbAvoirs > 0">
-              <td>
-                <span class="badge-paid" *ngIf="row.aPayee" title="Payée">✓</span>
-                {{ row.companyName }}
-              </td>
-              <td class="num">{{ row.nbFactures }}</td>
-              <td class="num avoir-cell">
-                <span *ngIf="row.nbAvoirs > 0">{{ row.nbAvoirs }}</span>
-                <span *ngIf="row.nbAvoirs === 0" class="muted">—</span>
-              </td>
-              <td class="num">{{ row.nbVisites }}</td>
-              <td class="num">{{ fmt(row.totalHT) }}</td>
-              <td class="num muted">{{ fmt(row.totalTPS) }}</td>
-              <td class="num muted">{{ fmt(row.totalTVQ) }}</td>
-              <td class="num bold">{{ fmt(row.totalTTC) }}</td>
-              <td class="num avoir-cell">
-                <span *ngIf="row.nbAvoirs > 0">-{{ fmt(row.totalAvoirs) }}</span>
-                <span *ngIf="row.nbAvoirs === 0" class="muted">—</span>
-              </td>
-              <td class="num green">{{ fmt(row.montantPaye) }}</td>
-              <td class="num orange">{{ fmt(row.totalTTC - row.totalAvoirs - row.montantPaye) }}</td>
+          <tbody *ngFor="let g of sortedGroups(); trackBy: trackGroup" class="grp" [class.is-open]="isOpen(g.key)" [attr.id]="'grp-' + g.key">
+            <tr class="grp-row">
+              <th scope="rowgroup" colspan="8" class="grp-cell">
+                <button type="button" class="grp-toggle" (click)="toggle(g.key)"
+                        [attr.aria-expanded]="isOpen(g.key)" [attr.aria-controls]="'grp-' + g.key">
+                  <span class="chev" aria-hidden="true">▸</span>
+                  <span class="grp-name">{{ g.company.companyName || '—' }}</span>
+                  <span class="grp-count">{{ g.invoices.length }} facture{{ g.invoices.length > 1 ? 's' : '' }}</span>
+                </button>
+                <button type="button" class="grp-detail" *ngIf="canOpenCompany(g.company)" (click)="openCompany(g.company)"
+                        [attr.aria-label]="'Détail des visites de ' + g.company.companyName + ' (nouvel onglet)'">Détail ↗</button>
+              </th>
+              <td class="num bold grp-total">{{ fmt(g.total) }}</td>
             </tr>
+            <ng-container *ngIf="isOpen(g.key)">
+              <tr *ngFor="let f of g.invoices; trackBy: trackInvoice" class="inv-row" [class.row-avoir]="f.isAvoir">
+                <td class="inv-num">{{ f.billNumber }}</td>
+                <td>{{ f.period }}</td>
+                <td>{{ f.billedDate | date:'yyyy-MM-dd' }}</td>
+                <td class="num">{{ f.isAvoir ? '—' : f.nbVisites }}</td>
+                <td class="num">{{ fmt(f.totalHT) }}</td>
+                <td class="num muted">{{ fmt(f.totalTPS) }}</td>
+                <td class="num muted">{{ fmt(f.totalTVQ) }}</td>
+                <td>
+                  <span class="st" [class.st-paid]="f.isPaid && !f.isAvoir" [class.st-avoir]="f.isAvoir"
+                        [class.st-sent]="!f.isPaid && f.isSent && !f.isAvoir">{{ invoiceStatus(f) }}</span>
+                </td>
+                <td class="num">{{ fmt(f.totalTTC) }}</td>
+              </tr>
+            </ng-container>
           </tbody>
           <tfoot>
             <tr class="total-row">
-              <td>Total net</td>
-              <td class="num">{{ totalFactures() }}</td>
-              <td class="num avoir-cell">{{ totalNbAvoirs() }}</td>
+              <th scope="row">Total</th>
+              <td>{{ groups().length }} compagnie{{ groups().length > 1 ? 's' : '' }}</td>
+              <td>{{ totalCount() }} facture{{ totalCount() > 1 ? 's' : '' }}</td>
               <td class="num">{{ totalVisites() }}</td>
               <td class="num">{{ fmt(totalHT()) }}</td>
-              <td class="num muted">{{ fmt(totalTPSFilt()) }}</td>
-              <td class="num muted">{{ fmt(totalTVQFilt()) }}</td>
-              <td class="num bold">{{ fmt(totalTTCFilt()) }}</td>
-              <td class="num avoir-cell">-{{ fmt(totalAvoirsSum()) }}</td>
-              <td class="num green">{{ fmt(totalPayeFilt()) }}</td>
-              <td class="num orange">{{ fmt(totalEnAttenteFilt()) }}</td>
+              <td class="num muted">{{ fmt(totalTPS()) }}</td>
+              <td class="num muted">{{ fmt(totalTVQ()) }}</td>
+              <td></td>
+              <td class="num bold">{{ fmt(totalTTC()) }}</td>
             </tr>
           </tfoot>
         </table>
       </div>
-      <div class="empty-msg" *ngIf="s.parCompagnie.length > 0 && filteredCompanies().length === 0">
-        Aucune compagnie « {{ statutLabel() }} » pour cette période.
+      <div class="empty-msg" *ngIf="s.parCompagnie.length > 0 && groups().length === 0">
+        Aucune facture « {{ statutLabel() }} » pour cette période.
       </div>
       <div class="empty-msg" *ngIf="s.parCompagnie.length === 0">Aucune facture pour cette période.</div>
-
+      </section>
 
     </ng-container>
     <!-- fin !regrouper -->

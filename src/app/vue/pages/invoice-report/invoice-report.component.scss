@@ -51,14 +51,14 @@
   transition: all .15s;
 
   &.active {
-    background: rgba(201, 162, 39, .15);
-    border-color: rgba(201, 162, 39, .5);
+    background: rgba(var(--accent-rgb), .15);
+    border-color: rgba(var(--accent-rgb), .5);
     color: var(--accent);
     font-weight: 700;
   }
 
   &:hover:not(.active) {
-    border-color: rgba(201, 162, 39, .3);
+    border-color: rgba(var(--accent-rgb), .3);
     color: var(--text);
   }
 }
@@ -92,7 +92,7 @@
     background: var(--surface2);
     min-width: 180px;
     transition: border-color .15s;
-    color-scheme: dark;
+    color-scheme: var(--color-scheme);
 
     &:focus {
       outline: none;
@@ -112,7 +112,7 @@
   padding: .5rem 1rem;
   background: var(--surface2);
   color: var(--accent);
-  border: 1px solid rgba(201, 162, 39, .4);
+  border: 1px solid rgba(var(--accent-rgb), .4);
   border-radius: 6px;
   font-weight: 700;
   font-size: .85rem;
@@ -120,7 +120,7 @@
   white-space: nowrap;
   transition: background .15s;
 
-  &:hover { background: rgba(201, 162, 39, .15); }
+  &:hover { background: rgba(var(--accent-rgb), .15); }
 }
 
 // ── Chips périodes ────────────────────────────────────────────────────────
@@ -136,8 +136,8 @@
   align-items: center;
   gap: .35rem;
   padding: .3rem .65rem;
-  background: rgba(201, 162, 39, .15);
-  border: 1px solid rgba(201, 162, 39, .35);
+  background: rgba(var(--accent-rgb), .15);
+  border: 1px solid rgba(var(--accent-rgb), .35);
   color: var(--accent);
   border-radius: 20px;
   font-size: .8rem;
@@ -190,8 +190,8 @@
   font-size: .78rem;
   font-weight: 700;
   color: var(--accent);
-  background: rgba(201, 162, 39, .12);
-  border: 1px solid rgba(201, 162, 39, .3);
+  background: rgba(var(--accent-rgb), .12);
+  border: 1px solid rgba(var(--accent-rgb), .3);
   border-radius: 20px;
   padding: .1rem .55rem;
 }
@@ -344,9 +344,9 @@
 
 .btn-popup-confirm {
   padding: .5rem 1.6rem;
-  background: rgba(201, 162, 39, .15);
+  background: rgba(var(--accent-rgb), .15);
   color: var(--accent);
-  border: 1px solid rgba(201, 162, 39, .4);
+  border: 1px solid rgba(var(--accent-rgb), .4);
   border-radius: 6px;
   font-weight: 700;
   font-size: .9rem;
@@ -354,7 +354,7 @@
   font-family: inherit;
   transition: background .15s;
 
-  &:hover { background: rgba(201, 162, 39, .25); }
+  &:hover { background: rgba(var(--accent-rgb), .25); }
 }
 
 // ── Bouton Appliquer ──────────────────────────────────────────────────────
@@ -365,9 +365,9 @@
 
 .btn-apply {
   padding: .5rem 1.6rem;
-  background: rgba(201, 162, 39, .15);
+  background: rgba(var(--accent-rgb), .15);
   color: var(--accent);
-  border: 1px solid rgba(201, 162, 39, .4);
+  border: 1px solid rgba(var(--accent-rgb), .4);
   border-radius: 6px;
   font-weight: 700;
   font-size: .9rem;
@@ -375,7 +375,7 @@
   transition: background .15s;
 
   &:disabled { opacity: .55; cursor: default; }
-  &:hover:not(:disabled) { background: rgba(201, 162, 39, .25); }
+  &:hover:not(:disabled) { background: rgba(var(--accent-rgb), .25); }
 }
 
 // ── Alertes ───────────────────────────────────────────────────────────────
@@ -410,9 +410,9 @@
 
 .btn-export {
   padding: .55rem 1.4rem;
-  background: rgba(201, 162, 39, .15);
+  background: rgba(var(--accent-rgb), .15);
   color: var(--accent);
-  border: 1px solid rgba(201, 162, 39, .4);
+  border: 1px solid rgba(var(--accent-rgb), .4);
   border-radius: 8px;
   font-weight: 700;
   font-size: .9rem;
@@ -420,7 +420,7 @@
   transition: background .15s;
 
   &:disabled { opacity: .5; cursor: default; }
-  &:hover:not(:disabled) { background: rgba(201, 162, 39, .25); }
+  &:hover:not(:disabled) { background: rgba(var(--accent-rgb), .25); }
 }
 
 .export-menu {
@@ -510,7 +510,7 @@
     transition: background .1s;
 
     &:hover td     { background: var(--surface2); }
-    &.selected td  { background: rgba(201, 162, 39, .08); }
+    &.selected td  { background: rgba(var(--accent-rgb), .08); }
     &.avoir td     { color: var(--muted); }
   }
 
@@ -536,7 +536,7 @@
   margin-left: .4rem;
   padding: .1rem .45rem;
   background: rgba(59,130,246,.15);
-  color: #93c5fd;
+  color: var(--info-text);
   border-radius: 4px;
   font-size: .7rem;
   font-weight: 700;
