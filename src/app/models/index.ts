@@ -69,6 +69,8 @@ export interface Employee {
 export interface EmployeeCompagnie {
   compagnieId:   string;
   compagnieName: string;
+  /** Compagnie active ; absent (ancienne API / liste résumée) = considérée active. */
+  isActive?:     boolean;
 }
 
 // ── WorkDate / WorkStats (utilisés dans employee-details) ─

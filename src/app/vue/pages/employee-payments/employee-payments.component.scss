@@ -1,8 +1,6 @@
 .page-wrap { padding: 24px; max-width: 1000px; margin: 0 auto; }
 
 .page-hdr { margin-bottom: 20px; }
-.page-title { font-size: 22px; font-weight: 700; color: var(--text); margin: 0; }
-.page-sub   { font-size: 12.5px; color: var(--muted); margin: 4px 0 0; }
 
 .error-banner {
   background: rgba(224,82,82,.1); border: 1px solid rgba(224,82,82,.25);
@@ -154,11 +152,6 @@ input[type="date"].inp, input[type="month"].inp { color-scheme: var(--color-sche
   border: 1px solid var(--border); cursor: pointer; font-family: inherit; transition: all .18s;
   background: var(--surface); color: var(--text);
   &:hover:not(:disabled) { background: var(--surface2); }
-  &:disabled { opacity: .5; cursor: not-allowed; }
-}
-.btn-primary {
-  background: rgba(var(--accent-rgb), .15); border-color: rgba(var(--accent-rgb), .4); color: var(--accent);
-  &:hover:not(:disabled) { background: rgba(var(--accent-rgb), .25); }
   &:disabled { opacity: .5; cursor: not-allowed; }
 }
 

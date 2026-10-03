@@ -10,6 +10,22 @@
            [value]="searchQuery()" (input)="onSearch($event)" />
   </div>
 
+  <!-- Filtre par état de l'employé (combiné avec la recherche et la validation) -->
+  <div class="status-filter" role="group" aria-label="Filtrer par état de l'employé">
+    <button type="button" class="sf-chip" [class.active]="activeFilter() === 'all'"
+            [attr.aria-pressed]="activeFilter() === 'all'" (click)="activeFilter.set('all')">
+      Tous <span class="sf-count">{{ activeCounts.all }}</span>
+    </button>
+    <button type="button" class="sf-chip" [class.active]="activeFilter() === 'active'"
+            [attr.aria-pressed]="activeFilter() === 'active'" (click)="activeFilter.set('active')">
+      Actifs <span class="sf-count">{{ activeCounts.active }}</span>
+    </button>
+    <button type="button" class="sf-chip sf-inactive" [class.active]="activeFilter() === 'inactive'"
+            [attr.aria-pressed]="activeFilter() === 'inactive'" (click)="activeFilter.set('inactive')">
+      Désactivés <span class="sf-count">{{ activeCounts.inactive }}</span>
+    </button>
+  </div>
+
   <!-- Filtre par statut (combiné avec la recherche) -->
   <div class="status-filter" role="group" aria-label="Filtrer par statut de validation">
     <button type="button" class="sf-chip" [class.active]="statusFilter() === 'all'"
@@ -29,6 +45,7 @@
   <div class="emp-list" *ngIf="!loading; else listSkeleton">
     <button type="button" *ngFor="let emp of filteredEmployees; trackBy: trackByEmployee"
             class="emp-item"
+            [class.emp-inactive]="!emp.isActive"
             [class.active]="emp.employeeId === selectedId"
             [attr.aria-current]="emp.employeeId === selectedId ? 'true' : null"
             (click)="employeeSelect.emit(emp.employeeId)">
@@ -37,13 +54,14 @@
         <span class="emp-name">{{ emp.employeeName }}</span>
         <span class="emp-dept" *ngIf="emp.employeeMail">{{ emp.employeeMail }}</span>
       </span>
-      <span class="val-pill val-warn" *ngIf="!emp.isTeamLead && !emp.managerId" title="Aucun chef d'équipe : à compléter dans la fiche">Sans chef</span>
+      <span class="val-pill val-off" *ngIf="!emp.isActive">Désactivé</span>
+      <span class="val-pill val-warn" *ngIf="emp.isActive && !emp.isTeamLead && !emp.managerId" title="Aucun chef d'équipe : à compléter dans la fiche">Sans chef</span>
       <span class="val-pill val-ok"  *ngIf=" isValidated(emp.employeeId)">✓ Validé</span>
       <span class="val-pill val-nok" *ngIf="!isValidated(emp.employeeId)">À valider</span>
     </button>
     <p class="empty-list" *ngIf="filteredEmployees.length === 0">
       Aucun employé ne correspond
-      <ng-container *ngIf="statusFilter() !== 'all'"> — <button type="button" class="link-btn" (click)="statusFilter.set('all')">afficher tous</button></ng-container>
+      <ng-container *ngIf="statusFilter() !== 'all' || activeFilter() !== 'all'"> — <button type="button" class="link-btn" (click)="statusFilter.set('all'); activeFilter.set('all')">afficher tous</button></ng-container>
     </p>
   </div>
 

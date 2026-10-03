@@ -26,6 +26,13 @@ export const routes: Routes = [
     canActivate: [superUserGuard],
     loadComponent: () => import('./vue/pages/providers/providers.component').then(m => m.ProvidersComponent)
   },
+  {
+    // Suppression définitive (facture / employé / compagnie + toutes leurs références) :
+    // permission « data.purge » (sa propre entreprise) ou super utilisateur (toutes)
+    path: 'purge',
+    canActivate: [permGuard(PERM.dataPurge)],
+    loadComponent: () => import('./vue/pages/purge/purge.component').then(m => m.PurgeComponent)
+  },
 
   // ── Pointage ─────────────────────────────────────────────────────────────
   {

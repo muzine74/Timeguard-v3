@@ -13,10 +13,10 @@
     <!-- Section 1 : mode -->
     <div class="filter-section">
       <div class="seg-control mode-seg">
-        <button type="button" class="seg-opt" [class.active]="mode === 'period'" (click)="mode = 'period'">
+        <button type="button" class="seg-opt" [class.active]="mode === 'period'" (click)="setMode('period')">
           📅 Période
         </button>
-        <button type="button" class="seg-opt" [class.active]="mode === 'range'" (click)="mode = 'range'">
+        <button type="button" class="seg-opt" [class.active]="mode === 'range'" (click)="setMode('range')">
           📆 Intervalle
         </button>
         <div class="seg-thumb" [class.thumb-right]="mode === 'range'"></div>
@@ -28,18 +28,18 @@
       <ng-container *ngIf="mode === 'period'">
         <div class="filter-field">
           <label for="stats-mois">Mois</label>
-          <input id="stats-mois" class="inp" type="month" [(ngModel)]="period" />
+          <input id="stats-mois" class="inp" type="month" [(ngModel)]="period" (ngModelChange)="autoLoad()" />
         </div>
       </ng-container>
 
       <ng-container *ngIf="mode === 'range'">
         <div class="filter-field">
           <label for="stats-du">Du</label>
-          <input id="stats-du" class="inp" type="date" [(ngModel)]="dateFrom" />
+          <input id="stats-du" class="inp" type="date" [(ngModel)]="dateFrom" (ngModelChange)="autoLoad()" />
         </div>
         <div class="filter-field">
           <label for="stats-au">Au</label>
-          <input id="stats-au" class="inp" type="date" [(ngModel)]="dateTo" />
+          <input id="stats-au" class="inp" type="date" [(ngModel)]="dateTo" (ngModelChange)="autoLoad()" />
         </div>
       </ng-container>
 
@@ -89,16 +89,16 @@
     <!-- ── Cartes totaux généraux ── -->
     <div class="cards-grid">
       <div class="stat-card card-blue">
-        <div class="card-val">{{ fmt(s.totalTTC) }}</div>
-        <div class="card-lbl">Total TTC facturé</div>
+        <div class="card-val">{{ fmt(cardTTC()) }}</div>
+        <div class="card-lbl">Total TTC facturé{{ cardSuffix() }}</div>
       </div>
       <div class="stat-card card-green">
         <div class="card-val">{{ fmt(s.totalPaye) }}</div>
         <div class="card-lbl">Total payé</div>
       </div>
       <div class="stat-card card-orange">
-        <div class="card-val">{{ fmt(s.totalEnAttente) }}</div>
-        <div class="card-lbl">En attente de paiement</div>
+        <div class="card-val">{{ fmt(cardAttente()) }}</div>
+        <div class="card-lbl">En attente de paiement{{ cardSuffix() }}</div>
       </div>
       <div class="stat-card card-purple">
         <div class="card-val">{{ fmt(s.gain) }}</div>
@@ -113,20 +113,20 @@
         <div class="card-lbl">Visites totales</div>
       </div>
       <div class="stat-card card-gray">
-        <div class="card-val">{{ s.nbCompagnies }}</div>
-        <div class="card-lbl">Compagnies facturées</div>
+        <div class="card-val">{{ cardCompanies() }}</div>
+        <div class="card-lbl">Compagnies facturées{{ cardSuffix() }}</div>
       </div>
       <div class="stat-card card-gray">
-        <div class="card-val">{{ s.nbFactures }}</div>
-        <div class="card-lbl">Factures émises</div>
+        <div class="card-val">{{ cardInvoices() }}</div>
+        <div class="card-lbl">Factures émises{{ cardSuffix() }}</div>
       </div>
       <div class="stat-card card-gray">
-        <div class="card-val">{{ fmt(s.totalTPS) }}</div>
-        <div class="card-lbl">TPS</div>
+        <div class="card-val">{{ fmt(cardTPS()) }}</div>
+        <div class="card-lbl">TPS{{ cardSuffix() }}</div>
       </div>
       <div class="stat-card card-gray">
-        <div class="card-val">{{ fmt(s.totalTVQ) }}</div>
-        <div class="card-lbl">TVQ</div>
+        <div class="card-val">{{ fmt(cardTVQ()) }}</div>
+        <div class="card-lbl">TVQ{{ cardSuffix() }}</div>
       </div>
     </div>
 

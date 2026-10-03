@@ -29,9 +29,15 @@ interface WeekBlock {
 }
 
 interface CompanyBlock {
+  key: string;          // identifiant de la compagnie (ou nom en repli)
   name: string;
   total: number;
   days: { date: string; amount: number }[];
+}
+
+/** Clé d'une compagnie : son identifiant (deux compagnies peuvent avoir le même nom), sinon son nom. */
+function companyKey(c: { companyId?: string; name: string }): string {
+  return c.companyId || c.name;
 }
 
 function dayCompanyKey(date: string, company: string): string {
@@ -98,7 +104,7 @@ export class EmployeePaymentsComponent {
         for (const c of w.companies) {
           rows.push({ kind: 'detail', cells: [
             `${w.date} (${new Date(w.date + 'T00:00:00').toLocaleDateString('fr-CA', { weekday: 'long' })})`, c.name, c.amount,
-            r.selectedKeys.has(dayCompanyKey(w.date, c.name)) ? 'Oui' : 'Non', null, null, '',
+            r.selectedKeys.has(dayCompanyKey(w.date, companyKey(c))) ? 'Oui' : 'Non', null, null, '',
           ] });
         }
       }
@@ -141,7 +147,7 @@ export class EmployeePaymentsComponent {
             // Par défaut, toutes les contributions (jour, compagnie) sont cochées
             // (= montant payé = gain cumulé)
             selectedKeys: new Set(
-              r.workDays.flatMap(w => w.companies.map(c => dayCompanyKey(w.date, c.name)))
+              r.workDays.flatMap(w => w.companies.map(c => dayCompanyKey(w.date, companyKey(c))))
             ),
             // Toutes les semaines repliées par défaut
             collapsedWeeks: new Set(r.workDays.map(w => this._mondayOf(w.date))),
@@ -162,7 +168,7 @@ export class EmployeePaymentsComponent {
   }
 
   private _dayKeys(w: EmployeePaymentWorkDay): string[] {
-    return w.companies.map(c => dayCompanyKey(w.date, c.name));
+    return w.companies.map(c => dayCompanyKey(w.date, companyKey(c)));
   }
 
   isDaySelected(row: PaymentRowState, w: EmployeePaymentWorkDay): boolean {
@@ -189,7 +195,7 @@ export class EmployeePaymentsComponent {
 
   private _computeAmountPaid(row: PaymentRowState): number {
     const sum = row.workDays
-      .flatMap(w => w.companies.map(c => ({ key: dayCompanyKey(w.date, c.name), amount: c.amount })))
+      .flatMap(w => w.companies.map(c => ({ key: dayCompanyKey(w.date, companyKey(c)), amount: c.amount })))
       .filter(x => row.selectedKeys.has(x.key))
       .reduce((s, x) => s + x.amount, 0);
     return Math.round(sum * 100) / 100;
@@ -260,7 +266,7 @@ export class EmployeePaymentsComponent {
 
   weekTotal(row: PaymentRowState, block: WeekBlock): number {
     const sum = block.days
-      .flatMap(w => w.companies.map(c => ({ key: dayCompanyKey(w.date, c.name), amount: c.amount })))
+      .flatMap(w => w.companies.map(c => ({ key: dayCompanyKey(w.date, companyKey(c)), amount: c.amount })))
       .filter(x => row.selectedKeys.has(x.key))
       .reduce((s, x) => s + x.amount, 0);
     return Math.round(sum * 100) / 100;
@@ -270,8 +276,9 @@ export class EmployeePaymentsComponent {
     const byCompany = new Map<string, CompanyBlock>();
     for (const w of block.days) {
       for (const c of w.companies) {
-        if (!byCompany.has(c.name)) byCompany.set(c.name, { name: c.name, total: 0, days: [] });
-        const entry = byCompany.get(c.name)!;
+        const k = companyKey(c);
+        if (!byCompany.has(k)) byCompany.set(k, { key: k, name: c.name, total: 0, days: [] });
+        const entry = byCompany.get(k)!;
         entry.total += c.amount;
         entry.days.push({ date: w.date, amount: c.amount });
       }
@@ -282,18 +289,18 @@ export class EmployeePaymentsComponent {
   }
 
   isCompanySelected(row: PaymentRowState, c: CompanyBlock): boolean {
-    const keys = c.days.map(d => dayCompanyKey(d.date, c.name));
+    const keys = c.days.map(d => dayCompanyKey(d.date, c.key));
     return keys.length > 0 && keys.every(k => row.selectedKeys.has(k));
   }
 
   isCompanyPartial(row: PaymentRowState, c: CompanyBlock): boolean {
-    const keys = c.days.map(d => dayCompanyKey(d.date, c.name));
+    const keys = c.days.map(d => dayCompanyKey(d.date, c.key));
     const nSelected = keys.filter(k => row.selectedKeys.has(k)).length;
     return nSelected > 0 && nSelected < keys.length;
   }
 
   toggleCompany(row: PaymentRowState, c: CompanyBlock): void {
-    const keys = c.days.map(d => dayCompanyKey(d.date, c.name));
+    const keys = c.days.map(d => dayCompanyKey(d.date, c.key));
     const selectAll = !this.isCompanySelected(row, c);
     for (const k of keys) {
       if (selectAll) row.selectedKeys.add(k);
@@ -343,7 +350,7 @@ export class EmployeePaymentsComponent {
   trackByEmployeeId(_: number, r: PaymentRowState): string { return r.employeeId; }
   trackByDate(_: number, w: EmployeePaymentWorkDay): string { return w.date; }
   trackByWeekStart(_: number, b: WeekBlock): string { return b.weekStart; }
-  trackByCompanyName(_: number, c: CompanyBlock): string { return c.name; }
+  trackByCompanyName(_: number, c: CompanyBlock): string { return c.key; }
 
   private _currentPeriod(): string {
     const d = new Date();

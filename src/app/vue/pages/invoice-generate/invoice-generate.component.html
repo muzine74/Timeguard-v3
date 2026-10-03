@@ -32,9 +32,9 @@
   <div class="main-area">
 
     <!-- Toasts -->
-    <div class="toast" [class.toast-show]="saved()">✓ Facture enregistrée avec succès</div>
-    <div class="toast toast-sent" [class.toast-show]="sent()">✓ Facture enregistrée et marquée envoyée</div>
-    <div class="toast toast-error" [class.toast-show]="error()">{{ error() }}</div>
+    <div role="status" aria-live="polite" class="toast" [class.toast-show]="saved()">{{ saved() ? '✓ Facture enregistrée avec succès' : '' }}</div>
+    <div role="status" aria-live="polite" class="toast toast-sent" [class.toast-show]="sent()">{{ sent() ? '✓ Facture enregistrée et marquée envoyée' : '' }}</div>
+    <div role="alert" class="toast toast-error" [class.toast-show]="error()">{{ error() }}</div>
 
     <!-- Aucune sélection -->
     <div class="no-selection" *ngIf="!selectedCo()">

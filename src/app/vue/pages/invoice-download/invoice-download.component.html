@@ -64,17 +64,47 @@
 
   <!-- ── Barre d'actions ──────────────────────────────────────────────── -->
   <div class="action-bar" *ngIf="bills().length > 0">
-    <span class="selection-info">
-      {{ selectedIds().size }} / {{ bills().length }} facture(s) sélectionnée(s)
-      <em *ngIf="selectedIds().size > 0">— les avoirs liés sont inclus automatiquement dans le PDF de chaque facture</em>
+    <span class="selection-info" aria-live="polite">
+      {{ selectedVisible().length }} / {{ displayedBills().length }} facture(s) sélectionnée(s)
+      <ng-container *ngIf="hasColumnFilter()"> — {{ bills().length - displayedBills().length }} masquée(s) par les filtres
+        <button type="button" class="btn-clear-filters" (click)="clearColumnFilters()">Effacer les filtres</button>
+      </ng-container>
+      <em *ngIf="someSelected()">— les avoirs liés sont inclus automatiquement dans le PDF de chaque facture</em>
     </span>
 
-    <button class="btn-export"
-            [disabled]="!someSelected() || downloading()"
-            (click)="download()">
-      <span *ngIf="!downloading()">Télécharger</span>
-      <span *ngIf="downloading()">Génération…</span>
-    </button>
+    <div class="export-wrap">
+      <button type="button" class="btn-export" aria-haspopup="menu" [attr.aria-expanded]="menuOpen()"
+              [disabled]="!someSelected() || downloading()"
+              (click)="toggleMenu($event)" (keydown.arrowdown)="openMenu($event)">
+        <span *ngIf="!downloading()">Télécharger ▾</span>
+        <span *ngIf="downloading()">Génération…</span>
+      </button>
+      <div class="export-menu" role="menu" aria-label="Téléchargement des factures sélectionnées" *ngIf="menuOpen()"
+           (click)="$event.stopPropagation()" (keydown)="onMenuKey($event)">
+        <button type="button" role="menuitem" class="export-item" (click)="download('grouped')">
+          <span class="ei-icon" aria-hidden="true">🗜</span>
+          <span>
+            <strong>Factures sélectionnées en ZIP</strong>
+            <small>Un PDF par facture (avec ses avoirs), regroupés dans un ZIP</small>
+          </span>
+        </button>
+        <button type="button" role="menuitem" class="export-item" (click)="download('merged-zip')">
+          <span class="ei-icon" aria-hidden="true">📑</span>
+          <span>
+            <strong>Factures sélectionnées → un seul PDF (ZIP)</strong>
+            <small>Toutes les factures à la suite dans un seul PDF, compressé en ZIP</small>
+          </span>
+        </button>
+        <div class="export-divider" role="separator"></div>
+        <button type="button" role="menuitem" class="export-item" (click)="download('print')">
+          <span class="ei-icon" aria-hidden="true">🖨</span>
+          <span>
+            <strong>Imprimer les factures sélectionnées</strong>
+            <small>Ouvre l’impression de toutes les factures (un seul document)</small>
+          </span>
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- ── Tableau ────────────────────────────────────────────────────────── -->
@@ -83,26 +113,46 @@
       <thead>
         <tr>
           <th class="col-check">
-            <input type="checkbox"
+            <input type="checkbox" aria-label="Sélectionner toutes les factures"
                    [checked]="allSelected()"
                    [indeterminate]="someSelected() && !allSelected()"
                    (change)="toggleSelectAll()" />
           </th>
-          <th>N° Facture</th>
-          <th>Compagnie</th>
-          <th>Date d'envoi</th>
-          <th>Date de paiement</th>
-          <th class="col-num col-ttc">Total TTC</th>
+          <th scope="col">N° Facture</th>
+          <th scope="col">Compagnie</th>
+          <th scope="col">Date d'envoi</th>
+          <th scope="col">Date de paiement</th>
+          <th scope="col" class="col-num col-ttc">Total TTC</th>
+        </tr>
+        <!-- Filtres par colonne -->
+        <tr class="col-filter-row">
+          <td class="col-check"></td>
+          <td><input class="col-filter" type="search" placeholder="Filtrer…" aria-label="Filtrer par numéro de facture"
+                     [ngModel]="fNumber()" (ngModelChange)="fNumber.set($event)" /></td>
+          <td><input class="col-filter" type="search" placeholder="Filtrer…" aria-label="Filtrer par compagnie"
+                     [ngModel]="fCompany()" (ngModelChange)="fCompany.set($event)" /></td>
+          <td><input class="col-filter" type="search" placeholder="jj/mm/aaaa" aria-label="Filtrer par date d'envoi (ex. 09/2026)"
+                     [ngModel]="fSent()" (ngModelChange)="fSent.set($event)" /></td>
+          <td><input class="col-filter" type="search" placeholder="jj/mm/aaaa ou —" aria-label="Filtrer par date de paiement (ex. 09/2026, ou — pour non payées)"
+                     [ngModel]="fPaid()" (ngModelChange)="fPaid.set($event)" /></td>
+          <td class="col-num">
+            <div class="range-filter">
+              <input class="col-filter" type="number" inputmode="decimal" min="0" placeholder="min" aria-label="Total TTC minimum"
+                     [ngModel]="fMin()" (ngModelChange)="fMin.set(toNumber($event))" />
+              <input class="col-filter" type="number" inputmode="decimal" min="0" placeholder="max" aria-label="Total TTC maximum"
+                     [ngModel]="fMax()" (ngModelChange)="fMax.set(toNumber($event))" />
+            </div>
+          </td>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let b of bills()"
+        <tr *ngFor="let b of displayedBills()"
             [class.selected]="isSelected(b.billIdentifier)"
             (click)="toggleSelect(b.billIdentifier)">
           <td class="col-check" (click)="$event.stopPropagation()">
             <input type="checkbox"
                    [checked]="isSelected(b.billIdentifier)"
-                   (change)="toggleSelect(b.billIdentifier)" />
+                   (change)="toggleSelect(b.billIdentifier)" [attr.aria-label]="'Sélectionner la facture ' + b.billNumber" />
           </td>
           <td><span class="bill-num">{{ b.billNumber }}</span></td>
           <td>{{ b.companyName }}</td>
@@ -110,13 +160,17 @@
           <td>{{ b.paidDate ? (b.paidDate | date:'dd/MM/yyyy') : '—' }}</td>
           <td class="col-num col-ttc">{{ b.totalWithTax | number:'1.2-2' }} $</td>
         </tr>
+        <tr *ngIf="displayedBills().length === 0">
+          <td colspan="6" class="empty-msg">Aucune facture ne correspond aux filtres.
+            <button type="button" class="btn-clear-filters" (click)="clearColumnFilters()">Effacer les filtres</button></td>
+        </tr>
       </tbody>
 
       <!-- Ligne totaux sélection -->
       <tfoot *ngIf="someSelected()">
         <tr class="totals-row">
           <td colspan="4">
-            Totaux — {{ selectedIds().size }} facture(s) sélectionnée(s)
+            Totaux — {{ selectedVisible().length }} facture(s) sélectionnée(s)
           </td>
           <td class="col-num"></td>
           <td class="col-num col-ttc">{{ totals().ttc | number:'1.2-2' }} $</td>
@@ -127,7 +181,7 @@
 
   <!-- ── État vide ─────────────────────────────────────────────────────── -->
   <div class="empty-state" *ngIf="!loading() && bills().length === 0 && !error()">
-    <span class="empty-icon">📥</span>
+    <span class="empty-icon" aria-hidden="true">📥</span>
     <p>Choisissez une période/statut puis cliquez sur Rechercher.</p>
   </div>
 

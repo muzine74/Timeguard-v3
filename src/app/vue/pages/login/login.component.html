@@ -42,13 +42,17 @@
                  class="inp" placeholder="••••••••"
                  [(ngModel)]="password" name="password"
                  autocomplete="current-password" [disabled]="loading()" />
-          <button type="button" class="toggle-pw" (click)="togglePw()">
-            {{ showPw() ? '🙈' : '👁' }}
+          <button type="button" class="toggle-pw" (click)="togglePw()"
+                  [attr.aria-label]="showPw() ? 'Masquer le mot de passe' : 'Afficher le mot de passe'" [attr.aria-pressed]="showPw()">
+            <span aria-hidden="true">{{ showPw() ? '🙈' : '👁' }}</span>
           </button>
         </div>
       </div>
 
-      <div class="error-banner" *ngIf="error()">
+      <div class="info-banner" role="status" *ngIf="sessionExpired && !error()">
+        Votre session a expiré. Reconnectez-vous pour revenir à la page où vous étiez.
+      </div>
+      <div class="error-banner" role="alert" *ngIf="error()">
         ⚠ {{ error() }}
       </div>
 

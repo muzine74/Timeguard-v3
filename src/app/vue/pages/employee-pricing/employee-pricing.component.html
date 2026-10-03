@@ -35,8 +35,8 @@
   <!-- ── Panneau principal ── -->
   <div class="form-area">
 
-    <div class="toast" [class.toast-show]="saved()">✓ Tarifs sauvegardés</div>
-    <div class="toast toast-error" [class.toast-show]="error()">{{ error() }}</div>
+    <div role="status" aria-live="polite" class="toast" [class.toast-show]="saved()">{{ saved() ? '✓ Tarifs sauvegardés' : '' }}</div>
+    <div role="alert" class="toast toast-error" [class.toast-show]="error()">{{ error() }}</div>
 
     <!-- Aucune sélection -->
     <div class="no-selection" *ngIf="!selectedEmployee() && !loadingEmployee()">

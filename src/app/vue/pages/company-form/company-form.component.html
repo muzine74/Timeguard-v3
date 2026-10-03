@@ -1,7 +1,7 @@
 <div class="page-wrap">
 
-  <div class="toast" [class.toast-show]="saved()">✓ Compagnie créée avec succès</div>
-  <div class="toast toast-error" [class.toast-show]="error()">{{ error() }}</div>
+  <div role="status" aria-live="polite" class="toast" [class.toast-show]="saved()">{{ saved() ? '✓ Compagnie créée avec succès' : '' }}</div>
+  <div role="alert" class="toast toast-error" [class.toast-show]="error()">{{ error() }}</div>
 
   <header class="page-hdr">
     <div>

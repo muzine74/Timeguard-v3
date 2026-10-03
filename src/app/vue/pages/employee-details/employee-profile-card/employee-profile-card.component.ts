@@ -28,6 +28,11 @@ export class EmployeeProfileCardComponent {
     return [this.employee.employeeCity, this.employee.employeeState].filter(v => !!v?.trim()).join(' · ');
   }
 
+  /** Compagnies affichées : uniquement les compagnies actives (une compagnie désactivée reste liée mais n'est pas montrée). */
+  get activeCompanies() {
+    return (this.employee.employeeCompagnies ?? []).filter(c => c.isActive !== false);
+  }
+
   get isPermanent(): boolean {
     return (this.employee.employeeType ?? 'Permanent') === 'Permanent';
   }

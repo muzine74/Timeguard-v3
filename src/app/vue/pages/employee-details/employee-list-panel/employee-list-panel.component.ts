@@ -4,6 +4,8 @@ import { Employee } from '../../../../models';
 import { InitialsPipe } from '../../../shared/initials.pipe';
 
 export type EmployeeStatusFilter = 'all' | 'pending' | 'validated';
+/** État de l'employé : actifs (par défaut, comportement d'origine), désactivés, ou tous. */
+export type EmployeeActiveFilter = 'all' | 'active' | 'inactive';
 
 /**
  * Liste des employés de la page Employés : recherche + filtre par statut de validation
@@ -28,17 +30,28 @@ export class EmployeeListPanelComponent {
 
   readonly searchQuery  = signal('');
   readonly statusFilter = signal<EmployeeStatusFilter>('all');
+  readonly activeFilter = signal<EmployeeActiveFilter>('active');
+
+  /** Employés correspondant à la recherche, tous états confondus (base des compteurs Tous / Actifs / Désactivés). */
+  private get queryMatches(): Employee[] {
+    const q = this.searchQuery().trim().toLowerCase();
+    return this.employees.filter(e => !q || e.employeeName.toLowerCase().includes(q));
+  }
+
+  get activeCounts(): { all: number; active: number; inactive: number } {
+    const list = this.queryMatches;
+    const active = list.filter(e => e.isActive).length;
+    return { all: list.length, active, inactive: list.length - active };
+  }
 
   isValidated(employeeId: string): boolean {
     return this.validated.get(employeeId.toLowerCase()) ?? false;
   }
 
-  /** Employés actifs correspondant à la recherche (avant le filtre de statut). */
+  /** Recherche + filtre Tous / Actifs / Désactivés (avant le filtre de validation). */
   private get searchMatches(): Employee[] {
-    const q = this.searchQuery().trim().toLowerCase();
-    return this.employees.filter(e =>
-      e.isActive && (!q || e.employeeName.toLowerCase().includes(q))
-    );
+    const a = this.activeFilter();
+    return this.queryMatches.filter(e => a === 'all' || (a === 'active') === !!e.isActive);
   }
 
   /** Compteurs des pastilles — calculés sur le résultat de la recherche. */

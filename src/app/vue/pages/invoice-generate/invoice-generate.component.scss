@@ -50,15 +50,6 @@
 .main-area { padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 18px; }
 
 // ── Toasts ───────────────────────────────────────────────
-.toast {
-  position: fixed; top: 18px; right: 24px; z-index: 99;
-  background: rgba(30,200,100,.15); border: 1px solid rgba(30,200,100,.35);
-  color: var(--success-text); padding: 10px 18px; border-radius: 10px;
-  font-size: 13px; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity .3s;
-  &.toast-show  { opacity: 1; }
-  &.toast-sent  { background: rgba(59,130,246,.15); border-color: rgba(59,130,246,.35); color: var(--info-text); }
-  &.toast-error { background: rgba(224,82,82,.12); border-color: rgba(224,82,82,.3); color: var(--danger); }
-}
 
 .no-selection {
   display: flex; flex-direction: column; align-items: center;
@@ -72,8 +63,6 @@
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
   @media (max-width: 700px) { flex-direction: column; align-items: flex-start; }
 }
-.page-title { font-size: 18px; font-weight: 700; }
-.page-sub   { font-size: 12px; color: var(--muted); margin-top: 2px; }
 .action-btns { display: flex; gap: 8px; flex-wrap: wrap; }
 
 // ── Paramètres ───────────────────────────────────────────
@@ -206,7 +195,6 @@
   border: 1px solid var(--border); cursor: pointer; font-family: inherit; transition: all .18s;
 }
 .btn-sm { padding: 6px 12px; font-size: 12px; }
-.btn-outline { background: transparent; color: var(--text); &:hover { background: var(--surface2); } }
 .btn-tarif {
   background: rgba(80,180,120,.12); border-color: rgba(80,180,120,.4); color: var(--success-text);
   &:hover { background: rgba(80,180,120,.22); }
@@ -214,11 +202,6 @@
 .btn-secondary {
   background: rgba(var(--accent-rgb), .1); border-color: rgba(var(--accent-rgb), .3); color: var(--accent);
   &:hover:not(:disabled) { background: rgba(var(--accent-rgb), .2); }
-  &:disabled { opacity: .45; cursor: not-allowed; }
-}
-.btn-primary {
-  background: rgba(var(--accent-rgb), .85); border-color: var(--accent); color: var(--on-accent);
-  &:hover:not(:disabled) { background: var(--accent); }
   &:disabled { opacity: .45; cursor: not-allowed; }
 }
 .spinner {

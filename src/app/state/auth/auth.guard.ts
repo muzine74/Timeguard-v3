@@ -1,10 +1,14 @@
 import { inject } from '@angular/core';
-import { CanActivateFn, Router, UrlTree } from '@angular/router';
+import { CanActivateFn, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { AuthService } from './auth.service';
 import { PERM } from './permissions';
 
-const _check = (auth: AuthService, router: Router): UrlTree | null => {
-  if (!auth.loggedIn()) return router.createUrlTree(['/login']);
+/** Vers la connexion, en mémorisant la page demandée (retour après connexion). */
+const _toLogin = (router: Router, state?: RouterStateSnapshot): UrlTree =>
+  router.createUrlTree(['/login'], state?.url && state.url !== '/' ? { queryParams: { returnUrl: state.url } } : {});
+
+const _check = (auth: AuthService, router: Router, state?: RouterStateSnapshot): UrlTree | null => {
+  if (!auth.loggedIn()) return _toLogin(router, state);
   // Super user : toujours autorisé
   if (auth.isSuperUser()) return null;
   if (!auth.loggedInWithAccess()) { auth.logout(); return router.createUrlTree(['/login']); }
@@ -15,9 +19,9 @@ const _check = (auth: AuthService, router: Router): UrlTree | null => {
  * Factory — retourne un guard qui vérifie une permission spécifique.
  * Super user : bypass automatique sur toutes les routes.
  */
-export const permGuard = (key: string): CanActivateFn => () => {
+export const permGuard = (key: string): CanActivateFn => (_route, state) => {
   const auth = inject(AuthService); const router = inject(Router);
-  const fail = _check(auth, router);
+  const fail = _check(auth, router, state);
   if (fail) return fail;
   // Super user a accès à tout
   if (auth.isSuperUser()) return true;
@@ -25,9 +29,9 @@ export const permGuard = (key: string): CanActivateFn => () => {
 };
 
 /** Guard générique — accessible à tout utilisateur connecté, sans permission spécifique. */
-export const authGuard: CanActivateFn = () => {
+export const authGuard: CanActivateFn = (_route, state) => {
   const auth = inject(AuthService); const router = inject(Router);
-  const fail = _check(auth, router);
+  const fail = _check(auth, router, state);
   return fail ?? true;
 };
 

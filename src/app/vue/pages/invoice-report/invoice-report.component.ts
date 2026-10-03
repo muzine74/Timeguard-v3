@@ -6,6 +6,7 @@ import { FormsModule }  from '@angular/forms';
 import { InvoiceService, BillSummary } from '../../../state/invoice/invoice.service';
 import { ExportDoc, TableExportService } from '../../../state/export/table-export.service';
 
+import { downloadBlob } from '../../shared/download';
 type FilterMode = 'date' | 'period';
 type ExportType = 'summary' | 'merged' | 'zip' | 'excel' | 'csv';
 
@@ -316,11 +317,6 @@ export class InvoiceReportComponent {
   }
 
   private _downloadBlob(blob: Blob, fileName: string): void {
-    const url = URL.createObjectURL(blob);
-    const a   = document.createElement('a');
-    a.href     = url;
-    a.download = fileName;
-    a.click();
-    URL.revokeObjectURL(url);
+    downloadBlob(blob, fileName);
   }
 }

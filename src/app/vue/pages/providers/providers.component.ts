@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, computed, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TenantService, TenantSummary, TenantDetail, TenantEmployeeItem } from '../../../state/tenant/tenant.service';
 import { AuthService } from '../../../state/auth/auth.service';
 
@@ -11,7 +11,7 @@ type StatusFilter = 'all' | 'active' | 'inactive';
   selector: 'app-providers',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './providers.component.html',
   styleUrls: ['./providers.component.scss'],
 })

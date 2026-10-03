@@ -182,7 +182,7 @@
       <thead>
         <tr>
           <th class="col-check">
-            <input type="checkbox"
+            <input type="checkbox" aria-label="Sélectionner toutes les factures"
                    [checked]="allSelected()"
                    [indeterminate]="someSelected() && !allSelected()"
                    (change)="toggleSelectAll()" />
@@ -204,7 +204,7 @@
           <td class="col-check" (click)="$event.stopPropagation()">
             <input type="checkbox"
                    [checked]="isSelected(b.billIdentifier)"
-                   (change)="toggleSelect(b.billIdentifier)" />
+                   (change)="toggleSelect(b.billIdentifier)" [attr.aria-label]="'Sélectionner la facture ' + b.billNumber" />
           </td>
           <td>
             <span class="bill-num">{{ b.billNumber }}</span>
@@ -236,7 +236,7 @@
 
   <!-- ── État vide ─────────────────────────────────────────────────────── -->
   <div class="empty-state" *ngIf="!loading() && displayedBills().length === 0 && !error()">
-    <span class="empty-icon">📋</span>
+    <span class="empty-icon" aria-hidden="true">📋</span>
     <p>Appliquez un filtre pour charger les factures.</p>
   </div>
 

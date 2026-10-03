@@ -11,6 +11,7 @@ export const PERM = {
   companiesEdit:      'companies.edit',
   groupsManage:       'groups.manage',
   configManage:       'config.manage',
+  dataPurge:          'data.purge',
   credentialsManage:  'credentials.manage',
   paymentsManage:     'payments.manage',
 } as const;

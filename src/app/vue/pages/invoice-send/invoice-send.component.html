@@ -36,8 +36,8 @@
   <div class="main-area">
 
     <!-- Toasts -->
-    <div class="toast toast-success" [class.toast-show]="success()">{{ success() }}</div>
-    <div class="toast toast-error"   [class.toast-show]="error()">{{ error() }}</div>
+    <div role="status" aria-live="polite" class="toast toast-success" [class.toast-show]="success()">{{ success() }}</div>
+    <div role="alert" class="toast toast-error"   [class.toast-show]="error()">{{ error() }}</div>
 
     <!-- Aucune sélection -->
     <div class="no-selection" *ngIf="!selected()">

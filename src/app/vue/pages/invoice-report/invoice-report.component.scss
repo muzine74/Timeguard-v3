@@ -10,17 +10,6 @@
 
 // ── En-tête ───────────────────────────────────────────────────────────────
 .page-header {
-  .page-title {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: var(--text);
-    margin: 0 0 .25rem;
-  }
-  .page-sub {
-    color: var(--muted);
-    font-size: .9rem;
-    margin: 0;
-  }
 }
 
 // ── Carte filtre ──────────────────────────────────────────────────────────
@@ -404,9 +393,6 @@
   font-weight: 500;
 }
 
-.export-wrap {
-  position: relative;
-}
 
 .btn-export {
   padding: .55rem 1.4rem;
@@ -423,50 +409,8 @@
   &:hover:not(:disabled) { background: rgba(var(--accent-rgb), .25); }
 }
 
-.export-menu {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 6px);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  box-shadow: 0 8px 24px rgba(0,0,0,.45);
-  min-width: 300px;
-  z-index: 100;
-  overflow: hidden;
-}
 
-.export-item {
-  display: flex;
-  align-items: center;
-  gap: .85rem;
-  width: 100%;
-  padding: .9rem 1.1rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-align: left;
-  transition: background .12s;
 
-  &:hover { background: var(--surface2); }
-
-  .ei-icon { font-size: 1.35rem; flex-shrink: 0; }
-
-  span {
-    display: flex;
-    flex-direction: column;
-    gap: .15rem;
-
-    strong { font-size: .9rem; color: var(--text); }
-    small  { font-size: .78rem; color: var(--muted); }
-  }
-}
-
-.export-divider {
-  height: 1px;
-  background: var(--border);
-  margin: 0 .75rem;
-}
 
 // ── Tableau ───────────────────────────────────────────────────────────────
 .table-wrap {
@@ -544,14 +488,6 @@
 }
 
 // ── État vide ─────────────────────────────────────────────────────────────
-.empty-state {
-  text-align: center;
-  padding: 3rem 1rem;
-  color: var(--muted);
-
-  .empty-icon { font-size: 2.5rem; display: block; margin-bottom: .75rem; }
-  p { font-size: .95rem; margin: 0; }
-}
 
 // ── Responsive ────────────────────────────────────────────────────────────
 @media (max-width: 640px) {
@@ -559,5 +495,4 @@
   .filter-row  { flex-direction: column; align-items: stretch; }
   .btn-apply   { width: 100%; }
   .action-bar  { flex-direction: column; align-items: flex-start; }
-  .export-menu { right: auto; left: 0; min-width: 260px; }
 }

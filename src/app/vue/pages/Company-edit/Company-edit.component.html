@@ -38,8 +38,8 @@
   <!-- ── Formulaire ── -->
   <div class="form-area">
 
-    <div class="toast" [class.toast-show]="saved()">✓ Compagnie mise à jour</div>
-    <div class="toast toast-error" [class.toast-show]="error()">{{ error() }}</div>
+    <div role="status" aria-live="polite" class="toast" [class.toast-show]="saved()">{{ saved() ? '✓ Compagnie mise à jour' : '' }}</div>
+    <div role="alert" class="toast toast-error" [class.toast-show]="error()">{{ error() }}</div>
 
     <!-- Aucune sélection -->
     <div class="no-selection" *ngIf="!companyId() && !loadingForm()">
@@ -165,7 +165,7 @@
 
             <div class="emp-loading" *ngIf="contactsLoading()"><div class="mini-spinner"></div></div>
 
-            <div class="toast toast-error" style="position:relative;margin:8px 0;" [class.toast-show]="contactError()">{{ contactError() }}</div>
+            <div role="alert" class="toast toast-error" style="position:relative;margin:8px 0;" [class.toast-show]="contactError()">{{ contactError() }}</div>
 
             <!-- Formulaire ajout/édition -->
             <div class="contact-form-wrap" *ngIf="showContactForm()">

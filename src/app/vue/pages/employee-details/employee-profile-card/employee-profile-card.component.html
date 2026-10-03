@@ -8,10 +8,10 @@
         <span *ngIf="employee.employeeMail">✉ {{ employee.employeeMail }}</span>
         <span *ngIf="employee.employeePhone">☎ {{ employee.employeePhone }}</span>
       </p>
-      <div class="profile-companies" *ngIf="employee.employeeCompagnies?.length; else noCompany">
-        <span class="co-chip" *ngFor="let c of employee.employeeCompagnies">{{ c.compagnieName }}</span>
+      <div class="profile-companies" *ngIf="activeCompanies.length; else noCompany">
+        <span class="co-chip" *ngFor="let c of activeCompanies">{{ c.compagnieName }}</span>
       </div>
-      <ng-template #noCompany><p class="profile-warn">⚠ Aucune compagnie affectée</p></ng-template>
+      <ng-template #noCompany><p class="profile-warn">⚠ {{ employee.employeeCompagnies?.length ? 'Aucune compagnie active affectée' : 'Aucune compagnie affectée' }}</p></ng-template>
     </div>
     <div class="profile-actions">
       <span class="status-badge" [class.active-badge]="employee.isActive" [class.inactive-badge]="!employee.isActive">

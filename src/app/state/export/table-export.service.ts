@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { downloadBlob } from '../../vue/shared/download';
 
 /**
  * Export Excel (.xlsx) et PDF des tableaux affichés, généré dans le navigateur à partir des
@@ -220,10 +221,6 @@ export class TableExportService {
   }
 
   private _download(blob: Blob, name: string): void {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = name;
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    downloadBlob(blob, name);
   }
 }

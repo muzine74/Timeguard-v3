@@ -1,8 +1,8 @@
 <div class="page-wrap">
 
   <!-- Toasts -->
-  <div class="toast toast-success" [class.toast-show]="success()">{{ success() }}</div>
-  <div class="toast toast-error"   [class.toast-show]="error()">{{ error() }}</div>
+  <div role="status" aria-live="polite" class="toast toast-success" [class.toast-show]="success()">{{ success() }}</div>
+  <div role="alert" class="toast toast-error"   [class.toast-show]="error()">{{ error() }}</div>
 
   <!-- En-tête + contrôles -->
   <header class="page-hdr">
@@ -28,7 +28,7 @@
   </header>
 
   <!-- Chargement -->
-  <div class="loading-wrap" *ngIf="loading()">
+  <div class="loading-wrap" role="status" aria-live="polite" *ngIf="loading()">
     <div class="loading-spinner"></div>
     <span>Chargement des données...</span>
   </div>
@@ -134,7 +134,7 @@
       </div>
 
       <div class="empty-state" *ngIf="rows.length === 0">
-        <div class="empty-icon">🕐</div>
+        <div class="empty-icon" aria-hidden="true">🕐</div>
         <div class="empty-txt">Aucune compagnie éligible pour cette période</div>
       </div>
     </section>

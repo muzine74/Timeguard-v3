@@ -4,9 +4,20 @@
   <aside class="sidebar">
     <div class="sidebar-hdr">
       <div class="sidebar-title">Profil Employé</div>
-      <input class="sidebar-search" [(ngModel)]="searchQuery" placeholder="Rechercher..." />
-      <div class="filter-tabs">
-        <button class="ftab ftab-active">Actifs</button>
+      <input class="sidebar-search" [(ngModel)]="searchQuery" placeholder="Rechercher..." aria-label="Rechercher un employé" />
+      <div class="filter-tabs" role="group" aria-label="Filtrer par état de l'employé">
+        <button type="button" class="ftab" [class.ftab-active]="activeFilter() === 'all'"
+                [attr.aria-pressed]="activeFilter() === 'all'" (click)="activeFilter.set('all')">
+          Tous <span class="ftab-count">{{ activeCounts.all }}</span>
+        </button>
+        <button type="button" class="ftab" [class.ftab-active]="activeFilter() === 'active'"
+                [attr.aria-pressed]="activeFilter() === 'active'" (click)="activeFilter.set('active')">
+          Actifs <span class="ftab-count">{{ activeCounts.active }}</span>
+        </button>
+        <button type="button" class="ftab" [class.ftab-active]="activeFilter() === 'inactive'"
+                [attr.aria-pressed]="activeFilter() === 'inactive'" (click)="activeFilter.set('inactive')">
+          Désactivés <span class="ftab-count">{{ activeCounts.inactive }}</span>
+        </button>
       </div>
     </div>
 
@@ -18,15 +29,24 @@
       <div *ngFor="let e of filteredEmployees"
            class="sidebar-item"
            [class.active]="e.employeeId === employeeId()"
-           (click)="selectEmployee(e.employeeId)">
+           [class.emp-inactive]="!e.isActive"
+           role="button" tabindex="0"
+           [attr.aria-current]="e.employeeId === employeeId() ? 'true' : null"
+           (click)="selectEmployee(e.employeeId)"
+           (keydown.enter)="selectEmployee(e.employeeId)"
+           (keydown.space)="$event.preventDefault(); selectEmployee(e.employeeId)">
         <div class="sidebar-avatar">{{ initials(e.employeeName) }}</div>
         <div class="sidebar-info">
           <div class="sidebar-name">{{ e.employeeName }}</div>
           <div class="sidebar-meta">{{ e.employeeMail }}</div>
         </div>
+        <span class="off-pill" *ngIf="!e.isActive">Désactivé</span>
       </div>
       <div class="sidebar-empty" *ngIf="filteredEmployees.length === 0">
         Aucun employé
+        <ng-container *ngIf="activeFilter() !== 'all' && activeCounts.all > 0">
+          — <button type="button" class="link-btn" (click)="activeFilter.set('all')">afficher tous</button>
+        </ng-container>
       </div>
     </div>
   </aside>
@@ -162,9 +182,9 @@
           </label>
         </div>
 
-        <div class="toast toast-error" [class.toast-show]="fileError()">{{ fileError() }}</div>
+        <div role="alert" class="toast toast-error" [class.toast-show]="fileError()">{{ fileError() }}</div>
 
-        <div *ngIf="files().length === 0" style="padding:1rem;color:var(--text-muted);font-size:.875rem">
+        <div *ngIf="files().length === 0" style="padding:1rem;color:var(--muted);font-size:.875rem">
           Aucun document
         </div>
 
@@ -172,11 +192,11 @@
           <li *ngFor="let f of files()"
               style="display:flex;align-items:center;gap:.75rem;padding:.6rem 1rem;border-top:1px solid var(--border)">
             <span (click)="openFile(f.id)"
-                  style="flex:1;font-size:.9rem;color:var(--primary);cursor:pointer"
+                  style="flex:1;font-size:.9rem;color:var(--accent);cursor:pointer"
                   title="Ouvrir {{ f.originalName }}">
               📄 {{ f.originalName }}
             </span>
-            <span style="font-size:.75rem;color:var(--text-muted);white-space:nowrap">
+            <span style="font-size:.75rem;color:var(--muted);white-space:nowrap">
               {{ f.uploadedAt | date:'dd/MM/yyyy' }}
             </span>
             <button class="btn btn-outline" style="padding:.25rem .6rem;font-size:.8rem;color:#e53935"

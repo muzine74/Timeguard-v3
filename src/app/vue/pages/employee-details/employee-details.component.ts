@@ -88,7 +88,8 @@ export class EmployeeDetailsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.empSvc.loadList(true);
+    // Tous les employés (actifs + désactivés) : la liste filtre ensuite Tous / Actifs / Désactivés (Actifs par défaut)
+    this.empSvc.loadList(false);
     this._loadWeekStatuses();
 
     const id = this.route.snapshot.paramMap.get('id');
@@ -98,7 +99,8 @@ export class EmployeeDetailsComponent implements OnInit {
       // Sans employé dans l'URL : ouvre le premier de la liste dès qu'elle est chargée
       effect(() => {
         const list = this.empSvc.list();
-        if (list.length && !this.selectedId()) this.selectEmployee(list[0].employeeId);
+        const first = list.find(e => e.isActive) ?? list[0];
+        if (first && !this.selectedId()) this.selectEmployee(first.employeeId);
       }, { injector: this.injector, allowSignalWrites: true });
     }
   }

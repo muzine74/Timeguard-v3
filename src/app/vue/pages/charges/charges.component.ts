@@ -5,6 +5,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ChargesService, ChargeItem, ChargeCompanyItem } from '../../../state/charges/charges.service';
 import { CompanyService, CompanySummary } from '../../../state/compagny/Company.service';
 
+import { downloadBlob } from '../../shared/download';
 interface CompanyRow {
   companyId:   string;
   companyName: string;
@@ -261,12 +262,7 @@ export class ChargesComponent implements OnInit {
     this.chargesSvc.downloadDocument(id, doc.chargeDocumentId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(blob => {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = doc.originalName;
-        a.click();
-        URL.revokeObjectURL(url);
+        downloadBlob(blob, doc.originalName);
       });
   }
 

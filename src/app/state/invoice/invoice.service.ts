@@ -256,7 +256,7 @@ export class InvoiceService {
   }
 
   // ── Exporter un rapport ───────────────────────────────────────────────
-  exportReport(billIds: number[], exportType: 'summary' | 'merged' | 'zip' | 'grouped', filterLabel = '') {
+  exportReport(billIds: number[], exportType: 'summary' | 'merged' | 'zip' | 'grouped' | 'merged-zip' | 'print', filterLabel = '') {
     this.log(`exportReport(${exportType}, ${billIds.length} facture(s))`);
     return this.http.post(
       '/api/bills/report/export',

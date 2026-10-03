@@ -1,4 +1,4 @@
-<div class="toast" [class.toast-show]="saved()" [class.toast-error]="isError()">{{ toast }}</div>
+<div role="status" aria-live="polite" class="toast" [class.toast-show]="saved()" [class.toast-error]="isError()">{{ toast }}</div>
 <div class="progress-bar" *ngIf="isSaving()">
   <div class="progress-fill" [style.width.%]="progress()"></div>
 </div>

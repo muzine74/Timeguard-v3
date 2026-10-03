@@ -1,0 +1,122 @@
+<div class="page-wrap">
+  <div role="status" aria-live="polite" class="toast" [class.toast-show]="!!success()">{{ success() }}</div>
+
+  <header class="page-hdr">
+    <div>
+      <h1 class="page-title">Suppression définitive</h1>
+      <p class="page-sub">Supprime une facture, un employé ou une compagnie et toutes leurs références — sans retour possible.</p>
+    </div>
+    <a class="btn btn-outline btn-sm" routerLink="/providers" *ngIf="isSuper">← Providers</a>
+  </header>
+
+  <div class="danger-banner" role="note">
+    <strong>Action irréversible.</strong> Les données et les fichiers supprimés ne peuvent pas être récupérés depuis l’application
+    (seule une sauvegarde de la base de données le permettrait).
+  </div>
+
+  <!-- ── Sélection ── -->
+  <section class="card" aria-labelledby="purge-select-title">
+    <h2 id="purge-select-title" class="card-title">1. Choisir l’élément</h2>
+
+    <div class="row">
+      <div class="field" *ngIf="isSuper">
+        <label for="purge-tenant">Entreprise</label>
+        <select id="purge-tenant" class="inp" [ngModel]="tenantId()" (ngModelChange)="tenantId.set($event); results.set([]); searched.set(false)">
+          <option value="" disabled>Choisir…</option>
+          <option *ngFor="let t of tenants()" [value]="t.tenantId">{{ t.name }} ({{ t.slug }})</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <span class="field-lbl" id="purge-kind-lbl">Type</span>
+        <div class="seg" role="radiogroup" aria-labelledby="purge-kind-lbl">
+          <button type="button" role="radio" *ngFor="let k of kinds" class="seg-opt"
+                  [class.active]="kind() === k.id" [attr.aria-checked]="kind() === k.id" (click)="setKind(k.id)">{{ k.label }}</button>
+        </div>
+      </div>
+    </div>
+
+    <form class="search-row" (ngSubmit)="search()">
+      <label for="purge-q" class="sr-only">Rechercher</label>
+      <input id="purge-q" name="q" class="inp" [(ngModel)]="query" [placeholder]="placeholder()" autocomplete="off" />
+      <button type="submit" class="btn btn-primary" [disabled]="!tenantId() || searching()">
+        {{ searching() ? 'Recherche…' : 'Rechercher' }}
+      </button>
+    </form>
+
+    <div class="err" role="alert" *ngIf="error() && !preview()">{{ error() }}</div>
+
+    <ul class="results" *ngIf="results().length > 0" aria-label="Résultats">
+      <li *ngFor="let c of results(); trackBy: trackById" class="result">
+        <div class="result-txt">
+          <strong>{{ c.label }}</strong>
+          <small *ngIf="c.detail">{{ c.detail }}</small>
+        </div>
+        <button type="button" class="btn btn-danger-solid btn-sm" [disabled]="loadingPrev() !== null"
+                (click)="openPreview(c, $event)" [attr.aria-label]="'Voir ce qui sera supprimé pour ' + c.label">
+          {{ loadingPrev() === c.id ? 'Analyse…' : 'Supprimer…' }}
+        </button>
+      </li>
+    </ul>
+    <div class="empty-msg" *ngIf="searched() && results().length === 0">Aucun résultat dans {{ tenantName() }}.</div>
+  </section>
+
+  <!-- ── Fenêtre de confirmation : références qui seront supprimées ── -->
+  <div class="backdrop" *ngIf="preview() as p" (click)="closePreview()">
+    <div class="purge-dialog" role="dialog" aria-modal="true" aria-labelledby="purge-dlg-title" aria-describedby="purge-dlg-desc"
+         (click)="$event.stopPropagation()">
+      <h2 id="purge-dlg-title" class="dlg-title">Supprimer définitivement : {{ p.title }}</h2>
+      <p id="purge-dlg-desc" class="dlg-sub">
+        <ng-container *ngIf="isSuper">Entreprise <strong>{{ tenantName() }}</strong> — </ng-container> <strong>{{ p.totalRecords }}</strong> enregistrement(s)
+        et <strong>{{ p.totalFiles }}</strong> fichier(s)/dossier(s) seront supprimés.
+      </p>
+
+      <div class="warn" role="alert" *ngFor="let w of p.warnings">⚠ {{ w }}</div>
+
+      <div class="dlg-body">
+        <h3 class="grp-title grp-delete">Supprimé</h3>
+        <ul class="refs">
+          <li *ngFor="let i of deleted()">
+            <span class="ref-count">{{ i.count }}</span>
+            <span class="ref-lbl">{{ i.label }}<small *ngIf="i.samples.length"> — {{ i.samples.join(', ') }}{{ i.count > i.samples.length ? '…' : '' }}</small></span>
+          </li>
+        </ul>
+
+        <ng-container *ngIf="files().length">
+          <h3 class="grp-title grp-file">Fichiers effacés du disque</h3>
+          <ul class="refs">
+            <li *ngFor="let i of files()">
+              <span class="ref-count">{{ i.count }}</span>
+              <span class="ref-lbl">{{ i.label }}<small *ngIf="i.samples.length"> — {{ i.samples.join(', ') }}</small></span>
+            </li>
+          </ul>
+        </ng-container>
+
+        <ng-container *ngIf="detached().length">
+          <h3 class="grp-title grp-detach">Conservé, mais la référence est retirée</h3>
+          <ul class="refs">
+            <li *ngFor="let i of detached()">
+              <span class="ref-count">{{ i.count }}</span>
+              <span class="ref-lbl">{{ i.label }}<small *ngIf="i.samples.length"> — {{ i.samples.join(', ') }}</small></span>
+            </li>
+          </ul>
+        </ng-container>
+      </div>
+
+      <div class="err dlg-err" role="alert" *ngIf="error()">{{ error() }}</div>
+
+      <div class="confirm">
+        <label for="purge-confirm">Pour confirmer, saisissez <strong>SUPPRIMER</strong></label>
+        <input id="purge-confirm" class="inp confirm-input" [(ngModel)]="confirmText" autocomplete="off" spellcheck="false"
+               (keydown.enter)="execute()" [disabled]="executing()" />
+      </div>
+
+      <div class="dlg-actions">
+        <button type="button" class="btn btn-outline" (click)="closePreview()" [disabled]="executing()">Annuler</button>
+        <button type="button" class="btn btn-danger-solid" (click)="execute()" [disabled]="!canExecute()">
+          {{ executing() ? 'Suppression…' : 'Supprimer définitivement' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

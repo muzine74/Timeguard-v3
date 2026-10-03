@@ -1,8 +1,6 @@
 .page-wrap { padding: 24px; max-width: 900px; margin: 0 auto; }
 
 .page-hdr   { margin-bottom: 24px; }
-.page-title { font-size: 1.5rem; font-weight: 700; margin: 0; }
-.page-sub   { font-size: .85rem; color: var(--text-muted); margin: 4px 0 0; }
 
 // ── Ajout ────────────────────────────────────────────────────────────────
 .add-card {
@@ -60,14 +58,14 @@
   align-items: center;
   gap: 6px;
   font-size: .85rem;
-  color: var(--text-muted);
+  color: var(--muted);
 
   .inp { width: auto; }
 }
 
 .filter-row .filter-status { flex: 0 1 180px; }
 
-.filter-count { margin-left: auto; font-size: .8rem; color: var(--text-muted); }
+.filter-count { margin-left: auto; font-size: .8rem; color: var(--muted); }
 
 .add-actions {
   display: flex;
@@ -82,7 +80,7 @@
   gap: 6px;
   cursor: pointer;
   font-size: .85rem;
-  color: var(--text-muted);
+  color: var(--muted);
   white-space: nowrap;
 }
 
@@ -97,7 +95,7 @@
 
   &.btn-primary { background: var(--accent); color: var(--on-accent); }
   &.btn-primary:disabled { opacity: .5; cursor: not-allowed; }
-  &.btn-ghost { background: transparent; border-color: var(--border); color: var(--text-muted); margin-left: 0; }
+  &.btn-ghost { background: transparent; border-color: var(--border); color: var(--muted); margin-left: 0; }
 }
 
 .err-msg { color: var(--danger); font-size: .85rem; margin-bottom: 16px; }
@@ -115,7 +113,7 @@
   background: transparent;
   border: none;
   border-top: 1px solid var(--border);
-  color: var(--text-muted);
+  color: var(--muted);
   font-size: .85rem;
   font-weight: 600;
   font-family: inherit;
@@ -153,7 +151,7 @@
 .expand-arrow {
   flex-shrink: 0;
   font-size: .75rem;
-  color: var(--text-muted);
+  color: var(--muted);
   transition: transform .15s ease;
 
   &.expanded { transform: rotate(90deg); }
@@ -171,7 +169,7 @@
 .note-author {
   flex-shrink: 0;
   font-size: .72rem;
-  color: var(--text-muted);
+  color: var(--muted);
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -216,10 +214,10 @@
   white-space: pre-wrap;
   word-break: break-word;
 
-  &.note-empty { color: var(--text-muted); font-style: italic; }
+  &.note-empty { color: var(--muted); font-style: italic; }
 }
 
-.note-date { font-size: .72rem; color: var(--text-muted); }
+.note-date { font-size: .72rem; color: var(--muted); }
 
 .btn-icon {
   background: transparent;
@@ -227,30 +225,14 @@
   border-radius: 6px;
   width: 28px; height: 28px;
   cursor: pointer;
-  color: var(--text-muted);
+  color: var(--muted);
   font-size: .85rem;
 
   &:hover { color: var(--text); border-color: var(--accent); }
   &.btn-icon-danger:hover { color: var(--danger); border-color: var(--danger); }
 }
 
-.empty-state {
-  text-align: center;
-  padding: 40px 20px;
-  color: var(--text-muted);
-}
-.empty-icon { font-size: 2rem; margin-bottom: 8px; }
-.empty-txt  { font-size: .9rem; }
 
-.loading-wrap {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 30px;
-  justify-content: center;
-  color: var(--text-muted);
-  font-size: .85rem;
-}
 
 .spinner {
   width: 16px; height: 16px;

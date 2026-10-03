@@ -207,6 +207,45 @@ export class StatsComponent {
     };
   };
 
+  // ── Cartes « factures » : valeurs de l'API pour « Facturée » (inchangé), sinon calculées
+  //    sur les factures retenues par le filtre de statut (les cartes employés restent globales) ──
+  private _filtered = computed(() => this.statutFilter() !== 'facturee');
+  cardSuffix    = computed(() => this._filtered() ? ` — ${this.statutLabel()}` : '');
+  cardTTC       = computed(() => this._filtered() ? this.totalTTC() : (this.stats()?.totalTTC ?? 0));
+  cardTPS       = computed(() => this._filtered() ? this.totalTPS() : (this.stats()?.totalTPS ?? 0));
+  cardTVQ       = computed(() => this._filtered() ? this.totalTVQ() : (this.stats()?.totalTVQ ?? 0));
+  cardInvoices  = computed(() => this._filtered() ? this.totalCount() : (this.stats()?.nbFactures ?? 0));
+  cardCompanies = computed(() => this._filtered() ? this.groups().length : (this.stats()?.nbCompagnies ?? 0));
+  cardAttente   = computed(() => {
+    switch (this.statutFilter()) {
+      case 'payee':    return 0;
+      case 'nonpayee': return this.totalTTC();
+      default:         return this.stats()?.totalEnAttente ?? 0;
+    }
+  });
+
+  // ── Recalcul automatique quand la période change ─────────────────────────
+  private _autoTimer: ReturnType<typeof setTimeout> | null = null;
+
+  setMode(m: FilterMode): void {
+    if (this.mode === m) return;
+    this.mode = m;
+    this.autoLoad();
+  }
+
+  /** Relance le calcul (avec un court délai pendant la saisie) dès que les dates sont complètes et valides. */
+  autoLoad(): void {
+    if (this._autoTimer) clearTimeout(this._autoTimer);
+    this._autoTimer = setTimeout(() => {
+      this._autoTimer = null;
+      const ok = this.mode === 'period'
+        ? /^\d{4}-\d{2}$/.test(this.period ?? '')
+        : !!this.dateFrom && !!this.dateTo && this.dateFrom <= this.dateTo;
+      if (ok) this.load();
+      else if (this.mode === 'range' && this.dateFrom && this.dateTo) this.error.set('La date de début doit être avant la date de fin.');
+    }, 400);
+  }
+
   // ── Chargement ────────────────────────────────────────────────────────────
   load(): void {
     this.error.set('');

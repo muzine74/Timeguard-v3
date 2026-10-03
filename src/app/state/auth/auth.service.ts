@@ -89,6 +89,11 @@ export class AuthService {
   token(): string | null { return localStorage.getItem(TOKEN_KEY); }
 
   /** Applique un nouveau mot de passe à partir d'un jeton reçu par courriel (page publique). */
+  /** Entreprise et identifiant du compte visé par un lien de réinitialisation (le lien n'est pas consommé). */
+  resetPasswordInfo(token: string) {
+    return this.http.post<{ companyName: string; companySlug: string; username: string }>('/api/auth/reset-password/info', { token });
+  }
+
   resetPasswordByToken(token: string, newPassword: string) {
     return this.http.post<{ message: string }>('/api/auth/reset-password', { token, newPassword });
   }

@@ -1,6 +1,6 @@
 <div class="page-wrap">
 
-  <div class="toast toast-error" [class.toast-show]="error()">{{ error() }}</div>
+  <div role="alert" class="toast toast-error" [class.toast-show]="error()">{{ error() }}</div>
 
   <header class="page-hdr">
     <div>
@@ -158,9 +158,9 @@
       </label>
     </div>
 
-    <div class="toast toast-error" [class.toast-show]="fileError()">{{ fileError() }}</div>
+    <div role="alert" class="toast toast-error" [class.toast-show]="fileError()">{{ fileError() }}</div>
 
-    <div *ngIf="files().length === 0" style="padding:1rem;color:var(--text-muted);font-size:.875rem">
+    <div *ngIf="files().length === 0" style="padding:1rem;color:var(--muted);font-size:.875rem">
       Aucun document
     </div>
 
@@ -168,11 +168,11 @@
       <li *ngFor="let f of files()"
           style="display:flex;align-items:center;gap:.75rem;padding:.6rem 1rem;border-top:1px solid var(--border)">
         <span (click)="openFile(f.id)"
-              style="flex:1;font-size:.9rem;color:var(--primary);cursor:pointer"
+              style="flex:1;font-size:.9rem;color:var(--accent);cursor:pointer"
               title="Ouvrir {{ f.originalName }}">
           📄 {{ f.originalName }}
         </span>
-        <span style="font-size:.75rem;color:var(--text-muted);white-space:nowrap">
+        <span style="font-size:.75rem;color:var(--muted);white-space:nowrap">
           {{ f.uploadedAt | date:'dd/MM/yyyy' }}
         </span>
         <button class="btn btn-outline" style="padding:.25rem .6rem;font-size:.8rem;color:#e53935"

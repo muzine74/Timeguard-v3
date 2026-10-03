@@ -33,6 +33,7 @@ export class EmployeesService {
       ? rawCompanies.map((c: any) => ({
           compagnieId:   c['companyId']   ?? c['compagnieId']   ?? c['CompagnieId']   ?? c['id']   ?? '',
           compagnieName: c['companyName'] ?? c['compagnieName'] ?? c['CompagnieName'] ?? c['name'] ?? '',
+          isActive:      c['isActive'] ?? c['IsActive'] ?? true,
         }))
       // Fallback depuis companyIds (liste summary) : pas de nom disponible
       : companyIds.map((id: string) => ({ compagnieId: id, compagnieName: '' }));

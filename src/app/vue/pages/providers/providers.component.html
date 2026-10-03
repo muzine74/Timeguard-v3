@@ -1,7 +1,7 @@
 <div class="providers-layout">
 
   <!-- ── Toast ─────────────────────────────────────────────────────────── -->
-  <div class="toast" [class.toast-show]="toastVisible()">{{ toast() }}</div>
+  <div role="status" aria-live="polite" class="toast" [class.toast-show]="toastVisible()">{{ toast() }}</div>
 
   <!-- ══════════════════════════════════════════════════════════════════════
        SIDEBAR — liste des providers
@@ -16,6 +16,7 @@
           <div class="sidebar-sub">Gestion des providers</div>
         </div>
       </div>
+      <a class="purge-link" routerLink="/purge">🗑 Suppression définitive</a>
     </div>
 
     <!-- Recherche -->

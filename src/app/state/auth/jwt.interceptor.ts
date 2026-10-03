@@ -18,7 +18,12 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(r).pipe(
     catchError((e: HttpErrorResponse) => {
-      if (e.status === 401) { auth.logout(); router.navigate(['/login']); }
+      if (e.status === 401) {
+        auth.logout();
+        // Session expirée : revenir sur la page en cours après reconnexion
+        const here = router.url;
+        router.navigate(['/login'], here && !here.startsWith('/login') ? { queryParams: { returnUrl: here, expired: 1 } } : {});
+      }
       return throwError(() => e);
     })
   );

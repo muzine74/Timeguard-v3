@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { EmployeesService } from '../../../state/employees/employees.service';
 import { T4AService, T4AData } from '../../../state/t4a/t4a.service';
 
+import { downloadBlob } from '../../shared/download';
 // Rendu du PDF fait nous-mêmes (canvas) plutôt que via le lecteur PDF natif du navigateur
 // (iframe) : certains navigateurs (ex. Chrome avec "toujours télécharger les PDF" activé)
 // n'affichent pas les PDF intégrés et montrent un simple bouton "Open" à la place. PDF.js
@@ -83,12 +84,7 @@ export class T4aGenerateComponent implements OnInit {
     this.t4aSvc.generate(this.data).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: blob => {
         this.downloading.set(false);
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `T4A_${this.data.year}_${this.data.firstName}_${this.data.lastName}.pdf`;
-        a.click();
-        URL.revokeObjectURL(url);
+        downloadBlob(blob, `T4A_${this.data.year}_${this.data.firstName}_${this.data.lastName}.pdf`);
         this.cdr.markForCheck();
       },
       error: err => {
@@ -131,7 +127,8 @@ export class T4aGenerateComponent implements OnInit {
     const container = this.pdfContainerRef.nativeElement;
     container.innerHTML = '';
 
-    const pdf = await pdfjsLib.getDocument({ data: bytes }).promise;
+    // isEvalSupported: false — correctif officiel CVE-2024-4367 (exécution de JavaScript via une police PDF piégée)
+    const pdf = await pdfjsLib.getDocument({ data: bytes, isEvalSupported: false }).promise;
     for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
       const page = await pdf.getPage(pageNum);
       const viewport = page.getViewport({ scale: 1.5 });

@@ -19,12 +19,29 @@ export class ResetPasswordComponent {
   loading         = signal(false);
   error           = signal('');
   success         = signal(false);
+  /** Compte visé par le lien (entreprise + identifiant), chargé à l'ouverture de la page. */
+  account         = signal<{ companyName: string; companySlug: string; username: string } | null>(null);
+  checking        = signal(true);
+  linkInvalid     = signal(false);
 
   private token = '';
 
   constructor(private route: ActivatedRoute, private auth: AuthService, private router: Router) {
     this.token = this.route.snapshot.queryParamMap.get('token') ?? '';
-    if (!this.token) this.error.set('Lien invalide : jeton manquant.');
+    if (!this.token) {
+      this.error.set('Lien invalide : jeton manquant.');
+      this.linkInvalid.set(true);
+      this.checking.set(false);
+      return;
+    }
+    this.auth.resetPasswordInfo(this.token).subscribe({
+      next: info => { this.account.set(info); this.checking.set(false); },
+      error: err => {
+        this.linkInvalid.set(true);
+        this.checking.set(false);
+        this.error.set(err?.error?.message ?? 'Ce lien de réinitialisation est invalide ou a expiré.');
+      },
+    });
   }
 
   togglePw(): void { this.showPw.update(v => !v); }
@@ -53,5 +70,10 @@ export class ResetPasswordComponent {
     });
   }
 
-  goToLogin(): void { this.router.navigate(['/login']); }
+  /** Vers la connexion, avec l'identifiant d'entreprise pré-rempli. */
+  goToLogin(): void {
+    const slug = this.account()?.companySlug;
+    if (slug) { try { localStorage.setItem('tg_last_tenant', slug); } catch { /* stockage indisponible */ } }
+    this.router.navigate(['/login']);
+  }
 }

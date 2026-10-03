@@ -181,6 +181,7 @@ export class NavbarComponent {
       { label: 'Groupes',       icon: '🔐', link: '/groups',                show: () => this.has('groups.manage') },
       { label: 'Identifiants',  icon: '🔑', link: '/employees/credentials', show: () => this.has('credentials.manage') },
       { label: 'Configuration', icon: '⚙',  link: '/config',                show: () => this.has('config.manage') },
+      { label: 'Suppression définitive', icon: '🗑', link: '/purge',        show: () => this.has('data.purge') },
     ] }] },
   ];
 

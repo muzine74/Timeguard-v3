@@ -31,11 +31,24 @@ export class EmployeeValidationComponent implements OnInit {
   private get _dev() { return isDevMode(); }
   private warn(...a: unknown[]) { if (this._dev) console.warn('[EmployeeValidation]', ...a); }
 
+  /** Filtre Tous / Actifs / Désactivés (Actifs par défaut = comportement d'origine). */
+  activeFilter = signal<'all' | 'active' | 'inactive'>('active');
+
+  /** Employés correspondant à la recherche, tous états confondus (base des compteurs). */
+  private get queryMatches(): Employee[] {
+    const q = this.searchQuery.trim().toLowerCase();
+    return this.empSvc.list().filter(e => !q || e.employeeName.toLowerCase().includes(q));
+  }
+
+  get activeCounts(): { all: number; active: number; inactive: number } {
+    const list = this.queryMatches;
+    const active = list.filter(e => e.isActive).length;
+    return { all: list.length, active, inactive: list.length - active };
+  }
+
   get filteredEmployees(): Employee[] {
-    const q = this.searchQuery.toLowerCase();
-    return this.empSvc.list().filter(e =>
-      e.isActive && (!q || e.employeeName.toLowerCase().includes(q))
-    );
+    const a = this.activeFilter();
+    return this.queryMatches.filter(e => a === 'all' || (a === 'active') === !!e.isActive);
   }
 
   constructor(
@@ -45,7 +58,8 @@ export class EmployeeValidationComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.empSvc.loadList(true);
+    // Tous les employés : la liste filtre ensuite Tous / Actifs / Désactivés
+    this.empSvc.loadList(false);
     const id = this.route.snapshot.paramMap.get('id');
     if (id) this.selectEmployee(id);
   }

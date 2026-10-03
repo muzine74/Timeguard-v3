@@ -10,17 +10,6 @@
 
 // ── En-tête ───────────────────────────────────────────────────────────────
 .page-header {
-  .page-title {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: var(--text);
-    margin: 0 0 .25rem;
-  }
-  .page-sub {
-    color: var(--muted);
-    font-size: .9rem;
-    margin: 0;
-  }
 }
 
 // ── Carte filtre ──────────────────────────────────────────────────────────
@@ -403,7 +392,7 @@
   color: var(--muted);
   font-weight: 500;
 
-  em { font-style: italic; opacity: .8; margin-left: .4rem; }
+  em { font-style: italic; margin-left: .4rem; }
 }
 
 .export-wrap {
@@ -546,14 +535,6 @@
 }
 
 // ── État vide ─────────────────────────────────────────────────────────────
-.empty-state {
-  text-align: center;
-  padding: 3rem 1rem;
-  color: var(--muted);
-
-  .empty-icon { font-size: 2.5rem; display: block; margin-bottom: .75rem; }
-  p { font-size: .95rem; margin: 0; }
-}
 
 // ── Responsive ────────────────────────────────────────────────────────────
 @media (max-width: 640px) {
@@ -562,4 +543,20 @@
   .btn-apply   { width: 100%; }
   .action-bar  { flex-direction: column; align-items: flex-start; }
   .export-menu { right: auto; left: 0; min-width: 260px; }
+}
+
+// ── Filtres par colonne ─────────────────────────────────────────────────
+.col-filter-row td { padding-top: 6px; padding-bottom: 8px; background: var(--surface); }
+.col-filter {
+  width: 100%; min-width: 0; padding: 5px 8px; border-radius: 6px; font: inherit; font-size: 12px;
+  background: var(--bg); color: var(--text); border: 1px solid var(--border);
+  &::placeholder { color: var(--muted); }
+  &:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(var(--accent-rgb), .25); }
+}
+.range-filter { display: flex; gap: 4px; .col-filter { width: 72px; text-align: right; } justify-content: flex-end; }
+.btn-clear-filters {
+  margin-left: .4rem; padding: 2px 8px; border-radius: 6px; font: inherit; font-size: 12px; cursor: pointer;
+  background: transparent; color: var(--text); border: 1px solid var(--border);
+  &:hover { background: var(--surface2); }
+  &:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 }

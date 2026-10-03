@@ -73,14 +73,6 @@
 // ── Zone principale ──────────────────────────────────────
 .form-area { padding: 24px; overflow-y: auto; }
 
-.toast {
-  position: fixed; top: 18px; right: 24px; z-index: 99;
-  background: rgba(30,200,100,.15); border: 1px solid rgba(30,200,100,.35);
-  color: var(--success-text); padding: 10px 18px; border-radius: 10px;
-  font-size: 13px; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity .3s;
-  &.toast-show  { opacity: 1; }
-  &.toast-error { background: rgba(224,82,82,.12); border-color: rgba(224,82,82,.3); color: var(--danger); }
-}
 
 .no-selection {
   display: flex; flex-direction: column; align-items: center;
@@ -93,11 +85,6 @@
   display: flex; flex-direction: column; align-items: center;
   justify-content: center; min-height: 200px; gap: 14px;
 }
-.loading-spinner {
-  width: 28px; height: 28px;
-  border: 3px solid rgba(var(--accent-rgb), .2); border-top-color: var(--accent);
-  border-radius: 50%; animation: spin .7s linear infinite;
-}
 .loading-txt { font-size: 13px; color: var(--muted); }
 
 // ── Header ───────────────────────────────────────────────
@@ -106,8 +93,6 @@
   margin-bottom: 20px; gap: 16px;
   @media (max-width: 700px) { flex-direction: column; align-items: flex-start; }
 }
-.page-title  { font-size: 20px; font-weight: 700; letter-spacing: -.4px; }
-.page-sub    { font-size: 12px; color: var(--muted); margin-top: 3px; }
 .page-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .unsaved-badge { font-size: 12px; color: var(--accent); font-weight: 700; }
 
@@ -207,11 +192,6 @@
 .btn {
   padding: 9px 18px; border-radius: 9px; font-size: 13px; font-weight: 600;
   border: 1px solid var(--border); cursor: pointer; font-family: inherit; transition: all .18s;
-}
-.btn-primary {
-  background: rgba(var(--accent-rgb), .15); border-color: rgba(var(--accent-rgb), .4); color: var(--accent);
-  &:hover:not(:disabled) { background: rgba(var(--accent-rgb), .25); }
-  &:disabled { opacity: .45; cursor: not-allowed; }
 }
 .btn-ghost {
   background: transparent; color: var(--muted);

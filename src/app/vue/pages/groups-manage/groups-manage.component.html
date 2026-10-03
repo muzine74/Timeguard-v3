@@ -1,7 +1,7 @@
 <div class="page-wrap">
 
   <!-- Toast -->
-  <div class="toast" [class.toast-show]="toast()">{{ toast() }}</div>
+  <div role="status" aria-live="polite" class="toast" [class.toast-show]="toast()">{{ toast() }}</div>
 
   <!-- Header -->
   <div class="page-hdr">
@@ -21,7 +21,7 @@
         <button class="btn btn-primary btn-sm" (click)="newGroup()">＋ Nouveau</button>
       </div>
 
-      <div class="loading-wrap" *ngIf="loading()">
+      <div class="loading-wrap" role="status" aria-live="polite" *ngIf="loading()">
         <div class="loading-spinner"></div> Chargement…
       </div>
 
@@ -41,7 +41,7 @@
         </div>
 
         <div class="empty-state" *ngIf="groups().length === 0">
-          <div class="empty-icon">🔐</div>
+          <div class="empty-icon" aria-hidden="true">🔐</div>
           <div class="empty-txt">Aucun groupe créé</div>
         </div>
       </ng-container>
@@ -213,7 +213,7 @@
 
     <!-- ── État vide ─────────────────────────────────────────────────── -->
     <div class="panel-empty" *ngIf="!showPanel() && !showPermPanel()">
-      <div class="empty-icon">🔐</div>
+      <div class="empty-icon" aria-hidden="true">🔐</div>
       <div class="empty-txt">Sélectionnez un groupe ou créez-en un nouveau</div>
     </div>
 

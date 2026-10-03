@@ -54,8 +54,8 @@
   <!-- ── Zone principale ── -->
   <div class="main-area">
 
-    <div class="toast" [class.toast-show]="saved()">✓ Modifications sauvegardées</div>
-    <div class="toast toast-error" [class.toast-show]="error()">{{ error() }}</div>
+    <div role="status" aria-live="polite" class="toast" [class.toast-show]="saved()">{{ saved() ? '✓ Modifications sauvegardées' : '' }}</div>
+    <div role="alert" class="toast toast-error" [class.toast-show]="error()">{{ error() }}</div>
 
     <!-- Placeholder -->
     <div class="placeholder" *ngIf="!selectedCo()">
@@ -86,7 +86,7 @@
       </div>
 
       <!-- Chargement -->
-      <div class="loading-wrap" *ngIf="loadingAssigned()">
+      <div class="loading-wrap" role="status" aria-live="polite" *ngIf="loadingAssigned()">
         <div class="loading-spinner"></div>
         <span>Chargement…</span>
       </div>

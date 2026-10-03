@@ -93,10 +93,12 @@ export class PointagePage implements OnInit {
           this.log(`✓ employé chargé: ${emp.employeeName}`);
           this.noteRefs.set({ employeeIds: [emp.employeeId] });
           this.noteAlerts.check({ employeeIds: [emp.employeeId] }, `Pointage — ${emp.employeeName}`);
-          // Initialise les compagnies depuis l'employé — visible même si aucun timelog pour la semaine
-          this.ptEmpSvc.initFromEmployee(emp.employeeCompagnies ?? []);
+          // Initialise les compagnies ACTIVES depuis l'employé — visible même si aucun timelog pour la semaine
+          // (une compagnie désactivée n'apparaît que si la semaine contient déjà des pointages chez elle — via l'API)
+          const activeCompanies = (emp.employeeCompagnies ?? []).filter(c => c.isActive !== false);
+          this.ptEmpSvc.initFromEmployee(activeCompanies);
           // Charge le calendrier tarifaire → prix injectés automatiquement à chaque case cochée
-          this.ptEmpSvc.loadPricing(id, (emp.employeeCompagnies ?? []).map(c => c.compagnieId));
+          this.ptEmpSvc.loadPricing(id, activeCompanies.map(c => c.compagnieId));
         },
         error: err => {
           this.warn(`✕ getOne(${id}) échoué — HTTP ${err.status}`);

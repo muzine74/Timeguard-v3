@@ -9,6 +9,7 @@ import { TableSort, SortValue } from '../../shared/table-sort';
 import { ExportButtonsComponent } from '../../components/export-buttons/export-buttons.component';
 import { ExportCell, ExportDoc, ExportRow, TableExportService } from '../../../state/export/table-export.service';
 
+import { downloadBlob } from '../../shared/download';
 type BillSortKey = 'num' | 'company' | 'period' | 'date' | 'ttc' | 'sent' | 'paid';
 const SORT_LABELS: Record<BillSortKey, string> = {
   num: 'N° facture', company: 'Compagnie', period: 'Période', date: 'Date', ttc: 'Total TTC', sent: 'Statut envoi', paid: 'Paiement',
@@ -596,12 +597,7 @@ export class InvoiceManageComponent implements OnInit {
   downloadPdf(bill: BillSummary): void {
     this.invoiceSvc.downloadFile(bill.billIdentifier).subscribe({
       next: blob => {
-        const url = URL.createObjectURL(blob);
-        const a   = document.createElement('a');
-        a.href     = url;
-        a.download = `${bill.billNumber}.pdf`;
-        a.click();
-        URL.revokeObjectURL(url);
+        downloadBlob(blob, `${bill.billNumber}.pdf`);
       },
       error: () => this.error.set('Fichier introuvable sur le serveur.'),
     });

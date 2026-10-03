@@ -1,7 +1,7 @@
-import { Component, signal, isDevMode, ChangeDetectionStrategy } from '@angular/core';
+import { Component, signal, isDevMode, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../state/auth/auth.service';
 
 @Component({
@@ -15,7 +15,8 @@ import { AuthService } from '../../../state/auth/auth.service';
 export class LoginComponent {
   username    = '';
   password    = '';
-  tenantSlug  = '';
+  /** Identifiant d'entreprise mémorisé sur cet appareil (non sensible) pour ne pas le ressaisir. */
+  tenantSlug  = LoginComponent._lastTenant();
   showPw      = signal(false);
   loading     = signal(false);
   error       = signal('');
@@ -24,7 +25,21 @@ export class LoginComponent {
   private log(...a: unknown[])  { if (this._dev) console.log('[LoginComponent]', ...a); }
   private warn(...a: unknown[]) { if (this._dev) console.warn('[LoginComponent]', ...a); }
 
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(private auth: AuthService, private router: Router, private route: ActivatedRoute) {}
+
+  /** Arrivée après une session expirée (401) : message explicatif. */
+  readonly sessionExpired = inject(ActivatedRoute).snapshot.queryParamMap.get('expired') === '1';
+
+  private static _lastTenant(): string {
+    try { return localStorage.getItem('tg_last_tenant') ?? ''; } catch { return ''; }
+  }
+
+  /** Page à rouvrir après connexion : chemin interne uniquement (pas de redirection ouverte). */
+  private _returnUrl(): string | null {
+    const u = this.route.snapshot.queryParamMap.get('returnUrl');
+    if (!u || !u.startsWith('/') || u.startsWith('//') || u.startsWith('/\\') || u.startsWith('/login')) return null;
+    return u;
+  }
 
   togglePw(): void { this.showPw.update(v => !v); }
 
@@ -41,6 +56,7 @@ export class LoginComponent {
       next: () => {
         this.loading.set(false);
         this.log('✓ login réussi');
+        try { localStorage.setItem('tg_last_tenant', this.tenantSlug.trim()); } catch { /* stockage indisponible */ }
         this.log('  user:       ', this.auth.user());
         this.log('  employeeId: ', this.auth.employeeId());
         this.log('  permissions:', this.auth.user()?.permissions);
@@ -58,6 +74,9 @@ export class LoginComponent {
           this.error.set('Aucune permission assignée. Contactez un administrateur.');
           return;
         }
+
+        const back = this._returnUrl();
+        if (back) { this.router.navigateByUrl(back); return; }   // les gardes vérifient encore la permission
 
         const dest = this.auth.canManage() ? '/employees' : '/pointage';
         this.log(`→ navigation vers ${dest}`);

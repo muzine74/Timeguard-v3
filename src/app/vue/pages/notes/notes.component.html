@@ -63,7 +63,7 @@
   <div class="err-msg" *ngIf="error()">{{ error() }}</div>
 
   <!-- ── Liste ────────────────────────────────────────────────────────────── -->
-  <div class="loading-wrap" *ngIf="loading()">
+  <div class="loading-wrap" role="status" aria-live="polite" *ngIf="loading()">
     <div class="spinner"></div>
     <span>Chargement…</span>
   </div>
@@ -92,12 +92,12 @@
     </ng-container>
 
     <div class="empty-state" *ngIf="notes().length > 0 && filteredNotes.length === 0">
-      <div class="empty-icon">🔍</div>
+      <div class="empty-icon" aria-hidden="true">🔍</div>
       <div class="empty-txt">Aucune note ne correspond aux filtres</div>
     </div>
 
     <div class="empty-state" *ngIf="notes().length === 0">
-      <div class="empty-icon">📝</div>
+      <div class="empty-icon" aria-hidden="true">📝</div>
       <div class="empty-txt">Aucune note pour le moment</div>
     </div>
   </ng-container>
