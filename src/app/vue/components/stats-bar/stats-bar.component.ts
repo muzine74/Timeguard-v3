@@ -3,11 +3,10 @@ import { CommonModule } from '@angular/common';
 import { SaveStateService } from '../../../state/pointage/save-state.service';
 
 @Component({
-  selector: 'app-stats-bar',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
-  template: `
+    selector: 'app-stats-bar',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule],
+    template: `
     <div class="stats-section">
       <div class="stats-hdr" (click)="toggleCollapse()">
         <span class="stats-hdr-title">📊 Statistiques</span>
@@ -68,7 +67,7 @@ import { SaveStateService } from '../../../state/pointage/save-state.service';
       </div><!-- /.stats-body -->
     </div><!-- /.stats-section -->
   `,
-  styleUrls: ['./stats-bar.component.scss']
+    styleUrls: ['./stats-bar.component.scss']
 })
 export class StatsBarComponent {
   showDetail = signal(false);

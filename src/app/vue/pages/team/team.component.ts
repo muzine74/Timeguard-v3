@@ -20,11 +20,10 @@ type Scope = 'all' | 'mine';
  * Clic sur une personne → son pointage (lecture seule) et ses notes. Droits vérifiés par l'API.
  */
 @Component({
-  selector: 'app-team',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, RouterLink, PointageTableComponent],
-  template: `
+    selector: 'app-team',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, FormsModule, RouterLink, PointageTableComponent],
+    template: `
     <div class="page">
       <header class="page-head">
         <div>
@@ -168,7 +167,7 @@ type Scope = 'all' | 'mine';
       </li>
     </ng-template>
   `,
-  styles: [`
+    styles: [`
     .page { padding: 24px 20px; max-width: 1500px; margin: 0 auto; }
     .page-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; align-items: flex-end; }
     .page-title { font-size: 22px; margin: 0; }
@@ -241,7 +240,7 @@ type Scope = 'all' | 'mine';
     .note-desc { margin: 6px 0 0; font-size: 13px; white-space: pre-wrap; }
     .note-meta { margin: 6px 0 0; font-size: 11.5px; color: var(--muted); }
     @media (max-width: 1000px) { .detail { position: static; } }
-  `],
+  `]
 })
 export class TeamComponent implements OnInit {
   readonly team  = inject(TeamService);

@@ -7,12 +7,11 @@ import { EmployeesService } from '../../../state/employees/employees.service';
 import { Employee, EmployeeFile } from '../../../models';
 
 @Component({
-  selector: 'app-employee-validation',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './employee-validation.component.html',
-  styleUrls: ['./employee-validation.component.scss'],
+    selector: 'app-employee-validation',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, FormsModule],
+    templateUrl: './employee-validation.component.html',
+    styleUrls: ['./employee-validation.component.scss']
 })
 export class EmployeeValidationComponent implements OnInit {
   empLoading    = this.empSvc.loading;
@@ -87,11 +86,57 @@ export class EmployeeValidationComponent implements OnInit {
     });
   }
 
+  /** Photo prise avec l'appareil (mobile) : réduite en JPEG puis jointe immédiatement. */
+  async onPhotoTaken(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    const raw   = input.files?.[0];
+    if (!raw || !this.employeeId()) return;
+
+    this.fileError.set('');
+    this.fileUploading.set(true);
+    try {
+      const photo = await this._toJpeg(raw);
+      this._upload(photo, input);
+    } catch {
+      this.fileUploading.set(false);
+      input.value = '';
+      this.fileError.set('Impossible de lire la photo. Réessayez ou utilisez « + Ajouter ».');
+    }
+  }
+
+  /** Réduit l'image (côté le plus long ≤ 2000 px, JPEG 85 %) : reste sous la limite de 10 Mo
+   *  de l'API et convertit les formats non acceptés (HEIC…) en JPEG. Nom : Photo_AAAA-MM-JJ_HHMMSS.jpg */
+  private _toJpeg(file: File): Promise<File> {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        const scale  = Math.min(1, 2000 / Math.max(img.naturalWidth, img.naturalHeight));
+        const canvas = document.createElement('canvas');
+        canvas.width  = Math.round(img.naturalWidth * scale);
+        canvas.height = Math.round(img.naturalHeight * scale);
+        canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
+        URL.revokeObjectURL(url);
+        canvas.toBlob(blob => {
+          if (!blob) return reject(new Error('toBlob'));
+          const d = new Date(), p = (n: number) => String(n).padStart(2, '0');
+          const name = `Photo_${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}.jpg`;
+          resolve(new File([blob], name, { type: 'image/jpeg' }));
+        }, 'image/jpeg', 0.85);
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('decode')); };
+      img.src = url;
+    });
+  }
+
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file  = input.files?.[0];
     if (!file || !this.employeeId()) return;
+    this._upload(file, input);
+  }
 
+  private _upload(file: File, input: HTMLInputElement): void {
     this.fileError.set('');
     this.fileUploading.set(true);
     this.empSvc.uploadFile(this.employeeId(), file).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({

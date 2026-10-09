@@ -2,10 +2,9 @@ import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 @Component({
-  selector: 'app-not-found',
-  standalone: true,
-  imports: [RouterLink],
-  template: `
+    selector: 'app-not-found',
+    imports: [RouterLink],
+    template: `
     <div class="nf">
       <div class="nf-code">404</div>
       <h1 class="nf-title">Page introuvable</h1>
@@ -13,7 +12,7 @@ import { RouterLink } from '@angular/router';
       <a routerLink="/employees" class="btn-home">→ Retour à l'accueil</a>
     </div>
   `,
-  styles: [`
+    styles: [`
     .nf {
       min-height: 80vh; display: flex; flex-direction: column;
       align-items: center; justify-content: center; gap: 12px;

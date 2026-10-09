@@ -114,7 +114,9 @@ export class TableExportService {
       if (typeof v === 'number') {
         return (col?.type === 'money' ? v.toFixed(2) : String(v)).replace('.', ',');
       }
-      return esc(String(v));
+      // Un texte commençant par = + - @ serait lu comme une formule par Excel : une apostrophe le neutralise
+      const text = String(v);
+      return esc(/^[=+\-@\t\r]/.test(text) ? `'${text}` : text);
     };
     const lines: string[] = [];
     const multi = doc.tables.length > 1;

@@ -21,6 +21,10 @@ export interface ChargePayload {
   title:       string;
   description?: string;
   amount:      number;
+  /** Charge qui revient chaque mois (false = ponctuelle). */
+  isMonthly:   boolean;
+  /** Le montant contient déjà les taxes (false = hors taxes). */
+  taxIncluded: boolean;
   companies:   ChargeCompanyItem[];
 }
 
@@ -29,6 +33,8 @@ export interface ChargeItem {
   title:       string;
   description?: string;
   amount:      number;
+  isMonthly:   boolean;
+  taxIncluded: boolean;
   createdAt:   string;
   companies:   ChargeCompanyResponse[];
   documents:   ChargeDocument[];

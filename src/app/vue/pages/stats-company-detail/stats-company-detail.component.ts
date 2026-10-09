@@ -6,12 +6,11 @@ import { DestroyRef, inject } from '@angular/core';
 import { StatsService, StatsCompanyDetailResponse } from '../../../state/stats/stats.service';
 
 @Component({
-  selector: 'app-stats-company-detail',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
-  templateUrl: './stats-company-detail.component.html',
-  styleUrls: ['./stats-company-detail.component.scss'],
+    selector: 'app-stats-company-detail',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule],
+    templateUrl: './stats-company-detail.component.html',
+    styleUrls: ['./stats-company-detail.component.scss']
 })
 export class StatsCompanyDetailComponent implements OnInit {
   loading = signal(false);

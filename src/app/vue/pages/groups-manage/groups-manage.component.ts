@@ -12,12 +12,11 @@ import { EmployeesService } from '../../../state/employees/employees.service';
 import { AuthService } from '../../../state/auth/auth.service';
 
 @Component({
-  selector: 'app-groups-manage',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './groups-manage.component.html',
-  styleUrls: ['./groups-manage.component.scss'],
+    selector: 'app-groups-manage',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, FormsModule],
+    templateUrl: './groups-manage.component.html',
+    styleUrls: ['./groups-manage.component.scss']
 })
 export class GroupsManageComponent implements OnInit {
   private destroyRef = inject(DestroyRef);

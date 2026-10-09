@@ -1,0 +1,190 @@
+<div class="page-wrap">
+
+  <header class="page-hdr">
+    <div>
+      <h1 class="page-title">Relevé bancaire</h1>
+      <p class="page-sub">Chargez le relevé de votre banque, puis reliez ses transactions à vos compagnies, vos employés et vos charges</p>
+    </div>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="Relevé bancaire">
+    <button #tabStatement type="button" role="tab" id="bank-tab-statement" class="tab" [class.active]="tab() === 'statement'"
+            [attr.aria-selected]="tab() === 'statement'" aria-controls="bank-panel-statement" [attr.tabindex]="tab() === 'statement' ? 0 : -1"
+            (click)="setTab('statement')" (keydown)="onTabKey($event, tabLexicon)">🏦 Relevé bancaire</button>
+    <button #tabLexicon type="button" role="tab" id="bank-tab-lexicon" class="tab" [class.active]="tab() === 'lexicon'"
+            [attr.aria-selected]="tab() === 'lexicon'" aria-controls="bank-panel-lexicon" [attr.tabindex]="tab() === 'lexicon' ? 0 : -1"
+            (click)="setTab('lexicon')" (keydown)="onTabKey($event, tabStatement)">📖 Lexique</button>
+  </div>
+
+  <div role="tabpanel" id="bank-panel-lexicon" aria-labelledby="bank-tab-lexicon" *ngIf="tab() === 'lexicon'">
+    <app-bank-lexicon (changed)="onLexiconChanged()"></app-bank-lexicon>
+  </div>
+
+  <div role="tabpanel" id="bank-panel-statement" aria-labelledby="bank-tab-statement" [hidden]="tab() !== 'statement'">
+
+  <!-- ── Import du CSV ───────────────────────────────────────────────────── -->
+  <section class="card" aria-labelledby="bank-import-title">
+    <h2 id="bank-import-title" class="card-title">Charger un relevé</h2>
+    <div class="import-row">
+      <div class="field">
+        <label for="bank-file">Fichier CSV</label>
+        <input #fileInput id="bank-file" class="inp" type="file" accept=".csv,text/csv" (change)="onFile($event)"
+               aria-describedby="bank-file-hint" [disabled]="importing()" />
+      </div>
+      <button type="button" class="btn btn-primary" [disabled]="!file() || importing()" (click)="importFile(fileInput)">
+        <span *ngIf="!importing()">⬆ Charger le CSV</span>
+        <span *ngIf="importing()">Chargement…</span>
+      </button>
+    </div>
+    <p class="hint" id="bank-file-hint">Colonnes lues : 4 = date, 6 = description, 8 = retrait, 9 = dépôt. Un fichier déjà chargé peut être rechargé sans créer de doublons.</p>
+
+    <div class="msg msg-err" role="alert" *ngIf="importError()">
+      ⚠ {{ importError() }}
+      <ul *ngIf="importErrorLines().length"><li *ngFor="let e of importErrorLines()">{{ e }}</li></ul>
+    </div>
+
+    <div class="msg msg-ok" role="status" *ngIf="result() as r">
+      <strong>✓ {{ plural(r.imported, 'ligne ajoutée', 'lignes ajoutées') }}</strong>
+      <span *ngIf="r.dateMin"> — du {{ r.dateMin }} au {{ r.dateMax }}</span>
+      <span *ngIf="r.imported"> : {{ fmt(r.totalWithdrawals) }} de retraits, {{ fmt(r.totalDeposits) }} de dépôts.</span>
+      <div *ngIf="r.duplicates">{{ plural(r.duplicates, 'ligne déjà enregistrée', 'lignes déjà enregistrées') }} : non ajoutée{{ r.duplicates > 1 ? 's' : '' }}.</div>
+      <div class="warn" *ngIf="r.skipped">
+        ⚠ {{ plural(r.skipped, 'ligne illisible ignorée', 'lignes illisibles ignorées') }} :
+        <ul><li *ngFor="let e of r.errors">{{ e }}</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Lignes enregistrées ─────────────────────────────────────────────── -->
+  <section class="card" aria-labelledby="bank-list-title">
+    <h2 id="bank-list-title" class="card-title">Lignes enregistrées</h2>
+
+    <div class="filters">
+      <div class="field">
+        <label for="bank-du">Du</label>
+        <input id="bank-du" class="inp" type="date" [(ngModel)]="dateFrom" (ngModelChange)="load()" />
+      </div>
+      <div class="field">
+        <label for="bank-au">Au</label>
+        <input id="bank-au" class="inp" type="date" [(ngModel)]="dateTo" (ngModelChange)="load()" />
+      </div>
+      <button type="button" class="btn btn-outline" *ngIf="dateFrom || dateTo" (click)="clearDates()">Tout afficher</button>
+    </div>
+
+    <div class="msg msg-err" role="alert" *ngIf="error()">⚠ {{ error() }}</div>
+    <div class="loading-wrap" role="status" *ngIf="loading()"><span class="spinner"></span> Chargement…</div>
+
+    <ng-container *ngIf="!loading() && list() as l">
+
+      <!-- Recherche + valeurs à afficher par colonne -->
+      <div class="tools" *ngIf="l.rows.length" role="search" aria-label="Recherche et filtres des lignes du relevé">
+        <div class="field search-field">
+          <label for="bank-search">Recherche</label>
+          <input id="bank-search" class="inp" type="search" placeholder="Mot-clé dans toutes les colonnes…"
+                 [ngModel]="search()" (ngModelChange)="setSearch($event)" />
+        </div>
+        <div class="field">
+          <span class="lbl" id="bank-f-date">Date</span>
+          <app-multi-select aria-labelledby="bank-f-date" [options]="options().date" [selected]="picked().date"
+                            (selectedChange)="setPicked('date', $event)" placeholder="Toutes les dates" plural="dates"></app-multi-select>
+        </div>
+        <div class="field">
+          <span class="lbl" id="bank-f-desc">Description</span>
+          <app-multi-select aria-labelledby="bank-f-desc" [options]="options().description" [selected]="picked().description"
+                            (selectedChange)="setPicked('description', $event)" placeholder="Toutes les descriptions" plural="descriptions"></app-multi-select>
+        </div>
+        <div class="field">
+          <span class="lbl" id="bank-f-wd">Retrait</span>
+          <app-multi-select aria-labelledby="bank-f-wd" [options]="options().withdrawal" [selected]="picked().withdrawal"
+                            (selectedChange)="setPicked('withdrawal', $event)" placeholder="Tous les retraits" plural="retraits"></app-multi-select>
+        </div>
+        <div class="field">
+          <span class="lbl" id="bank-f-dep">Dépôt</span>
+          <app-multi-select aria-labelledby="bank-f-dep" [options]="options().deposit" [selected]="picked().deposit"
+                            (selectedChange)="setPicked('deposit', $event)" placeholder="Tous les dépôts" plural="dépôts"></app-multi-select>
+        </div>
+        <div class="field">
+          <span class="lbl" id="bank-f-link">Lié à</span>
+          <app-multi-select aria-labelledby="bank-f-link" [options]="options().linkName" [selected]="picked().linkName"
+                            (selectedChange)="setPicked('linkName', $event)" placeholder="Tous les liens" plural="liens"></app-multi-select>
+        </div>
+        <div class="field">
+          <span class="lbl" id="bank-f-val">Validée</span>
+          <app-multi-select aria-labelledby="bank-f-val" [options]="options().validated" [selected]="picked().validated"
+                            (selectedChange)="setPicked('validated', $event)" placeholder="Toutes" plural="états"></app-multi-select>
+        </div>
+        <button type="button" class="btn btn-outline" *ngIf="hasFilters()" (click)="resetFilters()">Réinitialiser</button>
+      </div>
+
+      <div class="msg msg-err" role="alert" *ngIf="validateError()">⚠ {{ validateError() }}</div>
+
+      <dl class="totals" *ngIf="l.rows.length">
+        <div><dt>Lignes</dt><dd aria-live="polite">{{ hasFilters() ? filtered().length + ' / ' + l.rows.length : l.rows.length }}</dd></div>
+        <div><dt>Total des retraits</dt><dd class="neg">{{ fmt(totalWithdrawals()) }}</dd></div>
+        <div><dt>Total des dépôts</dt><dd class="pos">{{ fmt(totalDeposits()) }}</dd></div>
+        <div><dt>Dépôts − retraits</dt><dd>{{ fmt(net()) }}</dd></div>
+        <div><dt>Reliées</dt><dd>{{ linkedCount() }} / {{ filtered().length }}</dd></div>
+        <div><dt>Validées</dt><dd aria-live="polite">{{ validatedCount() }} / {{ filtered().length }}</dd></div>
+      </dl>
+
+      <div class="table-wrap" *ngIf="filtered().length" tabindex="0" role="region" aria-label="Lignes du relevé bancaire">
+        <table class="bank-table">
+          <caption class="sr-only">Lignes du relevé bancaire enregistrées. Cliquez sur un en-tête pour trier.</caption>
+          <thead>
+            <tr>
+              <th scope="col" [attr.aria-sort]="sort.aria('date')"><button type="button" class="th-sort" (click)="toggleSort('date')">Date <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('date') }}</span></button></th>
+              <th scope="col" [attr.aria-sort]="sort.aria('description')"><button type="button" class="th-sort" (click)="toggleSort('description')">Description <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('description') }}</span></button></th>
+              <th scope="col" class="num" [attr.aria-sort]="sort.aria('withdrawal')"><button type="button" class="th-sort" (click)="toggleSort('withdrawal')">Retrait <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('withdrawal') }}</span></button></th>
+              <th scope="col" class="num" [attr.aria-sort]="sort.aria('deposit')"><button type="button" class="th-sort" (click)="toggleSort('deposit')">Dépôt <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('deposit') }}</span></button></th>
+              <th scope="col" [attr.aria-sort]="sort.aria('linkName')"><button type="button" class="th-sort" (click)="toggleSort('linkName')">Lié à <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('linkName') }}</span></button></th>
+              <th scope="col" class="ctr" [attr.aria-sort]="sort.aria('validated')"><button type="button" class="th-sort" (click)="toggleSort('validated')">Validée <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('validated') }}</span></button></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let r of paged(); trackBy: trackRow" [class.row-validated]="r.validated">
+              <td class="nowrap">{{ r.date }}</td>
+              <td>{{ r.description }}</td>
+              <td class="num neg">{{ fmt(r.withdrawal) }}</td>
+              <td class="num pos">{{ fmt(r.deposit) }}</td>
+              <td>
+                <span class="chip" *ngIf="r.linkType as t" [ngClass]="'chip-' + t" [title]="'Mot-clé : ' + r.linkKeyword">
+                  <span aria-hidden="true">{{ linkIcon[t] }}</span><span class="sr-only">{{ linkLabel[t] }} : </span>{{ r.linkName }}
+                </span>
+              </td>
+              <td class="ctr">
+                <input type="checkbox" class="chk" [checked]="r.validated" [disabled]="saving().has(r.bankTransactionId)"
+                       (change)="setValidated(r, $any($event.target).checked)" [title]="validatedTitle(r)"
+                       [attr.aria-label]="'Validée : ' + r.date + ' ' + r.description + ' ' + (fmt(r.withdrawal) || fmt(r.deposit))" />
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <th scope="row" colspan="2">Total{{ hasFilters() ? ' des lignes affichées' : '' }}</th>
+              <td class="num neg">{{ fmt(totalWithdrawals()) }}</td>
+              <td class="num pos">{{ fmt(totalDeposits()) }}</td>
+              <td>{{ linkedCount() }} / {{ filtered().length }}</td>
+              <td class="ctr">{{ validatedCount() }} / {{ filtered().length }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <nav class="pager" *ngIf="pageCount() > 1" aria-label="Pages du relevé">
+        <button type="button" class="btn btn-outline" [disabled]="currentPage() === 1" (click)="goTo(currentPage() - 1)">‹ Précédent</button>
+        <span aria-live="polite">Page {{ currentPage() }} sur {{ pageCount() }}</span>
+        <button type="button" class="btn btn-outline" [disabled]="currentPage() === pageCount()" (click)="goTo(currentPage() + 1)">Suivant ›</button>
+      </nav>
+
+      <p class="empty" *ngIf="l.rows.length && !filtered().length">
+        Aucune ligne ne correspond à la recherche ou aux filtres.
+        <button type="button" class="link-btn" (click)="resetFilters()">Réinitialiser</button>
+      </p>
+      <p class="empty" *ngIf="!l.rows.length">
+        {{ dateFrom || dateTo ? 'Aucune ligne enregistrée pour ces dates.' : 'Aucune ligne enregistrée. Chargez un fichier CSV pour commencer.' }}
+      </p>
+    </ng-container>
+  </section>
+  </div>
+
+</div>

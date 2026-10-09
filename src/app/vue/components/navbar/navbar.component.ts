@@ -11,11 +11,10 @@ interface NavSection { title?: string; items: NavItem[]; }
 interface NavMenu    { id: string; label: string; sections: NavSection[]; }
 
 @Component({
-  selector: 'app-navbar',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterLink, RouterLinkActive],
-  template: `
+    selector: 'app-navbar',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, RouterLink, RouterLinkActive],
+    template: `
     <nav class="navbar">
       <div class="brand">
         <span class="dot"></span>
@@ -124,7 +123,7 @@ interface NavMenu    { id: string; label: string; sections: NavSection[]; }
       </div>
     </div>
   `,
-  styleUrls: ['./navbar.component.scss']
+    styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent {
   open     = signal(false);
@@ -171,6 +170,7 @@ export class NavbarComponent {
         { label: 'Paiements employés', icon: '💰', link: '/employees/payments', show: () => this.has('payments.manage') },
         { label: 'Feuillet T4A',       icon: '📄', link: '/employees/t4a',      show: () => this.has('employees.edit') },
         { label: 'Charges',            icon: '🧾', link: '/charges',            show: () => this.has('invoices.view') },
+        { label: 'Relevé bancaire',    icon: '🏦', link: '/bank-statement',     show: () => this.has('payments.manage') },
       ] },
       { title: 'Analyse', items: [
         { label: 'Rapports',     icon: '📋', link: '/invoices/report', show: () => this.has('invoices.view') },

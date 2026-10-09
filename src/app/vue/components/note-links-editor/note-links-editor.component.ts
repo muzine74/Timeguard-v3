@@ -9,11 +9,10 @@ import { MultiSelectComponent } from '../multi-select/multi-select.component';
  * plusieurs éléments cochables dans chacun. Utilisé à l'identique en création et en modification ([(links)]).
  */
 @Component({
-  selector: 'app-note-links-editor',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, MultiSelectComponent],
-  template: `
+    selector: 'app-note-links-editor',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, MultiSelectComponent],
+    template: `
     <div class="nle" (click)="$event.stopPropagation()">
       <div class="nle-row">
         <app-multi-select *ngFor="let t of types"
@@ -31,7 +30,7 @@ import { MultiSelectComponent } from '../multi-select/multi-select.component';
       </div>
     </div>
   `,
-  styles: [`
+    styles: [`
     .nle { display: flex; flex-direction: column; gap: 8px; }
     .nle-row { display: flex; flex-wrap: wrap; gap: 10px; }
     .nle-chips { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -46,7 +45,7 @@ import { MultiSelectComponent } from '../multi-select/multi-select.component';
       width: 20px; height: 20px; border-radius: 50%; font-size: .7rem;
     }
     .nle-x:hover:not(:disabled) { color: var(--danger); background: rgba(224,82,82,.12); }
-  `],
+  `]
 })
 export class NoteLinksEditorComponent implements OnInit {
   @Input() links: NoteLink[] = [];

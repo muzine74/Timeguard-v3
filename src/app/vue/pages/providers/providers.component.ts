@@ -8,12 +8,11 @@ import { AuthService } from '../../../state/auth/auth.service';
 type StatusFilter = 'all' | 'active' | 'inactive';
 
 @Component({
-  selector: 'app-providers',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, RouterLink],
-  templateUrl: './providers.component.html',
-  styleUrls: ['./providers.component.scss'],
+    selector: 'app-providers',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, FormsModule, RouterLink],
+    templateUrl: './providers.component.html',
+    styleUrls: ['./providers.component.scss']
 })
 export class ProvidersComponent implements OnInit {
 

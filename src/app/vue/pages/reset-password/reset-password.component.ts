@@ -5,12 +5,11 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../state/auth/auth.service';
 
 @Component({
-  selector: 'app-reset-password',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, RouterLink],
-  templateUrl: './reset-password.component.html',
-  styleUrls: ['./reset-password.component.scss'],
+    selector: 'app-reset-password',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, FormsModule, RouterLink],
+    templateUrl: './reset-password.component.html',
+    styleUrls: ['./reset-password.component.scss']
 })
 export class ResetPasswordComponent {
   password        = '';
@@ -48,8 +47,8 @@ export class ResetPasswordComponent {
 
   submit(): void {
     if (!this.token) return;
-    if (this.password.length < 4) {
-      this.error.set('Le mot de passe doit contenir au moins 4 caractères.'); return;
+    if (this.password.length < 10) {
+      this.error.set('Le mot de passe doit contenir au moins 10 caractères.'); return;
     }
     if (this.password !== this.confirmPassword) {
       this.error.set('Les mots de passe ne correspondent pas.'); return;
@@ -70,10 +69,15 @@ export class ResetPasswordComponent {
     });
   }
 
-  /** Vers la connexion, avec l'identifiant d'entreprise pré-rempli. */
+  /** Vers la connexion, avec l'identifiant d'entreprise ET l'identifiant utilisateur pré-remplis
+   *  (il ne reste que le mot de passe à saisir). Passés dans l'adresse : ils fonctionnent même si le
+   *  stockage du navigateur est indisponible. */
   goToLogin(): void {
-    const slug = this.account()?.companySlug;
-    if (slug) { try { localStorage.setItem('tg_last_tenant', slug); } catch { /* stockage indisponible */ } }
-    this.router.navigate(['/login']);
+    const a = this.account();
+    if (a?.companySlug) { try { localStorage.setItem('tg_last_tenant', a.companySlug); } catch { /* stockage indisponible */ } }
+    const queryParams: Record<string, string> = {};
+    if (a?.companySlug) queryParams['tenant'] = a.companySlug;
+    if (a?.username)    queryParams['user']   = a.username;
+    this.router.navigate(['/login'], { queryParams });
   }
 }

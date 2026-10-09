@@ -7,10 +7,9 @@ import { AuthService } from './state/auth/auth.service';
 import { ThemeService } from './state/theme/theme.service';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet, NavbarComponent, NoteAlertComponent, CommonModule, RouterLink],
-  template: `
+    selector: 'app-root',
+    imports: [RouterOutlet, NavbarComponent, NoteAlertComponent, CommonModule, RouterLink],
+    template: `
     <div class="staging-bar" *ngIf="isStaging" role="status">STAGING — environnement de test · données copiées de la prod · courriels redirigés</div>
     <app-navbar *ngIf="auth.loggedIn()"></app-navbar>
     <div class="super-bar" *ngIf="auth.isImpersonating()">
@@ -21,7 +20,7 @@ import { ThemeService } from './state/theme/theme.service';
     <router-outlet></router-outlet>
     <app-note-alert *ngIf="auth.loggedIn()"></app-note-alert>
   `,
-  styles: [`
+    styles: [`
     .staging-bar {
       background: #b45309; color: #fff; text-align: center;
       font-size: 12px; font-weight: 700; letter-spacing: .04em; padding: 4px 12px;

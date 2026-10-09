@@ -113,6 +113,14 @@
                 <label>Téléphone</label>
                 <div class="info-val">{{ selected()!.employeePhone || '—' }}</div>
               </div>
+              <div class="field">
+                <label>Numéro TPS</label>
+                <div class="info-val">{{ selected()!.tpsNumber || '—' }}</div>
+              </div>
+              <div class="field">
+                <label>Numéro TVQ</label>
+                <div class="info-val">{{ selected()!.tvqNumber || '—' }}</div>
+              </div>
               <div class="field span-full">
                 <label>Note</label>
                 <div class="info-val info-val-ta">{{ selected()!.employeeNote || '—' }}</div>
@@ -168,18 +176,26 @@
 
       <!-- Section Documents -->
       <div class="card" style="margin-top:1.5rem">
-        <div class="card-header">
+        <div class="card-header doc-header">
           <span class="card-icon">📎</span>
           <div>
             <div class="card-title">Documents</div>
             <div class="card-sub">Fichiers attachés à l'employé</div>
           </div>
-          <label class="btn btn-outline" style="margin-left:auto;cursor:pointer">
-            <span *ngIf="!fileUploading()">+ Ajouter</span>
-            <span *ngIf="fileUploading()" class="spinner"></span>
-            <input type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                   (change)="onFileSelected($event)" style="display:none" />
-          </label>
+          <div class="doc-actions">
+            <!-- Mobile : ouvre directement l'appareil photo, la photo est jointe dès qu'elle est prise -->
+            <label class="btn btn-outline btn-photo" [class.disabled]="fileUploading()">
+              <span aria-hidden="true">📷</span> Prendre une photo
+              <input type="file" accept="image/*" capture="environment" class="sr-only"
+                     [disabled]="fileUploading()" (change)="onPhotoTaken($event)" />
+            </label>
+            <label class="btn btn-outline" style="cursor:pointer" [class.disabled]="fileUploading()">
+              <span *ngIf="!fileUploading()">+ Ajouter</span>
+              <span *ngIf="fileUploading()" class="spinner" role="status" aria-label="Envoi en cours"></span>
+              <input type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" class="sr-only"
+                     [disabled]="fileUploading()" (change)="onFileSelected($event)" />
+            </label>
+          </div>
         </div>
 
         <div role="alert" class="toast toast-error" [class.toast-show]="fileError()">{{ fileError() }}</div>

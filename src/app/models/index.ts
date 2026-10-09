@@ -12,6 +12,8 @@ export interface LoginRequest {
   username:   string;
   password:   string;
   tenantSlug: string;  // identifiant de l'entreprise — requis
+  /** Code à 6 chiffres de l'application d'authentification (demandé seulement si le serveur l'exige). */
+  otp?: string;
 }
 
 export interface LoginResponse {
@@ -52,6 +54,9 @@ export interface Employee {
   employeeType?:        string;   // 'Permanent' | 'À la tâche'
   /** Rémunération : 'Visite' (planning) ou 'Heure' (heures × taux horaire). */
   modeRemuneration?:    'Visite' | 'Heure';
+  /** Numéros de taxes de l'employé : renseigné = la taxe s'ajoute à ses paiements (Statistiques). */
+  tpsNumber?:           string;
+  tvqNumber?:           string;
   /** Hiérarchie : chef d'équipe, et son chef / responsable direct (null = sans chef). */
   isTeamLead?:          boolean;
   managerId?:           string | null;
@@ -204,6 +209,9 @@ export interface EmployeeForm {
   nas:                 string;
   employeeType:        string;   // 'Permanent' | 'À la tâche'
   modeRemuneration:    'Visite' | 'Heure';
+  /** Numéros de taxes (vide = pas de taxe sur ses paiements). */
+  tpsNumber:           string;
+  tvqNumber:           string;
   /** Chef d'équipe (peut superviser des employés et d'autres chefs). */
   isTeamLead:          boolean;
   /** Chef d'équipe / responsable direct — obligatoire sauf chef au sommet. */

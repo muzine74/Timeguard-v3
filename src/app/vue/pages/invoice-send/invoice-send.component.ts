@@ -17,12 +17,11 @@ const W = (msg: string, ...args: unknown[]) => console.warn(`[InvoiceSend] ⚠ $
 const E = (msg: string, ...args: unknown[]) => console.error(`[InvoiceSend] ✗ ${msg}`, ...args);
 
 @Component({
-  selector: 'app-invoice-send',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, NoteInlineComponent],
-  templateUrl: './invoice-send.component.html',
-  styleUrls: ['./invoice-send.component.scss'],
+    selector: 'app-invoice-send',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, FormsModule, NoteInlineComponent],
+    templateUrl: './invoice-send.component.html',
+    styleUrls: ['./invoice-send.component.scss']
 })
 export class InvoiceSendComponent implements OnInit, OnDestroy {
   private readonly noteAlerts = inject(NoteAlertService);

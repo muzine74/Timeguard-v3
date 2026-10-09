@@ -11,6 +11,9 @@ const KINDS: { id: PurgeKind; label: string; placeholder: string }[] = [
   { id: 'bill',     label: 'Facture',   placeholder: 'N° de facture, compagnie ou période (ex. 2026-09)…' },
   { id: 'employee', label: 'Employé',   placeholder: 'Nom de l’employé…' },
   { id: 'company',  label: 'Compagnie', placeholder: 'Nom ou code de la compagnie…' },
+  // Paiements employés : tous les versements (transferts) d'une semaine, ou une seule ligne de l'historique
+  { id: 'paymentWeek',    label: 'Paiement employé (semaine)',    placeholder: 'Nom de l’employé ou date de la semaine (ex. 2026-09-21)…' },
+  { id: 'paymentHistory', label: 'Ligne d’historique de paiement', placeholder: 'Nom de l’employé ou date de la semaine (ex. 2026-09-21)…' },
 ];
 
 /**
@@ -18,12 +21,11 @@ const KINDS: { id: PurgeKind; label: string; placeholder: string }[] = [
  * liste toutes les références qui seront supprimées ; l'exécution exige de saisir « SUPPRIMER ».
  */
 @Component({
-  selector: 'app-purge',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, RouterLink],
-  templateUrl: './purge.component.html',
-  styleUrls: ['./purge.component.scss'],
+    selector: 'app-purge',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, FormsModule, RouterLink],
+    templateUrl: './purge.component.html',
+    styleUrls: ['./purge.component.scss']
 })
 export class PurgeComponent {
   readonly kinds = KINDS;
@@ -121,6 +123,7 @@ export class PurgeComponent {
           this.executing.set(false);
           this.preview.set(null);
           this.results.update(list => list.filter(x => x.id !== p.id));
+          this.search();   // liste rechargée : les éléments restants affichent leurs compteurs à jour
           this.success.set(`${p.title} supprimé(e) définitivement : ${r.recordsDeleted} enregistrement(s), `
             + `${r.recordsDetached} référence(s) retirée(s), ${r.filesDeleted} fichier(s)/dossier(s) effacé(s).`);
           // Fichiers non effacés : message persistant (à traiter), avec la référence du journal serveur

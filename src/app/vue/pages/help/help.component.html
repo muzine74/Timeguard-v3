@@ -3,7 +3,7 @@
   <!-- ── Sommaire ─────────────────────────────────────────────────────────── -->
   <nav class="toc">
     <div class="toc-title">Sommaire</div>
-    <a *ngFor="let s of sections" href="#{{ s.id }}" (click)="goTo(s.id, $event)">{{ s.title }}</a>
+    <a *ngFor="let s of sections()" href="#{{ s.id }}" (click)="goTo(s.id, $event)">{{ s.title }}</a>
   </nav>
 
   <article class="guide">
@@ -15,7 +15,7 @@
     </p>
 
     <!-- ── Premiers pas ───────────────────────────────────────────────────── -->
-    <section id="premiers-pas">
+    <section id="premiers-pas" *ngIf="show('premiers-pas')">
       <h2>Premiers pas</h2>
       <p>Pour vous connecter, il faut trois informations : l'identifiant de votre entreprise, votre nom d'utilisateur et votre mot de passe.</p>
 
@@ -54,8 +54,9 @@
       <p>À droite : 🎨 pour choisir votre design de couleurs (enregistré sur votre compte) et ❓ Aide.</p>
 
       <h3>Qui voit quoi</h3>
-      <p>Chaque menu n'apparaît que si vous avez la permission correspondante. Les permissions sont regroupées dans des <b>groupes</b> (voir Administration), et un employé cumule les permissions de tous ses groupes.</p>
-      <table>
+      <p>Chaque menu n'apparaît que si vous avez la permission correspondante, et ce guide n'affiche que les sections qui correspondent à vos menus. Les permissions sont regroupées dans des <b>groupes</b>, et un employé cumule les permissions de tous ses groupes.</p>
+      <p class="help-scope" *ngIf="!seesEverything()">Certaines sections de ce guide ne vous sont pas affichées, parce qu'elles décrivent des menus auxquels vous n'avez pas accès. Si vous en avez besoin, demandez à votre administrateur de vous ajouter au bon groupe.</p>
+      <table *ngIf="can(P.groupsManage)">
         <thead><tr><th>Permission</th><th>Ce qu'elle ouvre</th></tr></thead>
         <tbody>
           <tr><td><code>pointage.view</code></td><td>Feuille de temps (son propre pointage)</td></tr>
@@ -72,7 +73,7 @@
     </section>
 
     <!-- ── Pointage employé ───────────────────────────────────────────────── -->
-    <section id="pointage">
+    <section id="pointage" *ngIf="show('pointage')">
       <h2>Pour les employés : saisir son pointage</h2>
       <p>Chaque semaine, l'employé coche ses jours de travail pour chaque compagnie, puis clique sur <b>Sauvegarder</b>.</p>
       <ol>
@@ -89,7 +90,7 @@
     </section>
 
     <!-- ── Employés ───────────────────────────────────────────────────────── -->
-    <section id="employes">
+    <section id="employes" *ngIf="show('employes')">
       <h2>Gérer les employés</h2>
       <p>Un employé est prêt à pointer quand il a une fiche, au moins une compagnie affectée et un identifiant de connexion. Tout se fait depuis le menu <b>Gestion</b>.</p>
 
@@ -138,7 +139,7 @@
     </section>
 
     <!-- ── Compagnies ─────────────────────────────────────────────────────── -->
-    <section id="compagnies">
+    <section id="compagnies" *ngIf="show('compagnies')">
       <h2>Gérer les compagnies</h2>
       <p>Une compagnie est un client chez qui vos employés travaillent. Son planning fixe deux prix par jour de travail : ce que vous facturez au client et ce que vous payez à l'employé.</p>
 
@@ -178,7 +179,7 @@
     </section>
 
     <!-- ── Combinaisons employé × compagnie ───────────────────────────────── -->
-    <section id="combinaisons">
+    <section id="combinaisons" *ngIf="show('combinaisons')">
       <h2>Employé et compagnie : toutes les combinaisons</h2>
       <p>Deux réglages indépendants décident de la façon dont un employé pointe chez une compagnie, dont il est payé et dont la compagnie est facturée.</p>
 
@@ -297,7 +298,7 @@
     </section>
 
     <!-- ── Validation ─────────────────────────────────────────────────────── -->
-    <section id="validation">
+    <section id="validation" *ngIf="show('validation')">
       <h2>Valider le pointage</h2>
       <p>La validation verrouille la semaine d'un employé et fige son historique. Seules les semaines validées peuvent être facturées et payées.</p>
 
@@ -359,7 +360,7 @@
     </section>
 
     <!-- ── Facturation ────────────────────────────────────────────────────── -->
-    <section id="facturation">
+    <section id="facturation" *ngIf="show('facturation')">
       <h2>Facturer vos compagnies</h2>
       <p>Le plus rapide est de facturer directement à partir des pointages validés. On peut aussi créer une facture à la main. Les taux de TPS et de TVQ viennent de <b>Administration → Configuration</b>.</p>
 
@@ -408,23 +409,28 @@
       <ul>
         <li><b>Finances → Téléchargement des factures</b> : choisissez une période (sur la date d'envoi ou de paiement) et un statut, <b>Rechercher</b>, puis <b>Télécharger</b>. Une facture donne un PDF ; plusieurs donnent un ZIP. Les avoirs sont fusionnés avec leur facture.</li>
         <li><b>Finances → Rapports</b> : filtrez par date, période ou compagnies, cochez les factures, puis <b>Exporter ▾</b> : <b>PDF Récapitulatif</b> (un tableau consolidé), <b>PDFs fusionnés</b> (un seul fichier) ou <b>PDFs séparés (ZIP)</b>.</li>
+        <li><b>Finances → Relevé bancaire</b> : choisissez le fichier CSV de votre relevé, puis <b>⬆ Charger le CSV</b>. Chaque ligne est enregistrée avec sa date, sa description, son retrait et son dépôt. Recharger le même fichier ne crée pas de doublons. Dans le tableau : recherche par mot-clé, tri au clic sur un en-tête, valeurs à afficher par colonne, et case <b>Validée</b> à cocher pour chaque transaction vérifiée. L'onglet <b>📖 Lexique</b> relie les transactions à vos compagnies, employés et charges : ajoutez un mot-clé (par exemple le nom qui apparaît dans la description) et choisissez l'élément ; toutes les transactions dont la description contient ce mot-clé affichent ce lien dans la colonne <b>Lié à</b>.</li>
         <li><b>Finances → Charges</b> : vos dépenses partagées entre plusieurs compagnies (assurance, loyer…), réparties en pourcentage, avec leurs justificatifs.</li>
       </ul>
     </section>
 
     <!-- ── Paiements ──────────────────────────────────────────────────────── -->
-    <section id="paiements">
+    <section id="paiements" *ngIf="show('paiements')">
       <h2>Payer vos employés</h2>
-      <p>La page Paiements employés compare ce que chaque employé a gagné selon ses pointages et ce que vous lui avez réellement payé.</p>
+      <p>La page Paiements employés affiche, pour chaque employé, ses semaines dont le pointage est validé, et vous permet d'enregistrer ce que vous lui payez pour chacune.</p>
 
-      <h3>Rapprocher les paiements</h3>
+      <h3>Enregistrer un paiement</h3>
       <ol>
         <li><b>Finances → Paiements employés</b> (permission <code>payments.manage</code>).</li>
         <li>Dans <b>Employés</b>, cochez un ou plusieurs employés. <b>Tout sélectionner</b> les coche tous d'un coup.</li>
-        <li>Choisissez <b>📅 Période</b> (un mois) ou <b>📆 Intervalle</b> (du… au…), puis cliquez sur <b>⚡ Charger</b>.</li>
-        <li>Pour chaque employé, les jours travaillés s'affichent par semaine, en <b>📆 Vue journalière</b> ou en <b>🏢 Vue par compagnie</b>. Cochez les jours que vous avez payés : le <b>Montant payé (jours cochés)</b> se met à jour face au <b>Gain cumulé</b>.</li>
-        <li>Si les deux montants diffèrent, un champ vous demande d'<b>expliquer l'écart</b>. Cliquez sur <b>💾 Enregistrer</b>.</li>
+        <li>Choisissez <b>📅 Période</b> (un mois) ou <b>📆 Intervalle</b> (du… au…). La liste se charge toute seule : un bloc par employé, une carte par semaine validée.</li>
+        <li>Dans une semaine, cochez les journées que vous payez : leur somme est le <b>Total sélectionné</b>. Les journées <b>hors de la période choisie</b> (une semaine à cheval sur deux mois) sont grisées et barrées : elles ne sont pas comptées et se paient en affichant leur propre période.</li>
+        <li>Une semaine se paie en <b>un ou plusieurs versements</b>. Le <b>Montant avant taxes</b> d'un versement propose le <b>reste à verser</b> (total sélectionné − déjà versé) et ne peut jamais le dépasser. Pour un versement plus petit, une <b>raison</b> est demandée.</li>
+        <li>Si l'employé a un <b>Numéro TPS</b> ou un <b>Numéro TVQ</b> dans sa fiche, les taxes s'ajoutent toutes seules. La carte affiche le <b>Montant avant taxes</b>, les <b>Taxes</b> et le <b>Montant réel transféré</b> (avec taxes). Les taxes sont figées à l'enregistrement.</li>
+        <li>Choisissez la <b>Date de paiement</b> (la date du jour est proposée).</li>
+        <li>Cochez <b>Paiement transféré</b> si le virement est fait, puis cliquez sur <b>💾 Enregistrer le versement</b>. Sans cocher, le versement est seulement préparé.</li>
       </ol>
+      <p>Chaque versement enregistré apparaît dans la semaine, avec <b>✓ Marquer transféré</b> et <b>✕ Annuler</b> (deux clics ; l'historique en garde la trace). La semaine affiche <b>Non enregistrée</b>, <b>Versé … sur …</b> ou <b>✓ Transférée en entier</b>. <b>🕘 Historique</b> liste tous les enregistrements de la semaine.</p>
 
       <h3>Feuillet T4A</h3>
       <p>Pour un travailleur à la tâche, TimeGuard prépare le feuillet T4A de l'année.</p>
@@ -438,7 +444,7 @@
     </section>
 
     <!-- ── Notes ──────────────────────────────────────────────────────────── -->
-    <section id="notes">
+    <section id="notes" *ngIf="show('notes')">
       <h2>Notes et alertes</h2>
       <p>Une note active liée à un employé, une compagnie ou une facture s'affiche automatiquement chaque fois qu'on agit sur cet élément. Une note inactive ne s'affiche jamais.</p>
 
@@ -474,10 +480,11 @@
     </section>
 
     <!-- ── Administration ─────────────────────────────────────────────────── -->
-    <section id="administration">
+    <section id="administration" *ngIf="show('administration')">
       <h2>Statistiques et administration</h2>
-      <p>Avant la première facture, réglez la <b>Configuration</b> : vos taxes, vos coordonnées et votre serveur de courriel apparaissent sur chaque facture et chaque envoi.</p>
+      <p *ngIf="can(P.configManage)">Avant la première facture, réglez la <b>Configuration</b> : vos taxes, vos coordonnées et votre serveur de courriel apparaissent sur chaque facture et chaque envoi.</p>
 
+      <ng-container *ngIf="can(P.configManage)">
       <h3>Configuration de l'entreprise</h3>
       <p><b>Administration → ⚙ Configuration</b> (permission <code>config.manage</code>) :</p>
       <table>
@@ -492,6 +499,8 @@
       </table>
       <p>À l'enregistrement, un récapitulatif montre l'<b>Ancienne valeur</b> et la <b>Nouvelle valeur</b> de chaque champ modifié ; cliquez sur <b>Confirmer les modifications</b>.</p>
 
+      </ng-container>
+      <ng-container *ngIf="can(P.groupsManage)">
       <h3>Groupes et permissions</h3>
       <ol>
         <li><b>Administration → 🔐 Groupes</b> (permission <code>groups.manage</code>), puis <b>＋ Nouveau</b>.</li>
@@ -500,18 +509,23 @@
       </ol>
       <p>Un employé cumule les permissions de tous ses groupes. Créez peu de groupes, par rôle : par exemple « Employés » (feuille de temps seulement), « Superviseurs » (validation du pointage), « Administrateurs » (tout).</p>
 
+      </ng-container>
+      <ng-container *ngIf="can(P.statsView)">
       <h3>Statistiques</h3>
       <p><b>Finances → Statistiques</b> (permission <code>stats.view</code>) : choisissez un <b>Mois</b> ou un intervalle <b>Du / Au</b>, filtrez les compagnies si besoin, puis cliquez sur <b>🔍 Calculer</b>. Vous obtenez :</p>
       <ul>
-        <li>les <b>Revenus par employé et par compagnie</b> : visites, montant facturé, charge employé ;</li>
-        <li>les <b>Factures émises</b>, avec les avoirs déduits et ce qui reste <b>En attente de paiement</b> ;</li>
-        <li>les <b>Paiements employés</b> : total payé et en attente.</li>
+        <li>le <b>Total théorique à facturer</b>, selon le planning des compagnies actives ;</li>
+        <li>le <b>Total des factures envoyées</b>, le <b>Total payé</b> et le <b>Total en attente de paiement</b>, avec et sans taxes ;</li>
+        <li>les <b>Charges employés</b>, les <b>Paiements employés à effectuer</b> (ce qui devrait être payé pour les semaines validées) et les <b>Paiements employés effectués</b> (paiements marqués « transférés » dans Paiements employés). Pour ces trois cartes, les taxes suivent le profil de chaque employé : la TPS s'ajoute s'il a un <b>Numéro TPS</b>, la TVQ s'il a un <b>Numéro TVQ</b> (fiche employé) ; sans numéro, aucune taxe ;</li>
+        <li>le détail des <b>paiements par employé</b> et des <b>factures par compagnie</b>.</li>
+        <li>Cliquez sur une carte pour ouvrir, dans un nouvel onglet, le <b>détail de son calcul</b> : les lignes (compagnies, factures ou employés) dont la somme donne le montant, avec export Excel et PDF.</li>
       </ul>
       <p><b>Regrouper (totaux seuls)</b> masque le détail. Cliquez sur un employé ou une compagnie pour voir son détail.</p>
+      </ng-container>
     </section>
 
     <!-- ── FAQ ────────────────────────────────────────────────────────────── -->
-    <section id="faq">
+    <section id="faq" *ngIf="show('faq')">
       <h2>Questions fréquentes</h2>
       <table>
         <thead><tr><th>Problème</th><th>Cause et solution</th></tr></thead>

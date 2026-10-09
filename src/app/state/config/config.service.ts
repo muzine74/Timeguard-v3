@@ -15,7 +15,10 @@ export interface AppConfigDto {
   smtpServer:      string | null;
   smtpPort:        number | null;
   smtpUser:        string | null;
+  /** Jamais renvoyé par l'API. Laisser vide à l'enregistrement = mot de passe inchangé. */
   smtpPassword:    string | null;
+  /** Un mot de passe SMTP est enregistré côté serveur. */
+  hasSmtpPassword?: boolean;
   tpsNumber:       string | null;
   tvqNumber:       string | null;
   tpsRate:         number;

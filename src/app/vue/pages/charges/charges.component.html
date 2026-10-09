@@ -33,6 +33,7 @@
             <td class="col-expand">{{ isExpanded(c) ? '▼' : '▶' }}</td>
             <td>
               <span class="charge-title">{{ c.title }}</span>
+              <span class="tag-monthly" *ngIf="c.isMonthly">🔁 Mensuelle</span>
               <div class="charge-desc" *ngIf="c.description">{{ c.description }}</div>
             </td>
             <td>
@@ -40,7 +41,9 @@
                 {{ co.companyName }} — {{ co.percentage }}%
               </span>
             </td>
-            <td class="col-num">{{ c.amount | number:'1.2-2' }} $</td>
+            <td class="col-num">{{ c.amount | number:'1.2-2' }} $
+              <div class="tax-note">{{ c.taxIncluded ? 'taxes incluses' : 'hors taxes' }}</div>
+            </td>
             <td class="col-num">{{ c.documents.length }}</td>
             <td>{{ fmtDate(c.createdAt) }}</td>
             <td class="col-actions" (click)="$event.stopPropagation()">
@@ -105,6 +108,22 @@
         <div class="field-group">
           <label>Montant total <span class="req">*</span></label>
           <input type="number" min="0" step="0.01" [(ngModel)]="amount" placeholder="0.00" />
+        </div>
+
+        <div class="field-group">
+          <label class="check-line" for="charge-monthly">
+            <input id="charge-monthly" type="checkbox" [(ngModel)]="isMonthly" />
+            <span>Charge mensuelle</span>
+          </label>
+          <span class="field-note">Cochez si cette charge revient chaque mois (loyer, assurance…). Le montant saisi est alors le montant d'un mois.</span>
+        </div>
+
+        <div class="field-group">
+          <label class="check-line" for="charge-tax-included">
+            <input id="charge-tax-included" type="checkbox" [(ngModel)]="taxIncluded" />
+            <span>Taxes incluses dans le montant</span>
+          </label>
+          <span class="field-note">Cochez si le montant saisi contient déjà la TPS et la TVQ. Décochez s'il est hors taxes.</span>
         </div>
 
         <!-- ── Compagnies ────────────────────────────────────────────── -->

@@ -1,0 +1,54 @@
+.page-wrap { padding: 24px; max-width: 1300px; margin: 0 auto; }
+
+.page-hdr { margin-bottom: 16px; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+.err-msg { color: var(--danger-text); font-size: .85rem; margin-bottom: 16px; }
+
+.explain {
+  margin: 0 0 16px; padding: 12px 14px; font-size: .88rem; line-height: 1.45; color: var(--text);
+  background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 8px;
+}
+
+// Récapitulatif : sans taxes, taxes, avec taxes
+.summary {
+  margin: 0 0 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px;
+  > div { padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+  dt { font-size: .75rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 4px; }
+  dd { margin: 0; font-size: 1.1rem; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+  .summary-main dd { color: var(--accent); }
+}
+
+.table-wrap {
+  overflow-x: auto; border-radius: 10px; border: 1px solid var(--border);
+  &:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+}
+
+.stats-table {
+  width: 100%; border-collapse: collapse; font-size: .85rem;
+
+  th {
+    background: var(--surface-alt, var(--surface)); padding: 10px 12px; text-align: left; font-weight: 600; font-size: .75rem;
+    text-transform: uppercase; letter-spacing: .04em; color: var(--muted); border-bottom: 1px solid var(--border); white-space: nowrap;
+    &.num { text-align: right; }
+  }
+  td {
+    padding: 9px 12px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top;
+    &.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    &.neg { color: var(--danger-text); }
+  }
+  tbody tr:hover { background: var(--hover, rgba(var(--overlay-rgb), .03)); }
+  .total-row td { font-weight: 700; border-bottom: none; background: var(--surface-alt, var(--surface)); }
+}
+
+.empty-msg { padding: 24px; text-align: center; color: var(--muted); font-size: .9rem; border: 1px dashed var(--border); border-radius: 10px; }
+
+.spinner-wrap { display: flex; justify-content: center; padding: 40px; }
+.spinner {
+  width: 24px; height: 24px; border: 3px solid rgba(var(--overlay-rgb), .2); border-top-color: var(--accent);
+  border-radius: 50%; animation: spin .7s linear infinite; display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 768px) {
+  .page-wrap { padding: 16px 12px; }
+}

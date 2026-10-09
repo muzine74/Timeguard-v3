@@ -3,13 +3,17 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DestroyRef, inject } from '@angular/core';
-import { StatsService, StatsResponse, StatsCompanyRow, StatsInvoiceRow } from '../../../state/stats/stats.service';
+import {
+  StatsService, StatsResponse, StatsCompanyRow, StatsInvoiceRow, StatsEmployeeRow, StatsPaymentStatus, PAYMENT_STATUS_LABEL,
+} from '../../../state/stats/stats.service';
 import { TableSort, SortValue } from '../../shared/table-sort';
+import { todayIso } from '../../shared/dates';
 import { ExportButtonsComponent } from '../../components/export-buttons/export-buttons.component';
 import { ExportDoc, ExportRow, TableExportService } from '../../../state/export/table-export.service';
 
 type FilterMode = 'period' | 'range';
 type StatutFilter = 'facturee' | 'nonpayee' | 'payee';
+type StatsView = 'global' | 'comptable' | 'banque' | 'facturation';
 
 type InvoiceSortKey = 'num' | 'period' | 'date' | 'visits' | 'ht' | 'tps' | 'tvq' | 'status' | 'ttc';
 const AMOUNT: Partial<Record<InvoiceSortKey, 'totalHT' | 'totalTPS' | 'totalTVQ' | 'totalTTC'>> =
@@ -26,12 +30,11 @@ export interface CompanyGroup {
 const EMPTY_ID = '00000000-0000-0000-0000-000000000000';
 
 @Component({
-  selector: 'app-stats',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, ExportButtonsComponent],
-  templateUrl: './stats.component.html',
-  styleUrls: ['./stats.component.scss'],
+    selector: 'app-stats',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, FormsModule, ExportButtonsComponent],
+    templateUrl: './stats.component.html',
+    styleUrls: ['./stats.component.scss']
 })
 export class StatsComponent {
   // ── Filtres ───────────────────────────────────────────────────────────────
@@ -41,8 +44,8 @@ export class StatsComponent {
   period = this._currentPeriod();
 
   // Mode intervalle
-  dateFrom = '';
-  dateTo   = '';
+  dateFrom = todayIso();
+  dateTo   = todayIso();
 
   // ── État ──────────────────────────────────────────────────────────────────
   loading      = signal(false);
@@ -160,10 +163,11 @@ export class StatsComponent {
       subtitle: this._exportSubtitle(),
       tables: [{
         title: 'Paiements employés',
-        columns: [{ header: 'Employé', width: 32 }, { header: 'Visites', type: 'int' }, { header: 'Paiement', type: 'money' }],
+        columns: [{ header: 'Employé', width: 32 }, { header: 'Visites', type: 'int' }, { header: 'Paiement', type: 'money' },
+                  { header: 'Statut du paiement', width: 20 }],
         rows: [
-          ...s.parEmploye.map(r => ({ cells: [r.employeeName, r.nbVisites, r.totalPaiementEmploye] })),
-          { kind: 'total', cells: ['Total', s.nbVisitesTotal, s.totalPaiementsEmployes] },
+          ...s.parEmploye.map(r => ({ cells: [r.employeeName, r.nbVisites, r.totalPaiementEmploye, this.payStatusLabel(r)] })),
+          { kind: 'total', cells: ['Total', s.nbVisitesTotal, s.totalPaiementsEmployes, ''] },
         ],
       }],
     };
@@ -207,22 +211,104 @@ export class StatsComponent {
     };
   };
 
-  // ── Cartes « factures » : valeurs de l'API pour « Facturée » (inchangé), sinon calculées
-  //    sur les factures retenues par le filtre de statut (les cartes employés restent globales) ──
-  private _filtered = computed(() => this.statutFilter() !== 'facturee');
-  cardSuffix    = computed(() => this._filtered() ? ` — ${this.statutLabel()}` : '');
-  cardTTC       = computed(() => this._filtered() ? this.totalTTC() : (this.stats()?.totalTTC ?? 0));
-  cardTPS       = computed(() => this._filtered() ? this.totalTPS() : (this.stats()?.totalTPS ?? 0));
-  cardTVQ       = computed(() => this._filtered() ? this.totalTVQ() : (this.stats()?.totalTVQ ?? 0));
-  cardInvoices  = computed(() => this._filtered() ? this.totalCount() : (this.stats()?.nbFactures ?? 0));
-  cardCompanies = computed(() => this._filtered() ? this.groups().length : (this.stats()?.nbCompagnies ?? 0));
-  cardAttente   = computed(() => {
-    switch (this.statutFilter()) {
-      case 'payee':    return 0;
-      case 'nonpayee': return this.totalTTC();
-      default:         return this.stats()?.totalEnAttente ?? 0;
-    }
+  // ── Cartes : toutes calculées par l'API sur la période / l'intervalle choisi
+  //    (le filtre de statut ne concerne que le tableau des factures) ──
+  cards = computed(() => {
+    const s = this.stats();
+    if (!s) return [];
+    const n = s.nbPlanningIncomplet;
+    const empTax = ' Taxes selon le profil de chaque employé (numéro TPS / TVQ).';
+    return [
+      { key: 'theorique', label: 'Total théorique à facturer', color: 'card-blue', ht: s.totalTheoriqueHT, ttc: s.totalTheoriqueTTC,
+        note: 'Selon le planning des compagnies actives.' + (n > 0
+          ? ` ${n} compagnie${n > 1 ? 's' : ''} non comptée${n > 1 ? 's' : ''} (bi-hebdo sans date de début).` : '') },
+      { key: 'envoyees', label: 'Total des factures envoyées', color: 'card-gray', ht: s.totalEnvoyeHT, ttc: s.totalEnvoyeTTC, note: 'Avoirs déduits.' },
+      { key: 'paye', label: 'Total payé', color: 'card-green', ht: s.totalPayeHT, ttc: s.totalPaye, note: 'Factures de la période déjà payées.' },
+      { key: 'attente', label: 'Total en attente de paiement', color: 'card-orange', ht: s.totalEnAttenteHT, ttc: s.totalEnAttente, note: 'Factures de la période non payées.' },
+      { key: 'charges', label: 'Charges employés', color: 'card-purple', ht: s.chargesEmployes, ttc: s.chargesEmployesTTC,
+        note: 'Paie de tous les pointages de la période.' + empTax },
+      { key: 'aeffectuer', label: 'Paiements employés à effectuer', color: 'card-gray', ht: s.paiementsEmployesAEffectuer, ttc: s.paiementsEmployesAEffectuerTTC,
+        note: 'Montant qui devrait être payé : semaines validées.' + empTax },
+      { key: 'effectues', label: 'Paiements employés effectués', color: 'card-green', ht: s.paiementsEmployesEffectues, ttc: s.paiementsEmployesEffectuesTTC,
+        note: 'Paiements marqués « transférés » dans Paiements employés.' + empTax },
+    ];
   });
+
+  /**
+   * Change le filtre de statut des factures sans faire sauter la page : la section garde au moins sa hauteur
+   * actuelle (un tableau plus court raccourcirait la page, et le navigateur remonterait l'affichage).
+   * La hauteur réservée est libérée au prochain calcul (la section est alors recréée).
+   */
+  setStatut(statut: StatutFilter, section: HTMLElement): void {
+    if (this.statutFilter() === statut) return;
+    section.style.minHeight = `${section.offsetHeight}px`;
+    this.statutFilter.set(statut);
+  }
+
+  // ── Sous-pages (onglets) : mêmes filtres et mêmes données, seule la vue change ──
+  readonly views: { id: StatsView; label: string }[] = [
+    { id: 'global',      label: '📊 Global' },
+    { id: 'comptable',   label: '📒 Registre comptable' },
+    { id: 'banque',      label: '🏦 Registre bancaire' },
+    { id: 'facturation', label: '⚖ Comparaison de facturation' },
+  ];
+  view = signal<StatsView>('global');
+
+  /** Flèches gauche / droite entre les onglets. */
+  onTabKey(ev: KeyboardEvent): void {
+    if (ev.key !== 'ArrowLeft' && ev.key !== 'ArrowRight') return;
+    ev.preventDefault();
+    const i = this.views.findIndex(v => v.id === this.view());
+    const next = this.views[(i + (ev.key === 'ArrowRight' ? 1 : this.views.length - 1)) % this.views.length];
+    this.view.set(next.id);
+    setTimeout(() => document.getElementById('stats-tab-' + next.id)?.focus());
+  }
+
+  // ── Registre bancaire : lignes du relevé chargé, datées dans la période ──
+  bank = computed(() => {
+    const s = this.stats();
+    if (!s) return null;
+    const deposits = s.banqueDepots ?? 0, withdrawals = s.banqueRetraits ?? 0;
+    const invoices = s.banqueFacturesPayees ?? [], payments = s.banquePaiements ?? [], charges = s.banqueCharges ?? [];
+    const sum = (rows: number[]) => this._round2(rows.reduce((t, n) => t + n, 0));
+    const received = sum(invoices.map(i => i.totalTTC));
+    const paid     = sum(payments.map(p => p.total));
+    const spent    = sum(charges.map(c => c.total));
+    return { invoices, payments, charges, received, paid, spent, balance: this._round2(received - paid - spent),
+             paidHT: sum(payments.map(p => p.amountHT)), paidTaxes: sum(payments.map(p => p.taxes)), receivedHT: sum(invoices.map(i => i.totalHT)),
+             // Relevé bancaire chargé (lignes datées dans la période) : pour recouper
+             deposits, withdrawals, net: this._round2(deposits - withdrawals),
+             count: s.banqueNbTransactions ?? 0, validated: s.banqueNbValidees ?? 0 };
+  });
+
+  // ── Comparaison de facturation : théorique à facturer / factures envoyées (mêmes montants que les cartes) ──
+  billing = computed(() => {
+    const s = this.stats();
+    if (!s) return null;
+    const row = (label: string, theorique: number, envoye: number) => ({
+      label, theorique, envoye, ecart: this._round2(theorique - envoye),
+      pct: theorique > 0 ? Math.round(envoye / theorique * 1000) / 10 : null,
+    });
+    const rows = [row('Sans taxes', s.totalTheoriqueHT, s.totalEnvoyeHT), row('Avec taxes', s.totalTheoriqueTTC, s.totalEnvoyeTTC)];
+    const ecart = rows[0].ecart;
+    const status: 'ok' | 'reste' | 'depasse' = ecart === 0 ? 'ok' : ecart > 0 ? 'reste' : 'depasse';
+    const statusLabel = status === 'ok' ? 'Tout le théorique est facturé'
+      : status === 'reste' ? `Reste à facturer : ${this.fmt(ecart)} (sans taxes)`
+      : `Facturé au-delà du théorique : ${this.fmt(-ecart)} (sans taxes)`;
+    return { rows, status, statusLabel };
+  });
+
+  /** Compagnies dont les factures envoyées égalent le théorique. */
+  sameCount = computed(() => (this.stats()?.comparaisonFacturation ?? []).filter(r => r.ecart === 0).length);
+
+  private _round2(n: number): number { return Math.round(n * 100) / 100; }
+
+  // ── Statut du paiement d'un employé (calculé par l'API : montant transféré / paie de la période) ──
+  payStatus(row: StatsEmployeeRow): StatsPaymentStatus { return row.statutPaiement ?? 'nonpaye'; }
+  payStatusLabel(row: StatsEmployeeRow): string { return PAYMENT_STATUS_LABEL[this.payStatus(row)]; }
+  payStatusTitle(row: StatsEmployeeRow): string {
+    return `Transféré ${this.fmt(row.montantTransfere ?? 0)} sur ${this.fmt(row.totalPaiementEmploye)} (avant taxes)`;
+  }
 
   // ── Recalcul automatique quand la période change ─────────────────────────
   private _autoTimer: ReturnType<typeof setTimeout> | null = null;
@@ -309,6 +395,9 @@ export class StatsComponent {
       ? `period=${encodeURIComponent(this.period)}`
       : `from=${encodeURIComponent(this.dateFrom)}&to=${encodeURIComponent(this.dateTo)}`;
   }
+
+  /** Détail du calcul d'une carte, sur la même période. */
+  cardUrl(key: string): string { return `/stats/card/${key}?${this._rangeQuery()}`; }
 
   openEmployee(row: { employeeId: string }): void {
     window.open(`/stats/employee/${row.employeeId}?${this._rangeQuery()}`, '_blank');

@@ -3,15 +3,14 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DestroyRef, inject } from '@angular/core';
-import { StatsService, StatsEmployeeDetailResponse } from '../../../state/stats/stats.service';
+import { StatsService, StatsEmployeeDetailResponse, StatsEmployeeCompanyItem } from '../../../state/stats/stats.service';
 
 @Component({
-  selector: 'app-stats-employee-detail',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
-  templateUrl: './stats-employee-detail.component.html',
-  styleUrls: ['./stats-employee-detail.component.scss'],
+    selector: 'app-stats-employee-detail',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule],
+    templateUrl: './stats-employee-detail.component.html',
+    styleUrls: ['./stats-employee-detail.component.scss']
 })
 export class StatsEmployeeDetailComponent implements OnInit {
   loading = signal(false);
@@ -79,5 +78,14 @@ export class StatsEmployeeDetailComponent implements OnInit {
 
   totalPaiement(): number {
     return (this.detail()?.companies ?? []).reduce((s, c) => s + c.totalPaiement, 0);
+  }
+
+  totalTransfere(): number {
+    return Math.round((this.detail()?.companies ?? []).reduce((s, c) => s + (c.montantTransfere ?? 0), 0) * 100) / 100;
+  }
+
+  /** Journée dont la paie est entièrement couverte par des versements « transférés ». */
+  isPaid(c: StatsEmployeeCompanyItem, date: string): boolean {
+    return (c.paidDates ?? []).includes(date);
   }
 }

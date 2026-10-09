@@ -128,7 +128,7 @@
   font-size: 11px; font-weight: 700;
 }
 .result-ok  { background: rgba(30,200,100,.12);  color: var(--success-text); }
-.result-err { background: rgba(224,82,82,.12); color: var(--danger); }
+.result-err { background: rgba(224,82,82,.12); color: var(--danger-text); }
 
 // ── Symbole planifié vs réel ────────────────────────────────
 .match-symbol {

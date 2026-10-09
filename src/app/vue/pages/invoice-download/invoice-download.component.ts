@@ -1,3 +1,4 @@
+import { todayIso } from '../../shared/dates';
 import { Component, ChangeDetectionStrategy, signal, computed, ElementRef, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule }  from '@angular/forms';
@@ -8,18 +9,17 @@ type DateField = 'sent' | 'paid';
 type Status    = 'all' | 'paid' | 'unpaid';
 
 @Component({
-  selector: 'app-invoice-download',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './invoice-download.component.html',
-  styleUrls:  ['./invoice-download.component.scss'],
+    selector: 'app-invoice-download',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, FormsModule],
+    templateUrl: './invoice-download.component.html',
+    styleUrls: ['./invoice-download.component.scss']
 })
 export class InvoiceDownloadComponent {
 
   // ── Filtres ───────────────────────────────────────────────────────────
-  dateFrom   = '';
-  dateTo     = '';
+  dateFrom   = todayIso();
+  dateTo     = todayIso();
   dateField  = signal<DateField>('sent');
   status     = signal<Status>('all');
 
@@ -238,7 +238,7 @@ export class InvoiceDownloadComponent {
   private _fileNameSuffix(): string {
     if (this.dateFrom || this.dateTo)
       return [this.dateFrom, this.dateTo].filter(Boolean).join('_au_');
-    return new Date().toISOString().slice(0, 10);
+    return todayIso();
   }
 
   private _buildFilterLabel(): string {

@@ -9,11 +9,10 @@ export interface MultiSelectOption { id: string; label: string; }
  * d'employés de la page Paiements. Usage : <app-multi-select [options] [(selected)] placeholder="…">.
  */
 @Component({
-  selector: 'app-multi-select',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
-  template: `
+    selector: 'app-multi-select',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, FormsModule],
+    template: `
     <button type="button" class="ms-toggle" [class.ms-active]="selected.length" (click)="open = !open">
       <span class="ms-label">{{ summary() }}</span>
       <span class="ms-caret">▾</span>
@@ -33,7 +32,7 @@ export interface MultiSelectOption { id: string; label: string; }
       <div class="ms-empty" *ngIf="visible().length === 0">Aucun résultat</div>
     </div>
   `,
-  styles: [`
+    styles: [`
     :host { position: relative; display: block; flex: 1 1 170px; min-width: 0; }
     .ms-toggle {
       width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px;
@@ -66,7 +65,7 @@ export interface MultiSelectOption { id: string; label: string; }
       font-weight: 600; border-bottom: 1px solid var(--border);
       border-radius: 7px 7px 0 0; margin-bottom: 4px; padding-bottom: 9px;
     }
-  `],
+  `]
 })
 export class MultiSelectComponent {
   @Input() options: MultiSelectOption[] = [];

@@ -49,29 +49,8 @@
       </label>
     </div>
 
-    <!-- Section 3 : statut compagnies + action -->
+    <!-- Section 3 : action -->
     <div class="filter-section filter-actions-row">
-      <div class="statut-block" *ngIf="stats()">
-        <span class="statut-lbl" id="stats-statut-lbl">Factures :</span>
-        <div class="seg-control statut-seg statut-seg-3" role="group" aria-labelledby="stats-statut-lbl">
-          <button type="button"
-                  class="seg-opt"
-                  [class.active]="statutFilter() === 'facturee'" [attr.aria-pressed]="statutFilter() === 'facturee'"
-                  (click)="statutFilter.set('facturee')">Facturée</button>
-          <button type="button"
-                  class="seg-opt"
-                  [class.active]="statutFilter() === 'nonpayee'" [attr.aria-pressed]="statutFilter() === 'nonpayee'"
-                  (click)="statutFilter.set('nonpayee')">Non payée</button>
-          <button type="button"
-                  class="seg-opt"
-                  [class.active]="statutFilter() === 'payee'" [attr.aria-pressed]="statutFilter() === 'payee'"
-                  (click)="statutFilter.set('payee')">Payée</button>
-          <div class="seg-thumb seg-thumb-3"
-               [class.thumb-mid]="statutFilter() === 'nonpayee'"
-               [class.thumb-right]="statutFilter() === 'payee'"></div>
-        </div>
-      </div>
-
       <button class="btn btn-primary btn-calculer" [disabled]="loading()" (click)="load()">
         <span *ngIf="!loading()">🔍 Calculer</span>
         <span *ngIf="loading()" class="spinner"></span>
@@ -86,52 +65,243 @@
 
     <div class="periode-label">Période : {{ periodeLabel() }}</div>
 
-    <!-- ── Cartes totaux généraux ── -->
-    <div class="cards-grid">
-      <div class="stat-card card-blue">
-        <div class="card-val">{{ fmt(cardTTC()) }}</div>
-        <div class="card-lbl">Total TTC facturé{{ cardSuffix() }}</div>
-      </div>
-      <div class="stat-card card-green">
-        <div class="card-val">{{ fmt(s.totalPaye) }}</div>
-        <div class="card-lbl">Total payé</div>
-      </div>
-      <div class="stat-card card-orange">
-        <div class="card-val">{{ fmt(cardAttente()) }}</div>
-        <div class="card-lbl">En attente de paiement{{ cardSuffix() }}</div>
-      </div>
-      <div class="stat-card card-purple">
-        <div class="card-val">{{ fmt(s.gain) }}</div>
-        <div class="card-lbl">Charge employé</div>
-      </div>
-      <div class="stat-card card-gray">
-        <div class="card-val">{{ fmt(s.totalPaiementsEmployes) }}</div>
-        <div class="card-lbl">Paiements employés</div>
-      </div>
-      <div class="stat-card card-gray">
-        <div class="card-val">{{ s.nbVisitesTotal }}</div>
-        <div class="card-lbl">Visites totales</div>
-      </div>
-      <div class="stat-card card-gray">
-        <div class="card-val">{{ cardCompanies() }}</div>
-        <div class="card-lbl">Compagnies facturées{{ cardSuffix() }}</div>
-      </div>
-      <div class="stat-card card-gray">
-        <div class="card-val">{{ cardInvoices() }}</div>
-        <div class="card-lbl">Factures émises{{ cardSuffix() }}</div>
-      </div>
-      <div class="stat-card card-gray">
-        <div class="card-val">{{ fmt(cardTPS()) }}</div>
-        <div class="card-lbl">TPS{{ cardSuffix() }}</div>
-      </div>
-      <div class="stat-card card-gray">
-        <div class="card-val">{{ fmt(cardTVQ()) }}</div>
-        <div class="card-lbl">TVQ{{ cardSuffix() }}</div>
-      </div>
+    <!-- ── Réconciliation comptable et bancaire : quatre sous-pages, mêmes filtres (période / intervalle) ── -->
+    <div class="tabs" role="tablist" aria-label="Réconciliation comptable et bancaire">
+      <button type="button" role="tab" class="tab" *ngFor="let t of views" [id]="'stats-tab-' + t.id"
+              [class.active]="view() === t.id" [attr.aria-selected]="view() === t.id" aria-controls="stats-panel"
+              [attr.tabindex]="view() === t.id ? 0 : -1" (click)="view.set(t.id)" (keydown)="onTabKey($event)">{{ t.label }}</button>
     </div>
 
-    <!-- ── Détails (masqués si regrouper) ── -->
-    <ng-container *ngIf="!regrouper()">
+    <div role="tabpanel" id="stats-panel" [attr.aria-labelledby]="'stats-tab-' + view()">
+
+    <!-- Sous-page « Global » : les cartes de totaux (théorique, envoyé, payé, en attente, charges et paiements employés) -->
+    <section class="stats-section recon-panel" aria-labelledby="stats-sec-global" *ngIf="view() === 'global'">
+      <header class="sec-hdr">
+        <h3 id="stats-sec-global" class="sec-title">Global <span class="section-sub">(totaux de la période)</span></h3>
+      </header>
+      <div class="cards-grid">
+        <div class="stat-card" *ngFor="let c of cards()" [ngClass]="c.color">
+          <div class="card-lbl">{{ c.label }}</div>
+          <dl class="card-amounts">
+            <div><dt>Sans taxes</dt><dd>{{ fmt(c.ht) }}</dd></div>
+            <div><dt>Avec taxes</dt><dd class="amt-main">{{ fmt(c.ttc) }}</dd></div>
+          </dl>
+          <p class="card-note" *ngIf="c.note">{{ c.note }}</p>
+          <a class="card-link" [href]="cardUrl(c.key)" target="_blank" rel="noopener"
+             [attr.aria-label]="'Voir le détail du calcul : ' + c.label + ' (nouvel onglet)'">Voir le détail ↗</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sous-page 2 : registre bancaire (factures payées, paiements employés transférés et charges de la période) -->
+    <ng-container *ngIf="view() === 'banque'">
+    <section class="stats-section recon-panel" aria-labelledby="stats-sec-bank" *ngIf="bank() as b">
+      <header class="sec-hdr">
+        <h3 id="stats-sec-bank" class="sec-title">Registre bancaire <span class="section-sub">(argent réellement entré et sorti pendant la période)</span></h3>
+      </header>
+
+      <div class="cards-grid">
+        <div class="stat-card card-green">
+          <div class="card-lbl">Factures payées</div>
+          <dl class="card-amounts">
+            <div><dt>Sans taxes</dt><dd>{{ fmt(b.receivedHT) }}</dd></div>
+            <div><dt>Encaissé (avec taxes)</dt><dd class="amt-main">{{ fmt(b.received) }}</dd></div>
+          </dl>
+          <p class="card-note">{{ b.invoices.length }} facture{{ b.invoices.length > 1 ? 's' : '' }} dont la date de paiement est dans la période.</p>
+        </div>
+        <div class="stat-card card-orange">
+          <div class="card-lbl">Paiements employés</div>
+          <dl class="card-amounts">
+            <div><dt>Sans taxes</dt><dd>{{ fmt(b.paidHT) }}</dd></div>
+            <div><dt>Transféré (avec taxes)</dt><dd class="amt-main">{{ fmt(b.paid) }}</dd></div>
+          </dl>
+          <p class="card-note">{{ b.payments.length }} versement{{ b.payments.length > 1 ? 's' : '' }} marqué{{ b.payments.length > 1 ? 's' : '' }} « transféré{{ b.payments.length > 1 ? 's' : '' }} », payé{{ b.payments.length > 1 ? 's' : '' }} dans la période.</p>
+        </div>
+        <div class="stat-card card-purple">
+          <div class="card-lbl">Charges</div>
+          <dl class="card-amounts"><div><dt>Dépensé (avec taxes)</dt><dd class="amt-main">{{ fmt(b.spent) }}</dd></div></dl>
+          <p class="card-note">Charges ponctuelles créées dans la période et charges mensuelles (une fois par mois).</p>
+        </div>
+        <div class="stat-card card-blue">
+          <div class="card-lbl">Solde de la période</div>
+          <dl class="card-amounts"><div><dt>Encaissé − paiements − charges</dt><dd class="amt-main">{{ fmt(b.balance) }}</dd></div></dl>
+        </div>
+      </div>
+
+      <!-- Factures payées dans la période -->
+      <h4 class="cmp-title">Factures payées <span class="section-sub">(date de paiement dans la période)</span></h4>
+      <div class="table-wrap" *ngIf="b.invoices.length > 0">
+        <table class="stats-table">
+          <thead>
+            <tr>
+              <th scope="col">N° facture</th>
+              <th scope="col">Compagnie</th>
+              <th scope="col">Payée le</th>
+              <th scope="col" class="num">Total HT</th>
+              <th scope="col" class="num">Encaissé (TTC)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let i of b.invoices">
+              <td>{{ i.billNumber }}</td>
+              <td>{{ i.companyName || '—' }}</td>
+              <td>{{ i.paidDate }}</td>
+              <td class="num">{{ fmt(i.totalHT) }}</td>
+              <td class="num green">{{ fmt(i.totalTTC) }}</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="total-row"><td colspan="3">Total</td><td class="num">{{ fmt(b.receivedHT) }}</td><td class="num green">{{ fmt(b.received) }}</td></tr>
+          </tfoot>
+        </table>
+      </div>
+      <div class="empty-msg" *ngIf="b.invoices.length === 0">Aucune facture payée pendant cette période.</div>
+
+      <!-- Paiements employés transférés dans la période -->
+      <h4 class="cmp-title">Paiements employés <span class="section-sub">(versements transférés, date de paiement dans la période)</span></h4>
+      <div class="table-wrap" *ngIf="b.payments.length > 0">
+        <table class="stats-table">
+          <thead>
+            <tr>
+              <th scope="col">Employé</th>
+              <th scope="col">Payé le</th>
+              <th scope="col">Semaine du</th>
+              <th scope="col" class="num">Avant taxes</th>
+              <th scope="col" class="num">Taxes</th>
+              <th scope="col" class="num">Transféré</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of b.payments">
+              <td>{{ p.employeeName }}</td>
+              <td>{{ p.paymentDate }}</td>
+              <td>{{ p.weekStart }}</td>
+              <td class="num">{{ fmt(p.amountHT) }}</td>
+              <td class="num muted">{{ fmt(p.taxes) }}</td>
+              <td class="num bold">{{ fmt(p.total) }}</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="total-row"><td colspan="3">Total</td><td class="num">{{ fmt(b.paidHT) }}</td><td class="num muted">{{ fmt(b.paidTaxes) }}</td><td class="num bold">{{ fmt(b.paid) }}</td></tr>
+          </tfoot>
+        </table>
+      </div>
+      <div class="empty-msg" *ngIf="b.payments.length === 0">Aucun paiement employé transféré pendant cette période.</div>
+
+      <!-- Charges de la période -->
+      <h4 class="cmp-title">Charges <span class="section-sub">(dépensées dans la période, avec taxes)</span></h4>
+      <div class="table-wrap" *ngIf="b.charges.length > 0">
+        <table class="stats-table">
+          <thead>
+            <tr>
+              <th scope="col">Charge</th>
+              <th scope="col">Type</th>
+              <th scope="col">Créée le</th>
+              <th scope="col" class="num">Dépensé</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let c of b.charges">
+              <td>{{ c.title }}</td>
+              <td>{{ c.isMonthly ? 'Mensuelle' + (c.occurrences > 1 ? ' × ' + c.occurrences + ' mois' : '') : 'Ponctuelle' }}</td>
+              <td>{{ c.date }}</td>
+              <td class="num bold">{{ fmt(c.total) }}</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="total-row"><td colspan="3">Total</td><td class="num bold">{{ fmt(b.spent) }}</td></tr>
+          </tfoot>
+        </table>
+      </div>
+      <div class="empty-msg" *ngIf="b.charges.length === 0">Aucune charge pour cette période.</div>
+
+      <p class="card-note recon-note" *ngIf="b.count > 0">
+        Relevé bancaire chargé pour la période : dépôts {{ fmt(b.deposits) }}, retraits {{ fmt(b.withdrawals) }}, net {{ fmt(b.net) }}
+        ({{ b.count }} ligne{{ b.count > 1 ? 's' : '' }}, dont {{ b.validated }} validée{{ b.validated > 1 ? 's' : '' }}).
+      </p>
+      <p class="card-note recon-note" *ngIf="b.count === 0">
+        Aucune ligne de relevé bancaire chargée pour cette période (Finances → Relevé bancaire).
+      </p>
+    </section>
+    </ng-container>
+
+    <!-- Sous-page 3 : comparaison de facturation (théorique à facturer / factures réellement envoyées) -->
+    <ng-container *ngIf="view() === 'facturation'">
+    <section class="stats-section recon-panel" aria-labelledby="stats-sec-billing" *ngIf="billing() as bl">
+      <header class="sec-hdr">
+        <h3 id="stats-sec-billing" class="sec-title">Comparaison de facturation <span class="section-sub">(total théorique à facturer / factures réellement envoyées)</span></h3>
+        <span class="st" [class.st-paid]="bl.status === 'ok'" [class.st-unpaid]="bl.status !== 'ok'">{{ bl.statusLabel }}</span>
+      </header>
+      <div class="table-wrap">
+        <table class="stats-table">
+          <caption class="sr-only">Total théorique à facturer comparé au total des factures envoyées, sans et avec taxes</caption>
+          <thead>
+            <tr>
+              <th scope="col"><span class="sr-only">Montants</span></th>
+              <th scope="col" class="num">Théorique à facturer</th>
+              <th scope="col" class="num">Factures envoyées</th>
+              <th scope="col" class="num">Écart (théorique − envoyé)</th>
+              <th scope="col" class="num">Facturé</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let r of bl.rows">
+              <th scope="row" class="row-lbl">{{ r.label }}</th>
+              <td class="num">{{ fmt(r.theorique) }}</td>
+              <td class="num">{{ fmt(r.envoye) }}</td>
+              <td class="num bold" [class.green]="r.ecart === 0" [class.red]="r.ecart !== 0">{{ fmt(r.ecart) }}</td>
+              <td class="num bold" [class.green]="r.ecart === 0" [class.red]="r.ecart !== 0">{{ r.pct === null ? '—' : r.pct + ' %' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="card-note recon-note">
+        Théorique : planning des compagnies actives sur la période. Envoyées : factures de la période marquées envoyées, avoirs déduits.
+        Écart positif = reste à facturer ; écart négatif = facturé au-delà du planning.
+      </p>
+
+      <!-- Détail par compagnie : factures pareilles au théorique en vert, différentes en rouge -->
+      <ng-container *ngIf="s.comparaisonFacturation as rows">
+        <h4 class="cmp-title">
+          Par compagnie <span class="section-sub">(sans taxes)</span>
+          <span class="st st-paid">{{ sameCount() }} pareille{{ sameCount() > 1 ? 's' : '' }}</span>
+          <span class="st st-unpaid">{{ rows.length - sameCount() }} différente{{ rows.length - sameCount() > 1 ? 's' : '' }}</span>
+        </h4>
+        <div class="table-wrap" *ngIf="rows.length > 0">
+          <table class="stats-table cmp-table">
+            <caption class="sr-only">Par compagnie : théorique à facturer comparé aux factures envoyées, sans taxes. Pareil en vert, différent en rouge.</caption>
+            <thead>
+              <tr>
+                <th scope="col">Compagnie</th>
+                <th scope="col">Factures envoyées</th>
+                <th scope="col" class="num">Théorique à facturer</th>
+                <th scope="col" class="num">Montant envoyé</th>
+                <th scope="col" class="num">Écart</th>
+                <th scope="col">Résultat</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let r of rows" [class.cmp-same]="r.ecart === 0" [class.cmp-diff]="r.ecart !== 0">
+                <th scope="row" class="row-lbl">{{ r.companyName || '—' }}</th>
+                <td>{{ r.factures.length ? r.factures.join(', ') : 'Aucune facture envoyée' }}</td>
+                <td class="num">{{ fmt(r.theoriqueHT) }}</td>
+                <td class="num">{{ fmt(r.envoyeHT) }}</td>
+                <td class="num bold">{{ fmt(r.ecart) }}</td>
+                <td><span class="st" [class.st-paid]="r.ecart === 0" [class.st-unpaid]="r.ecart !== 0">{{ r.ecart === 0 ? 'Pareil' : 'Différent' }}</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="empty-msg" *ngIf="rows.length === 0">Aucune compagnie à comparer pour cette période.</div>
+      </ng-container>
+    </section>
+    </ng-container>
+
+    <!-- ── Sous-page « Registre comptable » : paiements employés et factures par compagnie (masqués si regrouper) ── -->
+    <div class="empty-msg" *ngIf="regrouper() && view() === 'comptable'">
+      Le détail est masqué : décochez « Regrouper (totaux seuls) » pour afficher les paiements employés et les factures par compagnie.
+    </div>
+    <ng-container *ngIf="!regrouper() && view() === 'comptable'">
 
       <!-- ── Section 1 : Paiements employés ── -->
       <section class="stats-section" aria-labelledby="stats-sec-emp">
@@ -148,6 +318,7 @@
               <th>Employé</th>
               <th class="num">Visites</th>
               <th class="num">Paiement</th>
+              <th>Statut du paiement</th>
             </tr>
           </thead>
           <tbody>
@@ -155,6 +326,10 @@
               <td>{{ row.employeeName }}</td>
               <td class="num">{{ row.nbVisites }}</td>
               <td class="num gain">{{ fmt(row.totalPaiementEmploye) }}</td>
+              <td>
+                <span class="st" [class.st-paid]="payStatus(row) === 'paye'" [class.st-partial]="payStatus(row) === 'partiel'"
+                      [class.st-unpaid]="payStatus(row) === 'nonpaye'" [title]="payStatusTitle(row)">{{ payStatusLabel(row) }}</span>
+              </td>
             </tr>
           </tbody>
           <tfoot>
@@ -162,6 +337,7 @@
               <td>Total</td>
               <td class="num">{{ s.nbVisitesTotal }}</td>
               <td class="num gain">{{ fmt(s.totalPaiementsEmployes) }}</td>
+              <td></td>
             </tr>
           </tfoot>
         </table>
@@ -170,10 +346,30 @@
       </section>
 
       <!-- ── Section 2 : Factures par compagnie (filtrées par statut, groupes repliés) ── -->
-      <section class="stats-section" aria-labelledby="stats-sec-inv">
+      <section #invSection class="stats-section" aria-labelledby="stats-sec-inv">
         <header class="sec-hdr">
           <h2 id="stats-sec-inv" class="sec-title">Factures par compagnie <span class="section-sub">({{ statutLabel() }})</span></h2>
           <div class="sec-actions">
+            <div class="statut-block">
+              <span class="statut-lbl" id="stats-statut-lbl">Factures :</span>
+              <div class="seg-control statut-seg statut-seg-3" role="group" aria-labelledby="stats-statut-lbl">
+                <button type="button"
+                        class="seg-opt"
+                        [class.active]="statutFilter() === 'facturee'" [attr.aria-pressed]="statutFilter() === 'facturee'"
+                        (click)="setStatut('facturee', invSection)">Facturée</button>
+                <button type="button"
+                        class="seg-opt"
+                        [class.active]="statutFilter() === 'nonpayee'" [attr.aria-pressed]="statutFilter() === 'nonpayee'"
+                        (click)="setStatut('nonpayee', invSection)">Non payée</button>
+                <button type="button"
+                        class="seg-opt"
+                        [class.active]="statutFilter() === 'payee'" [attr.aria-pressed]="statutFilter() === 'payee'"
+                        (click)="setStatut('payee', invSection)">Payée</button>
+                <div class="seg-thumb seg-thumb-3"
+                     [class.thumb-mid]="statutFilter() === 'nonpayee'"
+                     [class.thumb-right]="statutFilter() === 'payee'"></div>
+              </div>
+            </div>
             <button type="button" class="btn btn-outline btn-sm" *ngIf="groups().length > 0" (click)="toggleAll()">
               {{ allExpanded() ? 'Tout replier' : 'Tout déplier' }}
             </button>
@@ -250,6 +446,8 @@
 
     </ng-container>
     <!-- fin !regrouper -->
+
+    </div>
 
   </ng-container>
 

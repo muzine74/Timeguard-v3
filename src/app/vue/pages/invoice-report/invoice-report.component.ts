@@ -1,3 +1,4 @@
+import { todayIso } from '../../shared/dates';
 import {
   Component, ChangeDetectionStrategy, signal, computed, HostListener,
 } from '@angular/core';
@@ -11,19 +12,18 @@ type FilterMode = 'date' | 'period';
 type ExportType = 'summary' | 'merged' | 'zip' | 'excel' | 'csv';
 
 @Component({
-  selector: 'app-invoice-report',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './invoice-report.component.html',
-  styleUrls:  ['./invoice-report.component.scss'],
+    selector: 'app-invoice-report',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, FormsModule],
+    templateUrl: './invoice-report.component.html',
+    styleUrls: ['./invoice-report.component.scss']
 })
 export class InvoiceReportComponent {
 
   // ── Filtres ───────────────────────────────────────────────────────────
   filterMode  = signal<FilterMode>('date');
-  dateFrom    = '';
-  dateTo      = '';
+  dateFrom    = todayIso();
+  dateTo      = todayIso();
 
   periodInput = '';
   periods     = signal<string[]>([]);
@@ -294,7 +294,7 @@ export class InvoiceReportComponent {
       return this.periods().join('_');
     if (this.dateFrom || this.dateTo)
       return [this.dateFrom, this.dateTo].filter(Boolean).join('_au_');
-    return new Date().toISOString().slice(0, 10);
+    return todayIso();
   }
 
   private _buildFilterLabel(): string {

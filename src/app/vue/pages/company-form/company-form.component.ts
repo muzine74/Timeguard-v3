@@ -1,4 +1,4 @@
-import { Component, signal, isDevMode, ChangeDetectionStrategy } from '@angular/core';
+import { Component, HostListener, signal, isDevMode, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -6,12 +6,11 @@ import { CompanyService, ContactRequest } from  '../../../state/compagny/Company
 import { CompanyForm, FreqOption, SemainePlanning, JourMensuel } from '../../../models';
 
 @Component({
-  selector: 'app-company-form',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './company-form.component.html',
-  styleUrls: ['./company-form.component.scss'],
+    selector: 'app-company-form',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, FormsModule],
+    templateUrl: './company-form.component.html',
+    styleUrls: ['./company-form.component.scss']
 })
 export class CompanyFormComponent {
   saved  = signal(false);
@@ -34,7 +33,8 @@ export class CompanyFormComponent {
   private warn(...a: unknown[]) { if (this._dev) console.warn('[CompanyForm]', ...a); }
 
   form: CompanyForm = {
-    companyName: '', companyCode: '', isActive: false, note: '',
+    // Active par défaut (comme l'API) : une compagnie créée inactive n'apparaissait ni dans la liste (filtre « Actif ») ni au pointage
+    companyName: '', companyCode: '', isActive: true, note: '',
     civicNumber: '', suite: '', city: '', state: 'QC', country: 'Canada',
     zipCode: '', addressNote: '',
     tps: '', tvq: '',
@@ -86,12 +86,20 @@ export class CompanyFormComponent {
   get hourlyRatesError(): string | null { return CompanyService.hourlyRatesError(this.form); }
 
   submit(): void {
+    // Déjà en cours ou déjà créée (redirection en attente) : un 2e clic créerait un doublon
+    if (this.saving() || this.saved()) return;
     if (!this.form.companyName.trim()) {
       this.error.set('Le nom de la compagnie est requis.');
       return;
     }
     const ratesError = CompanyService.hourlyRatesError(this.form);
     if (ratesError) { this.error.set(ratesError); return; }
+    const mail = this.contact.mail?.trim();
+    if (mail && !CompanyService.isEmail(mail)) { this.error.set('Le courriel du contact n’est pas valide (ex. nom@exemple.com).'); return; }
+    if (!this.contact.name.trim() && (mail || this.contact.phone?.trim() || this.contact.notes?.trim())) {
+      this.error.set('Indiquez le nom du contact (ou videz ses autres champs) : sans nom, le contact ne serait pas enregistré.');
+      return;
+    }
 
     this.log('submit() → CompanyService.create()');
     this.error.set('');
@@ -106,7 +114,14 @@ export class CompanyFormComponent {
         this.saved.set(true);
 
         if (companyId && this.contact.name.trim()) {
-          this.companySvc.addContact(companyId, this.contact).subscribe({
+          const contact: ContactRequest = {
+            name:  this.contact.name.trim(),
+            mail:  this.contact.mail?.trim() || undefined,
+            phone: this.contact.phone?.trim() || undefined,
+            notes: this.contact.notes?.trim() || undefined,
+            isActive: true,
+          };
+          this.companySvc.addContact(companyId, contact).subscribe({
             next: () => openCompany(1500),
             error: e => {
               // Ne jamais masquer l'échec : la compagnie existe, le contact est à ressaisir sur sa fiche
@@ -154,5 +169,23 @@ export class CompanyFormComponent {
     this.log(`ligne ${index} supprimée`);
   }
 
-  cancel(): void { this.router.navigate(['/employees']); }
+  /** Annuler : retour à la liste des compagnies (avec confirmation si une saisie serait perdue). */
+  cancel(): void {
+    if (this.isDirty() && !confirm('Abandonner la création ? Les informations saisies seront perdues.')) return;
+    this._initial = '';
+    this.router.navigate(['/companies/edit']);
+  }
+
+  /** Formulaire vide de départ : sert à savoir si quelque chose a été saisi. */
+  private _initial = JSON.stringify([this.form, this.contact]);
+
+  isDirty(): boolean {
+    return !!this._initial && !this.saved() && JSON.stringify([this.form, this.contact]) !== this._initial;
+  }
+
+  /** Onglet fermé / page rechargée avec une saisie en cours : le navigateur demande confirmation. */
+  @HostListener('window:beforeunload', ['$event'])
+  onBeforeUnload(ev: BeforeUnloadEvent): void {
+    if (this.isDirty()) { ev.preventDefault(); ev.returnValue = ''; }
+  }
 }

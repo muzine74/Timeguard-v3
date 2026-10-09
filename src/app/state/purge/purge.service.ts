@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 /** Suppression définitive (super utilisateur) — identifiants envoyés dans le corps, jamais dans l'URL. */
-export type PurgeKind = 'bill' | 'employee' | 'company';
+export type PurgeKind = 'bill' | 'employee' | 'company' | 'paymentWeek' | 'paymentHistory';
 
 export interface PurgeCandidate { id: string; label: string; detail: string; }
 

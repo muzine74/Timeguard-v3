@@ -8,12 +8,11 @@ export interface WeekHistoryItem { weekStart: string; isLocked: boolean; }
  * mise en évidence, aperçu limité avec « Voir tout ». Le clic remonte la semaine via (openWeek).
  */
 @Component({
-  selector: 'app-week-history-panel',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
-  templateUrl: './week-history-panel.component.html',
-  styleUrls: ['./week-history-panel.component.scss'],
+    selector: 'app-week-history-panel',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule],
+    templateUrl: './week-history-panel.component.html',
+    styleUrls: ['./week-history-panel.component.scss']
 })
 export class WeekHistoryPanelComponent {
   @Input() weeks: WeekHistoryItem[] = [];

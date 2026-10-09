@@ -6,12 +6,11 @@ import { HttpClient } from '@angular/common/http';
 import { RegisterTenantRequest } from '../../../models';
 
 @Component({
-  selector: 'app-register',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, RouterLink],
-  templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss'],
+    selector: 'app-register',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, FormsModule, RouterLink],
+    templateUrl: './register.component.html',
+    styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent {
   form: RegisterTenantRequest = {
@@ -26,6 +25,8 @@ export class RegisterComponent {
   loading = signal(false);
   error   = signal('');
   success = signal(false);
+  /** L'espace est créé mais reste inactif jusqu'à sa validation par l'administrateur de la plateforme. */
+  pending = signal(false);
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -54,11 +55,19 @@ export class RegisterComponent {
     this.loading.set(true);
     this.error.set('');
 
-    this.http.post('/api/tenants/register', this.form).subscribe({
-      next: () => {
+    if (adminPassword.length < 10) {
+      this.loading.set(false);
+      this.error.set('Le mot de passe doit contenir au moins 10 caractères.');
+      return;
+    }
+
+    this.http.post<{ isActive?: boolean }>('/api/tenants/register', this.form).subscribe({
+      next: res => {
         this.loading.set(false);
+        this.pending.set(res?.isActive === false);
         this.success.set(true);
-        setTimeout(() => this.router.navigate(['/login']), 3000);
+        // Espace en attente de validation : pas de redirection, la connexion serait refusée
+        if (!this.pending()) setTimeout(() => this.router.navigate(['/login']), 3000);
       },
       error: err => {
         this.loading.set(false);

@@ -5,12 +5,11 @@ import { Employee } from '../../../models';
 import { AuthService } from '../../../state/auth/auth.service';
 
 @Component({
-  selector: 'app-employee-form',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './employee-form.component.html',
-  styleUrls:   ['./employee-form.component.scss'],
+    selector: 'app-employee-form',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, FormsModule],
+    templateUrl: './employee-form.component.html',
+    styleUrls: ['./employee-form.component.scss']
 })
 export class EmployeeFormComponent {
   readonly auth = inject(AuthService);
@@ -28,6 +27,8 @@ export class EmployeeFormComponent {
     { label:'Courriel', icon:'✉',  key:'employeeMail',  placeholder:'courriel@exemple.com', span:true,  nas:false },
     { label:'Tél',      icon:'📞', key:'employeePhone', placeholder:'Numéro de téléphone',  span:false, nas:false },
     { label:'NAS',      icon:'🔒', key:'nas',           placeholder:'XXX XXX XXX',          span:false, nas:true  },
+    { label:'N° TPS',   icon:'🧾', key:'tpsNumber',     placeholder:'Aucun',                span:false, nas:false },
+    { label:'N° TVQ',   icon:'🧾', key:'tvqNumber',     placeholder:'Aucun',                span:false, nas:false },
     { label:'Note',     icon:'📝', key:'employeeNote',  placeholder:'Note employé...',      span:true,  nas:false },
   ];
 

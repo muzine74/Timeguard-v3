@@ -9,12 +9,11 @@ import {
 interface DiffEntry { label: string; old: string; new: string; }
 
 @Component({
-  selector: 'app-app-config',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './app-config.component.html',
-  styleUrls: ['./app-config.component.scss'],
+    selector: 'app-app-config',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, FormsModule],
+    templateUrl: './app-config.component.html',
+    styleUrls: ['./app-config.component.scss']
 })
 export class AppConfigComponent implements OnInit {
 
@@ -78,6 +77,8 @@ export class AppConfigComponent implements OnInit {
     this.saving.set(true);
     this.svc.save(this.form).subscribe({
       next: () => {
+        // Le mot de passe saisi ne reste pas dans la page : il est enregistré côté serveur
+        if (this.form.smtpPassword) { this.form.hasSmtpPassword = true; this.form.smtpPassword = null; }
         this._saved = JSON.parse(JSON.stringify({ config: this.form }));
         this.success.set('Configuration enregistrée.');
         this.saving.set(false);
@@ -123,8 +124,13 @@ export class AppConfigComponent implements OnInit {
     for (const key of Object.keys(labels) as (keyof AppConfigDto)[]) {
       const oldVal = String(this._saved.config[key] ?? '');
       const newVal = String((this.form as any)[key] ?? '');
-      if (oldVal !== newVal)
-        entries.push({ label: labels[key as string], old: oldVal || '—', new: newVal || '—' });
+      if (oldVal === newVal) continue;
+      // Mot de passe SMTP : jamais affiché ; champ vide = inchangé (l'API ne le renvoie pas)
+      if (key === 'smtpPassword') {
+        if (newVal) entries.push({ label: labels[key], old: this.form.hasSmtpPassword ? '••••••' : '—', new: '(nouveau mot de passe)' });
+        continue;
+      }
+      entries.push({ label: labels[key as string], old: oldVal || '—', new: newVal || '—' });
     }
 
     return entries;

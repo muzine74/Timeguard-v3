@@ -13,12 +13,11 @@ export type EmployeeActiveFilter = 'all' | 'active' | 'inactive';
  * la sélection est remontée au conteneur via (employeeSelect).
  */
 @Component({
-  selector: 'app-employee-list-panel',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, InitialsPipe],
-  templateUrl: './employee-list-panel.component.html',
-  styleUrls: ['./employee-list-panel.component.scss'],
+    selector: 'app-employee-list-panel',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, InitialsPipe],
+    templateUrl: './employee-list-panel.component.html',
+    styleUrls: ['./employee-list-panel.component.scss']
 })
 export class EmployeeListPanelComponent {
   @Input() employees: Employee[] = [];

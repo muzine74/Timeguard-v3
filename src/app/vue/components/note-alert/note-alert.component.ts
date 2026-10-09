@@ -5,11 +5,10 @@ import { NoteLinkType, NOTE_LINK_LABELS } from '../../../state/notes/notes.servi
 
 /** Alerte globale des notes actives — montée une seule fois dans AppComponent. */
 @Component({
-  selector: 'app-note-alert',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
-  template: `
+    selector: 'app-note-alert',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule],
+    template: `
     <div class="na-backdrop" *ngIf="alerts.notes().length" (click)="alerts.dismiss()">
       <div class="na-modal" role="alertdialog" aria-modal="true" aria-labelledby="na-title" aria-describedby="na-list"
            (click)="$event.stopPropagation()">
@@ -42,7 +41,7 @@ import { NoteLinkType, NOTE_LINK_LABELS } from '../../../state/notes/notes.servi
       </div>
     </div>
   `,
-  styles: [`
+    styles: [`
     .na-btn:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
     .na-backdrop {
       position: fixed; inset: 0; z-index: 2000;
@@ -74,7 +73,7 @@ import { NoteLinkType, NOTE_LINK_LABELS } from '../../../state/notes/notes.servi
       padding: 8px 18px; border-radius: 8px; border: none; cursor: pointer;
       background: var(--accent); color: var(--on-accent); font-weight: 600; font-size: .85rem;
     }
-  `],
+  `]
 })
 export class NoteAlertComponent implements OnDestroy {
   @ViewChild('okBtn') private okBtn?: ElementRef<HTMLButtonElement>;

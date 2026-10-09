@@ -1,3 +1,4 @@
+import { todayIso } from '../../shared/dates';
 import { Component, OnInit, signal, ChangeDetectionStrategy, ChangeDetectorRef, DestroyRef, inject } from '@angular/core';
 import { NoteAlertService } from '../../../state/notes/note-alert.service';
 import { NotesService, NoteItem } from '../../../state/notes/notes.service';
@@ -20,18 +21,21 @@ export interface EligibleRow extends BillableCompanyItem {
   totalWithTax: number;
   /** Résultat après génération : numéro de facture ou message d'erreur */
   genResult?:   { ok: boolean; label: string };
+  /** Le serveur a refusé la création : la compagnie avait déjà une facture pour la période. */
+  alreadyBilled?: boolean;
 }
 
 @Component({
-  selector: 'app-invoice-from-timesheets',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, NoteInlineComponent, ExportButtonsComponent],
-  templateUrl: './invoice-from-timesheets.component.html',
-  styleUrls: ['./invoice-from-timesheets.component.scss'],
+    selector: 'app-invoice-from-timesheets',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, FormsModule, NoteInlineComponent, ExportButtonsComponent],
+    templateUrl: './invoice-from-timesheets.component.html',
+    styleUrls: ['./invoice-from-timesheets.component.scss']
 })
 export class InvoiceFromTimesheetsComponent implements OnInit {
   private readonly noteAlerts = inject(NoteAlertService);
+  /** Attente de la fermeture de la fenêtre de notes (voir generateSelected). */
+  private _alertTimer: ReturnType<typeof setInterval> | null = null;
   loading    = signal(false);
   generating = signal(false);
   error      = signal('');
@@ -47,9 +51,13 @@ export class InvoiceFromTimesheetsComponent implements OnInit {
   private static readonly NO_NOTES: NoteItem[] = [];
   private notesSvc = inject(NotesService);
 
-  get allChecked(): boolean  { return this.rows.length > 0 && this.rows.every(r => r.checked); }
-  get noneChecked(): boolean { return this.rows.every(r => !r.checked); }
-  get checkedRows(): EligibleRow[] { return this.rows.filter(r => r.checked); }
+  /** Ligne dont la facture vient d'être créée (ou existait déjà) : plus sélectionnable. */
+  isDone(r: EligibleRow): boolean { return r.genResult?.ok === true || r.alreadyBilled === true; }
+  private get _openRows(): EligibleRow[] { return this.rows.filter(r => !this.isDone(r)); }
+
+  get allChecked(): boolean  { const open = this._openRows; return open.length > 0 && open.every(r => r.checked); }
+  get noneChecked(): boolean { return this._openRows.every(r => !r.checked); }
+  get checkedRows(): EligibleRow[] { return this._openRows.filter(r => r.checked); }
   get hasAnyDiscrepancy(): boolean { return this.rows.some(r => this.hasDiscrepancy(r)); }
 
   /** Tri des compagnies éligibles au clic sur l'en-tête (montants : décroissant au 1er clic). */
@@ -196,43 +204,71 @@ export class InvoiceFromTimesheetsComponent implements OnInit {
   }
 
   toggleAll(checked: boolean): void {
-    this.rows.forEach(r => r.checked = checked);
+    this._openRows.forEach(r => r.checked = checked);
   }
 
   // ── Générer les factures cochées ──────────────────────────────────────────
   async generateSelected(): Promise<void> {
-    const selected = this.checkedRows; // snapshot avant tout await
+    if (this.generating()) return;      // déjà en cours (double clic, touche Entrée répétée)
+    const selected = this.checkedRows;  // snapshot avant tout await ; les lignes déjà facturées en sont exclues
     if (!selected.length) return;
 
-    this.noteAlerts.check({ companyIds: selected.map(r => r.companyId) }, 'Facturation depuis les pointages');
+    // Bouton désactivé dès maintenant : il le reste pendant la lecture des notes et la création
     this.generating.set(true);
     this.error.set('');
     this.success.set('');
 
     let ok = 0;
     let ko = 0;
+    let already = 0;
 
     try {
+      // Les notes des compagnies s'affichent AVANT de créer quoi que ce soit ; la création ne commence
+      // qu'une fois la fenêtre fermée (« J'ai compris »). Avant : la fenêtre s'ouvrait pendant la création,
+      // ressemblait à une confirmation, et un 2e clic sur « Générer » recréait les mêmes factures.
+      const notes = [...new Map(selected.flatMap(r => this.notesFor(r)).map(n => [n.noteId, n])).values()];
+      if (notes.length) {
+        this.noteAlerts.show(notes, 'Facturation depuis les pointages');
+        await this._alertClosed();
+      }
+
       for (const row of selected) {
         try {
           await this._createInvoice(row);
           row.genResult = { ok: true, label: row.genResult?.label ?? '✓' };
           ok++;
-        } catch {
-          row.genResult = { ok: false, label: '✕ Erreur' };
-          ko++;
+        } catch (err: any) {
+          if (err?.status === 409) {       // le serveur a refusé : déjà facturée pour cette période
+            row.alreadyBilled = true;
+            row.genResult = { ok: false, label: 'Déjà facturée' };
+            already++;
+          } else {
+            row.genResult = { ok: false, label: '✕ Erreur' };
+            ko++;
+          }
         }
+        row.checked = false;               // une ligne traitée ne reste pas cochée
         this.cdr.markForCheck();
       }
 
+      const skipped = already ? ` ${already} compagnie(s) déjà facturée(s) pour cette période : aucune nouvelle facture.` : '';
       if (ko === 0)
-        this.success.set(`${ok} facture(s) générée(s) avec succès.`);
+        this.success.set(`${ok} facture(s) générée(s) avec succès.${skipped}`);
       else
-        this.error.set(`${ok} succès, ${ko} erreur(s). Vérifiez les lignes en rouge.`);
+        this.error.set(`${ok} succès, ${ko} erreur(s). Vérifiez les lignes en rouge.${skipped}`);
     } finally {
       this.generating.set(false);
       this.cdr.markForCheck();
     }
+  }
+
+  /** Résolue quand la fenêtre de notes est fermée (« J'ai compris », Échap ou clic à côté). */
+  private _alertClosed(): Promise<void> {
+    return new Promise(resolve => {
+      const done = () => { if (this._alertTimer) clearInterval(this._alertTimer); this._alertTimer = null; resolve(); };
+      this._alertTimer = setInterval(() => { if (this.noteAlerts.notes().length === 0) done(); }, 100);
+      this.destroyRef.onDestroy(done);     // page quittée pendant l'attente : ne pas laisser le minuteur tourner
+    });
   }
 
   private _createInvoice(row: EligibleRow): Promise<void> {
@@ -254,7 +290,7 @@ export class InvoiceFromTimesheetsComponent implements OnInit {
       companyName:    row.companyName,
       companyCode:    row.companyCode,
       period:         this.period,
-      billedDate:     new Date().toISOString().split('T')[0],
+      billedDate:     todayIso(),
       companyPrice:   row.totalAmount,
       numberOfVisits: row.totalVisits,
       totalBeforeTax: row.totalAmount,
@@ -264,6 +300,7 @@ export class InvoiceFromTimesheetsComponent implements OnInit {
       note:           '',
       paymentInfo:    '',
       lines,
+      onlyIfNotBilled: true,   // le serveur refuse une 2e facture pour la même compagnie et la même période
     };
 
     return new Promise((resolve, reject) => {

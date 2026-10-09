@@ -24,6 +24,8 @@ export class PointageEmployeeService {
   private _loadRequested = false;
   // companyId → nom-jour-FR → prix effectif (customPrice ?? defaultPrice)
   private _pricingMap  = new Map<string, Record<string, number>>();
+  // companyId → lundi de la Semaine 1 (compagnies bi-hebdo avec date de début)
+  private _biWeeklyStart = new Map<string, string>();
 
   readonly compagnies = this._compagnies.asReadonly();
 
@@ -199,7 +201,7 @@ export class PointageEmployeeService {
       const prices = { ...c.prices };
       // Aperçu de la paie (le serveur recalcule et fige le montant à l'enregistrement) :
       // payé à l'heure → heures × taux ; payé à la visite → prix du planning pour ce jour
-      const visitPrice = this._pricingMap.get(c.companyId)?.[this._toDayName(dk)];
+      const visitPrice = this._planPrice(c.companyId, dk);
       if (dur !== null && c.hourlyRate != null) prices[dk] = Math.round(dur * c.hourlyRate * 100) / 100;
       else if (dur !== null && c.hourlyRate == null && visitPrice !== undefined) prices[dk] = visitPrice;
       else delete prices[dk];
@@ -240,8 +242,12 @@ export class PointageEmployeeService {
       const isNowChecked = !c.pointages?.[dateKey];
       const newPrices = { ...c.prices };
       // Injecter le prix du calendrier si la case est cochée pour la première fois
-      if (isNowChecked && !(dateKey in newPrices)) {
-        const price = this._pricingMap.get(c.companyId)?.[this._toDayName(dateKey)];
+      if (isNowChecked && this._biWeeklyStart.has(c.companyId)) {
+        // Bi-hebdo : le prix suit toujours le planning de la semaine (1 ou 2) ; jour non prévu cette semaine → pas de prix
+        const price = this._planPrice(c.companyId, dateKey);
+        if (price !== undefined) newPrices[dateKey] = price; else delete newPrices[dateKey];
+      } else if (isNowChecked && !(dateKey in newPrices)) {
+        const price = this._planPrice(c.companyId, dateKey);
         if (price !== undefined) newPrices[dateKey] = price;
       }
       return { ...c, pointages: { ...c.pointages, [dateKey]: isNowChecked }, prices: newPrices };
@@ -256,16 +262,56 @@ export class PointageEmployeeService {
     ];
   }
 
+  /**
+   * Prix du planning pour une journée (aperçu avant enregistrement ; le serveur fige le vrai montant).
+   * Clés du planning : « Lundi » (hebdo), « S1-Lundi » / « S2-Lundi » (bi-hebdo), « Bi-16 » (bi-mensuel), « 16 » (mensuel).
+   * Bi-hebdo : la semaine 1 ou 2 n'est pas connue ici → aperçu seulement si les deux semaines ont le même prix.
+   */
+  private _planPrice(companyId: string, dateKey: string): number | undefined {
+    const map = this._pricingMap.get(companyId);
+    if (!map) return undefined;
+    const name = this._toDayName(dateKey);
+    const day  = String(Number(dateKey.split('-')[2]));
+    if (map[name] !== undefined) return map[name];
+    // Bi-hebdo avec date de début connue : seul le planning de LA semaine (1 ou 2) compte —
+    // un jour coché uniquement dans l'autre semaine du planning n'affiche pas de prix (comme le serveur).
+    const start = this._biWeeklyStart.get(companyId);
+    if (start) return map[(this._weeksBetween(start, dateKey) % 2 === 0 ? 'S1-' : 'S2-') + name];
+    const s1 = map['S1-' + name], s2 = map['S2-' + name];
+    if (s1 !== undefined && (s2 === undefined || s2 === s1)) return s1;
+    if (s1 === undefined && s2 !== undefined) return s2;
+    return map['Bi-' + day] ?? map[day];
+  }
+
+  /** Semaines entières (en valeur absolue) entre le lundi de deux dates yyyy-MM-dd. */
+  private _weeksBetween(a: string, b: string): number {
+    const monday = (s: string) => {
+      const [y, m, d] = s.split('-').map(Number);
+      const t = Date.UTC(y, m - 1, d);
+      return t - ((new Date(t).getUTCDay() + 6) % 7) * 86_400_000;
+    };
+    return Math.abs(Math.round((monday(b) - monday(a)) / (7 * 86_400_000)));
+  }
+
+  /** Employé dont le planning tarifaire est chargé (les prix personnalisés dépendent de l'employé). */
+  private _pricingEmployeeId: string | null = null;
+
   /** Charge le calendrier tarifaire de chaque compagnie pour enrichir les prix lors du cochage. */
   loadPricing(employeeId: string, companyIds: string[]): void {
+    this._pricingMap.clear();              // ne pas garder les prix d'un autre employé
+    this._biWeeklyStart.clear();
+    this._pricingEmployeeId = employeeId;
     for (const companyId of companyIds) {
-      this.http.get<{ day: string; defaultPrice: number; customPrice?: number }[]>(
+      this.http.get<{ day: string; defaultPrice: number; customPrice?: number; biWeeklyStart?: string | null }[]>(
         `/api/employee/${employeeId}/pricing/${companyId}`
       ).subscribe({
         next: entries => {
+          if (this._pricingEmployeeId !== employeeId) return;   // réponse arrivée après un changement d'employé
           const map: Record<string, number> = {};
-          for (const e of entries) map[e.day] = e.customPrice ?? e.defaultPrice;
+          for (const e of entries) map[(e.day ?? '').trim()] = e.customPrice ?? e.defaultPrice;
           this._pricingMap.set(companyId, map);
+          const start = entries.find(e => e.biWeeklyStart)?.biWeeklyStart;
+          if (start) this._biWeeklyStart.set(companyId, start);
           this.log(`✓ pricing ${companyId} (${entries.length} jours)`);
         },
         error: err => this.warn(`✕ pricing ${companyId} — HTTP ${err.status}`),

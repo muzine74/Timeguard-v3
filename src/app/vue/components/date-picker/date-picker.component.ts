@@ -4,12 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { WeekService } from '../../../state/pointage/week.service';
 
 @Component({
-  selector: 'app-date-picker',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './date-picker.component.html',
-  styleUrls: ['./date-picker.component.scss'],
+    selector: 'app-date-picker',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, FormsModule],
+    templateUrl: './date-picker.component.html',
+    styleUrls: ['./date-picker.component.scss']
 })
 export class DatePickerComponent {
   @Output() weekChange = new EventEmitter<Date>();

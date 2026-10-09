@@ -8,12 +8,11 @@ import { TeamAssignmentComponent } from '../../components/team-assignment/team-a
 import { EmployeeFile, EmployeeForm } from '../../../models';
 
 @Component({
-  selector: 'app-employee-create',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TeamAssignmentComponent],
-  templateUrl: './employee-create.component.html',
-  styleUrls: ['./employee-create.component.scss'],
+    selector: 'app-employee-create',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, FormsModule, TeamAssignmentComponent],
+    templateUrl: './employee-create.component.html',
+    styleUrls: ['./employee-create.component.scss']
 })
 export class EmployeeCreateComponent {
   saved       = signal(false);
@@ -168,6 +167,7 @@ export class EmployeeCreateComponent {
       employeeName: '', employeeMail: '', employeePhone: '', employeeNote: '', nas: '',
       employeeType: 'Permanent',
       modeRemuneration: 'Visite',
+      tpsNumber: '', tvqNumber: '',
       isTeamLead: false,
       managerId: null,
       employeeCivicNumber: '', employeeSuite: '', employeeZipCode: '',

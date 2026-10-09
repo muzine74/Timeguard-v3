@@ -102,6 +102,11 @@ export class CompanyService {
     return null;
   }
 
+  /** Courriel plausible (une arobase, un domaine avec un point, sans espace) — contrôle de saisie, l'API revalide. */
+  static isEmail(value: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+  }
+
   private _sanitize(form: CompanyForm): any {
     return { ...form };
   }

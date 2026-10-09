@@ -16,11 +16,10 @@ const FORMATS: { id: ExportFormat; label: string; hint: string; icon: string }[]
  *   <app-export-buttons [build]="exportPayments" [disabled]="!rows().length" label="les paiements employés" />
  */
 @Component({
-  selector: 'app-export-buttons',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
-  template: `
+    selector: 'app-export-buttons',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule],
+    template: `
     <div class="exp-wrap">
       <button type="button" class="exp-btn" [disabled]="disabled || busy() !== null"
               aria-haspopup="menu" [attr.aria-expanded]="open()" [attr.aria-label]="'Exporter ' + label"
@@ -39,7 +38,7 @@ const FORMATS: { id: ExportFormat; label: string; hint: string; icon: string }[]
       <span class="exp-err" role="alert" *ngIf="error()">{{ error() }}</span>
     </div>
   `,
-  styles: [`
+    styles: [`
     :host { display: inline-flex; }
     .exp-wrap { position: relative; display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .exp-btn {
@@ -67,7 +66,7 @@ const FORMATS: { id: ExportFormat; label: string; hint: string; icon: string }[]
     .exp-txt strong { font-size: 13px; }
     .exp-txt small { font-size: 11px; color: var(--muted); font-weight: 400; }
     .exp-err { color: var(--danger-text); font-size: 12px; }
-  `],
+  `]
 })
 export class ExportButtonsComponent {
   @Input({ required: true }) build!: () => ExportDoc;

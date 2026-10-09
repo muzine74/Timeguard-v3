@@ -5,18 +5,24 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../state/auth/auth.service';
 
 @Component({
-  selector: 'app-login',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, RouterLink],
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
+    selector: 'app-login',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, FormsModule, RouterLink],
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
-  username    = '';
+  /** Paramètres de l'adresse : ?tenant=…&user=… (arrivée depuis le lien de réinitialisation du mot de passe). */
+  private readonly _query = inject(ActivatedRoute).snapshot.queryParamMap;
+  /** Identifiant pré-rempli quand on arrive depuis la réinitialisation du mot de passe. */
+  username    = (this._query.get('user') ?? '').trim();
   password    = '';
-  /** Identifiant d'entreprise mémorisé sur cet appareil (non sensible) pour ne pas le ressaisir. */
-  tenantSlug  = LoginComponent._lastTenant();
+  /** Identifiant d'entreprise : celui du lien de réinitialisation, sinon celui mémorisé sur cet appareil
+   *  (non sensible) pour ne pas le ressaisir. */
+  tenantSlug  = (this._query.get('tenant') ?? '').trim() || LoginComponent._lastTenant();
+  /** Code de l'application d'authentification — champ affiché seulement quand le serveur le demande. */
+  otp         = '';
+  needOtp     = signal(false);
   showPw      = signal(false);
   loading     = signal(false);
   error       = signal('');
@@ -52,7 +58,15 @@ export class LoginComponent {
     this.loading.set(true);
     this.error.set('');
 
-    this.auth.login({ username: this.username, password: this.password, tenantSlug: this.tenantSlug }).subscribe({
+    if (this.needOtp() && !this.otp.trim()) {
+      this.loading.set(false);
+      this.error.set('Saisissez le code de vérification à 6 chiffres.'); return;
+    }
+
+    this.auth.login({
+      username: this.username, password: this.password, tenantSlug: this.tenantSlug,
+      ...(this.needOtp() ? { otp: this.otp.trim() } : {}),
+    }).subscribe({
       next: () => {
         this.loading.set(false);
         this.log('✓ login réussi');
@@ -88,10 +102,22 @@ export class LoginComponent {
         this.warn('  status: ', err.status);
         this.warn('  message:', err.message);
         this.warn('  body:   ', err.error);
+        // Second facteur demandé par le serveur : on affiche le champ du code, ce n'est pas une erreur
+        if (err.status === 401 && err.error?.code === 'OTP_REQUIRED') {
+          this.needOtp.set(true);
+          this.otp = '';
+          return;
+        }
+        if (err.status === 401 && err.error?.code === 'OTP_INVALID') {
+          this.otp = '';
+          this.error.set('Code de vérification incorrect ou déjà utilisé. Attendez le code suivant.');
+          return;
+        }
         this.error.set(
-          err.status === 401
-            ? 'Identifiants incorrects.'
-            : 'Erreur de connexion. Réessayez.'
+          err.status === 401 ? 'Identifiants incorrects.'
+          // Compte temporairement verrouillé ou trop de tentatives : le serveur indique le délai
+          : err.status === 429 ? (err.error?.message ?? 'Trop de tentatives. Réessayez dans quelques minutes.')
+          : 'Erreur de connexion. Réessayez.'
         );
       }
     });

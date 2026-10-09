@@ -57,6 +57,8 @@ export interface BillCreatePayload {
   note:           string;
   paymentInfo:    string;
   lines:          BillLine[];
+  /** Facturation par pointages : le serveur refuse (409) si la compagnie est déjà facturée pour la période. */
+  onlyIfNotBilled?: boolean;
 }
 
 export interface BillFilter {

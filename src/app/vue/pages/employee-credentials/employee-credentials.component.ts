@@ -10,12 +10,11 @@ import { EmployeesService }       from '../../../state/employees/employees.servi
 import { GroupsService, GroupSummary } from '../../../state/groups/groups.service';
 
 @Component({
-  selector: 'app-employee-credentials',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './employee-credentials.component.html',
-  styleUrls: ['./employee-credentials.component.scss'],
+    selector: 'app-employee-credentials',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, FormsModule],
+    templateUrl: './employee-credentials.component.html',
+    styleUrls: ['./employee-credentials.component.scss']
 })
 export class EmployeeCredentialsComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
@@ -108,7 +107,7 @@ export class EmployeeCredentialsComponent implements OnInit {
   create(): void {
     if (!this.formEmpId()) { this.error.set('Sélectionnez un employé.'); return; }
     if (!this.formUser().trim()) { this.error.set("Nom d'utilisateur requis."); return; }
-    if (this.formPass().length < 4) { this.error.set('Mot de passe : minimum 4 caractères.'); return; }
+    if (this.formPass().length < 10) { this.error.set('Mot de passe : minimum 10 caractères.'); return; }
 
     this.saving.set(true);
     this.error.set('');
@@ -139,7 +138,7 @@ export class EmployeeCredentialsComponent implements OnInit {
   confirmReset(): void {
     const id = this.resetId();
     if (!id) return;
-    if (this.resetPass().length < 4) { this.error.set('Minimum 4 caractères.'); return; }
+    if (this.resetPass().length < 10) { this.error.set('Minimum 10 caractères.'); return; }
     this.saving.set(true);
     this.credSvc.resetPassword(id, this.resetPass()).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {

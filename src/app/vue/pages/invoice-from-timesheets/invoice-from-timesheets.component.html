@@ -75,7 +75,8 @@
                 [class.row-ok]="r.genResult?.ok === true"
                 [class.row-err]="r.genResult?.ok === false">
               <td class="col-chk">
-                <input type="checkbox" [(ngModel)]="r.checked" (ngModelChange)="onRowToggle(r)" [disabled]="generating()" [attr.aria-label]="'Sélectionner ' + r.companyName" />
+                <input type="checkbox" [(ngModel)]="r.checked" (ngModelChange)="onRowToggle(r)" [disabled]="generating() || isDone(r)"
+                       [attr.aria-label]="isDone(r) ? r.companyName + ' : déjà facturée' : 'Sélectionner ' + r.companyName" />
               </td>
               <td class="co-name" [class.mismatch-text]="hasDiscrepancy(r)">
                 {{ r.companyName }}

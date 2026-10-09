@@ -8,12 +8,11 @@ import { EmployeesService } from '../../../state/employees/employees.service';
 import { CompanyService, CompanySummary } from '../../../state/compagny/Company.service';
 
 @Component({
-  selector: 'app-employee-assign',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './employee-assign.component.html',
-  styleUrls: ['./employee-assign.component.scss'],
+    selector: 'app-employee-assign',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, FormsModule],
+    templateUrl: './employee-assign.component.html',
+    styleUrls: ['./employee-assign.component.scss']
 })
 export class EmployeeAssignComponent implements OnInit {
   private readonly noteAlerts = inject(NoteAlertService);

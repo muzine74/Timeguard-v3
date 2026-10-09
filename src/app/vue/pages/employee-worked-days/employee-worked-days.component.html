@@ -1,0 +1,328 @@
+<div class="page-wrap">
+
+  <header class="page-hdr">
+    <div>
+      <h1 class="page-title">Paiements employés</h1>
+      <p class="page-sub">Journées des pointages validés, par employé et par semaine — cochez les journées payées, puis enregistrez un ou plusieurs versements. Chaque versement est plafonné au reste à verser ; les taxes s'ajoutent si l'employé a un numéro TPS / TVQ. Les journées hors de la période choisie sont barrées et ne sont pas comptées.</p>
+    </div>
+  </header>
+
+  <div class="error-banner" role="alert" *ngIf="error()">⚠ {{ error() }}</div>
+
+  <!-- ── Filtres ─────────────────────────────────────────────────────────── -->
+  <div class="filter-card">
+    <div class="filter-field emp-filter">
+      <span class="lbl" id="wd-employees-lbl">Employés</span>
+      <app-multi-select aria-labelledby="wd-employees-lbl" [options]="employeeOptions()" [selected]="selectedEmployees"
+                        (selectedChange)="setEmployees($event)" placeholder="Choisir des employés…" plural="employés sélectionnés"></app-multi-select>
+    </div>
+
+    <div class="seg-control mode-seg" role="group" aria-label="Type de période">
+      <button type="button" class="seg-opt" [class.active]="mode === 'period'" [attr.aria-pressed]="mode === 'period'" (click)="setMode('period')">📅 Période</button>
+      <button type="button" class="seg-opt" [class.active]="mode === 'range'" [attr.aria-pressed]="mode === 'range'" (click)="setMode('range')">📆 Intervalle</button>
+      <div class="seg-thumb" [class.thumb-right]="mode === 'range'"></div>
+    </div>
+
+    <div class="filter-field" *ngIf="mode === 'period'">
+      <label for="wd-mois">Mois</label>
+      <input id="wd-mois" class="inp" type="month" [(ngModel)]="period" (ngModelChange)="autoLoad()" />
+    </div>
+    <ng-container *ngIf="mode === 'range'">
+      <div class="filter-field">
+        <label for="wd-du">Du</label>
+        <input id="wd-du" class="inp" type="date" [(ngModel)]="dateFrom" (ngModelChange)="autoLoad()" />
+      </div>
+      <div class="filter-field">
+        <label for="wd-au">Au</label>
+        <input id="wd-au" class="inp" type="date" [(ngModel)]="dateTo" (ngModelChange)="autoLoad()" />
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- ── États ───────────────────────────────────────────────────────────── -->
+  <div class="loading-wrap" *ngIf="loading()" role="status"><span class="spinner"></span> Chargement des journées validées…</div>
+
+  <div class="empty-state" *ngIf="!loading() && selectedEmployees.length === 0">
+    <div class="empty-icon" aria-hidden="true">👤</div>
+    <div>Choisissez un ou plusieurs employés pour afficher leurs semaines à payer.</div>
+  </div>
+
+  <div class="empty-state" *ngIf="!loading() && selectedEmployees.length > 0 && loaded() && weeks().length === 0 && !error()">
+    <div class="empty-icon" aria-hidden="true">📭</div>
+    <div>Aucune semaine validée sur cette période.</div>
+    <div class="empty-sub">Seuls les pointages des semaines validées sont affichés.</div>
+  </div>
+
+  <!-- ── Résumé ──────────────────────────────────────────────────────────── -->
+  <div class="summary-bar" *ngIf="!loading() && weeks().length > 0">
+    <div><span class="sum-lbl">Employés</span><span class="sum-val">{{ summary().employees }}</span></div>
+    <div><span class="sum-lbl">Semaines validées</span><span class="sum-val">{{ summary().weeks }}</span></div>
+    <div><span class="sum-lbl">Revenus sélectionnés</span><span class="sum-val">{{ fmt(summary().selected) }}</span></div>
+    <div><span class="sum-lbl">Transféré</span><span class="sum-val ok">{{ fmt(summary().transferred) }}</span></div>
+    <div><span class="sum-lbl">Reste à transférer</span><span class="sum-val accent">{{ fmt(summary().toTransfer) }}</span></div>
+  </div>
+
+  <!-- ── Un bloc par employé ─────────────────────────────────────────────── -->
+  <div class="group-list" *ngIf="!loading() && weeks().length > 0">
+    <section class="emp-group" *ngFor="let g of groups(); trackBy: trackByGroup" [attr.aria-label]="g.name">
+
+      <h2 class="group-hdr">
+        <button type="button" class="group-toggle" (click)="toggleGroup(g.employeeId)"
+                [attr.aria-expanded]="!isCollapsed(g.employeeId)" [attr.aria-controls]="'grp-' + g.employeeId">
+          <span class="chev" [class.open]="!isCollapsed(g.employeeId)" aria-hidden="true">▸</span>
+          <span class="group-name">{{ g.name }}</span>
+          <span class="group-count">{{ g.weeks.length }} semaine{{ g.weeks.length > 1 ? 's' : '' }}</span>
+          <span class="group-totals">
+            <span>Transféré <b class="ok">{{ fmt(g.transferred) }}</b></span>
+            <span>Reste à transférer <b class="accent">{{ fmt(g.toTransfer) }}</b></span>
+          </span>
+        </button>
+      </h2>
+
+      <div class="week-list" [id]="'grp-' + g.employeeId" *ngIf="!isCollapsed(g.employeeId)">
+        <p class="group-empty" *ngIf="g.weeks.length === 0">Aucune semaine validée sur cette période.</p>
+
+        <section class="week-card" *ngFor="let w of g.weeks; trackBy: trackByWeek" [attr.aria-label]="weekLabel(w) + ' — ' + g.name"
+                 [class.is-transferred]="isSettled(w)">
+
+          <div class="week-hdr">
+            <h3 class="week-title">
+              <button type="button" class="week-toggle" (click)="toggleWeek(w)"
+                      [attr.aria-expanded]="isWeekOpen(w)" [attr.aria-controls]="'wk-' + w.key">
+                <span class="chev" [class.open]="isWeekOpen(w)" aria-hidden="true">▸</span>{{ weekLabel(w) }}
+              </button>
+            </h3>
+            <label class="check-all" *ngIf="isWeekOpen(w) && periodDays(w).length">
+              <input type="checkbox" [checked]="allSelected(w)" [indeterminate]="someSelected(w)" (change)="toggleAll(w)" />
+              Tout sélectionner
+            </label>
+            <div class="week-total">
+              <span class="status st-none" *ngIf="!hasPayments(w)">Non enregistrée</span>
+              <span class="status st-done" *ngIf="isSettled(w)">✓ Transférée en entier</span>
+              <span class="status st-pending" *ngIf="hasPayments(w) && !isSettled(w)">
+                Versé {{ fmt(transferredAmount(w)) }} sur {{ fmt(selectedTotal(w)) }}
+              </span>
+              <span class="wt-lbl">Total sélectionné</span>
+              <span class="wt-val">{{ fmt(selectedTotal(w)) }}</span>
+              <span class="wt-of" *ngIf="w.selected.size !== periodDays(w).length">sur {{ fmt(periodTotal(w)) }}</span>
+            </div>
+          </div>
+
+          <!-- Contenu de la semaine (repliée par défaut) -->
+          <div class="week-body" [id]="'wk-' + w.key" *ngIf="isWeekOpen(w)">
+          <div class="day-grid" *ngIf="w.workDays.length">
+            <button type="button" class="day-chip" *ngFor="let d of w.workDays; trackBy: trackByDate"
+                    [class.selected]="isSelected(w, d)" [class.out-period]="isOutOfPeriod(d)"
+                    [attr.aria-pressed]="isOutOfPeriod(d) ? null : isSelected(w, d)" [disabled]="isOutOfPeriod(d)"
+                    (click)="toggleDay(w, d)" [title]="dayTooltip(d)">
+              <span class="chip-check" aria-hidden="true">{{ isSelected(w, d) ? '✓' : '' }}</span>
+              <span class="day-name">{{ dayLabel(d.date) }}</span>
+              <span class="day-amount">{{ fmt(d.amount) }}</span>
+              <span class="sr-only" *ngIf="isOutOfPeriod(d)"> (hors de la période affichée : non comptée)</span>
+            </button>
+          </div>
+          <div class="week-empty" *ngIf="!w.workDays.length">Plus aucun pointage dans cette semaine.</div>
+
+          <!-- Où en est la semaine : total sélectionné − déjà versé = reste à verser (montants avant taxes) -->
+          <dl class="balance" [attr.aria-label]="'Reste à verser — ' + weekLabel(w)">
+            <div><dt>Total sélectionné</dt><dd>{{ fmt(selectedTotal(w)) }}</dd></div>
+            <div><dt>Déjà versé</dt><dd>− {{ fmt(paidAmount(w)) }}</dd></div>
+            <div class="balance-rest"><dt>Reste à verser <span class="tax-detail">avant taxes</span></dt><dd>{{ fmt(remaining(w)) }}</dd></div>
+          </dl>
+          <p class="over-hint" role="alert" *ngIf="overpaid(w) > 0">
+            ⚠ Les versements dépassent le total sélectionné de {{ fmt(overpaid(w)) }}. Recochez des journées ou annulez un versement.
+          </p>
+
+          <!-- Versements déjà enregistrés -->
+          <div class="payments" *ngIf="hasPayments(w)">
+            <div class="table-scroll" tabindex="0" role="region" [attr.aria-label]="'Versements enregistrés — ' + weekLabel(w) + ' — ' + g.name">
+              <table class="pay-table">
+                <caption class="sr-only">Versements enregistrés — {{ weekLabel(w) }} — {{ g.name }}</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Date de paiement</th>
+                    <th scope="col" class="num">Avant taxes</th>
+                    <th scope="col" class="num">Taxes</th>
+                    <th scope="col" class="num">Montant transféré</th>
+                    <th scope="col">État</th>
+                    <th scope="col">Note</th>
+                    <th scope="col"><span class="sr-only">Actions</span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let p of visiblePayments(w); trackBy: trackByPayment">
+                    <td class="nowrap">{{ dateLabel(p.paymentDate) }}</td>
+                    <td class="num">{{ fmt(p.amount) }}<div class="split-note" *ngIf="isSplit(p)">dont {{ fmt(periodShare(p)) }} pour cette période</div></td>
+                    <td class="num">{{ fmt(installmentTaxes(p)) }}</td>
+                    <td class="num strong">{{ fmt(p.total) }}</td>
+                    <td><span class="status" [class.st-done]="p.isTransferred" [class.st-pending]="!p.isTransferred">{{ p.isTransferred ? '✓ Transféré' : 'À transférer' }}</span></td>
+                    <td>{{ p.note || '—' }}</td>
+                    <td class="row-actions">
+                      <ng-container *ngIf="w.confirmDeleteId !== p.id">
+                        <button type="button" class="btn btn-outline btn-sm" [disabled]="!!w.busyId || w.saving"
+                                (click)="markTransferred(w, p, !p.isTransferred)"
+                                [attr.aria-label]="(p.isTransferred ? 'Remettre à transférer' : 'Marquer transféré') + ' : versement de ' + fmt(p.total)">
+                          {{ p.isTransferred ? 'Remettre à transférer' : '✓ Marquer transféré' }}
+                        </button>
+                        <button type="button" class="btn btn-outline btn-sm" [disabled]="!!w.busyId || w.saving" (click)="deleteInstallment(w, p)"
+                                [attr.aria-label]="'Annuler le versement de ' + fmt(p.total)">✕ Annuler</button>
+                      </ng-container>
+                      <ng-container *ngIf="w.confirmDeleteId === p.id">
+                        <button type="button" class="btn btn-outline btn-sm btn-danger" (click)="deleteInstallment(w, p)"
+                                [attr.aria-label]="'Confirmer l\'annulation du versement de ' + fmt(p.total)">Confirmer l'annulation</button>
+                        <button type="button" class="btn btn-outline btn-sm" (click)="keepInstallment(w)">Garder</button>
+                      </ng-container>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Nouveau versement -->
+          <ng-container *ngIf="remaining(w) > 0">
+            <div class="pay-row">
+              <div class="field">
+                <label [attr.for]="'real-' + w.key">{{ hasPayments(w) ? 'Nouveau versement — montant avant taxes' : 'Montant avant taxes' }}</label>
+                <div class="amount-wrap">
+                  <input #amt [id]="'real-' + w.key" class="inp amount-inp" type="number" min="0" step="0.01" inputmode="decimal"
+                         [attr.max]="maxAmount(w)" [attr.aria-describedby]="'max-' + w.key"
+                         [ngModel]="realAmount(w)" (ngModelChange)="onAmountInput(w, $event, amt)" />
+                  <span class="amount-suffix" aria-hidden="true">$</span>
+                </div>
+                <span class="max-hint" [id]="'max-' + w.key" [class.capped]="w.capped" [attr.role]="w.capped ? 'alert' : null">
+                  {{ w.capped ? 'Ramené au maximum : ' : 'Maximum : ' }}{{ fmt(maxAmount(w)) }} (reste à verser)
+                </span>
+              </div>
+
+              <div class="field">
+                <label [attr.for]="'paydate-' + w.key">Date de paiement</label>
+                <input [id]="'paydate-' + w.key" class="inp date-inp" type="date" required
+                       [ngModel]="w.payDate" (ngModelChange)="setPayDate(w, $event)" />
+                <span class="max-hint" aria-hidden="true">&nbsp;</span>
+              </div>
+
+              <label class="transfer-check" [class.on]="w.transferred">
+                <input type="checkbox" [checked]="w.transferred" (change)="setTransferred(w, $any($event.target).checked)" />
+                <span>Paiement transféré</span>
+              </label>
+
+              <button type="button" class="link-btn" *ngIf="isPartial(w)" (click)="resetAmount(w)">
+                ↺ Verser tout le reste ({{ fmt(remaining(w)) }})
+              </button>
+            </div>
+
+            <!-- Montant avant taxes + taxes de l'employé = montant réel transféré -->
+            <dl class="tax-lines" [attr.aria-label]="'Calcul du montant réel transféré — ' + weekLabel(w)">
+              <div>
+                <dt>Montant avant taxes</dt>
+                <dd>{{ fmt(realAmount(w)) }}</dd>
+              </div>
+              <div>
+                <dt>
+                  Taxes
+                  <span class="tax-detail" *ngIf="hasTaxes(w)">
+                    <ng-container *ngIf="w.tpsRate">TPS {{ rateLabel(w.tpsRate) }} : {{ fmt(tps(w)) }}</ng-container>
+                    <ng-container *ngIf="w.tpsRate && w.tvqRate"> · </ng-container>
+                    <ng-container *ngIf="w.tvqRate">TVQ {{ rateLabel(w.tvqRate) }} : {{ fmt(tvq(w)) }}</ng-container>
+                  </span>
+                  <span class="tax-detail" *ngIf="!hasTaxes(w)">aucune : l'employé n'a pas de numéro TPS / TVQ</span>
+                </dt>
+                <dd>{{ fmt(taxes(w)) }}</dd>
+              </div>
+              <div class="tax-total">
+                <dt>Montant réel transféré <span class="tax-detail">avec taxes</span></dt>
+                <dd>{{ fmt(transferTotal(w)) }}</dd>
+              </div>
+            </dl>
+          </ng-container>
+
+          <p class="settled-hint" *ngIf="remaining(w) === 0 && hasPayments(w)">
+            {{ isSettled(w) ? 'Semaine soldée : tout le total sélectionné est versé et transféré.' : 'Tout le total sélectionné est versé. Il reste à marquer les versements « transférés ».' }}
+          </p>
+          <p class="settled-hint" *ngIf="remaining(w) === 0 && !hasPayments(w)">
+            {{ periodDays(w).length ? 'Cochez au moins une journée pour enregistrer un versement.' : 'Aucune journée de cette semaine ne tombe dans la période affichée.' }}
+          </p>
+
+          <div class="action-row">
+            <span class="save-msg" [class.err]="w.saveError" role="status" *ngIf="w.saveMsg">{{ w.saveMsg }}</span>
+            <div class="pay-actions">
+              <button type="button" class="btn btn-outline"
+                      [attr.aria-expanded]="w.historyOpen" [attr.aria-controls]="'hist-' + w.key"
+                      (click)="toggleHistory(w)">🕘 Historique</button>
+              <button type="button" class="btn btn-primary" *ngIf="remaining(w) > 0" [disabled]="!canSave(w)" (click)="save(w)"
+                      [attr.aria-describedby]="reasonMissing(w) ? 'reason-hint-' + w.key : null">
+                <span *ngIf="!w.saving">💾 Enregistrer le versement</span>
+                <span *ngIf="w.saving" class="spinner" aria-label="Enregistrement…"></span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Raison obligatoire pour un versement partiel -->
+          <div class="note-block" *ngIf="remaining(w) > 0">
+            <label class="note-lbl" [attr.for]="'reason-' + w.key">
+              <ng-container *ngIf="isPartial(w)">Raison du versement partiel <span class="req" aria-hidden="true">*</span>
+                <span class="diff">({{ diffLabel(w) }})</span></ng-container>
+              <ng-container *ngIf="!isPartial(w)">Note <span class="diff">(facultative)</span></ng-container>
+            </label>
+            <textarea [id]="'reason-' + w.key" class="inp note-area" rows="2" maxlength="1000" [required]="isPartial(w)"
+                      [class.missing]="reasonMissing(w)" [attr.aria-invalid]="reasonMissing(w)"
+                      [attr.aria-describedby]="isPartial(w) ? 'reason-hint-' + w.key : null"
+                      placeholder="Ex. : premier versement, avance déjà versée, retenue matériel…"
+                      [ngModel]="w.noteText" (ngModelChange)="setNote(w, $event)"></textarea>
+            <span class="reason-hint" [id]="'reason-hint-' + w.key" [class.ok]="!reasonMissing(w)" *ngIf="isPartial(w)">
+              {{ reasonMissing(w) ? 'Saisissez la raison du versement partiel pour pouvoir enregistrer.' : '✓ Raison saisie' }}
+            </span>
+          </div>
+
+          <!-- Historique des enregistrements de la semaine -->
+          <div class="history" [id]="'hist-' + w.key" *ngIf="w.historyOpen">
+            <div class="history-title">Historique des enregistrements</div>
+            <div class="loading-wrap hist-loading" *ngIf="w.historyLoading" role="status"><span class="spinner"></span> Chargement…</div>
+            <div class="reason-hint" role="alert" *ngIf="w.historyError">⚠ {{ w.historyError }}</div>
+            <p class="hist-empty" *ngIf="!w.historyLoading && !w.historyError && w.history?.length === 0">
+              Aucun enregistrement pour cette semaine.
+            </p>
+            <div class="table-scroll" *ngIf="!w.historyLoading && w.history?.length"
+                 tabindex="0" role="region" [attr.aria-label]="'Historique des enregistrements — ' + weekLabel(w) + ' — ' + g.name">
+              <table class="hist-table">
+                <caption class="sr-only">Historique des enregistrements — {{ weekLabel(w) }} — {{ g.name }}. « Ancien » et « nouveau » montants = total versé pour la semaine, avant taxes ; « différence » = le versement.</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Enregistré le</th>
+                    <th scope="col" class="num">Versé avant</th>
+                    <th scope="col" class="num">Versé après</th>
+                    <th scope="col" class="num">Versement</th>
+                    <th scope="col" class="num">Taxes</th>
+                    <th scope="col" class="num">Avec taxes</th>
+                    <th scope="col">Date de paiement</th>
+                    <th scope="col">Transféré</th>
+                    <th scope="col">Journées payées</th>
+                    <th scope="col">Raison</th>
+                    <th scope="col">Par</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let h of w.history">
+                    <td class="nowrap"><time [attr.datetime]="h.changedAt">{{ paidAtLabel(h.changedAt) }}</time></td>
+                    <td class="num">{{ h.previousAmount == null ? '—' : fmt(h.previousAmount) }}</td>
+                    <td class="num">{{ fmt(h.newAmount) }}</td>
+                    <td class="num delta" [class.pos]="h.delta > 0" [class.neg]="h.delta < 0">{{ deltaLabel(h.delta) }}</td>
+                    <td class="num">{{ historyTaxes(h) == null || h.delta === 0 ? '—' : deltaLabel(historyTaxes(h)!) }}</td>
+                    <td class="num">{{ historyTaxes(h) == null || h.delta === 0 ? '—' : deltaLabel(h.delta + historyTaxes(h)!) }}</td>
+                    <td class="nowrap">{{ dateLabel(h.paymentDate) }}</td>
+                    <td>{{ historyTransferred(h) }}</td>
+                    <td>{{ historyDays(h) }}</td>
+                    <td>{{ h.note || '—' }}</td>
+                    <td>{{ h.changedBy || '—' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          </div>
+        </section>
+      </div>
+    </section>
+  </div>
+</div>

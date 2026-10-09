@@ -77,6 +77,23 @@
   font-size: .75rem;
   color: var(--muted);
   white-space: nowrap;
+
+  // Journée payée (vert) / non payée (rouge) — le texte « payée / non payée » est aussi lu par les lecteurs d'écran
+  &.chip-paid   { background: rgba(52,168,83,.14); border-color: rgba(52,168,83,.5); color: var(--success-text); font-weight: 600; }
+  &.chip-unpaid { background: rgba(234,67,53,.12); border-color: rgba(234,67,53,.45); color: var(--danger-text); font-weight: 600; }
+}
+
+.legend {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 0 0 12px;
+  .legend-txt { font-size: .78rem; color: var(--muted); }
+}
+
+.stat-card.card-green { background: rgba(52,168,83,.12); border-color: rgba(52,168,83,.3); .card-val { color: var(--success-text); } }
+.stats-table td.transferred { color: var(--success-text); font-weight: 600; }
+.stats-table tfoot .total-row {
+  background: var(--surface-alt, var(--surface)); font-weight: 700;
+  th, td { border-top: 2px solid var(--border); border-bottom: none; }
+  th { text-transform: none; letter-spacing: 0; font-size: .85rem; color: var(--text); }
 }
 
 

@@ -15,20 +15,20 @@
     <form class="form" (ngSubmit)="submit()">
 
       <div class="field">
-        <label class="flabel">Identifiant entreprise <span class="req">*</span></label>
+        <label class="flabel" for="login-tenant">Identifiant entreprise <span class="req">*</span></label>
         <div class="input-wrap">
           <span class="field-icon">🏢</span>
-          <input type="text" class="inp" placeholder="Identifiant entreprise (ex: ramssis)"
+          <input id="login-tenant" type="text" class="inp" placeholder="Identifiant entreprise (ex: ramssis)"
                  [(ngModel)]="tenantSlug" name="tenantSlug"
                  autocomplete="organization" [disabled]="loading()" />
         </div>
       </div>
 
       <div class="field">
-        <label class="flabel">Identifiant <span class="req">*</span></label>
+        <label class="flabel" for="login-username">Identifiant <span class="req">*</span></label>
         <div class="input-wrap">
           <span class="field-icon">👤</span>
-          <input type="text" class="inp" placeholder="Nom d'utilisateur"
+          <input id="login-username" type="text" class="inp" placeholder="Nom d'utilisateur"
                  [(ngModel)]="username" name="username"
                  autocomplete="username" [disabled]="loading()" />
         </div>
@@ -49,7 +49,18 @@
         </div>
       </div>
 
-      <div class="info-banner" role="status" *ngIf="sessionExpired && !error()">
+      <div class="field" *ngIf="needOtp()">
+        <label class="flabel" for="login-otp">Code de vérification <span class="req">*</span></label>
+        <div class="input-wrap">
+          <span class="field-icon" aria-hidden="true">🔑</span>
+          <input id="login-otp" type="text" class="inp" placeholder="Code à 6 chiffres" inputmode="numeric" maxlength="7"
+                 [(ngModel)]="otp" name="otp" autocomplete="one-time-code" [disabled]="loading()"
+                 aria-describedby="login-otp-hint" />
+        </div>
+        <span class="otp-hint" id="login-otp-hint" role="status">Ouvrez votre application d'authentification et saisissez le code affiché pour TimeGuard.</span>
+      </div>
+
+      <div class="info-banner" role="status" *ngIf="sessionExpired && !error() && !needOtp()">
         Votre session a expiré. Reconnectez-vous pour revenir à la page où vous étiez.
       </div>
       <div class="error-banner" role="alert" *ngIf="error()">

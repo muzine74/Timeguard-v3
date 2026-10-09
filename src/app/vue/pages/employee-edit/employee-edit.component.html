@@ -132,13 +132,31 @@
                 </div>
               </div>
               <div class="field">
-                <label for="employee-edit-mode-remuneration">Mode de rémunération par défaut</label>
+                <div class="lbl-row">
+                  <label for="employee-edit-mode-remuneration">Mode de rémunération par défaut</label>
+                  <span class="help-tip" tabindex="0" role="img" aria-label="Aide : mode de rémunération par défaut">?<span class="help-tip-txt" role="tooltip" id="employee-edit-mode-remuneration-hint">S'applique à toutes ses compagnies, sauf réglage différent pour une compagnie dans Employés → Tarifs employés. Par heure : l'employé saisit ses heures et est payé heures × son taux, sinon le taux employé par défaut de la compagnie.</span></span>
+                </div>
                 <select id="employee-edit-mode-remuneration" class="inp inp-sel" [(ngModel)]="form.modeRemuneration"
                         aria-describedby="employee-edit-mode-remuneration-hint">
                   <option value="Visite">Par visite (tarifs du planning)</option>
                   <option value="Heure">Par heure (heure de début / fin)</option>
                 </select>
-                <span class="field-hint" id="employee-edit-mode-remuneration-hint">S'applique à toutes ses compagnies, sauf réglage différent pour une compagnie dans Employés → Tarifs employés. Par heure : l'employé saisit ses heures et est payé heures × son taux, sinon le taux employé par défaut de la compagnie.</span>
+              </div>
+              <div class="field">
+                <div class="lbl-row">
+                  <label for="employee-edit-tps">Numéro TPS</label>
+                  <span class="help-tip" tabindex="0" role="img" aria-label="Aide : numéro TPS">?<span class="help-tip-txt" role="tooltip" id="employee-edit-tps-hint">Facultatif. Si le numéro TPS est renseigné, la TPS est ajoutée aux paiements de l'employé dans les Statistiques. Sans numéro, aucune TPS.</span></span>
+                </div>
+                <input id="employee-edit-tps" class="inp" type="text" maxlength="50" autocomplete="off" [(ngModel)]="form.tpsNumber"
+                       placeholder="123456789 RT0001" aria-describedby="employee-edit-tps-hint" />
+              </div>
+              <div class="field">
+                <div class="lbl-row">
+                  <label for="employee-edit-tvq">Numéro TVQ</label>
+                  <span class="help-tip" tabindex="0" role="img" aria-label="Aide : numéro TVQ">?<span class="help-tip-txt" role="tooltip" id="employee-edit-tvq-hint">Facultatif. Si le numéro TVQ est renseigné, la TVQ est ajoutée aux paiements de l'employé dans les Statistiques. Sans numéro, aucune TVQ.</span></span>
+                </div>
+                <input id="employee-edit-tvq" class="inp" type="text" maxlength="50" autocomplete="off" [(ngModel)]="form.tvqNumber"
+                       placeholder="1234567890 TQ0001" aria-describedby="employee-edit-tvq-hint" />
               </div>
               <app-team-assignment class="team-assign-host" [form]="form" [selfId]="employeeId()" idPrefix="employee-edit"></app-team-assignment>
               <div class="field">

@@ -6,12 +6,11 @@ import { PointageAdminService }    from '../../../state/pointage/pointage-admin.
 import { Compagnie, WeekDay }      from '../../../models/index';
 
 @Component({
-  selector: 'app-pointage-table',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
-  templateUrl: './pointage-table.component.html',
-  styleUrls:   ['./pointage-table.component.scss'],
+    selector: 'app-pointage-table',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule],
+    templateUrl: './pointage-table.component.html',
+    styleUrls: ['./pointage-table.component.scss']
 })
 export class PointageTableComponent {
   @Input() mode:   'employee' | 'admin' = 'employee';

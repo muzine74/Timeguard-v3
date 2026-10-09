@@ -11,11 +11,10 @@ import { EmployeeForm } from '../../../models';
  * Le serveur revalide (chef existant, sans boucle, chef avec équipe qui garde son rôle).
  */
 @Component({
-  selector: 'app-team-assignment',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.Default,
-  imports: [CommonModule, FormsModule],
-  template: `
+    selector: 'app-team-assignment',
+    changeDetection: ChangeDetectionStrategy.Default,
+    imports: [CommonModule, FormsModule],
+    template: `
     <div class="field span-full team-assign">
       <label class="team-check">
         <input type="checkbox" [(ngModel)]="form.isTeamLead" [id]="idPrefix + '-team-lead'" />
@@ -41,12 +40,12 @@ import { EmployeeForm } from '../../../models';
       </span>
     </div>
   `,
-  styles: [`
+    styles: [`
     .team-check { display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 600; }
     .team-check input { width: 18px; height: 18px; accent-color: var(--accent); }
     .team-check-hint { font-weight: 400; color: var(--muted); font-size: 12px; }
     .team-error { color: var(--danger); font-weight: 600; }
-  `],
+  `]
 })
 export class TeamAssignmentComponent implements OnInit {
   @Input({ required: true }) form!: EmployeeForm;

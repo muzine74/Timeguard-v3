@@ -1,3 +1,4 @@
+import { todayIso } from '../../shared/dates';
 import { Component, OnInit, signal, computed, ChangeDetectionStrategy, inject } from '@angular/core';
 import { NoteAlertService } from '../../../state/notes/note-alert.service';
 import { CommonModule } from '@angular/common';
@@ -28,12 +29,11 @@ interface FlatRow {
 }
 
 @Component({
-  selector: 'app-invoice-manage',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, ExportButtonsComponent],
-  templateUrl: './invoice-manage.component.html',
-  styleUrls: ['./invoice-manage.component.scss'],
+    selector: 'app-invoice-manage',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, FormsModule, ExportButtonsComponent],
+    templateUrl: './invoice-manage.component.html',
+    styleUrls: ['./invoice-manage.component.scss']
 })
 export class InvoiceManageComponent implements OnInit {
 
@@ -445,7 +445,7 @@ export class InvoiceManageComponent implements OnInit {
     this.selectedBill.set(bill);
     this.aNote           = `AVOIR — Réf. ${bill.billNumber}`;
     this.aPeriod         = '';
-    this.aBilledDate     = new Date().toISOString().split('T')[0];
+    this.aBilledDate     = todayIso();
     this.aNumberOfVisits = 0;
     this.aPaymentInfo    = '';
     this.loadingDetail.set(true);

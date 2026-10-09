@@ -10,12 +10,11 @@ import { CredentialsService } from '../../../state/auth/credentials.service';
 import { Employee, EmployeeFile, EmployeeForm } from '../../../models';
 
 @Component({
-  selector: 'app-employee-edit',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TeamAssignmentComponent],
-  templateUrl: './employee-edit.component.html',
-  styleUrls: ['./employee-edit.component.scss'],
+    selector: 'app-employee-edit',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, FormsModule, TeamAssignmentComponent],
+    templateUrl: './employee-edit.component.html',
+    styleUrls: ['./employee-edit.component.scss']
 })
 export class EmployeeEditComponent implements OnInit {
   private readonly noteAlerts = inject(NoteAlertService);
@@ -292,6 +291,8 @@ export class EmployeeEditComponent implements OnInit {
       nas:                 e.nas                 ?? '',
       employeeType:        e.employeeType        ?? 'Permanent',
       modeRemuneration:    e.modeRemuneration    ?? 'Visite',
+      tpsNumber:           e.tpsNumber           ?? '',
+      tvqNumber:           e.tvqNumber           ?? '',
       isTeamLead:          !!e.isTeamLead,
       managerId:           e.managerId ?? null,
       employeeCivicNumber: e.employeeCivicNumber ?? '',
@@ -309,6 +310,7 @@ export class EmployeeEditComponent implements OnInit {
       employeeName: '', employeeMail: '', employeePhone: '', employeeNote: '', nas: '',
       employeeType: 'Permanent',
       modeRemuneration: 'Visite',
+      tpsNumber: '', tvqNumber: '',
       isTeamLead: false,
       managerId: null,
       employeeCivicNumber: '', employeeSuite: '', employeeZipCode: '',

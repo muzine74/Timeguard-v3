@@ -119,3 +119,6 @@
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+// Second facteur (super-administrateur)
+.otp-hint { display: block; margin-top: 6px; font-size: 12px; color: var(--muted); }

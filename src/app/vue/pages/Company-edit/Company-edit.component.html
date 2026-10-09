@@ -3,42 +3,48 @@
   <!-- ── Sidebar compagnies ── -->
   <aside class="sidebar">
     <div class="sidebar-hdr">
-      <div class="sidebar-title">Compagnies</div>
-      <input class="sidebar-search" [(ngModel)]="searchQuery" placeholder="Rechercher..." />
-      <div class="status-filter">
-        <button class="sf-btn" [class.sf-active]="statusFilter === 'all'"      (click)="statusFilter = 'all'">Tous</button>
-        <button class="sf-btn" [class.sf-active]="statusFilter === 'active'"   (click)="statusFilter = 'active'">Actif</button>
-        <button class="sf-btn" [class.sf-active]="statusFilter === 'inactive'" (click)="statusFilter = 'inactive'">Inactif</button>
+      <div class="sidebar-title">Compagnies <span class="sidebar-count" *ngIf="!loadingList() && !listError()">{{ filteredCompanies.length }} / {{ companies.length }}</span></div>
+      <input class="sidebar-search" type="search" [(ngModel)]="searchQuery" placeholder="Rechercher..." aria-label="Rechercher une compagnie par son nom" />
+      <div class="status-filter" role="group" aria-label="Filtrer par statut">
+        <button type="button" class="sf-btn" [class.sf-active]="statusFilter === 'all'"      [attr.aria-pressed]="statusFilter === 'all'"      (click)="statusFilter = 'all'">Tous</button>
+        <button type="button" class="sf-btn" [class.sf-active]="statusFilter === 'active'"   [attr.aria-pressed]="statusFilter === 'active'"   (click)="statusFilter = 'active'">Actif</button>
+        <button type="button" class="sf-btn" [class.sf-active]="statusFilter === 'inactive'" [attr.aria-pressed]="statusFilter === 'inactive'" (click)="statusFilter = 'inactive'">Inactif</button>
       </div>
     </div>
 
-    <div class="sidebar-loading" *ngIf="loadingList()">
-      <div class="mini-spinner"></div>
+    <div class="sidebar-loading" *ngIf="loadingList()" role="status">
+      <div class="mini-spinner"></div><span class="sr-only">Chargement des compagnies…</span>
     </div>
 
-    <div class="sidebar-list" *ngIf="!loadingList()">
-      <div *ngFor="let c of filteredCompanies"
+    <div class="sidebar-empty" role="alert" *ngIf="!loadingList() && listError()">
+      ⚠ {{ listError() }}
+      <button type="button" class="btn btn-outline btn-retry" (click)="reloadList()">Réessayer</button>
+    </div>
+
+    <nav class="sidebar-list" *ngIf="!loadingList() && !listError()" aria-label="Liste des compagnies">
+      <button type="button" *ngFor="let c of filteredCompanies; trackBy: trackCompany"
            class="sidebar-item"
            [class.active]="c.companyId === companyId()"
+           [attr.aria-current]="c.companyId === companyId() ? 'true' : null"
            (click)="selectCompany(c.companyId)">
-        <div class="sidebar-avatar">{{ initials(c.companyName) }}</div>
-        <div class="sidebar-info">
-          <div class="sidebar-name">{{ c.companyName }}</div>
+        <span class="sidebar-avatar" aria-hidden="true">{{ initials(c.companyName) }}</span>
+        <span class="sidebar-info">
+          <span class="sidebar-name">{{ c.companyName }}</span>
           <span class="sidebar-badge" [class.badge-active]="c.isActive">
             {{ c.isActive ? 'Actif' : 'Inactif' }}
           </span>
-        </div>
-      </div>
+        </span>
+      </button>
       <div class="sidebar-empty" *ngIf="filteredCompanies.length === 0">
-        Aucune compagnie
+        {{ companies.length === 0 ? 'Aucune compagnie' : 'Aucune compagnie ne correspond à la recherche ou au filtre.' }}
       </div>
-    </div>
+    </nav>
   </aside>
 
   <!-- ── Formulaire ── -->
   <div class="form-area">
 
-    <div role="status" aria-live="polite" class="toast" [class.toast-show]="saved()">{{ saved() ? '✓ Compagnie mise à jour' : '' }}</div>
+    <div role="status" aria-live="polite" class="toast" [class.toast-show]="saved()">{{ saved() ? savedMsg() : '' }}</div>
     <div role="alert" class="toast toast-error" [class.toast-show]="error()">{{ error() }}</div>
 
     <!-- Aucune sélection -->
@@ -59,11 +65,12 @@
       <header class="page-hdr">
         <div>
           <h1 class="page-title">{{ form.companyName || 'Modifier la compagnie' }}</h1>
-          <p class="page-sub">Modifiez et enregistrez les informations</p>
+          <p class="page-sub">Modifiez et enregistrez les informations
+            <span class="unsaved-dot" *ngIf="isDirty()">● Modifications non enregistrées</span></p>
         </div>
         <div class="page-actions">
-          <button class="btn btn-outline" (click)="cancel()">✕ Annuler</button>
-          <button class="btn btn-primary" [disabled]="saving()" (click)="submit()">
+          <button type="button" class="btn btn-outline" (click)="cancel()">{{ isDirty() ? '↺ Annuler les modifications' : '✕ Fermer' }}</button>
+          <button type="button" class="btn btn-primary" [disabled]="saving()" (click)="submit()">
             <span *ngIf="!saving()">✓ Enregistrer</span>
             <span *ngIf="saving()" class="spinner"></span>
           </button>
@@ -81,8 +88,8 @@
               <label class="toggle-wrap"><input type="checkbox" [(ngModel)]="form.isActive"><span class="toggle-lbl">Actif</span></label>
             </div>
             <div class="fields-grid">
-              <div class="field span-full"><label for="Company-edit-nom">Nom <span class="req">*</span></label><input id="Company-edit-nom" class="inp" [(ngModel)]="form.companyName" placeholder="Acme Construction inc." /></div>
-              <div class="field"><label for="Company-edit-code">Code</label><input id="Company-edit-code" class="inp" [(ngModel)]="form.companyCode" placeholder="ACME-001" /></div>
+              <div class="field span-full"><label for="Company-edit-nom">Nom <span class="req">*</span></label><input id="Company-edit-nom" class="inp" [(ngModel)]="form.companyName" placeholder="Acme Construction inc." required aria-required="true" maxlength="200" [attr.aria-invalid]="!form.companyName.trim()" /></div>
+              <div class="field"><label for="Company-edit-code">Code</label><input id="Company-edit-code" class="inp" [(ngModel)]="form.companyCode" placeholder="ACME-001" maxlength="50" /></div>
               <div class="field span-full"><label for="Company-edit-note">Note</label><textarea id="Company-edit-note" class="inp inp-ta" [(ngModel)]="form.note" rows="3"></textarea></div>
             </div>
           </div>
@@ -160,10 +167,10 @@
                 <div class="card-title">Contacts</div>
                 <div class="card-sub">{{ contacts().length }} contact(s)</div>
               </div>
-              <button class="btn-add-jour" (click)="openAddContact()" *ngIf="!showContactForm()">+ Contact</button>
+              <button type="button" class="btn-add-jour" (click)="openAddContact()" *ngIf="!showContactForm()">+ Contact</button>
             </div>
 
-            <div class="emp-loading" *ngIf="contactsLoading()"><div class="mini-spinner"></div></div>
+            <div class="emp-loading" *ngIf="contactsLoading()" role="status"><div class="mini-spinner"></div><span class="sr-only">Chargement des contacts…</span></div>
 
             <div role="alert" class="toast toast-error" style="position:relative;margin:8px 0;" [class.toast-show]="contactError()">{{ contactError() }}</div>
 
@@ -172,7 +179,7 @@
               <div class="fields-grid">
                 <div class="field span-full">
                   <label for="Company-edit-nom-2">Nom <span class="req">*</span></label>
-                  <input id="Company-edit-nom-2" class="inp" [(ngModel)]="contactForm.name" placeholder="Jean Dupont" />
+                  <input id="Company-edit-nom-2" class="inp" [(ngModel)]="contactForm.name" placeholder="Jean Dupont" required aria-required="true" autocomplete="off" />
                 </div>
                 <div class="field">
                   <label for="Company-edit-courriel">Courriel</label>
@@ -194,9 +201,9 @@
                 </div>
               </div>
               <div class="contact-form-actions">
-                <button class="btn btn-outline" (click)="cancelContactForm()">Annuler</button>
-                <button class="btn btn-primary" (click)="saveContact()">
-                  {{ editingContact() ? 'Modifier' : 'Ajouter' }}
+                <button type="button" class="btn btn-outline" [disabled]="savingContact()" (click)="cancelContactForm()">Annuler</button>
+                <button type="button" class="btn btn-primary" [disabled]="savingContact()" (click)="saveContact()">
+                  {{ savingContact() ? 'Enregistrement…' : editingContact() ? 'Modifier' : 'Ajouter' }}
                 </button>
               </div>
             </div>
@@ -217,11 +224,12 @@
                   <div class="emp-meta" *ngIf="c.notes">{{ c.notes }}</div>
                 </div>
                 <div class="contact-actions">
-                  <button class="btn-icon" [title]="c.isActive ? 'Désactiver' : 'Activer'" (click)="toggleContact(c)">
-                    {{ c.isActive ? '🔕' : '🔔' }}
+                  <button type="button" class="btn-icon" [title]="c.isActive ? 'Désactiver' : 'Activer'"
+                          [attr.aria-label]="(c.isActive ? 'Désactiver' : 'Activer') + ' le contact ' + c.name" (click)="toggleContact(c)">
+                    <span aria-hidden="true">{{ c.isActive ? '🔕' : '🔔' }}</span>
                   </button>
-                  <button class="btn-icon" title="Modifier" (click)="openEditContact(c)">✏️</button>
-                  <button class="btn-icon btn-icon-del" title="Supprimer" (click)="deleteContact(c)">🗑</button>
+                  <button type="button" class="btn-icon" title="Modifier" [attr.aria-label]="'Modifier le contact ' + c.name" (click)="openEditContact(c)"><span aria-hidden="true">✏️</span></button>
+                  <button type="button" class="btn-icon btn-icon-del" title="Supprimer" [attr.aria-label]="'Supprimer le contact ' + c.name" (click)="deleteContact(c)"><span aria-hidden="true">🗑</span></button>
                 </div>
               </div>
               <div class="emp-empty" *ngIf="contacts().length === 0 && !showContactForm()">
@@ -318,7 +326,7 @@
             <div class="card-header">
               <span class="card-icon">📋</span>
               <div><div class="card-title">Planning — Mensuel</div><div class="card-sub">Jours de travail</div></div>
-              <button class="btn-add-jour" (click)="addJourMensuel()">+ Jour</button>
+              <button type="button" class="btn-add-jour" (click)="addJourMensuel()">+ Jour</button>
             </div>
             <div class="mensuel-wrap">
               <div class="mensuel-row" *ngFor="let j of form.joursMensuel; let i = index">
@@ -328,8 +336,8 @@
                 <input [attr.aria-label]="'Travail le jour ' + j.jour" type="checkbox" [(ngModel)]="j.actif" />
                 <input [attr.aria-label]="'Prix compagnie — jour ' + j.jour" class="inp-num" type="number" min="0" step="0.01" [(ngModel)]="j.compagnie" [disabled]="!j.actif" placeholder="Cie $" />
                 <input [attr.aria-label]="'Paiement employé — jour ' + j.jour" class="inp-num" type="number" min="0" step="0.01" [(ngModel)]="j.employe"   [disabled]="!j.actif" placeholder="Emp $" />
-                <input class="inp" type="date" [(ngModel)]="j.applicatedDate" [disabled]="!j.actif" title="Date d'application (vide = toujours applicable)" style="width:145px;font-size:0.8rem" />
-                <button class="btn-remove" (click)="removeJourMensuel(i)">✕</button>
+                <input class="inp" type="date" [(ngModel)]="j.applicatedDate" [disabled]="!j.actif" title="Date d'application (vide = toujours applicable)" [attr.aria-label]="'Date d’application — jour ' + j.jour" style="width:145px;font-size:0.8rem" />
+                <button type="button" class="btn-remove" [attr.aria-label]="'Retirer le jour ' + j.jour" (click)="removeJourMensuel(i)"><span aria-hidden="true">✕</span></button>
               </div>
               <div class="mensuel-empty" *ngIf="form.joursMensuel.length === 0">
                 Cliquez sur "+ Jour" pour ajouter un jour
@@ -345,7 +353,7 @@
 <!-- Templates -->
 <ng-template #tplSemaine let-s="s">
   <table class="planning-table">
-    <thead><tr><th>Jour</th><th></th><th>Compagnie $</th><th>Employé $</th></tr></thead>
+    <thead><tr><th scope="col">Jour</th><th scope="col"><span class="sr-only">Travaillé</span></th><th scope="col">Compagnie $</th><th scope="col">Employé $</th></tr></thead>
     <tbody>
       <tr *ngFor="let jour of jours; let i = index">
         <td class="jour-lbl">{{ joursLabels[i] }}</td>
@@ -362,7 +370,7 @@
     <div class="bi-mensuel-col">
       <div class="semaine-title">Jours 1 — 8</div>
       <table class="planning-table">
-        <thead><tr><th>Jour</th><th></th><th>Cie $</th><th>Emp $</th></tr></thead>
+        <thead><tr><th scope="col">Jour</th><th scope="col"><span class="sr-only">Travaillé</span></th><th scope="col">Cie $</th><th scope="col">Emp $</th></tr></thead>
         <tbody>
           <tr *ngFor="let j of jours.slice(0,8)">
             <td class="jour-num">{{ j.jour }}</td>
@@ -376,7 +384,7 @@
     <div class="bi-mensuel-col">
       <div class="semaine-title">Jours 9 — 15</div>
       <table class="planning-table">
-        <thead><tr><th>Jour</th><th></th><th>Cie $</th><th>Emp $</th></tr></thead>
+        <thead><tr><th scope="col">Jour</th><th scope="col"><span class="sr-only">Travaillé</span></th><th scope="col">Cie $</th><th scope="col">Emp $</th></tr></thead>
         <tbody>
           <tr *ngFor="let j of jours.slice(8,15)">
             <td class="jour-num">{{ j.jour }}</td>

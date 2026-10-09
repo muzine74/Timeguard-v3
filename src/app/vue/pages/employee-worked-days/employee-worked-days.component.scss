@@ -1,0 +1,311 @@
+// Même langage visuel que « Paiements employés » (filtres, cartes semaine, puces journée).
+.page-wrap { padding: 24px; max-width: 1100px; margin: 0 auto; }
+.page-hdr { margin-bottom: 20px; }
+
+.error-banner {
+  background: rgba(224,82,82,.1); border: 1px solid rgba(224,82,82,.25);
+  border-radius: 9px; padding: 10px 14px; font-size: 12.5px; color: var(--danger-text);
+  margin-bottom: 16px;
+}
+
+// ── Filtres ───────────────────────────────────────────────────────────────
+.filter-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 20px 22px; margin-bottom: 22px;
+  display: flex; align-items: flex-end; gap: 22px; flex-wrap: wrap;
+}
+.filter-field {
+  display: flex; flex-direction: column; gap: 6px;
+  label, .lbl { font-size: 11px; font-weight: 600; color: var(--muted); }
+}
+.emp-filter { min-width: 280px; app-multi-select { flex: 0 0 auto; } }
+.inp {
+  background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+  padding: 9px 11px; border-radius: 8px; font-family: inherit; font-size: 13px;
+  outline: none; transition: border-color .2s;
+  &:focus { border-color: var(--accent); }
+}
+input[type="date"].inp, input[type="month"].inp, select.inp { color-scheme: var(--color-scheme); }
+
+.seg-control {
+  position: relative; display: inline-flex; min-width: 260px;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 22px; padding: 3px;
+}
+.seg-opt {
+  position: relative; z-index: 1; flex: 1; border: none; background: transparent;
+  padding: 8px 18px; font-size: .85rem; color: var(--muted); cursor: pointer; font-family: inherit;
+  border-radius: 19px; white-space: nowrap; transition: color .2s;
+  &.active { color: var(--on-accent); font-weight: 600; }
+  &:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+}
+.seg-thumb {
+  position: absolute; top: 3px; left: 3px; width: calc(50% - 3px); height: calc(100% - 6px);
+  background: var(--accent); border-radius: 19px; transition: transform .25s ease;
+  &.thumb-right { transform: translateX(100%); }
+}
+
+.empty-sub { font-size: 12px; }
+
+// ── Résumé ────────────────────────────────────────────────────────────────
+.summary-bar {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px;
+  margin-bottom: 16px;
+  > div {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 12px 16px; display: flex; flex-direction: column; gap: 4px;
+  }
+}
+.sum-lbl { font-size: 11px; font-weight: 600; color: var(--muted); }
+.sum-val { font-size: 17px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+.sum-val.accent { color: var(--accent); }
+
+// ── Semaines ──────────────────────────────────────────────────────────────
+.week-list { display: flex; flex-direction: column; gap: 14px; }
+.week-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+}
+.week-hdr {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  background: var(--bg); padding: 10px 16px; border-bottom: 1px solid var(--border);
+}
+.week-title { margin: 0; font-size: 13.5px; font-weight: 700; color: var(--text); }
+.check-all {
+  display: inline-flex; align-items: center; gap: 7px; cursor: pointer;
+  font-size: 12.5px; font-weight: 600; color: var(--text);
+  input { width: 16px; height: 16px; accent-color: var(--success); cursor: pointer; }
+}
+.week-total { margin-left: auto; display: flex; align-items: baseline; gap: 8px; }
+.wt-lbl { font-size: 11px; font-weight: 600; color: var(--muted); }
+.wt-val { font-size: 15px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+.wt-of  { font-size: 11.5px; color: var(--muted); }
+
+.day-grid { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 16px; }
+.day-chip { position: relative; }   // garde le texte « sr-only » dans la puce
+.day-chip {
+  display: flex; align-items: center; gap: 7px;
+  background: var(--surface2); border: 1px solid rgba(var(--overlay-rgb), .16); border-radius: 7px;
+  padding: 7px 11px; font-size: 12.5px; color: var(--text); cursor: pointer;
+  font-family: inherit; transition: border-color .15s, background .15s;
+  &:hover { border-color: var(--accent); }
+  &:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .chip-check {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 15px; height: 15px; border-radius: 4px; border: 1px solid var(--border);
+    font-size: 10px; font-weight: 700; flex-shrink: 0;
+  }
+  .day-name { text-transform: capitalize; }
+  .day-amount { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  // Journée payée DANS la période affichée → vert doux (non sélectionnée : couleur d'origine)
+  &.selected {
+    background: rgba(30,200,100,.09); border-color: rgba(30,200,100,.38);
+    .chip-check { background: var(--success); border-color: var(--success); color: #fff; }
+    .day-amount { color: var(--success-text); font-weight: 600; }
+    &:hover { border-color: var(--success); }
+  }
+  // Journée HORS de la période affichée → grisée, barrée, non cochable, exclue des calculs
+  &.out-period, &.out-period:hover {
+    background: transparent; border-style: dashed; border-color: rgba(var(--overlay-rgb), .16);
+    color: var(--muted); cursor: not-allowed;
+    .day-name, .day-amount { text-decoration: line-through; color: var(--muted); font-weight: 400; }
+    .chip-check { border-style: dashed; }
+  }
+}
+.week-empty { padding: 12px 16px; font-size: 12.5px; color: var(--muted); }
+
+// ── Montant réel transféré ────────────────────────────────────────────────
+.pay-row {
+  display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap;
+  padding: 12px 16px; border-top: 1px dashed var(--border);
+}
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-size: 11px; font-weight: 600; color: var(--muted); }
+.amount-wrap { position: relative; display: inline-flex; align-items: center; }
+.amount-inp { width: 170px; padding-right: 26px; font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.amount-suffix { position: absolute; right: 10px; color: var(--muted); font-size: 13px; pointer-events: none; }
+
+.link-btn {
+  background: none; border: none; padding: 0 0 10px; font: inherit; font-size: 12px; color: var(--accent);
+  text-decoration: underline; cursor: pointer;
+  &:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+}
+.pay-actions { margin-left: auto; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.saved-info { font-size: 12px; color: var(--muted); }
+.save-msg { font-size: 12px; font-weight: 600; color: var(--success-text); &.err { color: var(--danger-text); } }
+
+.note-block { display: flex; flex-direction: column; gap: 8px; padding: 0 16px 14px; }
+.note-area { resize: vertical; font-family: inherit; width: 100%; box-sizing: border-box; }
+
+.spinner {
+  display: inline-block; width: 14px; height: 14px;
+  border: 2px solid rgba(var(--accent-rgb), .3); border-top-color: var(--accent);
+  border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 640px) {
+  .page-wrap { padding: 16px; }
+  .filter-card { flex-direction: column; align-items: stretch; padding: 16px; }
+  .emp-filter, .seg-control { min-width: 0; width: 100%; }
+  .week-total { margin-left: 0; width: 100%; }
+  .pay-actions { margin-left: 0; width: 100%; justify-content: space-between; }
+  .amount-inp { width: 100%; }
+  .amount-wrap, .pay-row .field { width: 100%; }
+}
+
+// ── Raison de la différence (obligatoire) ─────────────────────────────────
+.note-lbl { font-size: 12.5px; font-weight: 600; color: var(--text); }
+.req { color: var(--danger-text); }
+.diff { font-weight: 500; color: var(--muted); margin-left: 4px; }
+.note-area.missing { border-color: var(--danger-text); }
+.reason-hint { font-size: 12px; color: var(--danger-text); &.ok { color: var(--success-text); } }
+
+// ── Date de paiement (dernier enregistrement), à gauche du total ──────────
+.paid-on {
+  display: inline-flex; align-items: baseline; gap: 6px; margin-right: 10px;
+  padding-right: 12px; border-right: 1px solid var(--border);
+}
+.paid-date { font-size: 12.5px; font-weight: 600; color: var(--success-text); white-space: nowrap; }
+.paid-on.unpaid { font-size: 12px; font-style: italic; color: var(--muted); }
+@media (max-width: 640px) {
+  .week-total { flex-wrap: wrap; }
+  .paid-on { width: 100%; border-right: none; padding-right: 0; margin: 0 0 4px; }
+}
+
+// ── Historique des enregistrements ────────────────────────────────────────
+.history { padding: 12px 16px 16px; border-top: 1px dashed var(--border); }
+.history-title { font-size: 12.5px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+.hist-loading { padding: 12px 0; justify-content: flex-start; }
+.hist-empty { margin: 0; font-size: 12.5px; color: var(--muted); font-style: italic; }
+.table-scroll {
+  overflow-x: auto; border: 1px solid var(--border); border-radius: 8px;
+  &:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+}
+.hist-table {
+  width: 100%; border-collapse: collapse; font-size: 12.5px;
+  th { text-align: left; font-size: 11px; font-weight: 600; color: var(--muted); background: var(--bg); padding: 7px 10px; white-space: nowrap; }
+  td { padding: 7px 10px; border-top: 1px solid var(--border); color: var(--text); vertical-align: top; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .nowrap { white-space: nowrap; }
+  .delta { font-weight: 700; }
+  .delta.pos { color: var(--success-text); }
+  .delta.neg { color: var(--danger-text); }
+}
+
+// ── Blocs employé (page fusionnée) ────────────────────────────────────────
+.group-list { display: flex; flex-direction: column; gap: 18px; }
+.emp-group { border: 1px solid var(--border); border-radius: 14px; background: var(--surface); overflow: hidden; }
+.group-hdr { margin: 0; }
+.group-toggle {
+  width: 100%; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 13px 16px;
+  border: none; background: var(--surface2); color: var(--text); font: inherit; cursor: pointer; text-align: left;
+  &:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+}
+.chev { display: inline-block; transition: transform .15s; color: var(--muted); &.open { transform: rotate(90deg); } }
+.group-name { font-size: 15px; font-weight: 700; }
+.group-count { font-size: 12px; color: var(--muted); }
+.group-totals {
+  margin-left: auto; display: flex; gap: 18px; flex-wrap: wrap; font-size: 12px; color: var(--muted);
+  b { font-size: 13.5px; font-variant-numeric: tabular-nums; }
+}
+.ok { color: var(--success-text); }
+.accent { color: var(--accent); }
+.emp-group .week-list { padding: 14px; }
+.emp-group .week-card { background: var(--bg); }
+.group-empty { margin: 0; padding: 6px 2px; font-size: 12.5px; color: var(--muted); font-style: italic; }
+.sum-val.ok { color: var(--success-text); }
+
+// ── Statut de la semaine ──────────────────────────────────────────────────
+.status {
+  display: inline-flex; align-items: center; padding: 2px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 600;
+  border: 1px solid var(--border); color: var(--text); white-space: nowrap; margin-right: 6px;
+}
+.st-none    { color: var(--muted); font-weight: 500; font-style: italic; }
+.st-pending { background: rgba(251,188,4,.14); border-color: rgba(251,188,4,.5); }
+.st-done    { background: rgba(52,168,83,.14); border-color: rgba(52,168,83,.5); }
+.week-card.is-transferred { border-color: rgba(52,168,83,.45); }
+
+// ── Date de paiement, case « Paiement transféré », actions ────────────────
+.date-inp { width: 170px; }
+input[type="date"].date-inp { color-scheme: var(--color-scheme); }
+.transfer-check {
+  display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; margin-bottom: 1px; cursor: pointer;
+  border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--text); background: var(--surface2);
+  input { width: 17px; height: 17px; accent-color: var(--success); cursor: pointer; }
+  &.on { border-color: rgba(52,168,83,.6); background: rgba(52,168,83,.12); }
+  &:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+}
+.action-row {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 0 16px 14px;
+}
+.dirty-info { font-size: 12px; font-weight: 600; color: var(--accent); }
+.btn-danger { border-color: var(--danger-text) !important; color: var(--danger-text) !important; }
+.confirm-hint { margin: -4px 16px 14px; font-size: 12px; color: var(--danger-text); }
+
+@media (max-width: 640px) {
+  .group-totals { margin-left: 0; width: 100%; }
+  .date-inp { width: 100%; }
+  .transfer-check { width: 100%; box-sizing: border-box; }
+  .action-row .pay-actions { width: 100%; margin-left: 0; }
+}
+
+// ── Montant avant taxes + taxes = montant réel transféré ──────────────────
+.tax-lines {
+  margin: 0 16px 14px; padding: 10px 14px; max-width: 560px;
+  border: 1px solid var(--border); border-radius: 10px; background: var(--surface);
+  > div { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 3px 0; }
+  dt { font-size: 12.5px; color: var(--text); }
+  dd { margin: 0; font-size: 13.5px; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .tax-detail { font-size: 11.5px; color: var(--muted); margin-left: 6px; }
+  .tax-total {
+    margin-top: 5px; padding-top: 8px; border-top: 1px solid var(--border);
+    dt { font-weight: 700; }
+    dd { font-size: 16px; font-weight: 700; color: var(--accent); }
+  }
+}
+@media (max-width: 640px) {
+  .tax-lines { max-width: none; > div { flex-wrap: wrap; } .tax-detail { display: block; margin-left: 0; } }
+}
+
+// ── Versements : reste à verser, liste des versements, plafond ────────────
+.balance {
+  margin: 0 16px 12px; padding: 8px 14px; max-width: 560px;
+  border: 1px dashed var(--border); border-radius: 10px;
+  > div { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 2px 0; }
+  dt { font-size: 12.5px; color: var(--muted); }
+  dd { margin: 0; font-size: 13px; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .tax-detail { font-size: 11.5px; color: var(--muted); margin-left: 6px; }
+  .balance-rest {
+    margin-top: 4px; padding-top: 6px; border-top: 1px solid var(--border);
+    dt { color: var(--text); font-weight: 700; }
+    dd { font-size: 15px; font-weight: 700; }
+  }
+}
+.over-hint { margin: -4px 16px 12px; font-size: 12.5px; color: var(--danger-text); }
+.payments { padding: 0 16px 12px; }
+.table-scroll { position: relative; }
+.pay-table {
+  width: 100%; border-collapse: collapse; font-size: 12.5px;
+  th { text-align: left; font-size: 11px; font-weight: 600; color: var(--muted); background: var(--bg); padding: 7px 10px; white-space: nowrap; }
+  td { padding: 7px 10px; border-top: 1px solid var(--border); color: var(--text); vertical-align: middle; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .strong { font-weight: 700; }
+  .nowrap { white-space: nowrap; }
+  .status { margin-right: 0; }
+  .row-actions { text-align: right; white-space: nowrap; .btn + .btn { margin-left: 6px; } }
+}
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+.max-hint { font-size: 11.5px; color: var(--muted); &.capped { color: var(--danger-text); font-weight: 600; } }
+.settled-hint { margin: 0 16px 12px; font-size: 12.5px; color: var(--muted); font-style: italic; }
+.action-row .pay-actions { margin-left: auto; }
+@media (max-width: 640px) { .balance { max-width: none; } }
+.split-note { font-size: 11px; font-weight: 400; color: var(--muted); white-space: nowrap; }
+
+// ── Semaine repliable (repliée par défaut) ────────────────────────────────
+.week-toggle {
+  display: inline-flex; align-items: center; gap: 8px; padding: 2px 4px; margin: -2px -4px;
+  border: none; background: none; color: inherit; font: inherit; font-weight: 700; cursor: pointer; border-radius: 6px;
+  &:hover { color: var(--accent); }
+  &:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+}

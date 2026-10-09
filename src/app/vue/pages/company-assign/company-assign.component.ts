@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, signal, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, OnInit, HostListener, computed, signal, ChangeDetectionStrategy, inject } from '@angular/core';
 import { NoteAlertService } from '../../../state/notes/note-alert.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -8,12 +8,11 @@ import { CompanyService, CompanySummary } from '../../../state/compagny/Company.
 import { Employee } from '../../../models';
 
 @Component({
-  selector: 'app-company-assign',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './company-assign.component.html',
-  styleUrls: ['./company-assign.component.scss'],
+    selector: 'app-company-assign',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, FormsModule],
+    templateUrl: './company-assign.component.html',
+    styleUrls: ['./company-assign.component.scss']
 })
 export class CompanyAssignComponent implements OnInit {
   private readonly noteAlerts = inject(NoteAlertService);
@@ -31,15 +30,22 @@ export class CompanyAssignComponent implements OnInit {
   saved          = signal(false);
   error          = signal('');
   empSearch      = signal('');
+  coSearch       = signal('');
+  companiesError = signal('');
   loadingAssigned = signal(false);
 
   // ── Computed ──────────────────────────────────────────
   filteredEmps = computed(() => {
-    const q = this.empSearch().toLowerCase();
+    const q = this._norm(this.empSearch());
     return this.employees().filter(e =>
-      e.isActive && (!q || e.employeeName.toLowerCase().includes(q))
+      e.isActive && (!q || this._norm(e.employeeName).includes(q))
     );
   });
+
+  /** Minuscules, sans accents ni espaces autour (« Hotel » trouve « Hôtel »). */
+  private _norm(s: string): string {
+    return (s ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+  }
 
   hasChanges = computed(() => {
     const curr = this.assigned(), orig = this.original();
@@ -48,11 +54,12 @@ export class CompanyAssignComponent implements OnInit {
     return false;
   });
 
-  // Compagnies assignées en tête, puis le reste trié par nom
+  // Compagnies assignées en tête, puis le reste trié par nom.
+  // Une compagnie désactivée reste visible tant qu'elle est assignée (sinon impossible de la retirer).
   sortedCompanies = computed(() => {
-    const assigned = this.assigned();
+    const assigned = this.assigned(), original = this.original();
     return this.companies()
-      .filter(c => c.isActive)
+      .filter(c => c.isActive || assigned.has(c.companyId) || original.has(c.companyId))
       .sort((a, b) => {
         const aAssigned = assigned.has(a.companyId);
         const bAssigned = assigned.has(b.companyId);
@@ -61,6 +68,14 @@ export class CompanyAssignComponent implements OnInit {
       });
   });
 
+  /** Compagnies affichées : filtrées par le champ de recherche. */
+  shownCompanies = computed(() => {
+    const q = this._norm(this.coSearch());
+    return q ? this.sortedCompanies().filter(c => this._norm(c.companyName).includes(q)) : this.sortedCompanies();
+  });
+
+  trackCompany(_: number, c: CompanySummary): string { return c.companyId; }
+
   constructor(
     private empSvc:     EmployeesService,
     private companySvc: CompanyService,
@@ -68,15 +83,29 @@ export class CompanyAssignComponent implements OnInit {
 
   ngOnInit(): void {
     this.empSvc.loadList();
+    this.loadCompanies();
+  }
+
+  loadCompanies(): void {
+    this.companiesError.set('');
     this.companySvc.getAll().subscribe({
       next:  list => this.companies.set(list),
-      error: ()   => {},
+      error: err  => this.companiesError.set(err?.error?.message ?? `Impossible de charger les compagnies (HTTP ${err?.status ?? '?'}).`),
     });
+  }
+
+  /** Onglet fermé / page rechargée avec des affectations non sauvegardées : le navigateur demande confirmation. */
+  @HostListener('window:beforeunload', ['$event'])
+  onBeforeUnload(ev: BeforeUnloadEvent): void {
+    if (this.hasChanges()) { ev.preventDefault(); ev.returnValue = ''; }
   }
 
   // ── Sélection employé → récupère les compagnies à jour ─
   select(emp: Employee): void {
     if (this.selected()?.employeeId === emp.employeeId) return;
+    if (this.saving()) return;
+    if (this.hasChanges() && !confirm(`Les affectations non sauvegardées de « ${this.selected()?.employeeName ?? 'cet employé'} » seront perdues. Continuer ?`)) return;
+    this.coSearch.set('');
     this.noteAlerts.check({ employeeIds: [emp.employeeId] }, `Affectation — ${emp.employeeName}`);
     this.selected.set(emp);
     this.assigned.set(new Set());
@@ -87,6 +116,7 @@ export class CompanyAssignComponent implements OnInit {
 
     this.empSvc.getOne(emp.employeeId).subscribe({
       next: full => {
+        if (this.selected()?.employeeId !== emp.employeeId) return;   // un autre employé a été choisi entre-temps
         this.selected.set(full);
         const ids = new Set((full.employeeCompagnies ?? []).map(c => c.compagnieId));
         this.assigned.set(new Set(ids));
@@ -94,6 +124,7 @@ export class CompanyAssignComponent implements OnInit {
         this.loadingAssigned.set(false);
       },
       error: () => {
+        if (this.selected()?.employeeId !== emp.employeeId) return;
         // Fallback : données déjà présentes dans la liste
         const ids = new Set((emp.employeeCompagnies ?? []).map(c => c.compagnieId));
         this.assigned.set(new Set(ids));
@@ -148,8 +179,21 @@ export class CompanyAssignComponent implements OnInit {
         setTimeout(() => this.saved.set(false), 3000);
       },
       error: err => {
-        this.error.set(`HTTP ${err.status} — ${err.message}`);
         this.saving.set(false);
+        // Une partie des changements a pu passer : on recharge l'état réel plutôt que d'afficher un état supposé
+        this.error.set((err?.error?.message ?? `La sauvegarde a échoué (HTTP ${err?.status ?? '?'})`) + ' — les affectations ont été rechargées, vérifiez-les.');
+        this.loadingAssigned.set(true);
+        this.empSvc.getOne(emp.employeeId).subscribe({
+          next: full => {
+            if (this.selected()?.employeeId !== emp.employeeId) return;
+            const ids = new Set((full.employeeCompagnies ?? []).map(c => c.compagnieId));
+            this.selected.set(full);
+            this.assigned.set(new Set(ids));
+            this.original.set(new Set(ids));
+            this.loadingAssigned.set(false);
+          },
+          error: () => this.loadingAssigned.set(false),
+        });
       },
     });
   }

@@ -20,12 +20,11 @@ interface PricingRow {
 }
 
 @Component({
-  selector: 'app-employee-pricing',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './employee-pricing.component.html',
-  styleUrls: ['./employee-pricing.component.scss'],
+    selector: 'app-employee-pricing',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, FormsModule],
+    templateUrl: './employee-pricing.component.html',
+    styleUrls: ['./employee-pricing.component.scss']
 })
 export class EmployeePricingComponent implements OnInit {
   private readonly noteAlerts = inject(NoteAlertService);
@@ -102,7 +101,8 @@ export class EmployeePricingComponent implements OnInit {
       .subscribe({
         next: full => {
           this.selectedEmployee.set(full);
-          this.companies.set(full.employeeCompagnies ?? []);
+          // Compagnies ACTIVES seulement (une compagnie désactivée n'a plus de tarif à régler)
+          this.companies.set((full.employeeCompagnies ?? []).filter(c => c.isActive !== false));
           this.loadingEmployee.set(false);
         },
         error: () => {

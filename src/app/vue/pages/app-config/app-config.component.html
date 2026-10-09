@@ -92,7 +92,8 @@
         </div>
         <div class="field">
           <label for="app-config-mot-de-passe">Mot de passe</label>
-          <input id="app-config-mot-de-passe" class="inp" type="password" [(ngModel)]="form.smtpPassword" placeholder="••••••••" />
+          <input id="app-config-mot-de-passe" class="inp" type="password" [(ngModel)]="form.smtpPassword" autocomplete="new-password"
+                 [placeholder]="form.hasSmtpPassword ? 'Défini — laisser vide pour ne pas le changer' : 'Non défini'" />
         </div>
       </div>
     </section>

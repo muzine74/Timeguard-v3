@@ -2,11 +2,10 @@ import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-section-header',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
-  template: `
+    selector: 'app-section-header',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule],
+    template: `
     <div class="sec-hdr">
       <div class="sec-left">
         <div class="sec-icon" [ngClass]="mode">{{ icon }}</div>
@@ -20,7 +19,7 @@ import { CommonModule } from '@angular/common';
       </div>
     </div>
   `,
-  styles: [`
+    styles: [`
     .sec-hdr {
       display: flex; align-items: flex-start;
       justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;

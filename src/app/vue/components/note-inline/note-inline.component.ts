@@ -11,11 +11,10 @@ import { NotesService, NoteItem, NoteAlertRefs, NOTE_LINK_LABELS } from '../../.
  * Seules les notes actives sont affichées ; rien n'est rendu s'il n'y en a aucune.
  */
 @Component({
-  selector: 'app-note-inline',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
-  template: `
+    selector: 'app-note-inline',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule],
+    template: `
     <div class="ni" *ngIf="visible.length" [class.ni-compact]="compact">
       <div class="ni-note" *ngFor="let n of visible">
         <span class="ni-icon">📝</span>
@@ -33,7 +32,7 @@ import { NotesService, NoteItem, NoteAlertRefs, NOTE_LINK_LABELS } from '../../.
       </div>
     </div>
   `,
-  styles: [`
+    styles: [`
     .ni {
       display: flex; flex-direction: column; gap: 6px;
       background: rgba(224,154,34,.08); border: 1px solid rgba(224,154,34,.35);
@@ -52,7 +51,7 @@ import { NotesService, NoteItem, NoteAlertRefs, NOTE_LINK_LABELS } from '../../.
     }
     .ni-desc { font-size: .8rem; color: var(--text); opacity: .85; white-space: pre-wrap; margin-top: 2px; }
     .ni-compact .ni-desc { font-size: .74rem; }
-  `],
+  `]
 })
 export class NoteInlineComponent implements OnChanges {
   @Input() refs: NoteAlertRefs | null = null;

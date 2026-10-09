@@ -9,8 +9,8 @@
       <p class="page-sub">Remplissez les informations pour créer une nouvelle compagnie</p>
     </div>
     <div class="page-actions">
-      <button class="btn btn-outline" (click)="cancel()">✕ Annuler</button>
-      <button class="btn btn-primary" [disabled]="saving()" (click)="submit()">
+      <button type="button" class="btn btn-outline" [disabled]="saving() || saved()" (click)="cancel()">✕ Annuler</button>
+      <button type="button" class="btn btn-primary" [disabled]="saving() || saved()" (click)="submit()">
         <span *ngIf="!saving()">✓ Ajouter</span>
         <span *ngIf="saving()" class="spinner"></span>
       </button>
@@ -29,8 +29,8 @@
           <label class="toggle-wrap"><input type="checkbox" [(ngModel)]="form.isActive"><span class="toggle-lbl">Actif</span></label>
         </div>
         <div class="fields-grid">
-          <div class="field span-full"><label for="company-form-nom">Nom <span class="req">*</span></label><input id="company-form-nom" class="inp" [(ngModel)]="form.companyName" placeholder="Acme Construction inc." /></div>
-          <div class="field"><label for="company-form-code">Code</label><input id="company-form-code" class="inp" [(ngModel)]="form.companyCode" placeholder="ACME-001" /></div>
+          <div class="field span-full"><label for="company-form-nom">Nom <span class="req">*</span></label><input id="company-form-nom" class="inp" [(ngModel)]="form.companyName" placeholder="Acme Construction inc." required aria-required="true" maxlength="200" /></div>
+          <div class="field"><label for="company-form-code">Code</label><input id="company-form-code" class="inp" [(ngModel)]="form.companyCode" placeholder="ACME-001" maxlength="50" /></div>
           <div class="field span-full"><label for="company-form-note">Note</label><textarea id="company-form-note" class="inp inp-ta" [(ngModel)]="form.note" rows="3"></textarea></div>
         </div>
       </div>
@@ -70,7 +70,7 @@
       <div class="card">
         <div class="card-header">
           <span class="card-icon">👤</span>
-          <div><div class="card-title">Contact</div><div class="card-sub">Personne responsable</div></div>
+          <div><div class="card-title">Contact</div><div class="card-sub">Personne responsable (facultatif — d'autres contacts s'ajoutent ensuite sur la fiche)</div></div>
         </div>
         <div class="fields-grid">
           <div class="field span-full"><label for="company-form-nom-2">Nom</label><input id="company-form-nom-2" class="inp" [(ngModel)]="contact.name" placeholder="Jean Dupont" /></div>
@@ -168,21 +168,21 @@
         <div class="card-header">
           <span class="card-icon">📋</span>
           <div><div class="card-title">Planning — Mensuel</div><div class="card-sub">Jours de travail</div></div>
-          <button class="btn-add-jour" (click)="addJourMensuel()">+ Jour</button>
+          <button type="button" class="btn-add-jour" (click)="addJourMensuel()">+ Jour</button>
         </div>
         <div class="mensuel-wrap">
           <div class="mensuel-row" *ngFor="let j of form.joursMensuel; let i = index">
             <div class="jour-stepper">
-              <button class="step-btn" (click)="stepJourLigne(i, -1)">◀</button>
-              <div class="step-val">{{ j.jour }}</div>
-              <button class="step-btn" (click)="stepJourLigne(i, 1)">▶</button>
+              <button type="button" class="step-btn" [attr.aria-label]="'Jour précédent (actuellement le ' + j.jour + ')'" (click)="stepJourLigne(i, -1)"><span aria-hidden="true">◀</span></button>
+              <div class="step-val" aria-live="polite"><span class="sr-only">Jour du mois : </span>{{ j.jour }}</div>
+              <button type="button" class="step-btn" [attr.aria-label]="'Jour suivant (actuellement le ' + j.jour + ')'" (click)="stepJourLigne(i, 1)"><span aria-hidden="true">▶</span></button>
             </div>
             <input [attr.aria-label]="'Travail le jour ' + j.jour" type="checkbox" [(ngModel)]="j.actif" />
             <input [attr.aria-label]="'Prix compagnie — jour ' + j.jour" class="inp-num" type="number" min="0" step="0.01"
                    [(ngModel)]="j.compagnie" [disabled]="!j.actif" placeholder="Cie $" />
             <input [attr.aria-label]="'Paiement employé — jour ' + j.jour" class="inp-num" type="number" min="0" step="0.01"
                    [(ngModel)]="j.employe" [disabled]="!j.actif" placeholder="Emp $" />
-            <button class="btn-remove" (click)="removeJourMensuel(i)">✕</button>
+            <button type="button" class="btn-remove" [attr.aria-label]="'Retirer le jour ' + j.jour" (click)="removeJourMensuel(i)"><span aria-hidden="true">✕</span></button>
           </div>
           <div class="mensuel-empty" *ngIf="form.joursMensuel.length === 0">
             Cliquez sur "+ Jour" pour ajouter un jour
@@ -197,7 +197,7 @@
 <!-- ── Template : tableau semaine ── -->
 <ng-template #tplSemaine let-s="s">
   <table class="planning-table">
-    <thead><tr><th>Jour</th><th></th><th>Compagnie $</th><th>Employé $</th></tr></thead>
+    <thead><tr><th scope="col">Jour</th><th scope="col"><span class="sr-only">Travaillé</span></th><th scope="col">Compagnie $</th><th scope="col">Employé $</th></tr></thead>
     <tbody>
       <tr *ngFor="let jour of jours; let i = index">
         <td class="jour-lbl">{{ joursLabels[i] }}</td>
@@ -219,7 +219,7 @@
     <div class="bi-mensuel-col">
       <div class="semaine-title">Jours 1 — 8</div>
       <table class="planning-table">
-        <thead><tr><th>Jour</th><th></th><th>Cie $</th><th>Emp $</th></tr></thead>
+        <thead><tr><th scope="col">Jour</th><th scope="col"><span class="sr-only">Travaillé</span></th><th scope="col">Cie $</th><th scope="col">Emp $</th></tr></thead>
         <tbody>
           <tr *ngFor="let j of jours.slice(0,8)">
             <td class="jour-num">{{ j.jour }}</td>
@@ -233,7 +233,7 @@
     <div class="bi-mensuel-col">
       <div class="semaine-title">Jours 9 — 15</div>
       <table class="planning-table">
-        <thead><tr><th>Jour</th><th></th><th>Cie $</th><th>Emp $</th></tr></thead>
+        <thead><tr><th scope="col">Jour</th><th scope="col"><span class="sr-only">Travaillé</span></th><th scope="col">Cie $</th><th scope="col">Emp $</th></tr></thead>
         <tbody>
           <tr *ngFor="let j of jours.slice(8,15)">
             <td class="jour-num">{{ j.jour }}</td>

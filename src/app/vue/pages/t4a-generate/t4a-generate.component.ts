@@ -14,12 +14,11 @@ import { downloadBlob } from '../../shared/download';
 // cette bibliothèque échoue à s'initialiser dans un navigateur donné.
 
 @Component({
-  selector: 'app-t4a-generate',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './t4a-generate.component.html',
-  styleUrls: ['./t4a-generate.component.scss'],
+    selector: 'app-t4a-generate',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, FormsModule],
+    templateUrl: './t4a-generate.component.html',
+    styleUrls: ['./t4a-generate.component.scss']
 })
 export class T4aGenerateComponent implements OnInit {
   employeeId = '';

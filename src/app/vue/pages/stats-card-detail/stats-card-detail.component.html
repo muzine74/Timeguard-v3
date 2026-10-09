@@ -1,0 +1,50 @@
+<div class="page-wrap">
+
+  <header class="page-hdr">
+    <div>
+      <h1 class="page-title">{{ detail()?.title || 'Détail du calcul' }}</h1>
+      <p class="page-sub" *ngIf="detail()">Détail du calcul — période : {{ periodeLabel() }}</p>
+    </div>
+    <app-export-buttons *ngIf="detail() as d" [build]="export" [disabled]="d.rows.length === 0" [label]="'le détail : ' + d.title"></app-export-buttons>
+  </header>
+
+  <div class="spinner-wrap" *ngIf="loading()" role="status"><span class="spinner"></span><span class="sr-only">Chargement…</span></div>
+  <div class="err-msg" role="alert" *ngIf="error()">{{ error() }}</div>
+
+  <ng-container *ngIf="detail() as d">
+
+    <p class="explain">{{ d.explanation }}</p>
+
+    <dl class="summary">
+      <div *ngFor="let l of d.summary; let last = last" [class.summary-main]="last">
+        <dt>{{ l.label }}</dt>
+        <dd>{{ fmt(l.amount) }}</dd>
+      </div>
+    </dl>
+
+    <div class="table-wrap" *ngIf="d.rows.length > 0" tabindex="0" role="region" [attr.aria-label]="'Détail : ' + d.title">
+      <table class="stats-table">
+        <caption class="sr-only">{{ d.title }} — lignes qui composent le montant</caption>
+        <thead>
+          <tr>
+            <th scope="col" *ngFor="let c of d.columns" [class.num]="c.type !== 'text'">{{ c.header }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of d.rows">
+            <td *ngFor="let c of d.columns; let i = index" [class.num]="c.type !== 'text'" [class.neg]="isNegative(r[i])">{{ cell(r[i], c.type) }}</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr class="total-row">
+            <td *ngFor="let c of d.columns; let i = index" [class.num]="c.type !== 'text'">{{ cell(d.totalRow[i], c.type) }}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div class="empty-msg" *ngIf="d.rows.length === 0">Aucune ligne pour cette période : le montant est de 0,00 $.</div>
+
+  </ng-container>
+
+</div>

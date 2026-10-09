@@ -1,3 +1,4 @@
+import { todayIso } from '../../shared/dates';
 import { Component, OnInit, signal, isDevMode, ChangeDetectionStrategy, ChangeDetectorRef, DestroyRef, inject } from '@angular/core';
 import { NoteAlertService } from '../../../state/notes/note-alert.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -22,12 +23,11 @@ interface CompanyPricing {
 }
 
 @Component({
-  selector: 'app-invoice-generate',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './invoice-generate.component.html',
-  styleUrls: ['./invoice-generate.component.scss'],
+    selector: 'app-invoice-generate',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, FormsModule],
+    templateUrl: './invoice-generate.component.html',
+    styleUrls: ['./invoice-generate.component.scss']
 })
 export class InvoiceGenerateComponent implements OnInit {
   private readonly noteAlerts = inject(NoteAlertService);
@@ -60,7 +60,7 @@ export class InvoiceGenerateComponent implements OnInit {
 
   // ── Formulaire facture ────────────────────────────────
   period        = this._currentPeriod();
-  billedDate    = new Date().toISOString().split('T')[0];
+  billedDate    = todayIso();
   numberOfVisits = 0;
   note          = '';
   paymentInfo   = '';

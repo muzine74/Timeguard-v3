@@ -24,12 +24,11 @@ interface NoteFilters {
 }
 
 @Component({
-  selector: 'app-notes',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, NoteLinksEditorComponent, MultiSelectComponent],
-  templateUrl: './notes.component.html',
-  styleUrls: ['./notes.component.scss'],
+    selector: 'app-notes',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, FormsModule, NoteLinksEditorComponent, MultiSelectComponent],
+    templateUrl: './notes.component.html',
+    styleUrls: ['./notes.component.scss']
 })
 export class NotesComponent implements OnInit {
   notes    = signal<NoteItem[]>([]);
@@ -39,6 +38,19 @@ export class NotesComponent implements OnInit {
 
   /** Notes actuellement dépliées (affichent leur description). */
   expandedIds = signal<Set<string>>(new Set());
+
+  /** Sections « Nouvelle note » et « Recherche » : repliées par défaut. */
+  addOpen    = signal(false);
+  searchOpen = signal(false);
+
+  /** Nombre de critères de recherche actifs (affiché sur la section repliée). */
+  get activeFilterCount(): number {
+    const f = this.filters;
+    return [f.search.trim(), f.employeeIds.length, f.companyIds.length, f.billIds.length, f.linkTypes.length,
+            f.status !== 'all', f.dateFrom, f.dateTo].filter(Boolean).length;
+  }
+
+  canEdit(n: NoteItem): boolean { return n.canEdit !== false; }
 
   newTitle = '';
   newDescription = '';
@@ -197,6 +209,7 @@ export class NotesComponent implements OnInit {
           this.newActive = true;
           this.newLinks = [];
           this.saving.set(false);
+          this.addOpen.set(false);
           this.load();
         },
         error: err => {
@@ -212,7 +225,8 @@ export class NotesComponent implements OnInit {
   }
 
   toggleExpand(note: NoteItem): void {
-    if (this.editingId === note.noteId) return; // ne pas replier pendant l'édition
+    // Pendant l'édition la note reste ouverte (on ne la replie pas) ; une note fermée peut toujours s'ouvrir
+    if (this.editingId === note.noteId && this.isExpanded(note)) return;
     this.expandedIds.update(set => {
       const next = new Set(set);
       if (next.has(note.noteId)) next.delete(note.noteId);
@@ -245,6 +259,9 @@ export class NotesComponent implements OnInit {
     this.editDescription = note.description;
     this.editActive      = note.isActive;
     this.editLinks       = [...note.links];
+    // Le formulaire est dans le contenu de la note : l'ouvrir, sinon « Modifier » ne montre rien
+    // (et la note restait impossible à déplier tant qu'elle était « en édition »).
+    this.expandedIds.update(set => new Set(set).add(note.noteId));
   }
 
   cancelEdit(event: Event): void {
@@ -261,8 +278,13 @@ export class NotesComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
+          // Mise à jour sur place (la liste n'est pas rechargée : la note reste ouverte, sans clignotement)
+          const links = this.editLinks.map(l => ({ ...l }));
+          this.notes.update(list => list.map(n => n.noteId === note.noteId
+            ? { ...n, title, description: this.editDescription.trim(), isActive: this.editActive, links }
+            : n));
           this.editingId = null;
-          this.load();
+          this.cdr.markForCheck();
         },
         error: err => {
           this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);

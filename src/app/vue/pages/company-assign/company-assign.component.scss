@@ -177,3 +177,10 @@ input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent);
   .main-hdr { padding: 14px 16px 12px; }
   .co-grid  { padding: 14px 12px; }
 }
+
+// ── Recherche dans la grille des compagnies (affichée au-delà de 8 compagnies) ──
+.co-tools  { display: flex; align-items: center; gap: 10px; padding: 16px 28px 0; @media (max-width: 640px) { padding: 12px 12px 0; } }
+.main-area > .co-empty { margin: 20px 28px; }
+.co-search { max-width: 320px; }
+.co-count  { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.co-empty .btn { display: block; margin: 10px auto 0; }

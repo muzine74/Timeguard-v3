@@ -126,3 +126,9 @@
   .guide .cm-row { grid-template-columns: 1fr; }
   .guide .cm-corner { display: none; }
 }
+
+// Message « certaines sections ne vous sont pas affichées »
+.help-scope {
+  padding: 10px 14px; border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 8px;
+  background: var(--surface); font-size: .88rem;
+}

@@ -7,14 +7,19 @@
     </div>
   </header>
 
-  <!-- ── Ajouter une note ─────────────────────────────────────────────────── -->
-  <div class="add-card">
-    <input class="inp"
+  <!-- ── Ajouter une note (section repliée par défaut) ───────────────────── -->
+  <button type="button" class="section-toggle" (click)="addOpen.set(!addOpen())"
+          [attr.aria-expanded]="addOpen()" aria-controls="notes-add-panel">
+    <span class="expand-arrow" [class.expanded]="addOpen()" aria-hidden="true">▸</span>
+    ＋ Nouvelle note
+  </button>
+  <div class="add-card" id="notes-add-panel" *ngIf="addOpen()">
+    <input class="inp" aria-label="Titre de la note"
            type="text"
            placeholder="Titre de la note…"
            [(ngModel)]="newTitle"
            [disabled]="saving()" />
-    <textarea class="inp inp-textarea"
+    <textarea class="inp inp-textarea" aria-label="Description de la note"
               placeholder="Description (optionnel)…"
               [(ngModel)]="newDescription"
               [disabled]="saving()"
@@ -32,9 +37,15 @@
     </div>
   </div>
 
-  <!-- ── Filtres : ET entre critères, OU entre les valeurs cochées d'un même critère ── -->
-  <div class="filter-card">
-    <input class="inp" type="search" placeholder="Rechercher (titre, description, lien, auteur)…"
+  <!-- ── Recherche (section repliée par défaut). ET entre critères, OU entre les valeurs cochées d'un même critère ── -->
+  <button type="button" class="section-toggle" (click)="searchOpen.set(!searchOpen())"
+          [attr.aria-expanded]="searchOpen()" aria-controls="notes-search-panel">
+    <span class="expand-arrow" [class.expanded]="searchOpen()" aria-hidden="true">▸</span>
+    🔍 Recherche
+    <span class="section-badge" *ngIf="activeFilterCount">{{ activeFilterCount }} critère{{ activeFilterCount > 1 ? 's' : '' }} actif{{ activeFilterCount > 1 ? 's' : '' }} · {{ filteredNotes.length }} / {{ notes().length }}</span>
+  </button>
+  <div class="filter-card" id="notes-search-panel" *ngIf="searchOpen()">
+    <input class="inp" type="search" aria-label="Rechercher dans les notes" placeholder="Rechercher (titre, description, lien, auteur)…"
            [(ngModel)]="filters.search" />
     <div class="filter-row">
       <app-multi-select [options]="optSvc.options('employee')" [(selected)]="filters.employeeIds"
@@ -112,13 +123,17 @@
         <span class="note-title">{{ n.title }}</span>
         <span class="note-link" *ngFor="let l of n.links" [title]="linkText(l)">{{ linkText(l) }}</span>
         <span class="note-author" *ngIf="n.createdByEmployeeName">{{ n.createdByEmployeeName }}</span>
-        <div class="note-actions">
+        <div class="note-actions" *ngIf="canEdit(n)">
           <label class="toggle-wrap" (click)="$event.stopPropagation()">
             <input type="checkbox" [checked]="n.isActive" (change)="toggleActive(n, $event)">
             <span>{{ n.isActive ? 'Active' : 'Inactive' }}</span>
           </label>
-          <button class="btn-icon" title="Modifier" (click)="startEdit(n, $event)">✎</button>
-          <button class="btn-icon btn-icon-danger" title="Supprimer" (click)="remove(n, $event)">✕</button>
+          <button type="button" class="btn-icon" title="Modifier" [attr.aria-label]="'Modifier la note ' + n.title" (click)="startEdit(n, $event)">✎</button>
+          <button type="button" class="btn-icon btn-icon-danger" title="Supprimer" [attr.aria-label]="'Supprimer la note ' + n.title" (click)="remove(n, $event)">✕</button>
+        </div>
+        <!-- Note de l'équipe : consultation seulement -->
+        <div class="note-actions" *ngIf="!canEdit(n)">
+          <span class="note-readonly" title="Seul son auteur peut modifier cette note">{{ n.isActive ? 'Active' : 'Inactive' }} · lecture seule</span>
         </div>
       </div>
 
@@ -132,8 +147,8 @@
         </ng-container>
 
         <ng-container *ngIf="editingId === n.noteId">
-          <input class="inp" type="text" [(ngModel)]="editTitle" (click)="$event.stopPropagation()" />
-          <textarea class="inp inp-textarea" [(ngModel)]="editDescription" (click)="$event.stopPropagation()" rows="2"></textarea>
+          <input class="inp" type="text" aria-label="Titre de la note" [(ngModel)]="editTitle" (click)="$event.stopPropagation()" />
+          <textarea class="inp inp-textarea" aria-label="Description de la note" [(ngModel)]="editDescription" (click)="$event.stopPropagation()" rows="2"></textarea>
           <app-note-links-editor [(links)]="editLinks"></app-note-links-editor>
           <div class="add-actions">
             <label class="toggle-wrap" (click)="$event.stopPropagation()">

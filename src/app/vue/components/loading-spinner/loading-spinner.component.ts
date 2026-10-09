@@ -2,17 +2,16 @@ import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-loading-spinner',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
-  template: `
+    selector: 'app-loading-spinner',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule],
+    template: `
     <div class="spinner-wrap" [class.full]="fullPage">
       <div class="spin"></div>
       <p class="msg">{{ message }}</p>
     </div>
   `,
-  styles: [`
+    styles: [`
     .spinner-wrap {
       display: flex; flex-direction: column; align-items: center;
       justify-content: center; gap: 12px; padding: 2rem;

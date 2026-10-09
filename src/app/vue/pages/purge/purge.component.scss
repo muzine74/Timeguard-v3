@@ -16,7 +16,7 @@
   padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font: inherit; font-size: 13px;
   &:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(var(--accent-rgb), .25); }
 }
-.seg { display: inline-flex; border: 1px solid var(--border); border-radius: 9px; overflow: hidden; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border); border-radius: 9px; overflow: hidden; }
 .seg-opt {
   padding: 8px 14px; min-height: 36px; background: transparent; border: none; color: var(--text); font: inherit; font-size: 13px; cursor: pointer;
   & + & { border-left: 1px solid var(--border); }

@@ -13,12 +13,11 @@ interface CompanyRow {
 }
 
 @Component({
-  selector: 'app-charges',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './charges.component.html',
-  styleUrls: ['./charges.component.scss'],
+    selector: 'app-charges',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, FormsModule],
+    templateUrl: './charges.component.html',
+    styleUrls: ['./charges.component.scss']
 })
 export class ChargesComponent implements OnInit {
   charges  = signal<ChargeItem[]>([]);
@@ -36,6 +35,8 @@ export class ChargesComponent implements OnInit {
   title       = '';
   description = '';
   amount: number | null = null;
+  isMonthly = false;
+  taxIncluded = false;
   rows = signal<CompanyRow[]>([]);
 
   documents = signal<ChargeItem['documents']>([]);
@@ -106,6 +107,8 @@ export class ChargesComponent implements OnInit {
     this.title          = '';
     this.description    = '';
     this.amount         = null;
+    this.isMonthly      = false;
+    this.taxIncluded    = false;
     this.rows.set([]);
     this.documents.set([]);
     this.error.set('');
@@ -118,6 +121,8 @@ export class ChargesComponent implements OnInit {
     this.title          = charge.title;
     this.description    = charge.description ?? '';
     this.amount         = charge.amount;
+    this.isMonthly      = !!charge.isMonthly;
+    this.taxIncluded    = !!charge.taxIncluded;
     this.rows.set(charge.companies.map(c => ({ companyId: c.companyId, companyName: c.companyName, percentage: c.percentage })));
     this.documents.set(charge.documents);
     this.error.set('');
@@ -187,7 +192,7 @@ export class ChargesComponent implements OnInit {
     }
 
     const companies: ChargeCompanyItem[] = this.rows().map(r => ({ companyId: r.companyId, percentage: r.percentage }));
-    const payload = { title, description: this.description.trim(), amount: this.amount, companies };
+    const payload = { title, description: this.description.trim(), amount: this.amount, isMonthly: this.isMonthly, taxIncluded: this.taxIncluded, companies };
 
     this.saving.set(true);
     this.error.set('');

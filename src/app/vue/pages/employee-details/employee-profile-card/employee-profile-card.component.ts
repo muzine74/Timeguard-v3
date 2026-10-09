@@ -9,12 +9,11 @@ import { InitialsPipe } from '../../../shared/initials.pipe';
  * affectées, statut actif, type d'emploi, statut de la semaine affichée, accès à la fiche.
  */
 @Component({
-  selector: 'app-employee-profile-card',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterLink, InitialsPipe],
-  templateUrl: './employee-profile-card.component.html',
-  styleUrls: ['./employee-profile-card.component.scss'],
+    selector: 'app-employee-profile-card',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, RouterLink, InitialsPipe],
+    templateUrl: './employee-profile-card.component.html',
+    styleUrls: ['./employee-profile-card.component.scss']
 })
 export class EmployeeProfileCardComponent {
   @Input({ required: true }) employee!: Employee;

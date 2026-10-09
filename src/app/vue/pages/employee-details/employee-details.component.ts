@@ -27,17 +27,16 @@ import { WeekHistoryPanelComponent, WeekHistoryItem } from './week-history-panel
  * carte de profil et de l'historique est délégué aux sous-composants.
  */
 @Component({
-  selector: 'app-employee-details',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    CommonModule,
-    SectionHeaderComponent, StatsBarComponent, DatePickerComponent,
-    PointageTableComponent, LoadingSpinnerComponent, NoteInlineComponent,
-    EmployeeListPanelComponent, EmployeeProfileCardComponent, WeekHistoryPanelComponent,
-  ],
-  templateUrl: './employee-details.component.html',
-  styleUrls: ['./employee-details.component.scss'],
+    selector: 'app-employee-details',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        CommonModule,
+        SectionHeaderComponent, StatsBarComponent, DatePickerComponent,
+        PointageTableComponent, LoadingSpinnerComponent, NoteInlineComponent,
+        EmployeeListPanelComponent, EmployeeProfileCardComponent, WeekHistoryPanelComponent,
+    ],
+    templateUrl: './employee-details.component.html',
+    styleUrls: ['./employee-details.component.scss']
 })
 export class EmployeeDetailsComponent implements OnInit {
   // ── Données ─────────────────────────────────────────────────────────────
@@ -121,6 +120,8 @@ export class EmployeeDetailsComponent implements OnInit {
         this.selected.set(emp);
         this.loadingDetail.set(false);
         this._loadWeekHistory(id);
+        // Planning tarifaire → le montant s'affiche dès qu'une journée est cochée (comme sur la Feuille de temps)
+        this.ptEmpSvc.loadPricing(id, (emp.employeeCompagnies ?? []).filter(c => c.isActive !== false).map(c => c.compagnieId));
       },
       error: err => {
         this.warn(`✕ getOne(${id}) — status: ${err.status}`);

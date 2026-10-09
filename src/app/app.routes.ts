@@ -80,10 +80,17 @@ export const routes: Routes = [
     loadComponent: () => import('./vue/pages/employee-pricing/employee-pricing.component').then(m => m.EmployeePricingComponent)
   },
   {
+    // Page unique « Paiements employés » (fusion avec « Jours travaillés / Revenus », 2026-10)
     path: 'employees/payments',
     canActivate: [permGuard(PERM.paymentsManage)],
-    loadComponent: () => import('./vue/pages/employee-payments/employee-payments.component').then(m => m.EmployeePaymentsComponent)
+    loadComponent: () => import('./vue/pages/employee-worked-days/employee-worked-days.component').then(m => m.EmployeeWorkedDaysComponent)
   },
+  {
+    path: 'bank-statement',
+    canActivate: [permGuard(PERM.paymentsManage)],
+    loadComponent: () => import('./vue/pages/bank-statement/bank-statement.component').then(m => m.BankStatementComponent)
+  },
+  { path: 'employees/worked-days', redirectTo: 'employees/payments', pathMatch: 'full' },
   {
     path: 'employees/credentials',
     canActivate: [permGuard(PERM.credentialsManage)],
@@ -172,6 +179,11 @@ export const routes: Routes = [
     path: 'stats',
     canActivate: [permGuard(PERM.statsView)],
     loadComponent: () => import('./vue/pages/stats/stats.component').then(m => m.StatsComponent)
+  },
+  {
+    path: 'stats/card/:key',
+    canActivate: [permGuard(PERM.statsView)],
+    loadComponent: () => import('./vue/pages/stats-card-detail/stats-card-detail.component').then(m => m.StatsCardDetailComponent)
   },
   {
     path: 'stats/employee/:id',

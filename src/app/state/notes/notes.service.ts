@@ -20,6 +20,8 @@ export interface NoteItem {
   createdByEmployeeName: string;
   /** Entités liées (vide = note générale). */
   links:                 NoteLink[];
+  /** Faux = note de l'équipe, consultable seulement (seul son auteur ou un administrateur la modifie). */
+  canEdit?:              boolean;
 }
 
 /** Lien d'une note vers un employé, une compagnie ou une facture. */

@@ -19,19 +19,18 @@ import { AuthService }             from '../../../state/auth/auth.service';
 import { Employee, EmployeeForm }  from '../../../models';
 
 @Component({
-  selector: 'app-pointage-page',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    CommonModule,
-    EmployeeFormComponent,
-    StatsBarComponent,
-    SectionHeaderComponent,
-    PointageTableComponent,
-    DatePickerComponent,
-    NoteInlineComponent,
-  ],
-  templateUrl: './pointage.page.html',
+    selector: 'app-pointage-page',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        CommonModule,
+        EmployeeFormComponent,
+        StatsBarComponent,
+        SectionHeaderComponent,
+        PointageTableComponent,
+        DatePickerComponent,
+        NoteInlineComponent,
+    ],
+    templateUrl: './pointage.page.html'
 })
 export class PointagePage implements OnInit {
   private readonly noteAlerts = inject(NoteAlertService);

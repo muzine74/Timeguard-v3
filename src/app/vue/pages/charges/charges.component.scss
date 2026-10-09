@@ -348,3 +348,15 @@
   .co-amount { display: none; }
   .charge-detail { flex-direction: column; gap: 1.25rem; }
 }
+
+// ── Charge mensuelle ──────────────────────────────────────────────────────
+.tag-monthly {
+  display: inline-block; margin-left: 8px; padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 600;
+  color: var(--text); background: rgba(var(--accent-rgb), .14); border: 1px solid rgba(var(--accent-rgb), .45); white-space: nowrap;
+}
+.check-line {
+  display: inline-flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text); font-weight: 600;
+  input { width: 17px; height: 17px; accent-color: var(--accent); cursor: pointer; }
+}
+.field-note { display: block; margin-top: 4px; font-size: 12px; color: var(--muted); }
+.tax-note { font-size: 11px; font-weight: 400; color: var(--muted); white-space: nowrap; }

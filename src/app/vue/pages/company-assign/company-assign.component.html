@@ -2,7 +2,7 @@
 
   <!-- ── Mobile : dropdown employés (≤1023px) ── -->
   <div class="mob-select-wrap">
-    <select class="mob-select"
+    <select class="mob-select" aria-label="Choisir un employé"
             [value]="selected()?.employeeId ?? ''"
             (change)="selectEmpById($any($event.target).value)">
       <option value="">— Sélectionner un employé —</option>
@@ -23,7 +23,7 @@
         <span class="sidebar-title">Employés</span>
         <span class="sidebar-count">{{ employees().length }}</span>
       </div>
-      <input class="sidebar-search" placeholder="Rechercher…"
+      <input class="sidebar-search" type="search" placeholder="Rechercher…" aria-label="Rechercher un employé par son nom"
              [ngModel]="empSearch()" (ngModelChange)="empSearch.set($event)" />
     </div>
 
@@ -32,9 +32,10 @@
         <div class="mini-spinner"></div>
       </div>
 
-      <button class="sidebar-item"
+      <button type="button" class="sidebar-item"
               *ngFor="let e of filteredEmps()"
               [class.active]="selected()?.employeeId === e.employeeId"
+              [attr.aria-current]="selected()?.employeeId === e.employeeId ? 'true' : null"
               (click)="select(e)">
         <div class="s-avatar">{{ initials(e.employeeName) }}</div>
         <div class="s-info">
@@ -73,7 +74,7 @@
             <span class="unsaved-dot" *ngIf="hasChanges()">● Non sauvegardé</span>
           </p>
         </div>
-        <button class="btn btn-primary"
+        <button type="button" class="btn btn-primary"
                 [disabled]="!hasChanges() || saving() || loadingAssigned()"
                 (click)="save()">
           <span *ngIf="!saving()">✓ Sauvegarder</span>
@@ -87,19 +88,33 @@
         <span>Chargement…</span>
       </div>
 
+      <!-- Compagnies non chargées : ne pas laisser croire qu'il n'y en a aucune -->
+      <div class="co-empty" role="alert" *ngIf="companiesError()">
+        ⚠ {{ companiesError() }}
+        <button type="button" class="btn btn-outline" (click)="loadCompanies()">Réessayer</button>
+      </div>
+
+      <div class="co-tools" *ngIf="!loadingAssigned() && !companiesError() && sortedCompanies().length > 8">
+        <input class="sidebar-search co-search" type="search" placeholder="Rechercher une compagnie…" aria-label="Rechercher une compagnie par son nom"
+               [ngModel]="coSearch()" (ngModelChange)="coSearch.set($event)" />
+        <span class="co-count">{{ shownCompanies().length }} / {{ sortedCompanies().length }}</span>
+      </div>
+
       <!-- Grille compagnies -->
-      <div class="co-grid" *ngIf="!loadingAssigned()">
-        <label class="co-card" *ngFor="let c of sortedCompanies()" [class.co-active]="isAssigned(c.companyId)">
+      <div class="co-grid" *ngIf="!loadingAssigned() && !companiesError()">
+        <label class="co-card" *ngFor="let c of shownCompanies(); trackBy: trackCompany" [class.co-active]="isAssigned(c.companyId)">
           <div class="co-info">
             <div class="co-name">{{ c.companyName }}</div>
             <span class="co-badge" [class.badge-on]="c.isActive">
               {{ c.isActive ? 'Actif' : 'Inactif' }}
             </span>
           </div>
-          <input type="checkbox" [checked]="isAssigned(c.companyId)" (change)="toggle(c.companyId)" />
+          <input type="checkbox" [checked]="isAssigned(c.companyId)" [disabled]="saving()" (change)="toggle(c.companyId)" />
         </label>
 
-        <div class="co-empty" *ngIf="sortedCompanies().length === 0">Aucune compagnie</div>
+        <div class="co-empty" *ngIf="shownCompanies().length === 0">
+          {{ sortedCompanies().length === 0 ? 'Aucune compagnie active' : 'Aucune compagnie ne correspond à la recherche.' }}
+        </div>
       </div>
 
     </ng-container>

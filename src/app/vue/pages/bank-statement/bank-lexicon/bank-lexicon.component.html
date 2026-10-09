@@ -1,0 +1,97 @@
+<div class="msg msg-err" role="alert" *ngIf="error()">⚠ {{ error() }}</div>
+<div class="loading-wrap" role="status" *ngIf="loading()"><span class="spinner"></span> Chargement…</div>
+
+<ng-container *ngIf="!loading() && lexicon() as lx">
+
+  <!-- ── Ajouter un mot-clé ──────────────────────────────────────────────── -->
+  <section class="card" aria-labelledby="lex-add-title">
+    <h2 id="lex-add-title" class="card-title">Ajouter un mot-clé</h2>
+    <p class="hint">Une transaction est reliée quand sa description contient le mot-clé (majuscules, accents et espaces ignorés). Si plusieurs mots-clés conviennent, le plus long l'emporte.</p>
+
+    <form class="add-form" (ngSubmit)="add()">
+      <div class="field kw-field">
+        <label for="lex-keyword">Mot-clé dans la description</label>
+        <input #kw id="lex-keyword" name="keyword" class="inp" type="text" maxlength="100" autocomplete="off"
+               placeholder="Ex. : Akram rahimi" [(ngModel)]="keyword" />
+      </div>
+      <fieldset class="field type-field">
+        <legend>Relier à</legend>
+        <div class="type-group">
+          <label class="type-opt" *ngFor="let t of types" [class.active]="targetType() === t">
+            <input type="radio" name="targetType" [value]="t" [checked]="targetType() === t" (change)="setType(t)" />
+            <span aria-hidden="true">{{ icon[t] }}</span> {{ label[t] }}
+          </label>
+        </div>
+      </fieldset>
+      <div class="field target-field">
+        <label for="lex-target">{{ label[targetType()] }}</label>
+        <select id="lex-target" name="targetId" class="inp" [(ngModel)]="targetId">
+          <option value="" disabled>Choisir…</option>
+          <option *ngFor="let o of targetOptions()" [value]="o.id">{{ o.name }}</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary" [disabled]="!canAdd()">{{ saving() ? 'Ajout…' : '＋ Ajouter' }}</button>
+    </form>
+    <p class="hint" *ngIf="targetOptions().length === 0">Aucun élément de ce type n'existe encore.</p>
+
+    <div class="msg msg-err" role="alert" *ngIf="formError()">⚠ {{ formError() }}</div>
+    <div class="msg msg-ok" role="status" *ngIf="message()">{{ message() }}</div>
+  </section>
+
+  <!-- ── Mots-clés enregistrés ───────────────────────────────────────────── -->
+  <section class="card" aria-labelledby="lex-list-title">
+    <h2 id="lex-list-title" class="card-title">
+      Lexique
+      <span class="count" *ngIf="lx.totalTransactions">— {{ lx.linkedTransactions }} transaction{{ lx.linkedTransactions > 1 ? 's' : '' }} reliée{{ lx.linkedTransactions > 1 ? 's' : '' }} sur {{ lx.totalTransactions }}</span>
+    </h2>
+
+    <div class="table-wrap" *ngIf="lx.entries.length" tabindex="0" role="region" aria-label="Mots-clés du lexique">
+      <table class="lex-table">
+        <caption class="sr-only">Mots-clés du lexique et élément auquel chacun est relié</caption>
+        <thead>
+          <tr>
+            <th scope="col">Mot-clé</th>
+            <th scope="col">Type</th>
+            <th scope="col">Relié à</th>
+            <th scope="col" class="num">Transactions</th>
+            <th scope="col"><span class="sr-only">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let e of lx.entries; trackBy: trackEntry">
+            <td class="kw">{{ e.keyword }}</td>
+            <td><span class="chip" [ngClass]="'chip-' + e.targetType"><span aria-hidden="true">{{ icon[e.targetType] }}</span> {{ label[e.targetType] }}</span></td>
+            <td>
+              <ng-container *ngIf="e.targetName !== null; else gone">{{ e.targetName }}</ng-container>
+              <ng-template #gone><span class="gone">⚠ Élément supprimé : mot-clé ignoré</span></ng-template>
+            </td>
+            <td class="num">{{ e.matchCount }}</td>
+            <td class="actions">
+              <button type="button" class="btn btn-outline btn-sm" [class.btn-danger]="confirmId() === e.id" [disabled]="deleting() === e.id"
+                      (click)="remove(e)" [attr.aria-label]="(confirmId() === e.id ? 'Confirmer la suppression du mot-clé ' : 'Supprimer le mot-clé ') + e.keyword">
+                {{ confirmId() === e.id ? 'Confirmer' : 'Supprimer' }}
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" *ngIf="confirmId() === e.id" (click)="cancelRemove()">Annuler</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="empty" *ngIf="!lx.entries.length">Aucun mot-clé pour l'instant. Ajoutez-en un ci-dessus, ou partez d'une description ci-dessous.</p>
+  </section>
+
+  <!-- ── Descriptions sans lien ──────────────────────────────────────────── -->
+  <section class="card" aria-labelledby="lex-unlinked-title" *ngIf="lx.unlinked.length">
+    <h2 id="lex-unlinked-title" class="card-title">Transactions sans lien <span class="count">— {{ lx.unlinked.length }} description{{ lx.unlinked.length > 1 ? 's' : '' }}</span></h2>
+    <p class="hint">Cliquez sur « Utiliser » pour reprendre une description comme mot-clé, puis raccourcissez-la si besoin.</p>
+    <ul class="unlinked">
+      <li *ngFor="let u of lx.unlinked">
+        <span class="desc">{{ u.description }}</span>
+        <span class="times">{{ u.count }} transaction{{ u.count > 1 ? 's' : '' }}</span>
+        <button type="button" class="btn btn-outline btn-sm" (click)="useDescription(u.description, kw)"
+                [attr.aria-label]="'Utiliser comme mot-clé : ' + u.description">Utiliser</button>
+      </li>
+    </ul>
+  </section>
+
+</ng-container>

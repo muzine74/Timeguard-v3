@@ -26,16 +26,27 @@
         <div class="card-val">{{ fmt(totalPaiement()) }}</div>
         <div class="card-lbl">Paiement total</div>
       </div>
+      <div class="stat-card card-green">
+        <div class="card-val">{{ fmt(totalTransfere()) }}</div>
+        <div class="card-lbl">Montant transféré</div>
+      </div>
     </div>
+
+    <p class="legend" *ngIf="d.companies.length > 0">
+      <span class="date-chip chip-paid">Journée payée</span>
+      <span class="date-chip chip-unpaid">Journée non payée</span>
+      <span class="legend-txt">Payée = sa paie est entièrement couverte par des versements marqués « transférés ». Montants avant taxes.</span>
+    </p>
 
     <div class="table-wrap" *ngIf="d.companies.length > 0">
       <table class="stats-table">
         <thead>
           <tr>
-            <th>Compagnie</th>
-            <th class="num">Visites</th>
-            <th class="num">Paiement</th>
-            <th>Dates de visite</th>
+            <th scope="col">Compagnie</th>
+            <th scope="col" class="num">Visites</th>
+            <th scope="col" class="num">Paiement</th>
+            <th scope="col" class="num">Montant transféré</th>
+            <th scope="col">Dates de visite</th>
           </tr>
         </thead>
         <tbody>
@@ -43,11 +54,24 @@
             <td>{{ c.companyName }}</td>
             <td class="num">{{ c.nbVisites }}</td>
             <td class="num gain">{{ fmt(c.totalPaiement) }}</td>
+            <td class="num transferred">{{ fmt(c.montantTransfere ?? 0) }}</td>
             <td class="dates-cell">
-              <span class="date-chip" *ngFor="let dt of c.visitDates">{{ fmtDate(dt) }}</span>
+              <span class="date-chip" *ngFor="let dt of c.visitDates"
+                    [class.chip-paid]="isPaid(c, dt)" [class.chip-unpaid]="!isPaid(c, dt)">
+                {{ fmtDate(dt) }}<span class="sr-only"> ({{ isPaid(c, dt) ? 'payée' : 'non payée' }})</span>
+              </span>
             </td>
           </tr>
         </tbody>
+        <tfoot>
+          <tr class="total-row">
+            <th scope="row">Total</th>
+            <td class="num">{{ totalVisites() }}</td>
+            <td class="num gain">{{ fmt(totalPaiement()) }}</td>
+            <td class="num transferred">{{ fmt(totalTransfere()) }}</td>
+            <td></td>
+          </tr>
+        </tfoot>
       </table>
     </div>
 

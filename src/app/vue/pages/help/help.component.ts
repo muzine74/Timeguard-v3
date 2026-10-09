@@ -1,29 +1,55 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../../state/auth/auth.service';
+import { PERM, PermKey } from '../../../state/auth/permissions';
 
-/** Guide utilisateur (page statique, accessible à tous les utilisateurs connectés). */
+/** Section du guide. `perms` : affichée si l'utilisateur a AU MOINS UNE de ces permissions (vide = tout le monde). */
+interface HelpSection { id: string; title: string; perms: readonly PermKey[]; }
+
+/**
+ * Guide utilisateur. La page est ouverte à tous les utilisateurs connectés, mais chaque section ne s'affiche
+ * que si l'utilisateur a la permission du menu qu'elle décrit (même règle que la barre de menus).
+ * Ce n'est pas une protection des données : le texte du guide n'a rien de confidentiel, on évite seulement
+ * de montrer à un employé des écrans auxquels il n'a pas accès.
+ */
 @Component({
-  selector: 'app-help',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
-  templateUrl: './help.component.html',
-  styleUrls: ['./help.component.scss'],
+    selector: 'app-help',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule],
+    templateUrl: './help.component.html',
+    styleUrls: ['./help.component.scss']
 })
 export class HelpComponent {
-  readonly sections = [
-    { id: 'premiers-pas',   title: 'Premiers pas' },
-    { id: 'pointage',       title: 'Pour les employés : saisir son pointage' },
-    { id: 'employes',       title: 'Gérer les employés' },
-    { id: 'compagnies',     title: 'Gérer les compagnies' },
-    { id: 'combinaisons',   title: 'Employé et compagnie : les combinaisons' },
-    { id: 'validation',     title: 'Valider le pointage' },
-    { id: 'facturation',    title: 'Facturer vos compagnies' },
-    { id: 'paiements',      title: 'Payer vos employés' },
-    { id: 'notes',          title: 'Notes et alertes' },
-    { id: 'administration', title: 'Statistiques et administration' },
-    { id: 'faq',            title: 'Questions fréquentes' },
+  private readonly auth = inject(AuthService);
+
+  private static readonly ALL_SECTIONS: readonly HelpSection[] = [
+    { id: 'premiers-pas',   title: 'Premiers pas',                              perms: [] },
+    { id: 'pointage',       title: 'Pour les employés : saisir son pointage',   perms: [] },
+    { id: 'employes',       title: 'Gérer les employés',                        perms: [PERM.employeesView, PERM.employeesCreate, PERM.employeesEdit] },
+    { id: 'compagnies',     title: 'Gérer les compagnies',                      perms: [PERM.companiesEdit] },
+    { id: 'combinaisons',   title: 'Employé et compagnie : les combinaisons',   perms: [PERM.companiesEdit, PERM.employeesEdit, PERM.pointageValidate] },
+    { id: 'validation',     title: 'Valider le pointage',                       perms: [PERM.pointageValidate] },
+    { id: 'facturation',    title: 'Facturer vos compagnies',                   perms: [PERM.invoicesView, PERM.invoicesEdit, PERM.invoicesSend] },
+    { id: 'paiements',      title: 'Payer vos employés',                        perms: [PERM.paymentsManage, PERM.employeesEdit] },
+    { id: 'notes',          title: 'Notes et alertes',                          perms: [] },
+    { id: 'administration', title: 'Statistiques et administration',            perms: [PERM.statsView, PERM.groupsManage, PERM.configManage, PERM.credentialsManage] },
+    { id: 'faq',            title: 'Questions fréquentes',                      perms: [] },
   ];
+
+  /** Au moins une des permissions (le super utilisateur les a toutes ; liste vide = tout le monde). */
+  can(...perms: PermKey[]): boolean {
+    return perms.length === 0 || this.auth.isSuperUser() || perms.some(p => this.auth.hasPerm(p));
+  }
+
+  /** Sections que cet utilisateur voit (sommaire et contenu). */
+  readonly sections = computed(() => HelpComponent.ALL_SECTIONS.filter(s => this.can(...s.perms)));
+  private readonly _visibleIds = computed(() => new Set(this.sections().map(s => s.id)));
+  show(id: string): boolean { return this._visibleIds().has(id); }
+
+  /** L'utilisateur voit tout le guide (aucune section masquée). */
+  readonly seesEverything = computed(() => this.sections().length === HelpComponent.ALL_SECTIONS.length);
+
+  readonly P = PERM;
 
   /** Exemples « Employé et compagnie » — compagnie : planning lundi 80 $ / 40 $, 50 $/h client, 25 $/h employé ;
    *  pointage : lundi 08:00 → 11:30 (3,5 h). Mêmes montants que les tests automatisés (HourlyBillingTests). */
