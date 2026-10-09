@@ -56,9 +56,9 @@ $env:E2E_ENV          = "remote"
 $env:E2E_BASE_URL     = "http://timeguards.net"
 $env:E2E_API_URL      = "http://timeguards.net"
 $env:TEST_ADMIN_USER  = "votre_admin"
-$env:TEST_ADMIN_PASS  = "votre_mot_de_passe"
+$env:TEST_ADMIN_PASS  = "<mot de passe du compte de test>"
 $env:TEST_EMP_USER    = "votre_employe"
-$env:TEST_EMP_PASS    = "emp_mot_de_passe"
+$env:TEST_EMP_PASS    = "<mot de passe du compte de test>"
 
 npx playwright test --config=playwright.config.ts
 ```

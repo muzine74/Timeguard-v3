@@ -17,11 +17,11 @@ export const APP_URL = process.env['E2E_BASE_URL'] ?? 'http://localhost:4200';
 export const API_URL = process.env['E2E_API_URL'] ?? 'https://localhost:56537';
 
 export const ADMIN = {
-  username: process.env['TEST_ADMIN_USER'] ?? 'admin',
-  password: process.env['TEST_ADMIN_PASS'] ?? 'admin123',
+  username: process.env['TEST_ADMIN_USER'] ?? '',
+  password: process.env['TEST_ADMIN_PASS'] ?? '',
 };
 
 export const EMPLOYEE = {
-  username: process.env['TEST_EMP_USER'] ?? 'employe1',
-  password: process.env['TEST_EMP_PASS'] ?? 'emp123',
+  username: process.env['TEST_EMP_USER'] ?? '',
+  password: process.env['TEST_EMP_PASS'] ?? '',
 };

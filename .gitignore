@@ -29,3 +29,9 @@ Thumbs.db
 !/.vscode/launch.json
 !/.vscode/extensions.json
 .idea/
+
+# Secrets locaux — ne jamais committer
+.env.local
+e2e/.env.local
+credential
+credential.*
