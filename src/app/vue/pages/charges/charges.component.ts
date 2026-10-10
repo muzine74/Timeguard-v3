@@ -29,6 +29,47 @@ export class ChargesComponent implements OnInit {
 
   expandedIds = signal<Set<string>>(new Set());
 
+  // ── Recherche : mot-clé, période (date de la charge) et montant. Les critères se cumulent. ──
+  fSearch = signal('');
+  fFrom   = signal('');          // yyyy-MM-dd
+  fTo     = signal('');
+  fMin    = signal<number | null>(null);
+  fMax    = signal<number | null>(null);
+
+  hasFilters = computed(() => !!(this.fSearch().trim() || this.fFrom() || this.fTo() || this.fMin() != null || this.fMax() != null));
+
+  shownCharges = computed(() => {
+    const q = this._norm(this.fSearch()), from = this.fFrom(), to = this.fTo(), min = this.fMin(), max = this.fMax();
+    // Un nombre tapé dans le mot-clé trouve aussi le montant (« 1200 » ou « 1200,50 »)
+    const qAmount = q.replace(/\s/g, '').replace(',', '.');
+    return this.charges().filter(c => {
+      if (from && c.chargeDate < from) return false;
+      if (to && c.chargeDate > to) return false;
+      if (min != null && c.amount < min) return false;
+      if (max != null && c.amount > max) return false;
+      if (!q) return true;
+      const text = this._norm([c.title, c.description ?? '', ...c.companies.map(co => co.companyName), ...c.documents.map(d => d.originalName)].join(' '));
+      return text.includes(q) || (qAmount !== '' && !isNaN(Number(qAmount)) && c.amount.toFixed(2).includes(qAmount));
+    });
+  });
+
+  /** Total des charges affichées (montants tels que saisis). */
+  shownTotal = computed(() => this.shownCharges().reduce((sum, c) => sum + c.amount, 0));
+
+  setAmount(which: 'min' | 'max', value: unknown): void {
+    const n = value === '' || value == null ? null : Number(value);
+    (which === 'min' ? this.fMin : this.fMax).set(n == null || isNaN(n) ? null : n);
+  }
+
+  resetFilters(): void {
+    this.fSearch.set(''); this.fFrom.set(''); this.fTo.set(''); this.fMin.set(null); this.fMax.set(null);
+  }
+
+  /** Minuscules, sans accents (« electricite » trouve « Électricité »). */
+  private _norm(s: string): string {
+    return (s ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+  }
+
   // ── Modal (création / édition) ───────────────────────────────────────────
   modalOpen  = signal(false);
   editingId: string | null = null;

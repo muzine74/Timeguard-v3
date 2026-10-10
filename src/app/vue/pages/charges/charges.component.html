@@ -13,8 +13,37 @@
   <div class="alert alert-error"   *ngIf="error() && !modalOpen()">{{ error() }}</div>
   <div class="alert alert-success" *ngIf="success()">{{ success() }}</div>
 
+  <!-- ── Recherche : mot-clé, période, montant ─────────────────────────── -->
+  <div class="charge-filters" *ngIf="!loading() && charges().length > 0">
+    <label class="cf-field cf-search">
+      <span>Mot-clé</span>
+      <input type="search" placeholder="Titre, description, compagnie, document…"
+             [ngModel]="fSearch()" (ngModelChange)="fSearch.set($event)" />
+    </label>
+    <label class="cf-field">
+      <span>Du</span>
+      <input type="date" [ngModel]="fFrom()" (ngModelChange)="fFrom.set($event)" />
+    </label>
+    <label class="cf-field">
+      <span>Au</span>
+      <input type="date" [ngModel]="fTo()" (ngModelChange)="fTo.set($event)" />
+    </label>
+    <label class="cf-field cf-amount">
+      <span>Montant min.</span>
+      <input type="number" min="0" step="0.01" placeholder="0,00" [ngModel]="fMin()" (ngModelChange)="setAmount('min', $event)" />
+    </label>
+    <label class="cf-field cf-amount">
+      <span>Montant max.</span>
+      <input type="number" min="0" step="0.01" placeholder="0,00" [ngModel]="fMax()" (ngModelChange)="setAmount('max', $event)" />
+    </label>
+    <button type="button" class="btn btn-outline cf-reset" *ngIf="hasFilters()" (click)="resetFilters()">Effacer</button>
+    <span class="cf-count" role="status" aria-live="polite">
+      {{ shownCharges().length }}{{ hasFilters() ? ' sur ' + charges().length : '' }} charge(s) · {{ shownTotal() | number:'1.2-2' }} $
+    </span>
+  </div>
+
   <!-- ── Tableau ────────────────────────────────────────────────────────── -->
-  <div class="table-wrap" *ngIf="!loading() && charges().length > 0">
+  <div class="table-wrap" *ngIf="!loading() && shownCharges().length > 0">
     <table class="charges-table">
       <thead>
         <tr>
@@ -28,7 +57,7 @@
         </tr>
       </thead>
       <tbody>
-        <ng-container *ngFor="let c of charges()">
+        <ng-container *ngFor="let c of shownCharges()">
           <tr class="charge-row" (click)="toggleExpand(c)">
             <td class="col-expand">{{ isExpanded(c) ? '▼' : '▶' }}</td>
             <td>
@@ -79,6 +108,11 @@
         </ng-container>
       </tbody>
     </table>
+  </div>
+
+  <div class="empty-state" *ngIf="!loading() && charges().length > 0 && shownCharges().length === 0">
+    <span class="empty-icon" aria-hidden="true">🔍</span>
+    <p>Aucune charge ne correspond à la recherche.</p>
   </div>
 
   <div class="empty-state" *ngIf="!loading() && charges().length === 0">
