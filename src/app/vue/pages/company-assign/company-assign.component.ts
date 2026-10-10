@@ -55,17 +55,24 @@ export class CompanyAssignComponent implements OnInit {
   });
 
   // Compagnies assignées en tête, puis le reste trié par nom.
-  // Une compagnie désactivée reste visible tant qu'elle est assignée (sinon impossible de la retirer).
+  // Seules les compagnies actives sont proposées. Une compagnie désactivée encore assignée n'est pas
+  // affichée et son affectation reste telle quelle (la sauvegarde n'envoie que les différences).
   sortedCompanies = computed(() => {
-    const assigned = this.assigned(), original = this.original();
+    const assigned = this.assigned();
     return this.companies()
-      .filter(c => c.isActive || assigned.has(c.companyId) || original.has(c.companyId))
+      .filter(c => c.isActive)
       .sort((a, b) => {
         const aAssigned = assigned.has(a.companyId);
         const bAssigned = assigned.has(b.companyId);
         if (aAssigned !== bAssigned) return aAssigned ? -1 : 1;
         return a.companyName.localeCompare(b.companyName, undefined, { sensitivity: 'base' });
       });
+  });
+
+  /** Nombre de compagnies actives assignées (les désactivées, masquées, ne sont pas comptées). */
+  assignedCount = computed(() => {
+    const assigned = this.assigned();
+    return this.sortedCompanies().filter(c => assigned.has(c.companyId)).length;
   });
 
   /** Compagnies affichées : filtrées par le champ de recherche. */

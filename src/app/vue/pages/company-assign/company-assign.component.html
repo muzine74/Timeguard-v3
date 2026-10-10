@@ -12,7 +12,7 @@
     </select>
     <div class="mob-result" *ngIf="selected()">
       <span class="mob-result-name">👤 {{ selected()!.employeeName }}</span>
-      <span class="mob-result-meta">{{ assigned().size }} compagnie(s) assignée(s)</span>
+      <span class="mob-result-meta">{{ assignedCount() }} compagnie(s) assignée(s)</span>
     </div>
   </div>
 
@@ -70,7 +70,7 @@
         <div class="main-hdr-left">
           <h1 class="main-title">{{ selected()!.employeeName }}</h1>
           <p class="main-sub">
-            {{ assigned().size }} compagnie(s) assignée(s) sur {{ sortedCompanies().length }}
+            {{ assignedCount() }} compagnie(s) assignée(s) sur {{ sortedCompanies().length }}
             <span class="unsaved-dot" *ngIf="hasChanges()">● Non sauvegardé</span>
           </p>
         </div>
