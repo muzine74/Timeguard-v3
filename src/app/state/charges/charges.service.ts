@@ -21,8 +21,10 @@ export interface ChargePayload {
   title:       string;
   description?: string;
   amount:      number;
-  /** Charge qui revient chaque mois (false = ponctuelle). */
+  /** Charge qui revient chaque mois (false = ponctuelle) : une copie est générée chaque mois, le même jour. */
   isMonthly:   boolean;
+  /** Date de la charge, yyyy-MM-dd (première échéance d'une charge mensuelle). */
+  chargeDate:  string;
   /** Le montant contient déjà les taxes (false = hors taxes). */
   taxIncluded: boolean;
   companies:   ChargeCompanyItem[];
@@ -36,6 +38,12 @@ export interface ChargeItem {
   isMonthly:   boolean;
   taxIncluded: boolean;
   createdAt:   string;
+  /** Date de la charge, yyyy-MM-dd. */
+  chargeDate:  string;
+  /** Copie générée automatiquement à partir d'une charge mensuelle. */
+  isGenerated: boolean;
+  /** Charge mensuelle : date de la prochaine copie (yyyy-MM-dd). */
+  nextDate?:   string | null;
   companies:   ChargeCompanyResponse[];
   documents:   ChargeDocument[];
 }

@@ -23,7 +23,7 @@
           <th>Compagnies</th>
           <th class="col-num">Montant</th>
           <th class="col-num">Documents</th>
-          <th>Créée le</th>
+          <th>Date</th>
           <th class="col-actions"></th>
         </tr>
       </thead>
@@ -33,7 +33,8 @@
             <td class="col-expand">{{ isExpanded(c) ? '▼' : '▶' }}</td>
             <td>
               <span class="charge-title">{{ c.title }}</span>
-              <span class="tag-monthly" *ngIf="c.isMonthly">🔁 Mensuelle</span>
+              <span class="tag-monthly" *ngIf="c.isMonthly" [title]="c.nextDate ? 'Prochaine copie générée le ' + fmtDay(c.nextDate) : ''">🔁 Mensuelle</span>
+              <span class="tag-monthly tag-generated" *ngIf="c.isGenerated" title="Copie générée automatiquement à partir d'une charge mensuelle">🔁 Générée</span>
               <div class="charge-desc" *ngIf="c.description">{{ c.description }}</div>
             </td>
             <td>
@@ -45,7 +46,9 @@
               <div class="tax-note">{{ c.taxIncluded ? 'taxes incluses' : 'hors taxes' }}</div>
             </td>
             <td class="col-num">{{ c.documents.length }}</td>
-            <td>{{ fmtDate(c.createdAt) }}</td>
+            <td>{{ fmtDay(c.chargeDate) }}
+              <div class="tax-note" *ngIf="c.isMonthly && c.nextDate">prochaine : {{ fmtDay(c.nextDate) }}</div>
+            </td>
             <td class="col-actions" (click)="$event.stopPropagation()">
               <button class="btn-icon" title="Modifier" (click)="openEdit(c, $event)">✏️</button>
               <button class="btn-icon" title="Supprimer" (click)="remove(c, $event)">🗑️</button>
@@ -111,11 +114,20 @@
         </div>
 
         <div class="field-group">
+          <label for="charge-date">Date de la charge <span class="req">*</span></label>
+          <input id="charge-date" type="date" [(ngModel)]="chargeDate" />
+        </div>
+
+        <div class="field-group" *ngIf="!editingGenerated">
           <label class="check-line" for="charge-monthly">
             <input id="charge-monthly" type="checkbox" [(ngModel)]="isMonthly" />
             <span>Charge mensuelle</span>
           </label>
           <span class="field-note">Cochez si cette charge revient chaque mois (loyer, assurance…). Le montant saisi est alors le montant d'un mois.</span>
+          <span class="field-note" *ngIf="isMonthly && chargeDay">Une copie de cette charge sera générée automatiquement le {{ chargeDay }} de chaque mois{{ chargeDay > 28 ? ' (ou le dernier jour du mois s\'il est plus court)' : '' }}. Chaque copie peut ensuite être modifiée ou supprimée séparément.</span>
+        </div>
+        <div class="field-group" *ngIf="editingGenerated">
+          <span class="field-note">🔁 Charge générée automatiquement à partir d'une charge mensuelle. La modifier ne change ni la charge mensuelle ni les autres mois.</span>
         </div>
 
         <div class="field-group">

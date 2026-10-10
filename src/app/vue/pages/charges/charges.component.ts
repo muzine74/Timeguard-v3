@@ -37,6 +37,10 @@ export class ChargesComponent implements OnInit {
   amount: number | null = null;
   isMonthly = false;
   taxIncluded = false;
+  /** Date de la charge (yyyy-MM-dd). */
+  chargeDate = '';
+  /** La charge en cours de modification est une copie générée : elle ne peut pas devenir mensuelle. */
+  editingGenerated = false;
   rows = signal<CompanyRow[]>([]);
 
   documents = signal<ChargeItem['documents']>([]);
@@ -109,6 +113,8 @@ export class ChargesComponent implements OnInit {
     this.amount         = null;
     this.isMonthly      = false;
     this.taxIncluded    = false;
+    this.chargeDate     = this._today();
+    this.editingGenerated = false;
     this.rows.set([]);
     this.documents.set([]);
     this.error.set('');
@@ -123,6 +129,8 @@ export class ChargesComponent implements OnInit {
     this.amount         = charge.amount;
     this.isMonthly      = !!charge.isMonthly;
     this.taxIncluded    = !!charge.taxIncluded;
+    this.chargeDate     = charge.chargeDate || this._today();
+    this.editingGenerated = !!charge.isGenerated;
     this.rows.set(charge.companies.map(c => ({ companyId: c.companyId, companyName: c.companyName, percentage: c.percentage })));
     this.documents.set(charge.documents);
     this.error.set('');
@@ -186,13 +194,14 @@ export class ChargesComponent implements OnInit {
     const title = this.title.trim();
     if (!title) { this.error.set('Le titre est requis.'); return; }
     if (this.amount == null || this.amount < 0) { this.error.set('Le montant est requis.'); return; }
+    if (!this.chargeDate) { this.error.set('La date de la charge est requise.'); return; }
     if (this.rows().length > 0 && !this.totalValid()) {
       this.error.set(`La somme des pourcentages doit être égale à 100 % (actuellement ${this.totalPercentage().toFixed(2)} %).`);
       return;
     }
 
     const companies: ChargeCompanyItem[] = this.rows().map(r => ({ companyId: r.companyId, percentage: r.percentage }));
-    const payload = { title, description: this.description.trim(), amount: this.amount, isMonthly: this.isMonthly, taxIncluded: this.taxIncluded, companies };
+    const payload = { title, description: this.description.trim(), amount: this.amount, isMonthly: this.isMonthly && !this.editingGenerated, chargeDate: this.chargeDate, taxIncluded: this.taxIncluded, companies };
 
     this.saving.set(true);
     this.error.set('');
@@ -293,6 +302,23 @@ export class ChargesComponent implements OnInit {
         this.charges.update(list => list.map(c => c.chargeId === charge.chargeId ? charge : c));
         this.cdr.markForCheck();
       });
+  }
+
+  /** Aujourd'hui, yyyy-MM-dd (heure locale). */
+  private _today(): string {
+    const d = new Date(), p = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+  }
+
+  /** Jour du mois de la date choisie (« le 15 de chaque mois »). */
+  get chargeDay(): number | null {
+    const day = Number((this.chargeDate || '').slice(8, 10));
+    return day >= 1 && day <= 31 ? day : null;
+  }
+
+  /** Date yyyy-MM-dd affichée sans décalage de fuseau horaire. */
+  fmtDay(day: string): string {
+    return day ? new Date(day + 'T12:00:00').toLocaleDateString('fr-CA', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
   }
 
   fmtDate(iso: string): string {

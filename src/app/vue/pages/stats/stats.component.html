@@ -203,7 +203,7 @@
           <tbody>
             <tr *ngFor="let c of b.charges">
               <td>{{ c.title }}</td>
-              <td>{{ c.isMonthly ? 'Mensuelle' + (c.occurrences > 1 ? ' × ' + c.occurrences + ' mois' : '') : 'Ponctuelle' }}</td>
+              <td>{{ c.isMonthly ? 'Mensuelle' : 'Ponctuelle' }}</td>
               <td>{{ c.date }}</td>
               <td class="num bold">{{ fmt(c.total) }}</td>
             </tr>
