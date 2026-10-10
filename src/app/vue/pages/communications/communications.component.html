@@ -1,0 +1,215 @@
+<div class="page-layout">
+
+  <!-- ── Mobile : choix par liste déroulante (≤1023px) ── -->
+  <div class="mob-select-wrap">
+    <div class="tabs" role="tablist" *ngIf="canCompanies() && canEmployees()">
+      <button type="button" role="tab" class="tab" [class.active]="tab() === 'company'" [attr.aria-selected]="tab() === 'company'" (click)="setTab('company')">Compagnies</button>
+      <button type="button" role="tab" class="tab" [class.active]="tab() === 'employee'" [attr.aria-selected]="tab() === 'employee'" (click)="setTab('employee')">Employés</button>
+    </div>
+    <select class="mob-select" [attr.aria-label]="tab() === 'company' ? 'Choisir une compagnie' : 'Choisir un employé'"
+            [value]="selected()?.id ?? ''" (change)="selectById($any($event.target).value)">
+      <option value="">{{ tab() === 'company' ? '— Sélectionner une compagnie —' : '— Sélectionner un employé —' }}</option>
+      <option *ngFor="let t of shownTargets(); trackBy: trackTarget" [value]="t.id">{{ t.name }}{{ t.count ? ' (' + t.count + ')' : '' }}</option>
+    </select>
+  </div>
+
+  <!-- ── Liste de gauche ── -->
+  <aside class="sidebar">
+    <div class="sidebar-hdr">
+      <div class="tabs" role="tablist" *ngIf="canCompanies() && canEmployees()">
+        <button type="button" role="tab" class="tab" [class.active]="tab() === 'company'" [attr.aria-selected]="tab() === 'company'" (click)="setTab('company')">Compagnies</button>
+        <button type="button" role="tab" class="tab" [class.active]="tab() === 'employee'" [attr.aria-selected]="tab() === 'employee'" (click)="setTab('employee')">Employés</button>
+      </div>
+      <div class="sidebar-top">
+        <span class="sidebar-title">{{ tab() === 'company' ? 'Compagnies' : 'Employés' }}</span>
+        <span class="sidebar-count">{{ shownTargets().length }}</span>
+      </div>
+      <input class="sidebar-search" type="search" placeholder="Rechercher…"
+             [attr.aria-label]="tab() === 'company' ? 'Rechercher une compagnie par son nom' : 'Rechercher un employé par son nom'"
+             [ngModel]="search()" (ngModelChange)="search.set($event)" />
+      <label class="inactive-toggle">
+        <input type="checkbox" [checked]="showInactive()" (change)="showInactive.set($any($event.target).checked)" />
+        Afficher les désactivés sans historique
+      </label>
+    </div>
+
+    <div class="sidebar-body">
+      <div class="sidebar-loading" *ngIf="targetsLoading()"><div class="mini-spinner"></div></div>
+
+      <div class="sidebar-empty" role="alert" *ngIf="targetsError()">
+        ⚠ {{ targetsError() }}
+        <button type="button" class="btn btn-outline" (click)="loadTargets()">Réessayer</button>
+      </div>
+
+      <button type="button" class="sidebar-item"
+              *ngFor="let t of shownTargets(); trackBy: trackTarget"
+              [class.active]="selected()?.id === t.id"
+              [attr.aria-current]="selected()?.id === t.id ? 'true' : null"
+              (click)="select(t)">
+        <div class="s-avatar">{{ initials(t.name) }}</div>
+        <div class="s-info">
+          <div class="s-name">{{ t.name }} <span class="s-off" *ngIf="!t.isActive">Inactif</span></div>
+          <div class="s-meta">
+            <ng-container *ngIf="t.count; else none">{{ t.count }} entrée(s) · dernière le {{ t.lastAt | date:'yyyy-MM-dd' }}</ng-container>
+            <ng-template #none>Aucune communication</ng-template>
+          </div>
+        </div>
+      </button>
+
+      <div class="sidebar-empty" *ngIf="!targetsLoading() && !targetsError() && shownTargets().length === 0">Aucun résultat</div>
+    </div>
+  </aside>
+
+  <!-- ── Zone principale ── -->
+  <div class="main-area">
+
+    <div role="status" aria-live="polite" class="toast" [class.toast-show]="saved()">{{ saved() ? '✓ ' + saved() : '' }}</div>
+
+    <div class="placeholder" *ngIf="!selected()">
+      <div class="ph-icon">💬</div>
+      <div class="ph-txt">Sélectionnez {{ tab() === 'company' ? 'une compagnie' : 'un employé' }} pour voir son historique de communication</div>
+    </div>
+
+    <ng-container *ngIf="selected() as sel">
+
+      <div class="main-hdr">
+        <div class="main-hdr-left">
+          <h1 class="main-title">{{ sel.name }} <span class="s-off" *ngIf="!sel.isActive">Inactif</span></h1>
+          <p class="main-sub">
+            Historique de communication ·
+            <ng-container *ngIf="hasFilters(); else total">{{ shownItems().length }} sur {{ items().length }} entrée(s)</ng-container>
+            <ng-template #total>{{ items().length }} entrée(s)</ng-template>
+          </p>
+        </div>
+        <button type="button" class="btn btn-primary" [disabled]="loading() || saving()" (click)="openNew()">＋ Ajouter une communication</button>
+      </div>
+
+      <!-- Filtres -->
+      <div class="filters">
+        <label class="f-field">
+          <span>Type</span>
+          <select [ngModel]="fChannel()" (ngModelChange)="fChannel.set($event)">
+            <option value="">Tous</option>
+            <option *ngFor="let c of CHANNELS" [value]="c.key">{{ c.label }}</option>
+          </select>
+        </label>
+        <label class="f-field">
+          <span>Origine</span>
+          <select [ngModel]="fSource()" (ngModelChange)="fSource.set($event)">
+            <option value="">Toutes</option>
+            <option value="auto">Envoyé par TimeGuard</option>
+            <option value="manual">Saisie manuelle</option>
+          </select>
+        </label>
+        <label class="f-field">
+          <span>Du</span>
+          <input type="date" [ngModel]="fFrom()" (ngModelChange)="fFrom.set($event)" />
+        </label>
+        <label class="f-field">
+          <span>Au</span>
+          <input type="date" [ngModel]="fTo()" (ngModelChange)="fTo.set($event)" />
+        </label>
+        <button type="button" class="btn btn-outline f-clear" *ngIf="hasFilters()" (click)="clearFilters()">Effacer les filtres</button>
+      </div>
+
+      <div class="main-scroll">
+
+        <!-- Formulaire d'ajout / de modification -->
+        <form class="comm-form" *ngIf="form() as f" (ngSubmit)="save()">
+          <h2 class="form-title">{{ f.id ? 'Modifier la communication' : 'Nouvelle communication' }}</h2>
+          <div class="form-grid">
+            <label class="f-field">
+              <span>Date et heure</span>
+              <input type="datetime-local" name="when" required [ngModel]="f.when" (ngModelChange)="patch({ when: $event })" />
+            </label>
+            <label class="f-field">
+              <span>Type</span>
+              <select name="channel" [ngModel]="f.channel" (ngModelChange)="patch({ channel: $event })">
+                <option *ngFor="let c of CHANNELS" [value]="c.key">{{ c.label }}</option>
+              </select>
+            </label>
+            <label class="f-field">
+              <span>Sens</span>
+              <select name="direction" [ngModel]="f.direction" (ngModelChange)="patch({ direction: $event })">
+                <option value="out">Envoyé / appel fait</option>
+                <option value="in">Reçu</option>
+              </select>
+            </label>
+            <label class="f-field">
+              <span>{{ contactLabel(f) }}</span>
+              <input type="text" name="contact" maxlength="500" placeholder="Nom, courriel ou téléphone"
+                     [ngModel]="f.contact" (ngModelChange)="patch({ contact: $event })" />
+            </label>
+            <label class="f-field f-wide">
+              <span>Sujet</span>
+              <input type="text" name="subject" maxlength="300" required
+                     [ngModel]="f.subject" (ngModelChange)="patch({ subject: $event })" />
+            </label>
+            <label class="f-field f-wide">
+              <span>Résumé</span>
+              <textarea name="body" rows="4" maxlength="4000"
+                        [ngModel]="f.body" (ngModelChange)="patch({ body: $event })"></textarea>
+            </label>
+          </div>
+          <div class="form-error" role="alert" *ngIf="formError()">⚠ {{ formError() }}</div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-outline" [disabled]="saving()" (click)="cancelForm()">Annuler</button>
+            <button type="submit" class="btn btn-primary" [disabled]="saving()">
+              <span *ngIf="!saving()">✓ Enregistrer</span>
+              <span *ngIf="saving()" class="spinner"></span>
+            </button>
+          </div>
+        </form>
+
+        <div class="loading-wrap" role="status" aria-live="polite" *ngIf="loading()">
+          <div class="mini-spinner"></div><span>Chargement…</span>
+        </div>
+
+        <div class="empty" role="alert" *ngIf="error()">
+          ⚠ {{ error() }}
+          <button type="button" class="btn btn-outline" (click)="reload()">Réessayer</button>
+        </div>
+
+        <div class="empty" *ngIf="!loading() && !error() && shownItems().length === 0">
+          {{ items().length === 0
+              ? 'Aucune communication enregistrée. Les courriels envoyés par TimeGuard apparaîtront ici automatiquement.'
+              : 'Aucune entrée ne correspond aux filtres.' }}
+        </div>
+
+        <!-- Historique, du plus récent au plus ancien -->
+        <ul class="timeline" *ngIf="!loading() && !error() && shownItems().length">
+          <li class="entry" *ngFor="let i of shownItems(); trackBy: trackItem" [class.entry-failed]="i.error">
+            <div class="entry-icon" aria-hidden="true">{{ channelIcon(i.channel) }}</div>
+            <div class="entry-main">
+              <div class="entry-top">
+                <span class="entry-date">{{ i.occurredAt | date:'yyyy-MM-dd HH:mm' }}</span>
+                <span class="tag">{{ channelLabel(i.channel) }}</span>
+                <span class="tag" [class.tag-in]="i.direction === 'in'">{{ i.direction === 'in' ? 'Reçu' : 'Envoyé' }}</span>
+                <span class="tag tag-auto" *ngIf="i.isAutomatic">TimeGuard</span>
+                <span class="tag tag-fail" *ngIf="i.error">Échec de l'envoi</span>
+              </div>
+              <div class="entry-subject">{{ i.subject }}</div>
+              <div class="entry-meta" *ngIf="i.contact">{{ contactLabel(i) }} : {{ i.contact }}</div>
+              <div class="entry-meta" *ngIf="i.attachment">📎 {{ i.attachment }}</div>
+              <div class="entry-error" *ngIf="i.error">{{ i.error }}</div>
+
+              <button type="button" class="link-btn" *ngIf="i.body" [attr.aria-expanded]="isOpen(i.id)" (click)="toggle(i.id)">
+                {{ isOpen(i.id) ? '▾ Masquer le texte' : '▸ Voir le texte' }}
+              </button>
+              <div class="entry-body" *ngIf="i.body && isOpen(i.id)">{{ i.body }}</div>
+
+              <div class="entry-foot">
+                <span *ngIf="i.createdBy">{{ i.isAutomatic ? 'Envoyé par' : 'Saisi par' }} {{ i.createdBy }}</span>
+                <span class="entry-actions" *ngIf="!i.isAutomatic">
+                  <button type="button" class="link-btn" [disabled]="saving()" (click)="edit(i)">Modifier</button>
+                  <button type="button" class="link-btn link-danger" [disabled]="saving()" (click)="remove(i)">Supprimer</button>
+                </span>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+    </ng-container>
+  </div>
+</div>

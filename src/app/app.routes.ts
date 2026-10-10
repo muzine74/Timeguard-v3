@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { permGuard, homeGuard, superUserGuard, authGuard } from './state/auth/auth.guard';
+import { permGuard, anyPermGuard, homeGuard, superUserGuard, authGuard } from './state/auth/auth.guard';
 import { PERM } from './state/auth/permissions';
 
 export const routes: Routes = [
@@ -127,6 +127,14 @@ export const routes: Routes = [
     path: 'companies/:id/edit',
     canActivate: [permGuard(PERM.companiesEdit)],
     loadComponent: () => import('./vue/pages/Company-edit/Company-edit.component').then(m => m.CompanyEditComponent)
+  },
+
+  // ── Communications (historique par compagnie et par employé) ─────────────
+  {
+    // Compagnies : « companies.edit » ; employés : « employees.edit » (l'API ne renvoie que ce qui est permis)
+    path: 'communications',
+    canActivate: [anyPermGuard(PERM.companiesEdit, PERM.employeesEdit)],
+    loadComponent: () => import('./vue/pages/communications/communications.component').then(m => m.CommunicationsComponent)
   },
 
   // ── Factures ─────────────────────────────────────────────────────────────

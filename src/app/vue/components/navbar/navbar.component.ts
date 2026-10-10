@@ -157,6 +157,9 @@ export class NavbarComponent {
         { label: 'Assigner compagnies', icon: '⇄', link: '/companies/assign',    show: () => this.has('companies.edit') },
         { label: 'Assigner employés',   icon: '⇄', link: '/employees/assign',    show: () => this.has('employees.edit') },
       ] },
+      { title: 'Suivi', items: [
+        { label: 'Communications',      icon: '💬', link: '/communications',      show: () => this.has('companies.edit') || this.has('employees.edit') },
+      ] },
     ] },
     { id: 'finance', label: 'Finances', sections: [
       { title: 'Facturation', items: [
