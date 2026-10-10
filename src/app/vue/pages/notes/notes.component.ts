@@ -7,6 +7,8 @@ import { NoteLinkOptionsService } from '../../../state/notes/note-link-options.s
 import { EmployeesService } from '../../../state/employees/employees.service';
 import { NoteLinksEditorComponent } from '../../components/note-links-editor/note-links-editor.component';
 import { MultiSelectComponent, MultiSelectOption } from '../../components/multi-select/multi-select.component';
+import { AttachmentsComponent } from '../../components/attachments/attachments.component';
+import { AttachmentsService, AttachmentItem } from '../../../state/attachments/attachments.service';
 
 /**
  * Critères de filtre. Entre critères : ET. Dans un critère à choix multiple : OU
@@ -26,7 +28,7 @@ interface NoteFilters {
 @Component({
     selector: 'app-notes',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule, NoteLinksEditorComponent, MultiSelectComponent],
+    imports: [CommonModule, FormsModule, NoteLinksEditorComponent, MultiSelectComponent, AttachmentsComponent],
     templateUrl: './notes.component.html',
     styleUrls: ['./notes.component.scss']
 })
@@ -56,6 +58,8 @@ export class NotesComponent implements OnInit {
   newDescription = '';
   newActive = true;
   newLinks: NoteLink[] = [];
+  /** Fichiers choisis pour la nouvelle note : envoyés une fois la note créée. */
+  newFiles: File[] = [];
 
   editingId: string | null = null;
   editTitle = '';
@@ -166,6 +170,7 @@ export class NotesComponent implements OnInit {
     private empSvc:   EmployeesService,
     public  optSvc:   NoteLinkOptionsService,
     private cdr:      ChangeDetectorRef,
+    private filesSvc: AttachmentsService,
   ) {}
 
   ngOnInit(): void {
@@ -203,14 +208,21 @@ export class NotesComponent implements OnInit {
     this.notesSvc.create({ title, description: this.newDescription.trim(), isActive: this.newActive, links: this.linkPayload(this.newLinks) })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: () => {
+        next: res => {
+          const files = this.newFiles;
           this.newTitle = '';
           this.newDescription = '';
           this.newActive = true;
           this.newLinks = [];
-          this.saving.set(false);
-          this.addOpen.set(false);
-          this.load();
+          this.newFiles = [];
+          // La note existe : ses pièces jointes sont envoyées, puis la liste est rechargée
+          this.filesSvc.uploadAll('note', res.noteId, files).subscribe(up => {
+            this.saving.set(false);
+            this.addOpen.set(false);
+            this.load();
+            if (up.errors.length) this.error.set(`Note créée, mais ${up.errors.length} pièce(s) jointe(s) refusée(s) — ${up.errors.join(' ; ')}`);
+            this.cdr.markForCheck();
+          });
         },
         error: err => {
           this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
@@ -218,6 +230,11 @@ export class NotesComponent implements OnInit {
           this.cdr.markForCheck();
         },
       });
+  }
+
+  setAttachments(note: NoteItem, attachments: AttachmentItem[]): void {
+    this.notes.update(list => list.map(n => n.noteId === note.noteId ? { ...n, attachments } : n));
+    this.cdr.markForCheck();
   }
 
   isExpanded(note: NoteItem): boolean {

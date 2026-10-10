@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { AttachmentItem } from '../attachments/attachments.service';
 
 export type CommTargetType = 'company' | 'employee';
 export type CommChannel    = 'email' | 'call' | 'meeting' | 'sms' | 'other';
@@ -35,6 +36,7 @@ export interface Communication {
   isAutomatic: boolean;         // envoi enregistré par TimeGuard : non modifiable
   error:       string | null;   // envoi échoué : message d'erreur
   createdBy:   string | null;
+  attachments: AttachmentItem[];
 }
 
 /** Entrée saisie à la main. */

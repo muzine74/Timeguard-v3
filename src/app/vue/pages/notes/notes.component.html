@@ -25,6 +25,7 @@
               [disabled]="saving()"
               rows="2"></textarea>
     <app-note-links-editor [(links)]="newLinks" [disabled]="saving()"></app-note-links-editor>
+    <app-attachments ownerType="note" [canEdit]="true" [(pending)]="newFiles" [disabled]="saving()"></app-attachments>
     <div class="add-actions">
       <label class="toggle-wrap">
         <input type="checkbox" [(ngModel)]="newActive" [disabled]="saving()">
@@ -122,6 +123,7 @@
         <span class="expand-arrow" [class.expanded]="isExpanded(n)">▸</span>
         <span class="note-title">{{ n.title }}</span>
         <span class="note-link" *ngFor="let l of n.links" [title]="linkText(l)">{{ linkText(l) }}</span>
+        <span class="note-link" *ngIf="n.attachments?.length" [title]="n.attachments.length + ' pièce(s) jointe(s)'">📎 {{ n.attachments.length }}</span>
         <span class="note-author" *ngIf="n.createdByEmployeeName">{{ n.createdByEmployeeName }}</span>
         <div class="note-actions" *ngIf="canEdit(n)">
           <label class="toggle-wrap" (click)="$event.stopPropagation()">
@@ -159,6 +161,10 @@
             <button class="btn btn-primary" [disabled]="!editTitle.trim()" (click)="saveEdit(n, $event)">Enregistrer</button>
           </div>
         </ng-container>
+
+        <!-- Pièces jointes : téléchargement pour tous ceux qui voient la note, ajout / retrait pour qui peut la modifier -->
+        <app-attachments ownerType="note" [ownerId]="n.noteId" [attachments]="n.attachments ?? []" [canEdit]="canEdit(n)"
+                         (attachmentsChange)="setAttachments(n, $event)"></app-attachments>
 
       </div>
 

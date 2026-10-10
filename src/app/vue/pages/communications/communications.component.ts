@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import {
   CommunicationsService, CommTarget, CommTargetType, CommChannel, CommDirection, Communication, CommSave,
 } from '../../../state/communications/communications.service';
+import { AttachmentsComponent } from '../../components/attachments/attachments.component';
+import { AttachmentsService, AttachmentItem } from '../../../state/attachments/attachments.service';
 
 interface CommForm {
   id:        string | null;      // null = nouvelle entrée
@@ -20,7 +22,7 @@ interface CommForm {
 @Component({
     selector: 'app-communications',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, AttachmentsComponent],
     templateUrl: './communications.component.html',
     styleUrls: ['./communications.component.scss']
 })
@@ -61,6 +63,8 @@ export class CommunicationsComponent implements OnInit {
 
   // ── Formulaire (ajout / modification) ─────────────────
   form      = signal<CommForm | null>(null);
+  /** Fichiers choisis pour une nouvelle entrée : envoyés une fois l'entrée créée. */
+  formFiles = signal<File[]>([]);
   saving    = signal(false);
   formError = signal('');
   private _formSnapshot = '';
@@ -88,7 +92,7 @@ export class CommunicationsComponent implements OnInit {
     });
   });
 
-  constructor(private svc: CommunicationsService) {}
+  constructor(private svc: CommunicationsService, private filesSvc: AttachmentsService) {}
 
   ngOnInit(): void { this.loadTargets(); }
 
@@ -185,6 +189,7 @@ export class CommunicationsComponent implements OnInit {
 
   private _openForm(f: CommForm): void {
     this._formSnapshot = JSON.stringify(f);
+    this.formFiles.set([]);
     this.formError.set('');
     this.form.set(f);
   }
@@ -196,11 +201,12 @@ export class CommunicationsComponent implements OnInit {
 
   formDirty(): boolean {
     const f = this.form();
-    return !!f && JSON.stringify(f) !== this._formSnapshot;
+    return !!f && (JSON.stringify(f) !== this._formSnapshot || this.formFiles().length > 0);
   }
 
   cancelForm(): void {
     if (!this._canLeaveForm()) return;
+    this.formFiles.set([]);
     this.form.set(null);
   }
 
@@ -224,12 +230,18 @@ export class CommunicationsComponent implements OnInit {
     this.formError.set('');
     (f.id ? this.svc.update(f.id, req) : this.svc.add(req)).subscribe({
       next: item => {
-        const rest = this.items().filter(i => i.id !== item.id);
-        this.items.set([...rest, item].sort((a, b) => b.occurredAt.localeCompare(a.occurredAt)));
-        if (!f.id) this._bumpCount(t.id, 1, item.occurredAt);
-        this.saving.set(false);
-        this.form.set(null);
-        this._toast(f.id ? 'Entrée modifiée' : 'Entrée ajoutée');
+        // L'entrée existe : ses pièces jointes sont envoyées avant de fermer le formulaire
+        this.filesSvc.uploadAll('communication', item.id, f.id ? [] : this.formFiles()).subscribe(up => {
+          const saved = { ...item, attachments: [...(item.attachments ?? []), ...up.uploaded] };
+          const rest = this.items().filter(i => i.id !== saved.id);
+          this.items.set([...rest, saved].sort((a, b) => b.occurredAt.localeCompare(a.occurredAt)));
+          if (!f.id) this._bumpCount(t.id, 1, saved.occurredAt);
+          this.saving.set(false);
+          this.formFiles.set([]);
+          this.form.set(null);
+          this.error.set(up.errors.length ? `Entrée ajoutée, mais ${up.errors.length} pièce(s) jointe(s) refusée(s) — ${up.errors.join(' ; ')}` : '');
+          this._toast(f.id ? 'Entrée modifiée' : 'Entrée ajoutée');
+        });
       },
       error: err => {
         this.formError.set(err?.error?.message ?? `Enregistrement impossible (HTTP ${err?.status ?? '?'}).`);
@@ -256,6 +268,10 @@ export class CommunicationsComponent implements OnInit {
         this.saving.set(false);
       },
     });
+  }
+
+  setAttachments(i: Communication, attachments: AttachmentItem[]): void {
+    this.items.set(this.items().map(x => x.id === i.id ? { ...x, attachments } : x));
   }
 
   /** Met à jour le compteur de la liste de gauche sans tout recharger. */

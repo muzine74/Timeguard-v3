@@ -1,0 +1,28 @@
+<div class="att" (click)="$event.stopPropagation()" *ngIf="canEdit || attachments.length || pending.length">
+
+  <ul class="att-list" *ngIf="attachments.length || pending.length">
+    <li class="att-item" *ngFor="let a of attachments; trackBy: trackItem">
+      <button type="button" class="att-name" [title]="'Télécharger ' + a.name" (click)="download(a)">📎 {{ a.name }}</button>
+      <span class="att-size">{{ size(a.size) }}</span>
+      <button type="button" class="att-x" *ngIf="canEdit" [disabled]="busy() || disabled"
+              [attr.aria-label]="'Retirer la pièce jointe ' + a.name" title="Retirer" (click)="remove(a)">✕</button>
+    </li>
+    <li class="att-item att-pending" *ngFor="let f of pending">
+      <span class="att-name att-static">📎 {{ f.name }}</span>
+      <span class="att-size">{{ size(f.size) }} · sera joint à l'enregistrement</span>
+      <button type="button" class="att-x" [disabled]="disabled"
+              [attr.aria-label]="'Retirer le fichier ' + f.name" title="Retirer" (click)="removePending(f)">✕</button>
+    </li>
+  </ul>
+
+  <label class="att-add" *ngIf="canAdd" [class.att-disabled]="busy() || disabled">
+    <input #picker type="file" multiple [accept]="accept" [disabled]="busy() || disabled" (change)="onPick(picker)" />
+    <span *ngIf="!busy()">📎 Joindre un fichier</span>
+    <span *ngIf="busy()">Envoi en cours…</span>
+  </label>
+  <span class="att-hint" *ngIf="canAdd">PDF, JPG, PNG, Word, Excel — 10 Mo max.</span>
+
+  <div class="att-errors" role="alert" *ngIf="errors().length">
+    <div *ngFor="let e of errors()">⚠ {{ e }}</div>
+  </div>
+</div>

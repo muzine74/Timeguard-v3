@@ -151,6 +151,9 @@
                         [ngModel]="f.body" (ngModelChange)="patch({ body: $event })"></textarea>
             </label>
           </div>
+          <!-- Nouvelle entrée : fichiers joints à l'enregistrement. Entrée existante : on joint depuis l'historique. -->
+          <app-attachments *ngIf="!f.id" ownerType="communication" [canEdit]="true" [disabled]="saving()"
+                           [pending]="formFiles()" (pendingChange)="formFiles.set($event)"></app-attachments>
           <div class="form-error" role="alert" *ngIf="formError()">⚠ {{ formError() }}</div>
           <div class="form-actions">
             <button type="button" class="btn btn-outline" [disabled]="saving()" (click)="cancelForm()">Annuler</button>
@@ -197,6 +200,10 @@
                 {{ isOpen(i.id) ? '▾ Masquer le texte' : '▸ Voir le texte' }}
               </button>
               <div class="entry-body" *ngIf="i.body && isOpen(i.id)">{{ i.body }}</div>
+
+              <app-attachments ownerType="communication" [ownerId]="i.id" [attachments]="i.attachments"
+                               [canEdit]="!i.isAutomatic" [disabled]="saving()"
+                               (attachmentsChange)="setAttachments(i, $event)"></app-attachments>
 
               <div class="entry-foot">
                 <span *ngIf="i.createdBy">{{ i.isAutomatic ? 'Envoyé par' : 'Saisi par' }} {{ i.createdBy }}</span>

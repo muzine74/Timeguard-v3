@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { AttachmentItem } from '../attachments/attachments.service';
 
 /** Entité à laquelle une note peut être rattachée. */
 export type NoteLinkType = 'employee' | 'company' | 'bill';
@@ -22,6 +23,8 @@ export interface NoteItem {
   links:                 NoteLink[];
   /** Faux = note de l'équipe, consultable seulement (seul son auteur ou un administrateur la modifie). */
   canEdit?:              boolean;
+  /** Pièces jointes de la note. */
+  attachments?:          AttachmentItem[];
 }
 
 /** Lien d'une note vers un employé, une compagnie ou une facture. */
