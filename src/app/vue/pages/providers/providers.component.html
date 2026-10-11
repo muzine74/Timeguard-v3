@@ -189,6 +189,9 @@
         </div>
       </div>
 
+      <!-- Pages et droits associés à l'entreprise -->
+      <app-tenant-permissions [tenantId]="selected()!.tenantId" [tenantName]="selected()!.name"></app-tenant-permissions>
+
       <!-- Section administrateurs -->
       <div class="section-card">
         <div class="section-card-hdr">

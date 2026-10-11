@@ -25,7 +25,7 @@ export const permGuard = (key: string): CanActivateFn => (_route, state) => {
   if (fail) return fail;
   // Super user a accès à tout
   if (auth.isSuperUser()) return true;
-  return auth.hasPerm(key) ? true : router.createUrlTree(['/']);
+  return auth.hasPerm(key) && auth.canOpen(state.url) ? true : router.createUrlTree(['/']);
 };
 
 /** Comme permGuard, mais une seule des permissions données suffit. */
@@ -34,14 +34,15 @@ export const anyPermGuard = (...keys: string[]): CanActivateFn => (_route, state
   const fail = _check(auth, router, state);
   if (fail) return fail;
   if (auth.isSuperUser()) return true;
-  return keys.some(k => auth.hasPerm(k)) ? true : router.createUrlTree(['/']);
+  return keys.some(k => auth.hasPerm(k)) && auth.canOpen(state.url) ? true : router.createUrlTree(['/']);
 };
 
 /** Guard générique — accessible à tout utilisateur connecté, sans permission spécifique. */
 export const authGuard: CanActivateFn = (_route, state) => {
   const auth = inject(AuthService); const router = inject(Router);
   const fail = _check(auth, router, state);
-  return fail ?? true;
+  if (fail) return fail;
+  return auth.canOpen(state.url) ? true : router.createUrlTree(['/']);
 };
 
 /** Guard réservé au super utilisateur. */
@@ -67,12 +68,15 @@ export const homeGuard: CanActivateFn = () => {
   if (auth.isSuperUser()) return router.createUrlTree(['/providers']);
   // Rôles de gestion : page d'accueil (tableau de bord). Un simple employé arrive directement sur sa page.
   if (DASHBOARD_PERMS.some(p => auth.hasPerm(p))) return router.createUrlTree(['/accueil']);
-  if (auth.hasPerm(PERM.employeesView))   return router.createUrlTree(['/employees']);
-  if (auth.hasPerm(PERM.pointageView))    return router.createUrlTree(['/pointage']);
-  if (auth.hasPerm(PERM.invoicesView))    return router.createUrlTree(['/invoices']);
-  if (auth.hasPerm(PERM.companiesEdit))   return router.createUrlTree(['/companies/assign']);
-  if (auth.hasPerm(PERM.groupsManage))    return router.createUrlTree(['/groups']);
-  if (auth.hasPerm(PERM.configManage))    return router.createUrlTree(['/config']);
+  // Première page que l'utilisateur peut réellement ouvrir (droit d'action ET droit de page) : une page refusée
+  // renvoie ici, il ne faut donc jamais y renvoyer.
+  const first = ([
+    [PERM.employeesView, '/employees'], [PERM.pointageView, '/pointage'], [PERM.invoicesView, '/invoices'],
+    [PERM.companiesEdit, '/companies/assign'], [PERM.groupsManage, '/groups'], [PERM.configManage, '/config'],
+  ] as const).find(([perm, url]) => auth.hasPerm(perm) && auth.canOpen(url));
+  if (first) return router.createUrlTree([first[1]]);
+  // Aucune de ces pages : Notes est ouverte à tout utilisateur connecté qui en a la page, sinon l'Aide (sans droit de page)
+  if (auth.loggedInWithAccess()) return router.createUrlTree([auth.canOpen('/notes') ? '/notes' : '/aide']);
   auth.logout();
   return router.createUrlTree(['/login']);
 };

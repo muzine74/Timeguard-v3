@@ -30,6 +30,16 @@ export interface TenantEmployeeItem {
   hasAccount: boolean;
 }
 
+export interface PermissionItem { permissionId: number; key: string; label: string; module: string; }
+
+/** Droits (pages et actions) associés à une entreprise par le super-administrateur. */
+export interface TenantPermissions {
+  catalog:    PermissionItem[];
+  /** Droits autorisés ; tout le catalogue quand l'entreprise n'est pas restreinte. */
+  allowed:    string[];
+  restricted: boolean;
+}
+
 export interface CreateAdminPayload {
   employeeId?:  string;
   employeeName: string;
@@ -86,6 +96,14 @@ export class TenantService {
 
   deleteAdmin(tenantId: string, credentialId: number) {
     return this.http.delete(`/api/tenants/${tenantId}/admins/${credentialId}`);
+  }
+
+  getPermissions(tenantId: string) {
+    return this.http.get<TenantPermissions>(`/api/tenants/${tenantId}/permissions`);
+  }
+
+  setPermissions(tenantId: string, keys: string[]) {
+    return this.http.put<{ message: string }>(`/api/tenants/${tenantId}/permissions`, { keys });
   }
 
   getEmployees(tenantId: string) {

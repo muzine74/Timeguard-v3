@@ -3,7 +3,10 @@
   <!-- ── Sidebar compagnies ── -->
   <aside class="sidebar">
     <div class="sidebar-hdr">
-      <div class="sidebar-title">Compagnies <span class="sidebar-count" *ngIf="!loadingList() && !listError()">{{ filteredCompanies.length }} / {{ companies.length }}</span></div>
+      <div class="sidebar-title-row">
+        <div class="sidebar-title">Compagnies <span class="sidebar-count" *ngIf="!loadingList() && !listError()">{{ filteredCompanies.length }} / {{ companies.length }}</span></div>
+        <button type="button" class="btn btn-primary btn-new" *ngIf="canCreate()" (click)="newCompany()">+ Nouvelle compagnie</button>
+      </div>
       <input class="sidebar-search" type="search" [(ngModel)]="searchQuery" placeholder="Rechercher..." aria-label="Rechercher une compagnie par son nom" />
       <div class="status-filter" role="group" aria-label="Filtrer par statut">
         <button type="button" class="sf-btn" [class.sf-active]="statusFilter === 'all'"      [attr.aria-pressed]="statusFilter === 'all'"      (click)="statusFilter = 'all'">Tous</button>

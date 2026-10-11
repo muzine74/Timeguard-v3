@@ -4,7 +4,8 @@ import { NoteAlertService } from '../../../state/notes/note-alert.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
+import { AuthService } from '../../../state/auth/auth.service';
 import { CompanyService, CompanySummary } from '../../../state/compagny/Company.service';
 import { InvoiceService, BillLine, BillCreatePayload } from '../../../state/invoice/invoice.service';
 import { ConfigService } from '../../../state/config/config.service';
@@ -27,7 +28,7 @@ interface CompanyPricing {
 @Component({
     selector: 'app-invoice-generate',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, RouterLink],
     templateUrl: './invoice-generate.component.html',
     styleUrls: ['./invoice-generate.component.scss']
 })
@@ -88,6 +89,12 @@ export class InvoiceGenerateComponent implements OnInit {
   get totalTtc(): number   { return +(this.subtotal + this.tpsAmount + this.tvqAmount).toFixed(2); }
 
   private destroyRef = inject(DestroyRef);
+  private readonly auth = inject(AuthService);
+
+  /** Bouton « Nouvelle compagnie » de la liste : seulement pour qui peut créer une compagnie et ouvrir cette page. */
+  canCreateCompany(): boolean {
+    return (this.auth.isSuperUser() || this.auth.hasPerm('companies.edit')) && this.auth.canOpen('/companies/new');
+  }
   private i18n       = inject(I18nService);
 
   private get _dev() { return isDevMode(); }

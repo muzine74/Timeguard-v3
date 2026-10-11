@@ -6,13 +6,14 @@ import { TenantService, TenantSummary, TenantDetail, TenantEmployeeItem } from '
 import { AuthService } from '../../../state/auth/auth.service';
 import { ConfirmService } from '../../../state/ui/confirm.service';
 import { httpErrorMessage } from '../../shared/http-error';
+import { TenantPermissionsComponent } from './tenant-permissions/tenant-permissions.component';
 
 type StatusFilter = 'all' | 'active' | 'inactive';
 
 @Component({
     selector: 'app-providers',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule, RouterLink],
+    imports: [CommonModule, FormsModule, RouterLink, TenantPermissionsComponent],
     templateUrl: './providers.component.html',
     styleUrls: ['./providers.component.scss']
 })

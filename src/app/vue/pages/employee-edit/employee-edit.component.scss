@@ -23,6 +23,13 @@
   background: rgba(var(--accent-rgb), .02);
 }
 .sidebar-title { font-size: 13px; font-weight: 700; margin-bottom: 10px; }
+// Titre et bouton « Nouvel employé » sur la même ligne
+.sidebar-title-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px;
+
+  .sidebar-title { margin-bottom: 0; }
+  .btn-new { padding: 5px 10px; font-size: 11px; text-decoration: none; white-space: nowrap; }
+}
 .sidebar-search {
   width: 100%; box-sizing: border-box;
   background: var(--surface2); border: 1px solid var(--border);

@@ -3,7 +3,10 @@
   <!-- ── Sidebar compagnies ── -->
   <aside class="sidebar no-print">
     <div class="sidebar-hdr">
-      <div class="sidebar-title">Compagnies actives</div>
+      <div class="sidebar-title-row">
+        <div class="sidebar-title">Compagnies actives</div>
+        <a class="btn btn-primary btn-new" routerLink="/companies/new" *ngIf="canCreateCompany()">+ Nouvelle compagnie</a>
+      </div>
       <input class="sidebar-search" [(ngModel)]="coSearch" placeholder="Rechercher..." />
     </div>
     <div class="sidebar-loading" *ngIf="coLoading()"><div class="mini-spinner"></div></div>

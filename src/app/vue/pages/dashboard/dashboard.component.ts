@@ -41,7 +41,7 @@ export class DashboardComponent implements OnInit {
     this.auth.user();   // dépendance réactive
     return this.SHORTCUTS.filter(s => {
       const perms = Array.isArray(s.perm) ? s.perm : [s.perm];
-      return perms.length === 0 || this.auth.isSuperUser() || perms.some(p => this.auth.hasPerm(p));
+      return (perms.length === 0 || this.auth.isSuperUser() || perms.some(p => this.auth.hasPerm(p))) && this.auth.canOpen(s.link);
     });
   });
 

@@ -417,3 +417,16 @@ E	Revenus annuels = prix d'une visite × nombre de visites par année.	Annual in
 E	Revenus annuels = montant × nombre de périodes par année. Les visites ne changent pas les revenus : elles donnent le prix d'une visite.	Annual income = amount × number of periods per year. Visits do not change the income: they give the price of one visit.	Ingresos anuales = importe × número de periodos por año. Las visitas no cambian los ingresos: dan el precio de una visita.	Ricavi annuali = importo × numero di periodi all'anno. Le visite non cambiano i ricavi: danno il prezzo di una visita.
 P	({0} visite{1} par 2 semaines, montant saisi {2})	({0} visit{1} per 2 weeks, amount entered {2})	({0} visita{1} cada 2 semanas, importe introducido {2})	({0} visit{1|a|e} ogni 2 settimane, importo inserito {2})
 P	Une année compte 52 semaines, 26 périodes de 2 semaines et 12 mois, soit {0} visite{1} par année.	A year has 52 weeks, 26 two-week periods and 12 months, i.e. {0} visit{1} per year.	Un año tiene 52 semanas, 26 periodos de 2 semanas y 12 meses, es decir, {0} visita{1} por año.	Un anno conta 52 settimane, 26 periodi di 2 settimane e 12 mesi, cioè {0} visit{1|a|e} all'anno.
+E	🔐 Pages et droits de l'entreprise	🔐 Pages and rights of the business	🔐 Páginas y derechos de la empresa	🔐 Pagine e diritti dell'impresa
+E	Tous les droits	All rights	Todos los derechos	Tutti i diritti
+P	{0#} droits sur {1#}	{0} rights out of {1}	{0} derechos de {1}	{0} diritti su {1}
+E	Les administrateurs de cette entreprise ne voient et n'attribuent à leurs groupes que les pages et les droits cochés. Une page s'ouvre avec son droit de page et le droit d'action correspondant.	The administrators of this business only see and assign to their groups the pages and rights that are ticked. A page opens with its page right and the matching action right.	Los administradores de esta empresa solo ven y asignan a sus grupos las páginas y los derechos marcados. Una página se abre con su derecho de página y el derecho de acción correspondiente.	Gli amministratori di questa impresa vedono e assegnano ai loro gruppi solo le pagine e i diritti spuntati. Una pagina si apre con il suo diritto di pagina e il diritto di azione corrispondente.
+E	✓ Droits enregistrés	✓ Rights saved	✓ Derechos guardados	✓ Diritti salvati
+E	Tout cocher	Tick all	Marcar todo	Spunta tutto
+E	Enregistrer les droits	Save rights	Guardar los derechos	Salva i diritti
+E	Cochez au moins un droit.	Tick at least one right.	Marque al menos un derecho.	Spunta almeno un diritto.
+E	Pages	Pages	Páginas	Pagine
+E	Choisissez au moins un droit pour cette entreprise.	Choose at least one right for this business.	Elija al menos un derecho para esta empresa.	Scegli almeno un diritto per questa impresa.
+E	Droits de l'entreprise enregistrés.	Rights of the business saved.	Derechos de la empresa guardados.	Diritti dell'impresa salvati.
+E	+ Nouvel employé	+ New employee	+ Nuevo empleado	+ Nuovo dipendente
+E	+ Nouvelle compagnie	+ New company	+ Nueva empresa	+ Nuova azienda

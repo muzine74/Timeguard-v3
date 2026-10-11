@@ -2,6 +2,7 @@ import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs';
 import { User, LoginRequest, LoginResponse } from '../../models';
+import { PAGES_ENABLED, pageKeyFor } from './page-permissions';
 
 const TOKEN_KEY = 'tg_token';
 const USER_KEY  = 'tg_user';
@@ -16,6 +17,16 @@ export class AuthService {
   private readonly _permSet = computed(() => new Set(this._user()?.permissions ?? []));
 
   hasPerm(key: string): boolean { return this._permSet().has(key); }
+
+  /**
+   * Droit de page : vrai si l'utilisateur peut ouvrir la page de cette adresse (voir page-permissions.ts).
+   * Ne remplace pas le droit d'action de la page, il s'y ajoute. Le super-administrateur ouvre tout.
+   */
+  canOpen(url: string): boolean {
+    if (this.isSuperUser() || !this._permSet().has(PAGES_ENABLED)) return true;
+    const key = pageKeyFor(url);
+    return key === null || this._permSet().has(key);
+  }
 
   readonly canManage = computed(() =>
     ['employees.view','companies.view','invoices.view','pointage.validate','groups.manage']

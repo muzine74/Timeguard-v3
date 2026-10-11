@@ -290,6 +290,13 @@
   text-transform: uppercase; letter-spacing: 1px;
 }
 
+// Titre et bouton « Nouvelle compagnie » sur la même ligne
+.sidebar-title-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;
+
+  .btn-new { padding: 5px 10px; font-size: 11px; white-space: nowrap; }
+}
+
 .sidebar-search {
   background: var(--surface2); border: 1px solid var(--border);
   color: var(--text); padding: 6px 10px; border-radius: 8px;

@@ -162,13 +162,11 @@ export class NavbarComponent {
     ] }] },
     { id: 'manage', label: 'Gestion', sections: [
       { title: 'Personnel', items: [
-        { label: 'Nouvel employé',     icon: 'user-plus', link: '/employees/new',        show: () => this.has('employees.create') },
         { label: 'Modifier employé',   icon: 'edit',  link: '/employees/edit',       show: () => this.has('employees.edit') },
         { label: 'Tarifs employés',    icon: 'dollar',  link: '/employees/pricing',    show: () => this.has('employees.edit') },
       ] },
       { title: 'Clients', items: [
         { label: 'Liste compagnies',   icon: 'building',  link: '/companies/edit',       show: () => this.has('companies.edit') },
-        { label: 'Nouvelle compagnie', icon: 'plus', link: '/companies/new',        show: () => this.has('companies.edit') },
       ] },
       { title: 'Pointage', items: [
         { label: 'Pointage employé',   icon: 'list',  link: '/employees', exact: true, show: () => this.has('employees.view') },
@@ -185,7 +183,6 @@ export class NavbarComponent {
     { id: 'finance', label: 'Finances', sections: [
       { title: 'Facturation', items: [
         { label: 'Gérer les factures',     icon: 'file', link: '/invoices', exact: true, show: () => this.has('invoices.view') },
-        { label: 'Nouvelle facture',       icon: 'file-plus', link: '/invoices/new',           show: () => this.has('invoices.edit') },
         { label: 'Facturer par pointages', icon: 'clock', link: '/invoices/from-timesheets', show: () => this.has('invoices.edit') },
         { label: 'Envoyer les factures',   icon: 'mail', link: '/invoices/send',          show: () => this.has('invoices.send') },
         { label: 'Téléchargement des factures', icon: 'download', link: '/invoices/download', show: () => this.has('invoices.view') },
@@ -215,7 +212,7 @@ export class NavbarComponent {
     this.auth.user(); this.team.hasTeam();   // dépendances réactives
     return this.NAV_MENUS
       .map(m => ({ ...m, sections: m.sections
-        .map(sec => ({ ...sec, items: sec.items.filter(it => it.show()) }))
+        .map(sec => ({ ...sec, items: sec.items.filter(it => it.show() && this.auth.canOpen(it.link)) }))
         .filter(sec => sec.items.length) }))
       .filter(m => m.sections.length);
   });

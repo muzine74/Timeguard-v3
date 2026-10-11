@@ -8,6 +8,7 @@ import { EmployeesService } from '../../../state/employees/employees.service';
 import { CompanyForm, FreqOption, SemainePlanning, JourMensuel } from '../../../models';
 import { ConfirmService } from '../../../state/ui/confirm.service';
 import { httpErrorMessage } from '../../shared/http-error';
+import { AuthService } from '../../../state/auth/auth.service';
 
 // Shape minimale pour la liste sidebar
 export interface CompanySummary {
@@ -25,6 +26,7 @@ export interface CompanySummary {
 })
 export class CompanyEditComponent implements OnInit {
   private readonly confirmDlg = inject(ConfirmService);
+  private readonly auth       = inject(AuthService);
   private readonly noteAlerts = inject(NoteAlertService);
   saved       = signal(false);
   savedMsg    = signal('✓ Compagnie mise à jour');
@@ -244,6 +246,17 @@ export class CompanyEditComponent implements OnInit {
   }
 
   reloadList(): void { this._loadList(); }
+
+  /** Bouton « Nouvelle compagnie » : seulement pour qui peut ouvrir cette page (l'entrée du menu a été retirée). */
+  canCreate(): boolean {
+    return (this.auth.isSuperUser() || this.auth.hasPerm('companies.edit')) && this.auth.canOpen('/companies/new');
+  }
+
+  /** Ouvre la création d'une compagnie, après confirmation si la fiche en cours a des modifications non enregistrées. */
+  async newCompany(): Promise<void> {
+    if (this.isDirty() && !await this.confirmDlg.discard(`Les modifications non enregistrées de « ${this.form.companyName || 'cette compagnie'} » seront perdues.`)) return;
+    this.router.navigate(['/companies/new']);
+  }
 
   // ── Sélectionner une compagnie → remplir le formulaire ─
   async selectCompany(id: string): Promise<void> {

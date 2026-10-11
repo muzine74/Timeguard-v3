@@ -3,7 +3,8 @@ import { NoteAlertService } from '../../../state/notes/note-alert.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
+import { AuthService } from '../../../state/auth/auth.service';
 import { EmployeesService } from '../../../state/employees/employees.service';
 import { TeamAssignmentComponent } from '../../components/team-assignment/team-assignment.component';
 import { CredentialsService } from '../../../state/auth/credentials.service';
@@ -13,7 +14,7 @@ import { httpErrorMessage } from '../../shared/http-error';
 @Component({
     selector: 'app-employee-edit',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule, TeamAssignmentComponent],
+    imports: [CommonModule, FormsModule, RouterLink, TeamAssignmentComponent],
     templateUrl: './employee-edit.component.html',
     styleUrls: ['./employee-edit.component.scss']
 })
@@ -60,6 +61,12 @@ export class EmployeeEditComponent implements OnInit {
   form: EmployeeForm = this._emptyForm();
 
   private destroyRef = inject(DestroyRef);
+  private readonly auth = inject(AuthService);
+
+  /** Bouton « Nouvel employé » : seulement pour qui peut créer un employé et ouvrir cette page. */
+  canCreate(): boolean {
+    return (this.auth.isSuperUser() || this.auth.hasPerm('employees.create')) && this.auth.canOpen('/employees/new');
+  }
   private get _dev() { return isDevMode(); }
   private log(...a: unknown[])  { if (this._dev) console.log('[EmployeeEdit]', ...a); }
   private warn(...a: unknown[]) { if (this._dev) console.warn('[EmployeeEdit]', ...a); }
