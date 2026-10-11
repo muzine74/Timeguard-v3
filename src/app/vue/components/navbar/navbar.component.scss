@@ -19,6 +19,9 @@
   display: flex; align-items: center; gap: 8px;
   font-weight: 700; font-size: 15px; letter-spacing: -.5px; flex-shrink: 0;
 
+  .brand-home { display: inline-flex; align-items: center; gap: 8px; color: inherit; text-decoration: none; border-radius: 6px;
+    &:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; } }
+  .brand-logo { width: 24px; height: 24px; color: var(--accent); flex-shrink: 0; }
   .dot {
     width: 9px; height: 9px; border-radius: 50%;
     background: var(--accent); box-shadow: 0 0 12px var(--accent);
@@ -253,3 +256,28 @@
 }
 
 .user-panel .dropdown-section { border-top: none; margin-top: 2px; }   // évite la double ligne sous l'en-tête
+
+// ── Icônes du jeu commun (app-icon) ──
+.di-icon { font-size: 15px; }
+.mobile-link app-icon { font-size: 16px; margin-right: 6px; }
+.help-link app-icon { font-size: 16px; }
+.user-logout app-icon { font-size: 15px; }
+.hamburger app-icon { font-size: 20px; }
+
+// ── Bouton de la recherche globale ──
+.qs-open {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 10px; border-radius: 9px; cursor: pointer;
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--muted); font-family: inherit; font-size: 12px; transition: all .15s;
+  &:hover { color: var(--text); border-color: var(--muted); }
+  &:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  app-icon { font-size: 14px; }
+}
+.qs-kbd {
+  font-family: inherit; font-size: 10px; font-weight: 600; color: var(--muted);
+  border: 1px solid var(--border); border-radius: 5px; padding: 1px 5px; background: var(--surface);
+}
+@media (max-width: 1200px) { .qs-open-txt, .qs-kbd { display: none; } .qs-open { padding: 7px 9px; } }
+.help-link { display: inline-flex; align-items: center; gap: 6px; }
+.lang-row { padding: 4px 12px 10px; }

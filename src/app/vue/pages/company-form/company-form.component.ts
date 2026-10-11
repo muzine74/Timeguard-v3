@@ -1,9 +1,10 @@
-import { Component, HostListener, signal, isDevMode, ChangeDetectionStrategy } from '@angular/core';
+import { Component, HostListener, signal, isDevMode, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CompanyService, ContactRequest } from  '../../../state/compagny/Company.service';
 import { CompanyForm, FreqOption, SemainePlanning, JourMensuel } from '../../../models';
+import { ConfirmService } from '../../../state/ui/confirm.service';
 
 @Component({
     selector: 'app-company-form',
@@ -13,6 +14,7 @@ import { CompanyForm, FreqOption, SemainePlanning, JourMensuel } from '../../../
     styleUrls: ['./company-form.component.scss']
 })
 export class CompanyFormComponent {
+  private readonly confirmDlg = inject(ConfirmService);
   saved  = signal(false);
   error  = signal('');
 
@@ -170,8 +172,9 @@ export class CompanyFormComponent {
   }
 
   /** Annuler : retour à la liste des compagnies (avec confirmation si une saisie serait perdue). */
-  cancel(): void {
-    if (this.isDirty() && !confirm('Abandonner la création ? Les informations saisies seront perdues.')) return;
+  async cancel(): Promise<void> {
+    if (this.isDirty() && !await this.confirmDlg.ask({ title: 'Abandonner la création ?', message: 'Les informations saisies seront perdues.',
+        confirmLabel: 'Abandonner', cancelLabel: 'Continuer la saisie', danger: true })) return;
     this._initial = '';
     this.router.navigate(['/companies/edit']);
   }

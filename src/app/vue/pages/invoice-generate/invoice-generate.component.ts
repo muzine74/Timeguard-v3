@@ -9,6 +9,8 @@ import { CompanyService, CompanySummary } from '../../../state/compagny/Company.
 import { InvoiceService, BillLine, BillCreatePayload } from '../../../state/invoice/invoice.service';
 import { ConfigService } from '../../../state/config/config.service';
 import { CompanyForm, SemainePlanning } from '../../../models';
+import { httpErrorMessage } from '../../shared/http-error';
+import { I18nService } from '../../../state/i18n/i18n.service';
 
 interface PriceGroup {
   unitPrice: number;
@@ -86,6 +88,7 @@ export class InvoiceGenerateComponent implements OnInit {
   get totalTtc(): number   { return +(this.subtotal + this.tpsAmount + this.tvqAmount).toFixed(2); }
 
   private destroyRef = inject(DestroyRef);
+  private i18n       = inject(I18nService);
 
   private get _dev() { return isDevMode(); }
   private log(...a: unknown[])  { if (this._dev) console.log('[InvoiceGenerate]', ...a); }
@@ -311,7 +314,7 @@ export class InvoiceGenerateComponent implements OnInit {
       },
       error: err => {
         this.warn('✕ save:', err);
-        this.error.set(this.invoiceSvc.error() ?? `Erreur HTTP ${err.status}`);
+        this.error.set(this.invoiceSvc.error() ?? httpErrorMessage(err));
         this.saving.set(false);
       },
     });
@@ -344,8 +347,8 @@ export class InvoiceGenerateComponent implements OnInit {
             }
 
             const amount  = this.totalTtc.toLocaleString('fr-CA', { minimumFractionDigits: 2 });
-            const subject = `Facture ${res.billNumber} — ${co.companyName}`;
-            const body    = `Bonjour,\n\nVeuillez trouver en pièce jointe la facture ${res.billNumber} d'un montant de ${amount} $ pour la période ${this.period}.\n\nMerci pour votre confiance.\n\nCordialement,\n${this.providerName}`;
+            const subject = this.i18n.t(`Facture ${res.billNumber} — ${co.companyName}`);
+            const body    = this.i18n.tLines(`Bonjour,\n\nVeuillez trouver en pièce jointe la facture ${res.billNumber} d'un montant de ${amount} $ pour la période ${this.period}.\n\nMerci pour votre confiance.\n\nCordialement,\n${this.providerName}`);
 
             this.invoiceSvc.sendEmail(id, { recipients, subject, body }).subscribe({
               next: () => {
@@ -370,7 +373,7 @@ export class InvoiceGenerateComponent implements OnInit {
         });
       },
       error: err => {
-        this.error.set(this.invoiceSvc.error() ?? `Erreur HTTP ${err.status}`);
+        this.error.set(this.invoiceSvc.error() ?? httpErrorMessage(err));
         this.saving.set(false);
       },
     });

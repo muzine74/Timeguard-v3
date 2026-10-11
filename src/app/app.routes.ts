@@ -14,6 +14,11 @@ export const routes: Routes = [
     loadComponent: () => import('./vue/pages/login/login.component').then(m => m.LoginComponent)
   },
   {
+    // Page de présentation publique
+    path: 'bienvenue',
+    loadComponent: () => import('./vue/pages/landing/landing.component').then(m => m.LandingComponent)
+  },
+  {
     path: 'register',
     loadComponent: () => import('./vue/pages/register/register.component').then(m => m.RegisterComponent)
   },
@@ -32,6 +37,13 @@ export const routes: Routes = [
     path: 'purge',
     canActivate: [permGuard(PERM.dataPurge)],
     loadComponent: () => import('./vue/pages/purge/purge.component').then(m => m.PurgeComponent)
+  },
+
+  // ── Accueil : ce qui demande l'attention (sections selon les permissions) ─
+  {
+    path: 'accueil',
+    canActivate: [authGuard],
+    loadComponent: () => import('./vue/pages/dashboard/dashboard.component').then(m => m.DashboardComponent)
   },
 
   // ── Pointage ─────────────────────────────────────────────────────────────

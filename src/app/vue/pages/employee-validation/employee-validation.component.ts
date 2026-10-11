@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { EmployeesService } from '../../../state/employees/employees.service';
 import { Employee, EmployeeFile } from '../../../models';
+import { httpErrorMessage } from '../../shared/http-error';
 
 @Component({
     selector: 'app-employee-validation',
@@ -146,7 +147,7 @@ export class EmployeeValidationComponent implements OnInit {
         input.value = '';
       },
       error: err => {
-        this.fileError.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.fileError.set(httpErrorMessage(err));
         this.fileUploading.set(false);
         input.value = '';
       },
@@ -164,14 +165,14 @@ export class EmployeeValidationComponent implements OnInit {
         a.click();
         setTimeout(() => URL.revokeObjectURL(url), 10000);
       },
-      error: err => this.fileError.set(err?.error?.message ?? `Erreur HTTP ${err.status}`),
+      error: err => this.fileError.set(httpErrorMessage(err)),
     });
   }
 
   removeFile(fileId: string): void {
     this.empSvc.deleteFile(this.employeeId(), fileId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => this._loadFiles(this.employeeId()),
-      error: err => this.fileError.set(err?.error?.message ?? `Erreur HTTP ${err.status}`),
+      error: err => this.fileError.set(httpErrorMessage(err)),
     });
   }
 

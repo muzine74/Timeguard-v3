@@ -13,11 +13,12 @@ export interface MultiSelectOption { id: string; label: string; }
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [CommonModule, FormsModule],
     template: `
-    <button type="button" class="ms-toggle" [class.ms-active]="selected.length" (click)="open = !open">
+    <button #btn type="button" class="ms-toggle" [class.ms-active]="selected.length" (click)="toggleOpen(btn)"
+            [attr.aria-expanded]="open">
       <span class="ms-label">{{ summary() }}</span>
       <span class="ms-caret">▾</span>
     </button>
-    <div class="ms-panel" *ngIf="open">
+    <div class="ms-panel" *ngIf="open" [ngStyle]="panelStyle">
       <input *ngIf="options.length > 8" class="ms-search" type="search" placeholder="Rechercher…"
              [(ngModel)]="query" />
       <label class="ms-item ms-all" *ngIf="visible().length > 0">
@@ -65,6 +66,9 @@ export interface MultiSelectOption { id: string; label: string; }
       font-weight: 600; border-bottom: 1px solid var(--border);
       border-radius: 7px 7px 0 0; margin-bottom: 4px; padding-bottom: 9px;
     }
+    /* Dans un en-tête de colonne : plus petit, sans hériter des majuscules de l'en-tête */
+    :host(.compact) { flex: none; width: 190px; max-width: 100%; text-transform: none; letter-spacing: normal; font-weight: 400; }
+    :host(.compact) .ms-toggle { padding: 5px 9px; font-size: .78rem; border-radius: 7px; }
   `]
 })
 export class MultiSelectComponent {
@@ -75,7 +79,13 @@ export class MultiSelectComponent {
   @Input() placeholder = 'Tous';
   /** Nom au pluriel pour le résumé (ex. « employés » → « 3 employés »). */
   @Input() plural = 'éléments';
+  /**
+   * Liste posée par-dessus la page (position fixe) au lieu d'être rattachée au bouton : à utiliser dans un
+   * tableau, dont le cadre défilant couperait la liste.
+   */
+  @Input() floating = false;
 
+  panelStyle: Record<string, string> | null = null;
   open  = false;
   query = '';
 
@@ -85,6 +95,27 @@ export class MultiSelectComponent {
   @HostListener('document:pointerdown', ['$event'])
   onDocumentPointerDown(ev: Event): void {
     if (this.open && !this.host.nativeElement.contains(ev.target as Node)) this.open = false;
+  }
+
+  toggleOpen(btn: HTMLElement): void {
+    this.open = !this.open;
+    if (!this.open || !this.floating) { this.panelStyle = null; return; }
+    const r = btn.getBoundingClientRect();
+    // Sous le bouton s'il y a la place, sinon au-dessus (bouton en bas de l'écran)
+    const below = window.innerHeight - r.bottom - 16, above = r.top - 16;
+    const down = below >= 200 || below >= above;
+    this.panelStyle = {
+      position: 'fixed', left: `${Math.max(8, Math.min(r.left, window.innerWidth - 328))}px`,
+      top: down ? `${r.bottom + 6}px` : 'auto', bottom: down ? 'auto' : `${window.innerHeight - r.top + 6}px`,
+      'min-width': `${r.width}px`, 'max-height': `${Math.min(320, down ? below : above)}px`,
+    };
+  }
+
+  // Liste en position fixe : elle ne suit pas le bouton quand la page défile, donc on la ferme
+  @HostListener('window:scroll')
+  @HostListener('window:resize')
+  onViewportChange(): void {
+    if (this.open && this.floating) this.open = false;
   }
 
   summary(): string {

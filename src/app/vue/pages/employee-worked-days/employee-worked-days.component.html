@@ -40,7 +40,7 @@
   </div>
 
   <!-- ── États ───────────────────────────────────────────────────────────── -->
-  <div class="loading-wrap" *ngIf="loading()" role="status"><span class="spinner"></span> Chargement des journées validées…</div>
+  <div class="sk-list" *ngIf="loading()" role="status"><span class="sr-only">Chargement des journées validées…</span><div class="sk-row" *ngFor="let _ of [1, 2, 3, 4, 5, 6]"><i></i><i></i><i></i></div></div>
 
   <div class="empty-state" *ngIf="!loading() && selectedEmployees.length === 0">
     <div class="empty-icon" aria-hidden="true">👤</div>

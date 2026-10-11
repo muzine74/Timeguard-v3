@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { RegisterTenantRequest } from '../../../models';
+import { httpErrorMessage } from '../../shared/http-error';
 
 @Component({
     selector: 'app-register',
@@ -75,7 +76,7 @@ export class RegisterComponent {
         const firstValidationMsg = validationErrors
           ? (Object.values(validationErrors)[0] as string[] | undefined)?.[0]
           : undefined;
-        this.error.set(err?.error?.message ?? firstValidationMsg ?? `Erreur HTTP ${err.status}`);
+        this.error.set(err?.error?.message ?? firstValidationMsg ?? httpErrorMessage(err));
       },
     });
   }

@@ -1,0 +1,300 @@
+0301	Employment type	Tipo de empleo	Tipo di impiego
+0302	✓ Employee created — add documents, then click Finish	✓ Empleado creado — añada documentos y haga clic en Terminar	✓ Dipendente creato — aggiungi i documenti poi clicca su Fine
+0303	💼 Permanent	💼 Fijo	💼 Fisso
+0304	🔧 Per job	🔧 Por tarea	🔧 A cottimo
+0305	No credentials found	No se encontró ninguna credencial	Nessuna credenziale trovata
+0306	Confirm deletion	Confirmar la eliminación	Conferma l'eliminazione
+0307	Create a login for an employee	Crear un acceso de conexión para un empleado	Crea un accesso per un dipendente
+0308	Create and manage employee logins.	Cree y gestione los accesos de conexión de los empleados.	Crea e gestisci gli accessi dei dipendenti.
+0309	Employee	Empleado	Dipendente
+0310	Groups	Grupos	Gruppi
+0311	Groups (optional)	Grupos (opcional)	Gruppi (facoltativo)
+0312	Username	Usuario	Nome utente
+0313	Employee credentials	Credenciales de empleados	Credenziali dipendenti
+0314	The employee will no longer be able to log in.	El empleado ya no podrá conectarse.	Il dipendente non potrà più accedere.
+0315	Username	Nombre de usuario	Nome utente
+0316	New password	Nueva contraseña	Nuova password
+0317	New login	Nueva credencial	Nuova credenziale
+0318	Reset the password	Restablecer la contraseña	Reimposta la password
+0319	Delete the login of	Eliminar la credencial de	Elimina la credenziale di
+0320	— Select —	— Seleccionar —	— Seleziona —
+0321	＋ New login	＋ Nueva credencial	＋ Nuova credenziale
+0322	Unable to load	No se pudo cargar	Caricamento non riuscito
+0323	Choose an employee from the list to display their data.	Elija un empleado de la lista para ver sus datos.	Scegli un dipendente dall'elenco per visualizzarne i dati.
+0324	Week validated by the admin	Semana validada por el admin	Settimana convalidata dall'admin
+0325	Select an employee	Seleccione un empleado	Seleziona un dipendente
+0326	All ✓	Todo ✓	Tutto ✓
+0327	✅ Validate the week	✅ Validar la semana	✅ Convalida la settimana
+0328	💾 Save	💾 Guardar	💾 Salva
+0329	🔓 Cancel validation	🔓 Anular la validación	🔓 Annulla la convalida
+0330	Active	Activos	Attivi
+0331	No employee matches	Ningún empleado coincide	Nessun dipendente corrisponde
+0332	Deactivated	Desactivado	Disattivato
+0333	Deactivated	Desactivados	Disattivati
+0334	No leader	Sin jefe	Senza capo
+0335	Validated	Validados	Convalidati
+0336	show all	mostrar todos	mostra tutti
+0337	To validate	Por validar	Da convalidare
+0338	✓ Validated	✓ Validado	✓ Convalidato
+0339	✎ Edit the record	✎ Modificar la ficha	✎ Modifica la scheda
+0340	No timesheet recorded	Ningún fichaje registrado	Nessuna timbratura registrata
+0341	· displayed	· mostrada	· visualizzata
+0342	📅 Week history	📅 Historial de semanas	📅 Cronologia delle settimane
+0343	No employee	Ningún empleado	Nessun dipendente
+0344	Select an employee from the list	Seleccione un empleado de la lista	Seleziona un dipendente dall'elenco
+0345	✉ Send reset link	✉ Enviar enlace de restablecimiento	✉ Invia link di reimpostazione
+0346	✓ Reset link emailed to the employee.	✓ Enlace de restablecimiento enviado por correo al empleado.	✓ Link di reimpostazione inviato via email al dipendente.
+0347	🔑 Go to Credentials	🔑 Ir a Credenciales	🔑 Vai a Credenziali
+0348	(an employee can be paid per visit at one company and by the hour at another, in the same week).	(un empleado puede cobrar por visita en una empresa y por hora en otra, en la misma semana).	(un dipendente può essere pagato a visita presso un'azienda e a ore presso un'altra, nella stessa settimana).
+0349	Current	Actual	Attuale
+0350	No change recorded for this company.	Ningún cambio registrado para esta empresa.	Nessuna modifica registrata per questa azienda.
+0351	No active work day defined for this company.	Ningún día de trabajo activo definido para esta empresa.	Nessun giorno di lavoro attivo definito per questa azienda.
+0352	No company assigned to this employee	Ninguna empresa asignada a este empleado	Nessuna azienda assegnata a questo dipendente
+0353	Loading rates...	Cargando tarifas...	Caricamento tariffe...
+0354	Choose how this employee is paid	Elija cómo se paga a este empleado	Scegli come viene pagato questo dipendente
+0355	Default	Por defecto	Predefinito
+0356	Rate change history	Historial de cambios de tarifa	Cronologia delle modifiche di tariffa
+0357	Pay mode at this company	Modo de remuneración en esta empresa	Modalità di retribuzione presso questa azienda
+0358	Override	Personalizado	Personalizzato
+0359	Pay = hours × applied rate; leave the rate empty to use the company's.	Pago = horas × tarifa aplicada; deje la tarifa vacía para usar la de la empresa.	Paga = ore × tariffa applicata; lascia vuota la tariffa per usare quella dell'azienda.
+0360	Pay = per-visit rates below.	Pago = tarifas por visita de abajo.	Paga = tariffe a visita qui sotto.
+0361	By the hour	Por hora	A ore
+0362	Per visit (rates below)	Por visita (tarifas de abajo)	A visita (tariffe qui sotto)
+0363	Time logged in hours (start / end) at this company.	Fichaje en horas (inicio / fin) en esta empresa.	Timbratura in ore (inizio / fine) presso questa azienda.
+0364	First rate	Primera tarifa	Prima tariffa
+0365	Applies to timesheets recorded afterwards (amounts already logged are not recalculated).	Se aplica a los fichajes registrados después (los importes ya fichados no se recalculan).	Si applica alle timbrature registrate in seguito (gli importi già timbrati non vengono ricalcolati).
+0366	Only the days allowed by the company's calendar can be edited. Leave the field empty to use the default rate.	Solo se pueden modificar los días permitidos por el calendario de la empresa. Deje el campo vacío para usar la tarifa por defecto.	Solo i giorni consentiti dal calendario dell'azienda sono modificabili. Lascia vuoto il campo per usare la tariffa predefinita.
+0367	Status	Estado	Stato
+0368	Select an employee to manage their rates	Seleccione un empleado para gestionar sus tarifas	Seleziona un dipendente per gestirne le tariffe
+0369	Select a company above	Seleccione una empresa arriba	Seleziona un'azienda qui sopra
+0370	Company rate	Tarifa de la empresa	Tariffa azienda
+0371	Custom rates per assigned company	Tarifas personalizadas por empresa asignada	Tariffe personalizzate per azienda assegnata
+0372	Applied rate	Tarifa aplicada	Tariffa applicata
+0373	Company's default rate	Tarifa por defecto de la empresa	Tariffa predefinita dell'azienda
+0374	Employee's specific rate ($/h)	Tarifa específica del empleado ($/h)	Tariffa specifica del dipendente ($/h)
+0375	Your rate	Su tarifa	La tua tariffa
+0376	at this company	en esta empresa	presso questa azienda
+0377	Take a photo	Tomar una foto	Scatta una foto
+0378	Employee profile	Perfil del empleado	Profilo dipendente
+0379	Employee profile — read only	Perfil del empleado — solo lectura	Profilo dipendente — sola lettura
+0380	-	-	-
+0381	(optional)	(opcional)	(facoltativa)
+0382	(outside the displayed period: not counted)	(fuera del periodo mostrado: no contada)	(fuori dal periodo visualizzato: non conteggiata)
+0383	-	-	-
+0384	No record for this week.	Ningún registro para esta semana.	Nessuna registrazione per questa settimana.
+0385	No validated week in this period.	Ninguna semana validada en este periodo.	Nessuna settimana convalidata in questo periodo.
+0386	Before taxes	Antes de impuestos	Al netto delle imposte
+0387	With taxes	Con impuestos	Con imposte
+0388	Loading validated days…	Cargando los días validados…	Caricamento delle giornate convalidate…
+0389	Choose one or more employees to display their weeks to pay.	Elija uno o varios empleados para ver sus semanas por pagar.	Scegli uno o più dipendenti per visualizzare le settimane da pagare.
+0390	Confirm cancellation	Confirmar la anulación	Conferma l'annullamento
+0391	Payment date	Fecha de pago	Data di pagamento
+0392	Already paid	Ya pagado	Già versato
+0393	Recorded on	Registrado el	Registrato il
+0394	Keep	Conservar	Mantieni
+0395	Record history	Historial de registros	Cronologia delle registrazioni
+0396	Days from validated timesheets, by employee and by week — check the days paid, then record one or more payments. Each payment is capped at the remaining balance; taxes are added if the employee has a GST / QST number. Days outside the chosen period are struck through and not counted.	Días de los fichajes validados, por empleado y por semana — marque los días pagados y registre uno o varios pagos. Cada pago tiene como tope el resto por pagar; se añaden impuestos si el empleado tiene número TPS / TVQ. Los días fuera del periodo elegido aparecen tachados y no se cuentan.	Giornate delle timbrature convalidate, per dipendente e per settimana — seleziona le giornate pagate, poi registra uno o più versamenti. Ogni versamento ha come limite il residuo da versare; le imposte si aggiungono se il dipendente ha un numero TPS / TVQ. Le giornate fuori dal periodo scelto sono barrate e non vengono conteggiate.
+0397	Days paid	Días pagados	Giornate pagate
+0398	Month	Mes	Mese
+0399	Amount before taxes	Importe antes de impuestos	Importo al netto delle imposte
+0400	Actual amount transferred	Importe real transferido	Importo effettivo trasferito
+0401	Amount transferred	Importe transferido	Importo trasferito
+0402	Not recorded	No registrada	Non registrata
+0403	Payment transferred	Pago transferido	Pagamento trasferito
+0404	Employee payments	Pagos a empleados	Pagamenti dipendenti
+0405	By	Por	Da
+0406	No more timesheets in this week.	Ya no hay fichajes en esta semana.	Nessuna timbratura più in questa settimana.
+0407	Reason	Motivo	Motivo
+0408	Reason for the partial payment	Motivo del pago parcial	Motivo del versamento parziale
+0409	Left to transfer	Resto por transferir	Residuo da trasferire
+0410	Left to pay	Resto por pagar	Residuo da versare
+0411	Selected income	Ingresos seleccionados	Redditi selezionati
+0412	Validated weeks	Semanas validadas	Settimane convalidate
+0413	Only timesheets from validated weeks are shown.	Solo se muestran los fichajes de las semanas validadas.	Sono mostrate solo le timbrature delle settimane convalidate.
+0414	Selected total	Total seleccionado	Totale selezionato
+0415	Select all	Seleccionar todo	Seleziona tutto
+0416	Transferred	Transferido	Trasferito
+0417	Payment	Pago	Versamento
+0418	Paid after	Pagado después	Versato dopo
+0419	Paid before	Pagado antes	Versato prima
+0420	none: the employee has no GST / QST number	ninguno: el empleado no tiene número TPS / TVQ	nessuna: il dipendente non ha un numero TPS / TVQ
+0421	before taxes	antes de impuestos	al netto delle imposte
+0422	with taxes	con impuestos	con imposte
+0423	Status	Estado	Stato
+0424	✓ Fully transferred	✓ Transferida por completo	✓ Trasferita per intero
+0425	💾 Record the payment	💾 Registrar el pago	💾 Registra il versamento
+0426	📅 Period	📅 Periodo	📅 Periodo
+0427	📆 Date range	📆 Intervalo	📆 Intervallo
+0428	🕘 History	🕘 Historial	🕘 Cronologia
+0429	Add a permission	Añadir un permiso	Aggiungi un permesso
+0430	No employee found	No se encontró ningún empleado	Nessun dipendente trovato
+0431	No group created	Ningún grupo creado	Nessun gruppo creato
+0432	No permission defined	Ningún permiso definido	Nessun permesso definito
+0433	No permission defined.	Ningún permiso definido.	Nessun permesso definito.
+0434	Catalogue shared by all businesses — viewable here, editable only by the platform administrator.	Catálogo común a todas las empresas — se consulta aquí, solo lo modifica el administrador de la plataforma.	Catalogo comune a tutte le imprese — consultabile qui, modificabile solo dall'amministratore della piattaforma.
+0435	Key	Clave	Chiave
+0436	Create groups, define their access and assign employees.	Cree grupos, defina sus accesos y asigne empleados.	Crea gruppi, definisci i loro accessi e assegna i dipendenti.
+0437	Define the permissions available to groups	Defina los permisos disponibles para los grupos	Definisci i permessi disponibili per i gruppi
+0438	Assigned employees	Empleados asignados	Dipendenti assegnati
+0439	Permission management	Gestión de permisos	Gestione dei permessi
+0440	Groups & permissions	Grupos y permisos	Gruppi e permessi
+0441	Manage permissions →	Gestionar los permisos →	Gestisci i permessi →
+0442	Information	Información	Informazioni
+0443	Label	Etiqueta	Etichetta
+0444	Module	Módulo	Modulo
+0445	Group name	Nombre del grupo	Nome del gruppo
+0446	No	No	No
+0447	Yes	Sí	Sì
+0448	Permissions	Permisos	Permessi
+0449	Existing permissions	Permisos existentes	Permessi esistenti
+0450	Delete?	¿Eliminar?	Eliminare?
+0451	Delete this group permanently?	¿Eliminar este grupo definitivamente?	Eliminare definitivamente questo gruppo?
+0452	Select a group or create a new one	Seleccione un grupo o cree uno nuevo	Seleziona un gruppo o creane uno nuovo
+0453	⚙ Manage permissions	⚙ Gestionar los permisos	⚙ Gestisci i permessi
+0454	✕ Close	✕ Cerrar	✕ Chiudi
+0455	＋ New	＋ Nuevo	＋ Nuovo
+0456	+ Add a line	+ Añadir una línea	+ Aggiungi una riga
+0457	Active	Activa	Attiva
+0458	Year	Año	Anno
+0459	Box 048 — Fees for services	Casilla 048 — Honorarios por servicios prestados	Casella 048 — Onorari per servizi resi
+0460	Active companies	Empresas activas	Aziende attive
+0461	Eligible companies	Empresas elegibles	Aziende idonee
+0462	Owner email	Correo del propietario	Email del titolare
+0463	Create a business space	Crear un espacio de empresa	Crea uno spazio aziendale
+0464	Billing date	Fecha de facturación	Data di fatturazione
+0465	Recipients	Destinatarios	Destinatari
+0466	Send	Enviar	Invia
+0467	Sent	Enviadas	Inviate
+0468	Export ▾	Exportar ▾	Esporta ▾
+0469	Unsent invoices	Facturas no enviadas	Fatture non inviate
+0470	T4A slip	Formulario T4A	Modulo T4A
+0471	Business ID	Identificador de empresa	Identificativo azienda
+0472	Unique identifier	Identificador único	Identificativo univoco
+0473	Unpaid	Impagadas	Non pagate
+0474	Admin password	Contraseña del admin	Password admin
+0475	Admin username	Usuario del admin	Nome utente admin
+0476	Business name	Nombre de la empresa	Nome dell'impresa
+0477	Number of visits	Número de visitas	Numero di visite
+0478	Not sent	No enviadas	Non inviate
+0479	Summary PDF	PDF resumen	PDF riepilogativo
+0480	Merged PDFs	PDF fusionados	PDF uniti
+0481	Separate PDFs (ZIP)	PDF separados (ZIP)	PDF separati (ZIP)
+0482	Payer	Pagador	Pagatore
+0483	Paid	Pagadas	Pagate
+0484	Unit price	Precio unit.	Prezzo unit.
+0485	Period	Periodo	Periodo
+0486	Period (YYYY-MM)	Periodo (AAAA-MM)	Periodo (AAAA-MM)
+0487	Qty	Cant.	Q.tà
+0488	Group (totals only)	Agrupar (solo totales)	Raggruppa (solo totali)
+0489	SUPPRIMER	SUPPRIMER	SUPPRIMER
+0490	Log in	Iniciar sesión	Accedi
+0491	Unvalidated weeks	Semanas no validadas	Settimane non convalidate
+0492	Statistics	Estadísticas	Statistiche
+0493	Permanent deletion	Eliminación definitiva	Eliminazione definitiva
+0494	TOTAL CREDIT	TOTAL ABONO	TOTALE NOTA DI CREDITO
+0495	Total incl. tax	Total con impuestos	Totale IVA incl.
+0496	⏳ Unvalidated weeks	⏳ Semanas no validadas	⏳ Settimane non convalidate
+0497	⚡ Suggest the amounts	⚡ Sugerir los importes	⚡ Suggerisci gli importi
+0498	✎ Edit	✎ Modificar	✎ Modifica
+0499	⬇ Download	⬇ Descargar	⬇ Scarica
+0500	👁 View PDF	👁 Ver PDF	👁 Visualizza PDF
+0501	💾 Save	💾 Guardar	💾 Salva
+0502	📄 Generate the PDF	📄 Generar el PDF	📄 Genera il PDF
+0503	📋 Credit note	📋 Abono	📋 Nota di credito
+0504	📤 Save and send	📤 Guardar y enviar	📤 Salva e invia
+0505	📧 Save and send	📧 Guardar y enviar	📧 Salva e invia
+0506	📧 Send the invoice	📧 Enviar la factura	📧 Invia la fattura
+0507	🔄 Status only	🔄 Solo el estado	🔄 Solo lo stato
+0508	🔍 Calculate	🔍 Calcular	🔍 Calcola
+0509	🖨 PDF preview	🖨 Vista previa PDF	🖨 Anteprima PDF
+0510	🗑 Delete	🗑 Eliminar	🗑 Elimina
+0511	No invoice matches the filters.	Ninguna factura coincide con los filtros.	Nessuna fattura corrisponde ai filtri.
+0512	Based on	Basada en	Basata su
+0513	Choose a period/status, then click Search.	Elija un periodo/estado y haga clic en Buscar.	Scegli un periodo/stato, poi clicca su Cerca.
+0514	Sent date	Fecha de envío	Data di invio
+0515	Selected invoices as ZIP	Facturas seleccionadas en ZIP	Fatture selezionate in ZIP
+0516	Selected invoices → a single PDF (ZIP)	Facturas seleccionadas → un solo PDF (ZIP)	Fatture selezionate → un solo PDF (ZIP)
+0517	Generating…	Generando…	Generazione…
+0518	Print the selected invoices	Imprimir las facturas seleccionadas	Stampa le fatture selezionate
+0519	Unpaid	No pagadas	Non pagate
+0520	Invoice no.	N.º de factura	N. fattura
+0521	Opens the print view of all invoices (a single document)	Abre la impresión de todas las facturas (un solo documento)	Apre la stampa di tutte le fatture (un solo documento)
+0522	Select a period and a status, then download.	Seleccione un periodo y un estado, y descargue.	Seleziona un periodo e uno stato, poi scarica.
+0523	All invoices one after another in a single PDF, compressed as ZIP	Todas las facturas seguidas en un solo PDF, comprimido en ZIP	Tutte le fatture di seguito in un solo PDF, compresso in ZIP
+0524	Invoice download	Descarga de facturas	Download delle fatture
+0525	Download ▾	Descargar ▾	Scarica ▾
+0526	One PDF per invoice (with its credit notes), bundled in a ZIP	Un PDF por factura (con sus abonos), agrupados en un ZIP	Un PDF per fattura (con le sue note di credito), raggruppati in un ZIP
+0527	— linked credit notes are automatically included in each invoice's PDF	— los abonos vinculados se incluyen automáticamente en el PDF de cada factura	— le note di credito collegate sono incluse automaticamente nel PDF di ogni fattura
+0528	-	-	-
+0529	No eligible company for this period	Ninguna empresa elegible para este periodo	Nessuna azienda idonea per questo periodo
+0530	Loading data...	Cargando datos...	Caricamento dati...
+0531	Awaiting validation	Pendiente de validación	In attesa di convalida
+0532	Billing blocked — some weeks are not yet validated	Facturación bloqueada — hay semanas aún sin validar	Fatturazione bloccata — alcune settimane non sono ancora convalidate
+0533	Billing from timesheets	Facturación por fichajes	Fatturazione da timbrature
+0534	Billed by the hour	Facturado por hora	Fatturato a ore
+0535	Generate invoices from the hours validated by the administrator	Genere facturas a partir de las horas validadas por el administrador	Genera fatture dalle ore convalidate dall'amministratore
+0536	Scheduled days / Price	Días planificados / Precio	Giorni pianificati / Prezzo
+0537	Gross amount	Importe bruto	Importo lordo
+0538	Result	Resultado	Risultato
+0539	Subtotal	Subtotal	Subtotale
+0540	GST (5%)	TPS (5 %)	TPS (5 %)
+0541	QST (9.975%)	TVQ (9,975 %)	TVQ (9,975 %)
+0542	All weeks have been validated	Todas las semanas han sido validadas	Tutte le settimane sono state convalidate
+0543	Visits	Visitas	Visite
+0544	Visits / Price	Visitas / Precio	Visite / Prezzo
+0545	⚠ Week 1 start date missing	⚠ Falta la fecha de inicio de la Semana 1	⚠ Data di inizio Settimana 1 mancante
+0546	⚠️ Discrepancy detected on at least one company (red ✕ symbol) — recheck the invoice before generating it: the amount or the number of visits does not match the schedule.	⚠️ Diferencia detectada en al menos una empresa (símbolo ✕ rojo) — revise la factura antes de generarla: el importe o el número de visitas no coincide con la planificación.	⚠️ Scostamento rilevato su almeno un'azienda (simbolo ✕ rosso) — ricontrolla la fattura prima di generarla: l'importo o il numero di visite non corrisponde alla pianificazione.
+0547	Loading rate...	Cargando tarifa...	Caricamento tariffa...
+0548	Date:	Fecha:	Data:
+0549	INVOICE	FACTURA	FATTURA
+0550	BILLED TO	FACTURADO A	FATTURATO A
+0551	Number:	Número:	Numero:
+0552	Period:	Periodo:	Periodo:
+0553	Select a company to create an invoice	Seleccione una empresa para crear una factura	Seleziona un'azienda per creare una fattura
+0554	TOTAL	TOTAL	TOTALE
+0555	On save	Al guardar	Al salvataggio
+0556	“Update the status” sends no email — use it only if the invoice has already been sent another way.	«Actualizar el estado» no envía ningún correo — úselo solo si la factura ya se ha transmitido por otro medio.	«Aggiorna lo stato» non invia alcuna email — da usare solo se la fattura è già stata trasmessa in altro modo.
+0557	+ Line	+ Línea	+ Riga
+0558	+ New invoice	+ Nueva factura	+ Nuova fattura
+0559	/ page	/ página	/ pagina
+0560	Show	Mostrar	Mostra
+0561	No file attached	Ningún archivo adjunto	Nessun file allegato
+0562	No invoice found	No se encontró ninguna factura	Nessuna fattura trovata
+0563	This action cannot be undone.	Esta acción es irreversible.	Questa azione è irreversibile.
+0564	Loading invoices...	Cargando facturas...	Caricamento fatture...
+0565	Create the first invoice	Crear la primera factura	Crea la prima fattura
+0566	Create a credit note	Crear un abono	Crea una nota di credito
+0567	Invoice not sent	Factura no enviada	Fattura non inviata
+0568	Close	Cerrar	Chiudi
+0569	Attached file	Archivo adjunto	File allegato
+0570	Invoice management	Gestión de facturas	Gestione delle fatture
+0571	Unable to load this invoice.	No se pudo cargar esta factura.	Impossibile caricare questa fattura.
+0572	Update the status (no email) or actually send the invoice?	¿Actualizar el estado (sin correo) o enviar realmente la factura?	Aggiornare lo stato (senza email) o inviare davvero la fattura?
+0573	Payment	Pago	Pagamento
+0574	What do you want to do with invoice	Qué quiere hacer con la factura	Cosa vuoi fare con la fattura
+0575	Sending status	Estado del envío	Stato dell'invio
+0576	Permanently delete this invoice?	¿Eliminar definitivamente esta factura?	Eliminare definitivamente questa fattura?
+0577	TOTAL INCL. TAX	TOTAL CON IMPUESTOS	TOTALE IVA INCL.
+0578	of	de	di
+0579	⏳ Not sent	⏳ No enviada	⏳ Non inviata
+0580	✓ Sent	✓ Enviada	✓ Inviata
+0581	📧 Send	📧 Enviar	📧 Invia
+0582	🔄 Update the status	🔄 Actualizar el estado	🔄 Aggiorna lo stato
+0583	🔍 Filter	🔍 Filtrar	🔍 Filtra
+0584	🗑 Confirm deletion	🗑 Confirmar la eliminación	🗑 Conferma l'eliminazione
+0585	🗑 Delete the credit note	🗑 Eliminar el abono	🗑 Elimina la nota di credito
+0586	CREDIT NOTE	ABONO	NOTA DI CREDITO
+0587	Add one or more periods.	Añada uno o varios periodos.	Aggiungi uno o più periodi.
+0588	Apply	Aplicar	Applica
+0589	Apply a filter to load the invoices.	Aplique un filtro para cargar las facturas.	Applica un filtro per caricare le fatture.
+0590	No results.	Sin resultados.	Nessun risultato.
+0591	Summary CSV	CSV resumen	CSV riepilogativo
+0592	Confirm	Confirmar	Conferma
+0593	Raw data of the selected invoices (separator ;)	Datos en bruto de las facturas seleccionadas (separador ;)	Dati grezzi delle fatture selezionate (separatore ;)
+0594	Summary Excel	Excel resumen	Excel riepilogativo
+0595	Amount excl. tax	Importe sin impuestos	Importo IVA escl.
+0596	By creation date	Por fecha de creación	Per data di creazione
+0597	By period	Por periodo	Per periodo
+0598	Period(s) — select and click Apply	Periodo(s) — seleccione y haga clic en Aplicar	Periodo/i — seleziona e clicca su Applica
+0599	Invoice report	Informe de facturas	Report delle fatture
+0600	Select companies	Seleccionar empresas	Seleziona aziende

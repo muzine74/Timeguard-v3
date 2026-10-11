@@ -1,0 +1,68 @@
+<div class="lp">
+
+  <header class="lp-top">
+    <a class="lp-brand" routerLink="/bienvenue">
+      <img src="logo.svg" alt="" width="28" height="28" />
+      <span>TimeGuard</span>
+    </a>
+    <nav class="lp-nav" aria-label="Accès">
+      <app-lang-switch></app-lang-switch>
+      <a class="btn btn-outline" [routerLink]="auth.loggedIn() ? '/' : '/login'">{{ auth.loggedIn() ? 'Ouvrir l\'application' : 'Se connecter' }}</a>
+      <a class="btn btn-primary" routerLink="/register" *ngIf="!auth.loggedIn()">Créer un espace</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="lp-hero">
+      <h1>Le pointage, la facturation et la paie de votre entreprise de services, au même endroit.</h1>
+      <p class="lp-lead">
+        TimeGuard suit les journées travaillées chez chaque client, en tire vos factures et calcule ce que vous devez à vos employés.
+        Vous arrêtez de recopier d'un tableur à l'autre.
+      </p>
+      <div class="lp-cta">
+        <a class="btn btn-primary lp-big" routerLink="/register">Créer mon espace gratuitement</a>
+        <a class="btn btn-outline lp-big" routerLink="/login">J'ai déjà un compte</a>
+      </div>
+      <p class="lp-note">Essai gratuit — aucune carte bancaire requise.</p>
+    </section>
+
+    <figure class="lp-shot">
+      <img src="apercu.png" width="1280" height="820" loading="lazy"
+           alt="Page d'accueil de TimeGuard : pointages à valider, factures en attente de paiement, paiements à transférer et charges du mois." />
+      <figcaption>La page d'accueil : ce qui demande votre attention aujourd'hui. Données d'exemple.</figcaption>
+    </figure>
+
+    <section class="lp-section" aria-labelledby="lp-features">
+      <h2 id="lp-features">Ce que TimeGuard fait pour vous</h2>
+      <ul class="lp-features">
+        <li *ngFor="let f of features">
+          <span class="lp-ficon"><app-icon [name]="f.icon"></app-icon></span>
+          <h3>{{ f.title }}</h3>
+          <p>{{ f.text }}</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="lp-section" aria-labelledby="lp-steps">
+      <h2 id="lp-steps">Démarrer en trois étapes</h2>
+      <ol class="lp-steps">
+        <li *ngFor="let s of steps">
+          <span class="lp-num" aria-hidden="true">{{ s.n }}</span>
+          <div><h3>{{ s.title }}</h3><p>{{ s.text }}</p></div>
+        </li>
+      </ol>
+    </section>
+
+    <section class="lp-final">
+      <h2>Prêt à essayer ?</h2>
+      <p>L'inscription prend deux minutes ; votre espace est utilisable dès sa validation. Il fonctionne sur ordinateur et sur téléphone, et s'installe sur l'écran d'accueil.</p>
+      <a class="btn btn-primary lp-big" routerLink="/register">Créer mon espace gratuitement</a>
+    </section>
+  </main>
+
+  <footer class="lp-foot">
+    <span>© TimeGuard</span>
+    <a routerLink="/login">Se connecter</a>
+    <a routerLink="/register">Créer un espace</a>
+  </footer>
+</div>

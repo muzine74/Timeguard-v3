@@ -138,7 +138,36 @@
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
 .f-wide { grid-column: 1 / -1; }
+.f-hint { font-size: 11px; color: var(--muted); }
+.f-check {
+  display: flex; align-items: flex-start; gap: 8px; font-size: 13px; font-weight: 600; cursor: pointer;
+  input { margin-top: 2px; }
+  small { display: block; font-size: 11px; font-weight: 400; color: var(--muted); }
+}
 .form-error { margin-top: 10px; font-size: 12px; color: var(--danger); font-weight: 600; }
+
+// ── Appel depuis TimeGuard ────────────────────────────────
+.main-hdr-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.call-note { margin: 0 0 10px; font-size: 12px; color: var(--muted); }
+.call-list {
+  list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 6px;
+  li {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px;
+    padding: 8px 10px; border-radius: 9px; background: var(--surface); border: 1px solid var(--border);
+  }
+  .btn { margin-left: auto; padding: 6px 14px; }
+}
+.call-who { font-size: 13px; font-weight: 600; }
+.call-num { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.call-other {
+  display: flex; align-items: flex-end; flex-wrap: wrap; gap: 10px;
+  .f-field { flex: 1 1 200px; }
+}
+.entry-audio {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px;
+  &:empty { display: none; }
+  audio { margin-top: 8px; width: min(420px, 100%); height: 36px; }
+}
 .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px; }
 
 // ── Historique ────────────────────────────────────────────

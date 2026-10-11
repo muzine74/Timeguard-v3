@@ -75,9 +75,9 @@
   <div class="err-msg" *ngIf="error()">{{ error() }}</div>
 
   <!-- ── Liste ────────────────────────────────────────────────────────────── -->
-  <div class="loading-wrap" role="status" aria-live="polite" *ngIf="loading()">
-    <div class="spinner"></div>
-    <span>Chargement…</span>
+  <div class="sk-list" role="status" aria-live="polite" *ngIf="loading()">
+    <span class="sr-only">Chargement…</span>
+    <div class="sk-row" *ngFor="let _ of [1, 2, 3, 4, 5, 6]"><i></i><i></i><i></i></div>
   </div>
 
   <ng-container *ngIf="!loading()">

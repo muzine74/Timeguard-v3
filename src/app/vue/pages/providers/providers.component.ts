@@ -1,9 +1,11 @@
-import { Component, OnInit, signal, computed, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, signal, computed, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TenantService, TenantSummary, TenantDetail, TenantEmployeeItem } from '../../../state/tenant/tenant.service';
 import { AuthService } from '../../../state/auth/auth.service';
+import { ConfirmService } from '../../../state/ui/confirm.service';
+import { httpErrorMessage } from '../../shared/http-error';
 
 type StatusFilter = 'all' | 'active' | 'inactive';
 
@@ -15,6 +17,7 @@ type StatusFilter = 'all' | 'active' | 'inactive';
     styleUrls: ['./providers.component.scss']
 })
 export class ProvidersComponent implements OnInit {
+  private readonly confirmDlg = inject(ConfirmService);
 
   // ── Sidebar ──────────────────────────────────────────────────────────────
   search       = '';
@@ -124,7 +127,7 @@ export class ProvidersComponent implements OnInit {
       },
       error: err => {
         this.savingNew.set(false);
-        this.newError.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.newError.set(httpErrorMessage(err));
         this.cdr.markForCheck();
       },
     });
@@ -172,16 +175,17 @@ export class ProvidersComponent implements OnInit {
       },
       error: err => {
         this.savingAdmin.set(false);
-        this.adminError.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.adminError.set(httpErrorMessage(err));
         this.cdr.markForCheck();
       },
     });
   }
 
   // ── Supprimer un admin ────────────────────────────────────────────────────
-  deleteAdmin(credentialId: number): void {
+  async deleteAdmin(credentialId: number): Promise<void> {
     const tid = this.selected()?.tenantId;
-    if (!tid || !confirm('Supprimer cet administrateur ?')) return;
+    if (!tid) return;
+    if (!await this.confirmDlg.danger('Supprimer cet administrateur ?', 'Il ne pourra plus se connecter à cette entreprise.')) return;
     this.tenantSvc.deleteAdmin(tid, credentialId).subscribe({
       next: () => {
         this.selected.update(d => d

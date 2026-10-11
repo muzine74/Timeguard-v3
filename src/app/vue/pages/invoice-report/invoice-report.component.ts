@@ -8,6 +8,7 @@ import { InvoiceService, BillSummary } from '../../../state/invoice/invoice.serv
 import { ExportDoc, TableExportService } from '../../../state/export/table-export.service';
 
 import { downloadBlob } from '../../shared/download';
+import { httpErrorMessage } from '../../shared/http-error';
 type FilterMode = 'date' | 'period';
 type ExportType = 'summary' | 'merged' | 'zip' | 'excel' | 'csv';
 
@@ -151,7 +152,7 @@ export class InvoiceReportComponent {
         this.loading.set(false);
       },
       error: e => {
-        this.error.set(`Erreur chargement : HTTP ${e.status}`);
+        this.error.set(httpErrorMessage(e, `Erreur chargement`));
         this.loading.set(false);
       },
     });
@@ -236,7 +237,7 @@ export class InvoiceReportComponent {
       },
       error: e => {
         this.exporting.set(false);
-        this.error.set(`Erreur export : HTTP ${e.status}`);
+        this.error.set(httpErrorMessage(e, `Erreur export`));
       },
     });
   }

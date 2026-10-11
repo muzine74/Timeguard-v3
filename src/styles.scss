@@ -657,3 +657,22 @@ input, select, textarea { font-family: inherit; }
 
 /* ── Champ obligatoire ── */
 .req { color: var(--danger); }
+
+/* ── Chargement : silhouette de liste (remplace le cercle qui tourne sur les pages de liste) ── */
+.sk-list { display: flex; flex-direction: column; gap: 8px; padding: 14px 0; }
+.sk-row {
+  display: flex; align-items: center; gap: 16px;
+  padding: 14px 16px; border-radius: 10px;
+  background: var(--surface); border: 1px solid var(--border);
+  i {
+    display: block; height: 10px; border-radius: 6px; background: var(--surface2);
+    animation: sk-pulse 1.2s ease-in-out infinite;
+    &:nth-child(1) { width: 28%; }
+    &:nth-child(2) { width: 18%; animation-delay: .1s; }
+    &:nth-child(3) { width: 12%; margin-left: auto; animation-delay: .2s; }
+  }
+  &:nth-child(odd) i:nth-child(1) { width: 36%; }
+}
+@keyframes sk-pulse { 50% { opacity: .4; } }
+@media (prefers-reduced-motion: reduce) { .sk-row i { animation: none; } }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

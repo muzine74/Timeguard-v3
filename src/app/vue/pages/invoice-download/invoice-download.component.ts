@@ -5,6 +5,7 @@ import { FormsModule }  from '@angular/forms';
 import { InvoiceService, BillSummary } from '../../../state/invoice/invoice.service';
 
 import { downloadBlob } from '../../shared/download';
+import { httpErrorMessage } from '../../shared/http-error';
 type DateField = 'sent' | 'paid';
 type Status    = 'all' | 'paid' | 'unpaid';
 
@@ -118,7 +119,7 @@ export class InvoiceDownloadComponent {
         this.loading.set(false);
       },
       error: e => {
-        this.error.set(`Erreur de recherche : HTTP ${e.status}`);
+        this.error.set(httpErrorMessage(e, `Erreur de recherche`));
         this.loading.set(false);
       },
     });
@@ -212,7 +213,7 @@ export class InvoiceDownloadComponent {
       },
       error: e => {
         this.downloading.set(false);
-        this.error.set(`Erreur ${kind === 'print' ? 'impression' : 'téléchargement'} : HTTP ${e.status}`);
+        this.error.set(httpErrorMessage(e, kind === 'print' ? `L'impression a échoué` : `Le téléchargement a échoué`));
       },
     });
   }

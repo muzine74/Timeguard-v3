@@ -11,6 +11,7 @@ import { ConfigService } from '../../../state/config/config.service';
 import { TableSort, SortValue } from '../../shared/table-sort';
 import { ExportButtonsComponent } from '../../components/export-buttons/export-buttons.component';
 import { ExportDoc, TableExportService } from '../../../state/export/table-export.service';
+import { httpErrorMessage } from '../../shared/http-error';
 
 type EligibleSortKey = 'name' | 'visits' | 'subtotal' | 'tps' | 'tvq' | 'ttc' | 'result' | 'planned';
 
@@ -165,7 +166,7 @@ export class InvoiceFromTimesheetsComponent implements OnInit {
         this._loadCompanyNotes();
       },
       error: (err: any) => {
-        this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.error.set(httpErrorMessage(err));
         this.loading.set(false);
         this.cdr.markForCheck();
       },

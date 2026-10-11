@@ -11,6 +11,7 @@ import { ExportButtonsComponent } from '../../components/export-buttons/export-b
 import { ExportCell, ExportDoc, ExportRow, TableExportService } from '../../../state/export/table-export.service';
 
 import { downloadBlob } from '../../shared/download';
+import { httpErrorMessage } from '../../shared/http-error';
 type BillSortKey = 'num' | 'company' | 'period' | 'date' | 'ttc' | 'sent' | 'paid';
 const SORT_LABELS: Record<BillSortKey, string> = {
   num: 'N° facture', company: 'Compagnie', period: 'Période', date: 'Date', ttc: 'Total TTC', sent: 'Statut envoi', paid: 'Paiement',
@@ -283,7 +284,7 @@ export class InvoiceManageComponent implements OnInit {
         const avoirs = list.filter(b => b.parentBillIdentifier !== null);
         console.log(`[loadBills] ${list.length} factures | ${avoirs.length} avoir(s)`, avoirs.map(a => a.billNumber));
       },
-      error: err => this.error.set(`HTTP ${err.status}`),
+      error: err => this.error.set(httpErrorMessage(err)),
     });
   }
 
@@ -330,7 +331,7 @@ export class InvoiceManageComponent implements OnInit {
         setTimeout(() => this.success.set(''), 4000);
       },
       error: err => {
-        this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.error.set(httpErrorMessage(err));
         this.acting.set(false);
       },
     });
@@ -367,7 +368,7 @@ export class InvoiceManageComponent implements OnInit {
         setTimeout(() => this.success.set(''), 4000);
       },
       error: err => {
-        this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.error.set(httpErrorMessage(err));
         this.acting.set(false);
       },
     });
@@ -393,7 +394,7 @@ export class InvoiceManageComponent implements OnInit {
         setTimeout(() => this.success.set(''), 4000);
       },
       error: err => {
-        this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.error.set(httpErrorMessage(err));
         this.acting.set(false);
       },
     });
@@ -417,7 +418,7 @@ export class InvoiceManageComponent implements OnInit {
         setTimeout(() => this.success.set(''), 4000);
       },
       error: err => {
-        this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.error.set(httpErrorMessage(err));
         this.acting.set(false);
       },
     });
@@ -512,7 +513,7 @@ export class InvoiceManageComponent implements OnInit {
         setTimeout(() => this.success.set(''), 4000);
       },
       error: err => {
-        this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.error.set(httpErrorMessage(err));
         this.acting.set(false);
       },
     });
@@ -528,7 +529,7 @@ export class InvoiceManageComponent implements OnInit {
         this.success.set(`Facture ${bill.billNumber} marquée ${bill.isPaid ? 'payée' : 'impayée'}.`);
         setTimeout(() => this.success.set(''), 3000);
       },
-      error: err => this.error.set(err?.error?.message ?? `HTTP ${err.status}`),
+      error: err => this.error.set(httpErrorMessage(err)),
     });
   }
 

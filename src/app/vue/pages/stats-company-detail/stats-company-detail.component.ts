@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DestroyRef, inject } from '@angular/core';
 import { StatsService, StatsCompanyDetailResponse } from '../../../state/stats/stats.service';
+import { httpErrorMessage } from '../../shared/http-error';
 
 @Component({
     selector: 'app-stats-company-detail',
@@ -49,7 +50,7 @@ export class StatsCompanyDetailComponent implements OnInit {
           this.cdr.markForCheck();
         },
         error: err => {
-          this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+          this.error.set(httpErrorMessage(err));
           this.loading.set(false);
           this.cdr.markForCheck();
         },

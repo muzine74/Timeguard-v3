@@ -3,6 +3,7 @@ import { EmployeesService } from '../employees/employees.service';
 import { CompanyService } from '../compagny/Company.service';
 import { InvoiceService } from '../invoice/invoice.service';
 import { NoteLinkType } from './notes.service';
+import { httpErrorMessage } from '../../vue/shared/http-error';
 
 export interface NoteLinkOption { id: string; label: string; }
 
@@ -50,7 +51,7 @@ export class NoteLinkOptionsService {
   /** silent : pas de message d'erreur (préchargement des filtres, droits variables selon l'utilisateur). */
   ensure(type: NoteLinkType, silent = false): void {
     const fail = (err: { status?: number }) => {
-      if (!silent) this.error.set(`Impossible de charger la liste — HTTP ${err?.status ?? '?'}`);
+      if (!silent) this.error.set(httpErrorMessage(err, `Impossible de charger la liste`));
     };
 
     if (type === 'employee' && this.empSvc.list().length === 0) {

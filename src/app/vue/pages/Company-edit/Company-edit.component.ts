@@ -6,6 +6,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { CompanyService, ContactItem, ContactRequest } from  '../../../state/compagny/Company.service';
 import { EmployeesService } from '../../../state/employees/employees.service';
 import { CompanyForm, FreqOption, SemainePlanning, JourMensuel } from '../../../models';
+import { ConfirmService } from '../../../state/ui/confirm.service';
+import { httpErrorMessage } from '../../shared/http-error';
 
 // Shape minimale pour la liste sidebar
 export interface CompanySummary {
@@ -22,6 +24,7 @@ export interface CompanySummary {
     styleUrls: ['./company-edit.component.scss']
 })
 export class CompanyEditComponent implements OnInit {
+  private readonly confirmDlg = inject(ConfirmService);
   private readonly noteAlerts = inject(NoteAlertService);
   saved       = signal(false);
   savedMsg    = signal('✓ Compagnie mise à jour');
@@ -34,6 +37,9 @@ export class CompanyEditComponent implements OnInit {
 
   // ── Contacts ──────────────────────────────────────────
   contacts        = signal<ContactItem[]>([]);
+  /** Contacts actifs en premier, puis par nom. */
+  sortedContacts  = computed(() => [...this.contacts()].sort((a, b) =>
+    Number(b.isActive) - Number(a.isActive) || a.name.localeCompare(b.name, 'fr', { sensitivity: 'base' })));
   contactsLoading = signal(false);
   contactError    = signal('');
   showContactForm = signal(false);
@@ -209,10 +215,10 @@ export class CompanyEditComponent implements OnInit {
     });
   }
 
-  deleteContact(c: ContactItem): void {
+  async deleteContact(c: ContactItem): Promise<void> {
     const id = this.companyId();
     if (!id) return;
-    if (!confirm(`Supprimer le contact « ${c.name} » ? Il ne recevra plus les factures.`)) return;
+    if (!await this.confirmDlg.danger(`Supprimer le contact « ${c.name} » ?`, 'Il ne recevra plus les factures.')) return;
     this.companySvc.deleteContact(id, c.contactId).subscribe({
       next: () => this._loadContacts(id),
       error: err => this.contactError.set(err?.error?.message ?? 'Erreur lors de la suppression.')
@@ -231,7 +237,7 @@ export class CompanyEditComponent implements OnInit {
       },
       error: err => {
         this.warn(`✕ getAll() échoué (${err.status})`);
-        this.listError.set(err?.error?.message ?? `Impossible de charger les compagnies (HTTP ${err?.status ?? '?'}).`);
+        this.listError.set(httpErrorMessage(err, `Impossible de charger les compagnies`));
         this.loadingList.set(false);
       }
     });
@@ -240,9 +246,10 @@ export class CompanyEditComponent implements OnInit {
   reloadList(): void { this._loadList(); }
 
   // ── Sélectionner une compagnie → remplir le formulaire ─
-  selectCompany(id: string): void {
+  async selectCompany(id: string): Promise<void> {
     if (id === this.companyId()) return;
-    if (this.isDirty() && !confirm(`Les modifications non enregistrées de « ${this.form.companyName || 'cette compagnie'} » seront perdues. Continuer ?`)) return;
+    if (this.isDirty() && !await this.confirmDlg.discard(`Les modifications non enregistrées de « ${this.form.companyName || 'cette compagnie'} » seront perdues.`)) return;
+    if (id === this.companyId()) return;
     this._loaded = '';
     this.contacts.set([]);
     this.companyId.set(id);
@@ -266,7 +273,7 @@ export class CompanyEditComponent implements OnInit {
       error: err => {
         if (this.companyId() !== id) return;
         this.warn(`✕ getById(${id}) échoué (${err.status})`);
-        this.error.set(err?.error?.message ?? `Impossible de charger la compagnie (HTTP ${err.status}).`);
+        this.error.set(httpErrorMessage(err, `Impossible de charger la compagnie`));
         this.companyId.set('');                   // pas de formulaire vide enregistrable par-dessus la vraie fiche
         this.loadingForm.set(false);
       }

@@ -20,9 +20,9 @@
   </header>
 
   <!-- Chargement -->
-  <div class="loading-wrap" role="status" aria-live="polite" *ngIf="loading()">
-    <div class="loading-spinner"></div>
-    <span>Chargement...</span>
+  <div class="sk-list" role="status" aria-live="polite" *ngIf="loading()">
+    <span class="sr-only">Chargement...</span>
+    <div class="sk-row" *ngFor="let _ of [1, 2, 3, 4, 5, 6]"><i></i><i></i><i></i></div>
   </div>
 
   <div class="cfg-grid" *ngIf="!loading()">
@@ -160,6 +160,146 @@
           <label for="app-config-version">Version</label>
           <input id="app-config-version" class="inp" [(ngModel)]="form.appVersion" placeholder="2.0.0" />
         </div>
+      </div>
+    </section>
+
+    <!-- Téléphonie (Twilio) : enregistrée séparément, avec son propre bouton -->
+    <section class="cfg-card cfg-card-full" aria-labelledby="app-config-tel-title">
+      <div class="cfg-card-hdr" id="app-config-tel-title">Téléphonie (Twilio)</div>
+      <div class="cfg-card-body" *ngIf="telLoaded()">
+        <p class="field field-full tel-help">
+          Permet d'appeler les compagnies et les employés depuis la page Communications, avec le numéro de votre entreprise.
+          Les identifiants viennent de votre compte Twilio ; les utilisateurs qui appellent doivent avoir la permission
+          <b>Passer des appels</b> (Administration → Groupes).
+        </p>
+        <label class="field field-full tel-check">
+          <input type="checkbox" [(ngModel)]="tel.enabled" />
+          <span>Activer la téléphonie</span>
+        </label>
+        <div class="field">
+          <label for="app-config-tel-account">Compte (Account SID)</label>
+          <input id="app-config-tel-account" class="inp" [(ngModel)]="tel.accountSid" placeholder="AC…" autocomplete="off" spellcheck="false" />
+        </div>
+        <div class="field">
+          <label for="app-config-tel-token">Jeton d'authentification (Auth Token)</label>
+          <input id="app-config-tel-token" class="inp" type="password" [(ngModel)]="tel.authToken" autocomplete="new-password"
+                 [placeholder]="tel.hasAuthToken ? 'Défini — laisser vide pour ne pas le changer' : 'Non défini'" />
+        </div>
+        <div class="field">
+          <label for="app-config-tel-key">Clé d'API (API Key SID)</label>
+          <input id="app-config-tel-key" class="inp" [(ngModel)]="tel.apiKeySid" placeholder="SK…" autocomplete="off" spellcheck="false" />
+        </div>
+        <div class="field">
+          <label for="app-config-tel-secret">Secret de la clé d'API</label>
+          <input id="app-config-tel-secret" class="inp" type="password" [(ngModel)]="tel.apiKeySecret" autocomplete="new-password"
+                 [placeholder]="tel.hasApiKeySecret ? 'Défini — laisser vide pour ne pas le changer' : 'Non défini'" />
+        </div>
+        <div class="field">
+          <label for="app-config-tel-app">Application TwiML (TwiML App SID)</label>
+          <input id="app-config-tel-app" class="inp" [(ngModel)]="tel.twimlAppSid" placeholder="AP…" autocomplete="off" spellcheck="false" />
+        </div>
+        <div class="field">
+          <label for="app-config-tel-caller">Numéro affiché aux personnes appelées</label>
+          <input id="app-config-tel-caller" class="inp" type="tel" [(ngModel)]="tel.callerNumber" placeholder="514 555-0100" />
+        </div>
+        <div class="field field-full" *ngIf="tel.voiceUrl">
+          <label for="app-config-tel-voice">Adresse à saisir dans Twilio (application TwiML → Voice → Request URL, méthode POST)</label>
+          <div class="tel-url">
+            <input id="app-config-tel-voice" class="inp" [value]="tel.voiceUrl" readonly />
+            <button type="button" class="btn btn-outline" (click)="copyVoiceUrl()">Copier</button>
+          </div>
+        </div>
+        <p class="field field-full tel-help" *ngIf="!tel.voiceUrl">
+          Enregistrez une première fois : l'adresse à saisir dans votre application TwiML s'affichera ici.
+        </p>
+
+        <div class="field">
+          <label for="app-config-tel-rec">Enregistrement des appels</label>
+          <select id="app-config-tel-rec" class="inp" [(ngModel)]="tel.recordingMode">
+            <option value="off">Ne pas enregistrer</option>
+            <option value="all">Enregistrer tous les appels</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="app-config-tel-keep">Conservation des enregistrements (jours, 0 = sans limite)</label>
+          <input id="app-config-tel-keep" class="inp" type="number" min="0" max="3650" [(ngModel)]="tel.retentionDays" />
+        </div>
+        <div class="field field-full" *ngIf="tel.recordingMode === 'all'">
+          <label for="app-config-tel-notice">Message d'avis lu à la personne appelée (obligatoire)</label>
+          <textarea id="app-config-tel-notice" class="inp inp-textarea" rows="2" maxlength="500" [(ngModel)]="tel.recordingNotice"
+                    [placeholder]="NOTICE_EXAMPLE"></textarea>
+          <span class="tel-help">La personne appelée doit savoir que l'appel est enregistré et pourquoi. Seuls les utilisateurs ayant la
+            permission <b>Écouter les enregistrements d'appels</b> peuvent les écouter, et chaque écoute est tracée.</span>
+        </div>
+
+        <div class="field field-full tel-actions">
+          <div class="tel-error" role="alert" *ngIf="telError()">⚠ {{ telError() }}</div>
+          <button type="button" class="btn btn-primary" [disabled]="telSaving()" (click)="saveTelephony()">
+            <span *ngIf="!telSaving()">Enregistrer la téléphonie</span>
+            <span *ngIf="telSaving()" class="spinner"></span>
+          </button>
+        </div>
+      </div>
+      <div class="cfg-card-body" *ngIf="!telLoaded()">
+        <p class="field field-full tel-help" role="status">{{ telError() || 'Chargement…' }}</p>
+      </div>
+    </section>
+
+    <!-- Courriels reçus (Microsoft 365) : enregistrés séparément, avec leur propre bouton -->
+    <section class="cfg-card cfg-card-full" aria-labelledby="app-config-mbx-title">
+      <div class="cfg-card-hdr" id="app-config-mbx-title">Courriels reçus (Microsoft 365)</div>
+      <div class="cfg-card-body" *ngIf="mbxLoaded()">
+        <p class="field field-full tel-help">
+          TimeGuard lit la boîte de courriel de l'entreprise toutes les cinq minutes. Quand un courriel reçu vient d'une adresse
+          présente dans les contacts d'une compagnie, il est ajouté à l'historique de cette compagnie, dans Communications
+          (« Courriel reçu »). Les autres courriels ne sont ni copiés ni conservés. La boîte n'est jamais modifiée.
+          Les identifiants viennent d'une application inscrite dans Microsoft Entra, avec la permission d'application
+          <b>Mail.Read</b> de Microsoft Graph (voir l'Aide).
+        </p>
+        <label class="field field-full tel-check">
+          <input type="checkbox" [(ngModel)]="mbx.enabled" />
+          <span>Ajouter à Communications les courriels reçus des contacts</span>
+        </label>
+        <div class="field">
+          <label for="app-config-mbx-box">Boîte de courriel à lire</label>
+          <input id="app-config-mbx-box" class="inp" type="email" [(ngModel)]="mbx.mailbox" placeholder="info@entreprise.com" autocomplete="off" spellcheck="false" />
+        </div>
+        <div class="field">
+          <label for="app-config-mbx-dir">Identifiant de l'annuaire (Directory / tenant ID)</label>
+          <input id="app-config-mbx-dir" class="inp" [(ngModel)]="mbx.directoryId" placeholder="00000000-0000-0000-0000-000000000000" autocomplete="off" spellcheck="false" />
+        </div>
+        <div class="field">
+          <label for="app-config-mbx-app">Identifiant de l'application (Application / client ID)</label>
+          <input id="app-config-mbx-app" class="inp" [(ngModel)]="mbx.clientId" placeholder="00000000-0000-0000-0000-000000000000" autocomplete="off" spellcheck="false" />
+        </div>
+        <div class="field">
+          <label for="app-config-mbx-secret">Secret de l'application (Client secret — la « Valeur »)</label>
+          <input id="app-config-mbx-secret" class="inp" type="password" [(ngModel)]="mbx.clientSecret" autocomplete="new-password"
+                 [placeholder]="mbx.hasClientSecret ? 'Défini — laisser vide pour ne pas le changer' : 'Non défini'" />
+        </div>
+        <div class="field">
+          <label for="app-config-mbx-days">Reprendre aussi les courriels des derniers jours (0 = seulement les nouveaux)</label>
+          <input id="app-config-mbx-days" class="inp" type="number" min="0" max="90" [(ngModel)]="mbx.importPastDays" />
+        </div>
+        <p class="field tel-help" role="status">
+          <ng-container *ngIf="mbx.lastCheckedAt; else mbxNever">Dernière lecture : {{ mbx.lastCheckedAt | date:'yyyy-MM-dd HH:mm' }}{{ mbx.lastError ? ' — échec' : ' — réussie' }}</ng-container>
+          <ng-template #mbxNever>La boîte n'a pas encore été lue.</ng-template>
+        </p>
+
+        <div class="field field-full tel-actions">
+          <div class="tel-error" role="alert" *ngIf="mbxError() || mbx.lastError">⚠ {{ mbxError() || mbx.lastError }}</div>
+          <div class="tel-ok" role="status" *ngIf="mbxResult()">✓ {{ mbxResult() }}</div>
+          <button type="button" class="btn btn-outline" [disabled]="mbxChecking() || mbxSaving() || !mbx.enabled" (click)="checkMailbox()">
+            {{ mbxChecking() ? 'Lecture…' : 'Lire maintenant' }}
+          </button>
+          <button type="button" class="btn btn-primary" [disabled]="mbxSaving() || mbxChecking()" (click)="saveMailbox()">
+            <span *ngIf="!mbxSaving()">Enregistrer les courriels reçus</span>
+            <span *ngIf="mbxSaving()" class="spinner"></span>
+          </button>
+        </div>
+      </div>
+      <div class="cfg-card-body" *ngIf="!mbxLoaded()">
+        <p class="field field-full tel-help" role="status">{{ mbxError() || 'Chargement…' }}</p>
       </div>
     </section>
 

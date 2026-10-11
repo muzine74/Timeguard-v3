@@ -6,6 +6,7 @@ import { EmployeesService } from '../../../state/employees/employees.service';
 import { T4AService, T4AData } from '../../../state/t4a/t4a.service';
 
 import { downloadBlob } from '../../shared/download';
+import { httpErrorMessage } from '../../shared/http-error';
 // Rendu du PDF fait nous-mêmes (canvas) plutôt que via le lecteur PDF natif du navigateur
 // (iframe) : certains navigateurs (ex. Chrome avec "toujours télécharger les PDF" activé)
 // n'affichent pas les PDF intégrés et montrent un simple bouton "Open" à la place. PDF.js
@@ -65,7 +66,7 @@ export class T4aGenerateComponent implements OnInit {
         this.cdr.markForCheck();
       },
       error: err => {
-        this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.error.set(httpErrorMessage(err));
         this.loading.set(false);
         this.cdr.markForCheck();
       },
@@ -87,7 +88,7 @@ export class T4aGenerateComponent implements OnInit {
         this.cdr.markForCheck();
       },
       error: err => {
-        this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.error.set(httpErrorMessage(err));
         this.downloading.set(false);
         this.cdr.markForCheck();
       },
@@ -112,7 +113,7 @@ export class T4aGenerateComponent implements OnInit {
         }
       },
       error: err => {
-        this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.error.set(httpErrorMessage(err));
         this.previewing.set(false);
         this.cdr.markForCheck();
       },
@@ -174,7 +175,7 @@ export class T4aGenerateComponent implements OnInit {
         this.cdr.markForCheck();
       },
       error: err => {
-        this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.error.set(httpErrorMessage(err));
         savingSignal.set(false);
         this.cdr.markForCheck();
       },

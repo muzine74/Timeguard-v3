@@ -8,6 +8,7 @@ import { EmployeesService } from '../../../state/employees/employees.service';
 import { TeamAssignmentComponent } from '../../components/team-assignment/team-assignment.component';
 import { CredentialsService } from '../../../state/auth/credentials.service';
 import { Employee, EmployeeFile, EmployeeForm } from '../../../models';
+import { httpErrorMessage } from '../../shared/http-error';
 
 @Component({
     selector: 'app-employee-edit',
@@ -100,7 +101,7 @@ export class EmployeeEditComponent implements OnInit {
       },
       error: err => {
         this.warn(`✕ getOne(${id}) échoué (${err.status})`);
-        this.error.set(`Impossible de charger — HTTP ${err.status}`);
+        this.error.set(httpErrorMessage(err, `Impossible de charger`));
         this.loadingForm.set(false);
       },
     });
@@ -174,7 +175,7 @@ export class EmployeeEditComponent implements OnInit {
       this.fieldErrors.set(mapped);
       this.error.set('Veuillez corriger les champs en erreur.');
     } else {
-      this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+      this.error.set(httpErrorMessage(err));
     }
   }
 
@@ -195,7 +196,7 @@ export class EmployeeEditComponent implements OnInit {
         this.cdr.markForCheck();
       },
       error: err => {
-        this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.error.set(httpErrorMessage(err));
         this.togglingActive.set(false);
       },
     });
@@ -219,7 +220,7 @@ export class EmployeeEditComponent implements OnInit {
       },
       error: err => {
         this.sendingResetLink.set(false);
-        this.resetLinkError.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.resetLinkError.set(httpErrorMessage(err));
         this.resetNeedsCredential.set(err?.error?.code === 'NO_CREDENTIAL');
         this.cdr.markForCheck();
       },
@@ -242,7 +243,7 @@ export class EmployeeEditComponent implements OnInit {
         input.value = '';
       },
       error: err => {
-        this.fileError.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.fileError.set(httpErrorMessage(err));
         this.fileUploading.set(false);
         input.value = '';
       },
@@ -253,7 +254,7 @@ export class EmployeeEditComponent implements OnInit {
     if (!this.employeeId()) return;
     this.empSvc.deleteFile(this.employeeId(), fileId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => this._loadFiles(this.employeeId()),
-      error: err => this.fileError.set(err?.error?.message ?? `Erreur HTTP ${err.status}`),
+      error: err => this.fileError.set(httpErrorMessage(err)),
     });
   }
 
@@ -271,7 +272,7 @@ export class EmployeeEditComponent implements OnInit {
         a.click();
         setTimeout(() => URL.revokeObjectURL(url), 10000);
       },
-      error: err => this.fileError.set(err?.error?.message ?? `Erreur HTTP ${err.status}`),
+      error: err => this.fileError.set(httpErrorMessage(err)),
     });
   }
 

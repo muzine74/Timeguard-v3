@@ -6,6 +6,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TenantService } from '../../../state/tenant/tenant.service';
 import { AuthService } from '../../../state/auth/auth.service';
 import { PurgeService, PurgeKind, PurgeCandidate, PurgePreview } from '../../../state/purge/purge.service';
+import { httpErrorMessage } from '../../shared/http-error';
 
 const KINDS: { id: PurgeKind; label: string; placeholder: string }[] = [
   { id: 'bill',     label: 'Facture',   placeholder: 'N° de facture, compagnie ou période (ex. 2026-09)…' },
@@ -79,7 +80,7 @@ export class PurgeComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: list => { this.results.set(list); this.searched.set(true); this.searching.set(false); },
-        error: e => { this.error.set(e?.error?.message ?? `Erreur HTTP ${e.status}`); this.searching.set(false); },
+        error: e => { this.error.set(httpErrorMessage(e)); this.searching.set(false); },
       });
   }
 
@@ -97,7 +98,7 @@ export class PurgeComponent {
           this.preview.set(p);
           setTimeout(() => (this.host.nativeElement.querySelector('.purge-dialog .confirm-input') as HTMLElement | null)?.focus());
         },
-        error: e => { this.loadingPrev.set(null); this.error.set(e?.error?.message ?? `Erreur HTTP ${e.status}`); },
+        error: e => { this.loadingPrev.set(null); this.error.set(httpErrorMessage(e)); },
       });
   }
 

@@ -1,9 +1,11 @@
-import { Component, ChangeDetectionStrategy, EventEmitter, Input, Output, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, EventEmitter, Input, Output, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   AttachmentsService, AttachmentItem, AttachmentOwner, ATTACHMENT_EXTENSIONS, ATTACHMENT_MAX_COUNT,
 } from '../../../state/attachments/attachments.service';
 import { downloadBlob } from '../../shared/download';
+import { ConfirmService } from '../../../state/ui/confirm.service';
+import { httpErrorMessage } from '../../shared/http-error';
 
 /**
  * Pièces jointes d'une note ou d'une communication.
@@ -19,6 +21,7 @@ import { downloadBlob } from '../../shared/download';
     styleUrls: ['./attachments.component.scss']
 })
 export class AttachmentsComponent {
+  private readonly confirmDlg = inject(ConfirmService);
   @Input({ required: true }) ownerType!: AttachmentOwner;
   @Input() ownerId: string | null = null;
   @Input() attachments: AttachmentItem[] = [];
@@ -73,12 +76,13 @@ export class AttachmentsComponent {
   download(a: AttachmentItem): void {
     this.svc.download(a.id).subscribe({
       next: blob => downloadBlob(blob, a.name),
-      error: err => this.errors.set([`${a.name} : ${err?.status === 404 ? 'fichier introuvable' : `téléchargement impossible (HTTP ${err?.status ?? '?'})`}`]),
+      error: err => this.errors.set([`${a.name} : ${err?.status === 404 ? 'fichier introuvable' : httpErrorMessage(err, `téléchargement impossible`)}`]),
     });
   }
 
-  remove(a: AttachmentItem): void {
-    if (this.busy() || !confirm(`Retirer la pièce jointe « ${a.name} » ?`)) return;
+  async remove(a: AttachmentItem): Promise<void> {
+    if (this.busy()) return;
+    if (!await this.confirmDlg.danger(`Retirer la pièce jointe « ${a.name} » ?`, 'Le fichier sera supprimé définitivement.', 'Retirer')) return;
     this.busy.set(true);
     this.svc.delete(a.id).subscribe({
       next: () => {
@@ -88,7 +92,7 @@ export class AttachmentsComponent {
       },
       error: err => {
         this.busy.set(false);
-        this.errors.set([`${a.name} : ${err?.error?.message ?? `retrait impossible (HTTP ${err?.status ?? '?'})`}`]);
+        this.errors.set([`${a.name} : ${httpErrorMessage(err, `retrait impossible`)}`]);
       },
     });
   }

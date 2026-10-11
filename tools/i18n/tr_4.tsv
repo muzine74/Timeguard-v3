@@ -1,0 +1,280 @@
+0901	Apt 2	Apto. 2	App. 2
+0902	Blue door, 2nd floor...	Puerta azul, 2.º piso...	Porta blu, 2º piano...
+0903	-	-	-
+0904	-	-	-
+0905	E.g. jdupont	P. ej.: jdupont	Es.: jdupont
+0906	Minimum 10 characters	Mínimo 10 caracteres	Minimo 10 caratteri
+0907	Search by name or username…	Buscar por nombre o usuario…	Cerca per nome o nome utente…
+0908	Timesheet for the week	Fichaje de la semana	Timbratura della settimana
+0909	No team leader: to be completed in the record	Sin jefe de equipo: complételo en la ficha	Nessun caposquadra: da completare nella scheda
+0910	Loading employees	Cargando empleados	Caricamento dipendenti
+0911	Filter by validation status	Filtrar por estado de validación	Filtra per stato di convalida
+0912	Filter by employee status	Filtrar por estado del empleado	Filtra per stato del dipendente
+0913	Search for an employee	Buscar un empleado	Cerca un dipendente
+0914	Send an email with a link to choose a new password	Enviar un correo con un enlace para elegir una nueva contraseña	Invia un'email con un link per scegliere una nuova password
+0915	Default rate	Tarifa por defecto	Tariffa predefinita
+0916	Sending	Enviando	Invio in corso
+0917	Choose employees…	Elegir empleados…	Scegli dipendenti…
+0918	E.g. first payment, advance already paid, equipment deduction…	P. ej.: primer pago, anticipo ya pagado, retención por material…	Es.: primo versamento, anticipo già versato, trattenuta materiale…
+0919	Period type	Tipo de periodo	Tipo di periodo
+0920	E.g. Employees	P. ej.: Empleados	Es.: Dipendenti
+0921	E.g. Export	P. ej.: Exportar	Es.: Esporta
+0922	E.g. Supervisors	P. ej.: Supervisores	Es.: Supervisori
+0923	E.g. employees.export	P. ej.: employees.export	Es.: employees.export
+0924	Filter by company	Filtrar por empresa	Filtra per azienda
+0925	Filter by sent date (e.g. 09/2026)	Filtrar por fecha de envío (p. ej. 09/2026)	Filtra per data di invio (es. 09/2026)
+0926	Filter by payment date (e.g. 09/2026, or — for unpaid)	Filtrar por fecha de pago (p. ej. 09/2026, o — para no pagadas)	Filtra per data di pagamento (es. 09/2026, o — per non pagate)
+0927	Filter by invoice number	Filtrar por número de factura	Filtra per numero di fattura
+0928	Filter…	Filtrar…	Filtra…
+0929	Select all invoices	Seleccionar todas las facturas	Seleziona tutte le fatture
+0930	Maximum total incl. tax	Total con impuestos máximo	Totale IVA incl. massimo
+0931	Minimum total incl. tax	Total con impuestos mínimo	Totale IVA incl. minimo
+0932	Download of the selected invoices	Descarga de las facturas seleccionadas	Download delle fatture selezionate
+0933	dd/mm/yyyy	dd/mm/aaaa	gg/mm/aaaa
+0934	dd/mm/yyyy or —	dd/mm/aaaa o —	gg/mm/aaaa o —
+0935	max	máx.	max
+0936	min	mín.	min
+0937	Company billed by the hour: amount = hours logged × client hourly rate	Empresa facturada por hora: importe = horas fichadas × tarifa por hora del cliente	Azienda fatturata a ore: importo = ore timbrate × tariffa oraria cliente
+0938	Billing blocked	Facturación bloqueada	Fatturazione bloccata
+0939	Fill in “Week 1 starts on” in the company's schedule	Indique «La Semana 1 empieza el» en la planificación de la empresa	Compila «La Settimana 1 inizia il» nella pianificazione dell'azienda
+0940	Select all eligible companies	Seleccionar todas las empresas elegibles	Seleziona tutte le aziende idonee
+0941	Service description...	Descripción del servicio...	Descrizione del servizio...
+0942	-	-	-
+0943	Additional information...	Información adicional...	Informazioni aggiuntive...
+0944	Prefill from the configured rate	Rellenar desde la tarifa configurada	Precompila dalla tariffa configurata
+0945	Start date	Fecha de inicio	Data di inizio
+0946	End date	Fecha de fin	Data di fine
+0947	Description...	Descripción...	Descrizione...
+0948	Invoices per page	Facturas por página	Fatture per pagina
+0949	Edit the invoice	Modificar la factura	Modifica la fattura
+0950	Reason for the credit note...	Motivo del abono...	Motivo della nota di credito...
+0951	Search by company, number, amount...	Buscar por empresa, número, importe...	Cerca per azienda, numero, importo...
+0952	Add a recipient manually…	Añadir un destinatario manualmente…	Aggiungi un destinatario manualmente…
+0953	Click to open the PDF	Haga clic para abrir el PDF	Clicca per aprire il PDF
+0954	Remove this attachment	Quitar este adjunto	Rimuovi questo allegato
+0955	Regenerate the automatic message	Regenerar el mensaje automático	Rigenera il messaggio automatico
+0956	Email subject	Asunto del correo	Oggetto dell'email
+0957	Access	Acceso	Accesso
+0958	TimeGuard home page: timesheets to validate, invoices awaiting payment, payments to transfer and the month's expenses.	Página de inicio de TimeGuard: fichajes por validar, facturas pendientes de pago, pagos por transferir y gastos del mes.	Pagina iniziale di TimeGuard: timbrature da convalidare, fatture in attesa di pagamento, pagamenti da trasferire e spese del mese.
+0959	6-digit code	Código de 6 cifras	Codice a 6 cifre
+0960	Business ID (e.g. ramssis)	Identificador de empresa (p. ej.: ramssis)	Identificativo azienda (es.: ramssis)
+0961	Description (optional)…	Descripción (opcional)…	Descrizione (facoltativa)…
+0962	Note description	Descripción de la nota	Descrizione della nota
+0963	Checked employees (or one of their companies)	Empleados marcados (o una de sus empresas)	Dipendenti selezionati (o una delle loro aziende)
+0964	Search (title, description, link, author)…	Buscar (título, descripción, vínculo, autor)…	Cerca (titolo, descrizione, collegamento, autore)…
+0965	Search in notes	Buscar en las notas	Cerca nelle note
+0966	Only its author can edit this note	Solo su autor puede modificar esta nota	Solo l'autore può modificare questa nota
+0967	Note title	Título de la nota	Titolo della nota
+0968	Note title…	Título de la nota…	Titolo della nota…
+0969	All employees	Todos los empleados	Tutti i dipendenti
+0970	All companies	Todas las empresas	Tutte le aziende
+0971	All invoices	Todas las facturas	Tutte le fatture
+0972	-	-	-
+0973	Open the company with this user's permissions	Abrir la empresa con los permisos de este usuario	Apri l'azienda con i permessi di questo utente
+0974	Delete this administrator	Eliminar este administrador	Elimina questo amministratore
+0975	-	-	-
+0976	-	-	-
+0977	-	-	-
+0978	-	-	-
+0979	Results	Resultados	Risultati
+0980	-	-	-
+0981	-	-	-
+0982	-	-	-
+0983	Account concerned	Cuenta afectada	Account interessato
+0984	Accounting and bank reconciliation	Conciliación contable y bancaria	Riconciliazione contabile e bancaria
+0985	View the employee's detail (new tab)	Ver el detalle del empleado (nueva pestaña)	Vedi il dettaglio del dipendente (nuova scheda)
+0986	1 to 5, leave empty if not applicable	1 a 5, dejar vacío si no procede	Da 1 a 5, lasciare vuoto se non applicabile
+0987	Level colours	Colores de los niveles	Colori dei livelli
+0988	Org chart	Organigrama	Organigramma
+0989	Scope shown	Ámbito mostrado	Ambito visualizzato
+0990	Search for a person…	Buscar una persona…	Cerca una persona…
+0991	Week shown	Semana mostrada	Settimana visualizzata
+0992	{0} · will be attached on save	{0} · se adjuntará al guardar	{0} · sarà allegato al salvataggio
+0993	-	-	-
+0994	-	-	-
+0995	-	-	-
+0996	-	-	-
+0997	{0} Detail by company	{0} Detalle por empresa	{0} Dettaglio per azienda
+0998	{0} employee(s)	{0} empleado(s)	{0} dipendente/i
+0999	{0} contact(s)	{0} contacto(s)	{0} contatto/i
+1000	-	-	-
+1001	: {0} in withdrawals, {1} in deposits.	: {0} de retiros, {1} de depósitos.	: {0} di prelievi, {1} di versamenti.
+1002	Page {0} of {1}	Página {0} de {1}	Pagina {0} di {1}
+1003	-	-	-
+1004	Documents ({0})	Documentos ({0})	Documenti ({0})
+1005	Total: {0}%	Total: {0} %	Totale: {0} %
+1006	next: {0}	próximo: {0}	prossima: {0}
+1007	{0}{1} expense(s) · {2} $	{0}{1} gasto(s) · {2} $	{0}{1} spesa/e · {2} $
+1008	Select {0} to see their communication history	Seleccione {0} para ver su historial de comunicación	Seleziona {0} per vederne la cronologia delle comunicazioni
+1009	{0} entry(ies)	{0} entrada(s)	{0} voce/i
+1010	{0} of {1} entry(ies)	{0} de {1} entrada(s)	{0} di {1} voce/i
+1011	{0} entry(ies) · last on {1}	{0} entrada(s) · última el {1}	{0} voce/i · ultima il {1}
+1012	{0} company(ies)	{0} empresa(s)	{0} azienda/e
+1013	{0} company(ies) assigned	{0} empresa(s) asignada(s)	{0} azienda/e assegnata/e
+1014	{0} company(ies) assigned out of {1}	{0} empresa(s) asignada(s) de {1}	{0} azienda/e assegnata/e su {1}
+1015	-	-	-
+1016	-	-	-
+1017	Expenses — {0}	Gastos — {0}	Spese — {0}
+1018	${0} saved, not yet sent to clients.	{0} $ registrados, aún no enviados a los clientes.	{0} $ registrati, non ancora inviati ai clienti.
+1019	{0} wk · since {1}	{0} sem. · desde el {1}	{0} sett. · dal {1}
+1020	· {0} for more than 30 days	· {0} desde hace más de 30 días	· {0} da più di 30 giorni
+1021	{0} employee(s) assigned	{0} empleado(s) asignado(s)	{0} dipendente/i assegnato/i
+1022	{0} employee(s) assigned out of {1}	{0} empleado(s) asignado(s) de {1}	{0} dipendente/i assegnato/i su {1}
+1023	Week of {0}	Semana del {0}	Settimana del {0}
+1024	Company billed {0}.	Empresa facturada {0}.	Azienda fatturata {0}.
+1025	Company default: ${0}	Por defecto de la empresa: {0} $	Predefinito azienda: {0} $
+1026	Employee default ({0})	Por defecto del empleado ({0})	Predefinito del dipendente ({0})
+1027	Record history — {0} — {1}. “Old” and “new” amounts = total paid for the week, before taxes; “difference” = the payment.	Historial de registros — {0} — {1}. Importes «anterior» y «nuevo» = total pagado de la semana, antes de impuestos; «diferencia» = el pago.	Cronologia delle registrazioni — {0} — {1}. Importi «vecchio» e «nuovo» = totale versato per la settimana, al netto delle imposte; «differenza» = il versamento.
+1028	GST {0}: {1}	TPS {0}: {1}	TPS {0}: {1}
+1029	QST {0}: {1}	TVQ {0}: {1}	TVQ {0}: {1}
+1030	Recorded payments — {0} — {1}	Pagos registrados — {0} — {1}	Versamenti registrati — {0} — {1}
+1031	Paid {0} of {1}	Pagado {0} de {1}	Versato {0} su {1}
+1032	of which {0} for this period	de los cuales {0} para este periodo	di cui {0} per questo periodo
+1033	of {0}	de {0}	su {0}
+1034	{0}{1} (left to pay)	{0}{1} (resto por pagar)	{0}{1} (residuo da versare)
+1035	↺ Pay all the remainder ({0})	↺ Pagar todo el resto ({0})	↺ Versa tutto il residuo ({0})
+1036	⚠ The payments exceed the selected total by {0}. Check days again or cancel a payment.	⚠ Los pagos superan el total seleccionado en {0}. Vuelva a marcar días o anule un pago.	⚠ I versamenti superano il totale selezionato di {0}. Riseleziona delle giornate o annulla un versamento.
+1037	{0} emp.	{0} empl.	{0} dip.
+1038	{0} perm.	{0} perm.	{0} perm.
+1039	Totals — {0} invoice(s) selected	Totales — {0} factura(s) seleccionada(s)	Totali — {0} fattura/e selezionata/e
+1040	{0} / {1} invoice(s) selected	{0} / {1} factura(s) seleccionada(s)	{0} / {1} fattura/e selezionata/e
+1041	— {0} hidden by the filters	— {0} oculta(s) por los filtros	— {0} nascosta/e dai filtri
+1042	-	-	-
+1043	-	-	-
+1044	Thank you for your trust — {0}	Gracias por su confianza — {0}	Grazie per la fiducia — {0}
+1045	New invoice — {0}	Nueva factura — {0}	Nuova fattura — {0}
+1046	Period {0}	Periodo {0}	Periodo {0}
+1047	{0} visit(s)	{0} visita(s)	{0} visita/e
+1048	{0} visit(s) · {1} $	{0} visita(s) · {1} $	{0} visita/e · {1} $
+1049	⚡ Prefill (${0})	⚡ Rellenar ({0} $)	⚡ Precompila ({0} $)
+1050	Detail — {0}	Detalle — {0}	Dettaglio — {0}
+1051	Ref. {0} — {1}	Ref. {0} — {1}	Rif. {0} — {1}
+1052	Do you want to delete {0}	¿Quiere eliminar {0}	Vuoi eliminare {0}
+1053	{0}–{1} of {2}	{0}–{1} de {2}	{0}–{1} di {2}
+1054	{0} invoice(s) — {1} credit note(s) — page {2}/{3}	{0} factura(s) — {1} abono(s) — página {2}/{3}	{0} fattura/e — {1} nota/e di credito — pagina {2}/{3}
+1055	{0} selected — Edit ▾	{0} seleccionada(s) — Modificar ▾	{0} selezionata/e — Modifica ▾
+1056	Send invoice {0}	Enviar la factura {0}	Invia la fattura {0}
+1057	{0} unpaid invoice(s)	{0} factura(s) impagada(s)	{0} fattura/e non pagata/e
+1058	Inactive notes ({0})	Notas inactivas ({0})	Note inattive ({0})
+1059	{0} · read only	{0} · solo lectura	{0} · sola lettura
+1060	No result in {0}.	Ningún resultado en {0}.	Nessun risultato in {0}.
+1061	Permanently delete: {0}	Eliminar definitivamente: {0}	Elimina definitivamente: {0}
+1062	Calculation detail — period: {0}	Detalle del cálculo — periodo: {0}	Dettaglio del calcolo — periodo: {0}
+1063	{0} — lines that make up the amount	{0} — líneas que componen el importe	{0} — righe che compongono l'importo
+1064	Employees and dates worked (validated weeks) — {0}	Empleados y fechas trabajadas (semanas validadas) — {0}	Dipendenti e date lavorate (settimane convalidate) — {0}
+1065	Companies and visit dates — {0}	Empresas y fechas de visita — {0}	Aziende e date di visita — {0}
+1066	No “{0}” invoice for this period.	Ninguna factura «{0}» para este periodo.	Nessuna fattura «{0}» per questo periodo.
+1067	{0} invoices grouped by company, with each company's total	Facturas {0} agrupadas por empresa, con el total de cada empresa	Fatture {0} raggruppate per azienda, con il totale di ogni azienda
+1068	Period: {0}	Periodo: {0}	Periodo: {0}
+1069	Preview — T4A {0} {1} {2}	Vista previa — T4A {0} {1} {2}	Anteprima — T4A {0} {1} {2}
+1070	No note linked to {0}.	Ninguna nota vinculada a {0}.	Nessuna nota collegata a {0}.
+1071	No person matches “{0}”.	Ninguna persona coincide con «{0}».	Nessuna persona corrisponde a «{0}».
+1072	Level {0}	Nivel {0}	Livello {0}
+1073	· leader: {0}	· jefe: {0}	· capo: {0}
+1074	· team: {0}	· equipo: {0}	· squadra: {0}
+1075	team: {0}	equipo: {0}	squadra: {0}
+1076	Per job	Por tarea	A cottimo
+1077	exceeds 10 MB	supera los 10 MB	supera i 10 MB
+1078	empty file	archivo vacío	file vuoto
+1079	type not allowed (accepted: PDF, JPG / PNG images, Word, Excel)	tipo no permitido (aceptados: PDF, imágenes JPG / PNG, Word, Excel)	tipo non consentito (accettati: PDF, immagini JPG / PNG, Word, Excel)
+1080	Hourly billing: enter the client hourly rate (greater than 0).	Facturación por hora: indique la tarifa por hora del cliente (mayor que 0).	Fatturazione a ore: indica la tariffa oraria cliente (maggiore di 0).
+1081	Hourly rates cannot be negative.	Las tarifas por hora no pueden ser negativas.	Le tariffe orarie non possono essere negative.
+1082	-	-	-
+1083	-	-	-
+1084	-	-	-
+1085	-	-	-
+1086	Aug	ago	ago
+1087	Dec	dic	dic
+1088	Feb	feb	feb
+1089	Unpaid	No pagado	Non pagato
+1090	Partially paid	Pagado parcialmente	Pagato parzialmente
+1091	Paid	Pagado	Pagato
+1092	Amethyst	Amatista	Ametista
+1093	Light · beige and terracotta	Claro · beige y terracota	Chiaro · beige e terracotta
+1094	Light · ivory and gold	Claro · marfil y oro	Chiaro · avorio e oro
+1095	Light · lilac and violet	Claro · lila y violeta	Chiaro · lilla e viola
+1096	Light · raspberry pink	Claro · rosa frambuesa	Chiaro · rosa lampone
+1097	Forest	Bosque	Foresta
+1098	Ocean	Océano	Oceano
+1099	Rosé	Rosado	Rosé
+1100	Dark · cyan blue	Oscuro · azul cian	Scuro · blu ciano
+1101	Dark · gold	Oscuro · dorado	Scuro · dorato
+1102	Dark · grey and lemon	Oscuro · gris y limón	Scuro · grigio e limone
+1103	Dark · ember orange	Oscuro · naranja brasa	Scuro · arancio brace
+1104	Dark · emerald green	Oscuro · verde esmeralda	Scuro · verde smeraldo
+1105	Keep editing	Seguir editando	Continua la modifica
+1106	Unsaved changes	Cambios sin guardar	Modifiche non salvate
+1107	Leave without saving	Salir sin guardar	Esci senza salvare
+1108	Delete this expense?	¿Eliminar este gasto?	Eliminare questa spesa?
+1109	The file will be permanently deleted.	El archivo se eliminará definitivamente.	Il file sarà eliminato definitivamente.
+1110	file not found	archivo no encontrado	file non trovato
+1111	-	-	-
+1112	August	Agosto	Agosto
+1113	December	Diciembre	Dicembre
+1114	February	Febrero	Febbraio
+1115	Delivery instructions...	Instrucciones de entrega...	Istruzioni di consegna...
+1116	Employee note...	Nota del empleado...	Nota dipendente...
+1117	Phone number	Número de teléfono	Numero di telefono
+1118	Tel.	Tel.	Tel.
+1119	-	-	-
+1120	Formatted .xlsx workbook	Libro .xlsx con formato	Cartella .xlsx formattata
+1121	Printable document	Documento imprimible	Documento stampabile
+1122	Raw data (separator ;)	Datos en bruto (separador ;)	Dati grezzi (separatore ;)
+1123	employee payments	los pagos a empleados	i pagamenti dipendenti
+1124	Select all (results)	Seleccionar todo (resultados)	Seleziona tutto (risultati)
+1125	-	-	-
+1126	items	elementos	elementi
+1127	Assign companies	Asignar empresas	Assegna aziende
+1128	Assign employees	Asignar empleados	Assegna dipendenti
+1129	Send invoices	Enviar las facturas	Invia le fatture
+1130	Bill from timesheets	Facturar por fichajes	Fattura da timbrature
+1131	Timesheet	Hoja de horas	Foglio ore
+1132	Manage invoices	Gestionar las facturas	Gestisci le fatture
+1133	Company list	Lista de empresas	Elenco aziende
+1134	Edit employee	Modificar empleado	Modifica dipendente
+1135	New company	Nueva empresa	Nuova azienda
+1136	New invoice	Nueva factura	Nuova fattura
+1137	Employee timesheets	Fichaje de empleados	Timbrature dipendenti
+1138	Employee profile	Perfil del empleado	Profilo dipendente
+1139	Employee rates	Tarifas de empleados	Tariffe dipendenti
+1140	-	-	-
+1141	-	-	-
+1142	-	-	-
+1143	-	-	-
+1144	-	-	-
+1145	-	-	-
+1146	-	-	-
+1147	-	-	-
+1148	-	-	-
+1149	-	-	-
+1150	-	-	-
+1151	Active note	Nota activa	Nota attiva
+1152	active notes	notas activas	note attive
+1153	Link to companies…	Vincular a empresas…	Collega ad aziende…
+1154	Link to employees…	Vincular a empleados…	Collega a dipendenti…
+1155	Link to invoices…	Vincular a facturas…	Collega a fatture…
+1156	employees	empleados	dipendenti
+1157	-	-	-
+1158	-	-	-
+1159	-	-	-
+1160	-	-	-
+1161	-	-	-
+1162	-	-	-
+1163	Choose this employee's team leader.	Elija el jefe de equipo de este empleado.	Scegli il caposquadra di questo dipendente.
+1164	-	-	-
+1165	-	-	-
+1166	-	-	-
+1167	— None: top of the hierarchy —	— Ninguno: cima de la jerarquía —	— Nessuno: vertice della gerarchia —
+1168	No company selected.	Ninguna empresa seleccionada.	Nessuna azienda selezionata.
+1169	Error while adding.	Error al añadir.	Errore durante l'aggiunta.
+1170	Error while editing.	Error al modificar.	Errore durante la modifica.
+1171	Error while deleting.	Error al eliminar.	Errore durante l'eliminazione.
+1172	Error while changing the status.	Error al cambiar el estado.	Errore durante il cambio di stato.
+1173	They will no longer receive invoices.	Ya no recibirá las facturas.	Non riceverà più le fatture.
+1174	Unable to load the contacts.	No se pudieron cargar los contactos.	Impossibile caricare i contatti.
+1175	The contact's email is not valid (e.g. name@example.com).	El correo del contacto no es válido (p. ej. nombre@ejemplo.com).	L'email del contatto non è valida (es. nome@esempio.com).
+1176	The name is required.	El nombre es obligatorio.	Il nome è obbligatorio.
+1177	Changes cancelled	Cambios anulados	Modifiche annullate
+1178	this company	esta empresa	questa azienda
+1179	No change detected.	No se detectó ningún cambio.	Nessuna modifica rilevata.
+1180	Configuration saved.	Configuración guardada.	Configurazione salvata.

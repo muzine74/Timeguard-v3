@@ -9,6 +9,8 @@ import { NoteLinksEditorComponent } from '../../components/note-links-editor/not
 import { MultiSelectComponent, MultiSelectOption } from '../../components/multi-select/multi-select.component';
 import { AttachmentsComponent } from '../../components/attachments/attachments.component';
 import { AttachmentsService, AttachmentItem } from '../../../state/attachments/attachments.service';
+import { httpErrorMessage } from '../../shared/http-error';
+import { locale } from '../../../state/i18n/i18n.service';
 
 /**
  * Critères de filtre. Entre critères : ET. Dans un critère à choix multiple : OU
@@ -193,7 +195,7 @@ export class NotesComponent implements OnInit {
           this.cdr.markForCheck();
         },
         error: err => {
-          this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+          this.error.set(httpErrorMessage(err));
           this.loading.set(false);
           this.cdr.markForCheck();
         },
@@ -225,7 +227,7 @@ export class NotesComponent implements OnInit {
           });
         },
         error: err => {
-          this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+          this.error.set(httpErrorMessage(err));
           this.saving.set(false);
           this.cdr.markForCheck();
         },
@@ -263,7 +265,7 @@ export class NotesComponent implements OnInit {
           this.cdr.markForCheck();
         },
         error: err => {
-          this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+          this.error.set(httpErrorMessage(err));
           this.cdr.markForCheck();
         },
       });
@@ -304,7 +306,7 @@ export class NotesComponent implements OnInit {
           this.cdr.markForCheck();
         },
         error: err => {
-          this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+          this.error.set(httpErrorMessage(err));
           this.cdr.markForCheck();
         },
       });
@@ -320,7 +322,7 @@ export class NotesComponent implements OnInit {
           this.cdr.markForCheck();
         },
         error: err => {
-          this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+          this.error.set(httpErrorMessage(err));
           this.cdr.markForCheck();
         },
       });
@@ -334,6 +336,6 @@ export class NotesComponent implements OnInit {
 
   fmtDate(iso: string): string {
     const d = new Date(iso);
-    return d.toLocaleDateString('fr-CA', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    return d.toLocaleDateString(locale(), { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
   }
 }

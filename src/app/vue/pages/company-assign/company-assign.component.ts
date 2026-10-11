@@ -6,6 +6,8 @@ import { forkJoin } from 'rxjs';
 import { EmployeesService } from '../../../state/employees/employees.service';
 import { CompanyService, CompanySummary } from '../../../state/compagny/Company.service';
 import { Employee } from '../../../models';
+import { ConfirmService } from '../../../state/ui/confirm.service';
+import { httpErrorMessage } from '../../shared/http-error';
 
 @Component({
     selector: 'app-company-assign',
@@ -15,6 +17,7 @@ import { Employee } from '../../../models';
     styleUrls: ['./company-assign.component.scss']
 })
 export class CompanyAssignComponent implements OnInit {
+  private readonly confirmDlg = inject(ConfirmService);
   private readonly noteAlerts = inject(NoteAlertService);
 
   // ── Service signals passés directement ────────────────
@@ -97,7 +100,7 @@ export class CompanyAssignComponent implements OnInit {
     this.companiesError.set('');
     this.companySvc.getAll().subscribe({
       next:  list => this.companies.set(list),
-      error: err  => this.companiesError.set(err?.error?.message ?? `Impossible de charger les compagnies (HTTP ${err?.status ?? '?'}).`),
+      error: err  => this.companiesError.set(httpErrorMessage(err, `Impossible de charger les compagnies`)),
     });
   }
 
@@ -108,10 +111,10 @@ export class CompanyAssignComponent implements OnInit {
   }
 
   // ── Sélection employé → récupère les compagnies à jour ─
-  select(emp: Employee): void {
+  async select(emp: Employee): Promise<void> {
     if (this.selected()?.employeeId === emp.employeeId) return;
     if (this.saving()) return;
-    if (this.hasChanges() && !confirm(`Les affectations non sauvegardées de « ${this.selected()?.employeeName ?? 'cet employé'} » seront perdues. Continuer ?`)) return;
+    if (this.hasChanges() && !await this.confirmDlg.discard(`Les affectations non sauvegardées de « ${this.selected()?.employeeName ?? 'cet employé'} » seront perdues.`)) return;
     this.coSearch.set('');
     this.noteAlerts.check({ employeeIds: [emp.employeeId] }, `Affectation — ${emp.employeeName}`);
     this.selected.set(emp);
@@ -188,7 +191,7 @@ export class CompanyAssignComponent implements OnInit {
       error: err => {
         this.saving.set(false);
         // Une partie des changements a pu passer : on recharge l'état réel plutôt que d'afficher un état supposé
-        this.error.set((err?.error?.message ?? `La sauvegarde a échoué (HTTP ${err?.status ?? '?'})`) + ' — les affectations ont été rechargées, vérifiez-les.');
+        this.error.set((httpErrorMessage(err, `La sauvegarde a échoué`)) + ' — les affectations ont été rechargées, vérifiez-les.');
         this.loadingAssigned.set(true);
         this.empSvc.getOne(emp.employeeId).subscribe({
           next: full => {

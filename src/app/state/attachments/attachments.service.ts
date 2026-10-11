@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, from, of } from 'rxjs';
 import { catchError, concatMap, map, toArray } from 'rxjs/operators';
+import { httpErrorMessage } from '../../vue/shared/http-error';
 
 export type AttachmentOwner = 'note' | 'communication';
 
@@ -50,7 +51,7 @@ export class AttachmentsService {
     return from(files).pipe(
       concatMap(f => this.upload(ownerType, ownerId, f).pipe(
         map(item => ({ item, error: '' })),
-        catchError(err => of({ item: null as AttachmentItem | null, error: `${f.name} : ${err?.error?.message ?? `erreur HTTP ${err?.status ?? '?'}`}` })),
+        catchError(err => of({ item: null as AttachmentItem | null, error: `${f.name} : ${httpErrorMessage(err)}` })),
       )),
       toArray(),
       map(results => ({

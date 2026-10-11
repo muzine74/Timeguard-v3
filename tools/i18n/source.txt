@@ -1,0 +1,1460 @@
+0001	S	Mode aperçu
+0002	S	STAGING — environnement de test · données copiées de la prod · courriels redirigés
+0003	S	← Providers
+0004	S	Envoi en cours…
+0005	S	PDF, JPG, PNG, Word, Excel — 10 Mo max.
+0006	S	📎 Joindre un fichier
+0007	S	Aujourd'hui
+0008	S	Journée cible
+0009	S	Adresse
+0010	S	Confidentiel
+0011	S	Identifiants, coordonnées et adresse
+0012	S	Informations Employé
+0013	S	Informations personnelles
+0014	S	Masqué
+0015	S	✕ Annuler
+0016	S	Aucun résultat
+0017	S	ADMIN
+0018	S	Aide
+0019	S	Ctrl K
+0020	S	Design de couleurs
+0021	S	Déconnexion
+0022	S	Rechercher
+0023	S	Se déconnecter
+0024	S	TimeGuard
+0025	S	● En ligne
+0026	S	1 ? alerts.notes().length + ' notes actives' : 'Note active' }}
+0027	S	J'ai compris
+0028	S	(aujourd'hui)
+0029	S	+ plage
+0030	S	Auj.
+0031	S	Cochez les jours travaillés
+0032	S	Compagnie
+0033	S	Compagnies par visite
+0034	S	Compagnies à l'heure
+0035	S	Indiquez l'heure de début et de fin — « + plage » pour plusieurs plages dans la journée (total = somme)
+0036	S	Ligne sélectionnée
+0037	S	Plage incomplète, inversée ou qui chevauche une autre
+0038	S	Total
+0039	S	Entrée
+0040	S	choisir ·
+0041	S	fermer
+0042	S	ouvrir ·
+0043	S	Échap
+0044	S	Compagnies
+0045	S	Gains non validés
+0046	S	Jours / Semaine
+0047	S	Pointages Employé
+0048	S	Validés Admin
+0049	S	📊 Statistiques
+0050	S	(supervise des employés et/ou d'autres chefs d'équipe)
+0051	S	Aucun chef d'équipe pour l'instant : cochez « Chef d'équipe » sur la fiche d'un responsable.
+0052	S	Chef d'équipe
+0053	S	Le chef d'équipe consulte le pointage et les notes de son équipe (page « Équipe »).
+0054	S	). Les tarifs à la visite restent ceux du planning ci-dessous.
+0055	S	+ Contact
+0056	S	+ Jour
+0057	S	Actif
+0058	S	Actif (inclus dans les envois)
+0059	S	Annuler
+0060	S	Aucun contact — cliquez sur "+ Contact"
+0061	S	Aucun employé assigné à cette compagnie
+0062	S	Chargement des compagnies…
+0063	S	Chargement des contacts…
+0064	S	Chargement...
+0065	S	Cie $
+0066	S	Cliquez sur "+ Jour" pour ajouter un jour
+0067	S	Code
+0068	S	Code postal
+0069	S	Compagnie $
+0070	S	Contacts
+0071	S	Courriel
+0072	S	Deux semaines alternées
+0073	S	Dès que la compagnie est facturée à l'heure
+0074	S	Emp $
+0075	S	Employé $
+0076	S	Employés associés
+0077	S	Employés → Tarifs employés
+0078	S	Fréquence de paiement
+0079	S	Fréquence de travail
+0080	S	Fréquences
+0081	S	Identification
+0082	S	Inactif
+0083	S	Informations générales
+0084	S	Jour
+0085	S	Jours 1 à 15
+0086	S	Jours 1 — 8
+0087	S	Jours 9 — 15
+0088	S	Jours de travail
+0089	S	La Semaine 1 commence le
+0090	S	Localisation
+0091	S	Mode de facturation
+0092	S	Modifiez et enregistrez les informations
+0093	S	Nom
+0094	S	Note
+0095	S	Note adresse
+0096	S	Notes
+0097	S	Numéros applicables
+0098	S	N° civique
+0099	S	Paiement et travail
+0100	S	Par heure (heures pointées × taux client)
+0101	S	Par visite (prix du planning)
+0102	S	Pays
+0103	S	Planning — Bi-hebdomadaire
+0104	S	Planning — Bi-mensuel
+0105	S	Planning — Hebdomadaire
+0106	S	Planning — Mensuel
+0107	S	Province
+0108	S	Puis une semaine sur deux, à partir du lundi de cette semaine.
+0109	S	Réessayer
+0110	S	Semaine 1
+0111	S	Semaine 2
+0112	S	Suite
+0113	S	Sélectionnez une compagnie dans la liste
+0114	S	TPS
+0115	S	TVQ
+0116	S	Taux horaire client ($/h)
+0117	S	Taux horaire employé par défaut ($/h)
+0118	S	Taxes
+0119	S	Tous
+0120	S	Travaillé
+0121	S	Téléphone
+0122	S	Une semaine type
+0123	S	Ville
+0124	S	ou
+0125	S	que l'employé est payé à l'heure, le pointage se fait en heures (début / fin). Le taux employé par défaut sert aux employés payés à l'heure sans taux spécifique (
+0126	S	● Modifications non enregistrées
+0127	S	⚠ À renseigner : sans cette date, les jours planifiés ne peuvent pas être calculés.
+0128	S	✓ Enregistrer
+0129	S	Adresse civique
+0130	S	Ancienne valeur
+0131	S	Application
+0132	S	Champ
+0133	S	Configuration
+0134	S	Confirmer les modifications
+0135	S	Contact
+0136	S	Coordonnées bancaires
+0137	S	Coordonnées de paiement
+0138	S	Courriel (SMTP)
+0139	S	Enregistrer
+0140	S	Logo (chemin ou URL)
+0141	S	Mot de passe
+0142	S	Nouvelle valeur
+0143	S	Numéro de compte de programme du payeur
+0144	S	N° TPS
+0145	S	N° TVQ
+0146	S	Paramètres globaux de l'application
+0147	S	Port
+0148	S	Serveur
+0149	S	Taux TPS (%)
+0150	S	Taux TVQ (%)
+0151	S	Utilisateur
+0152	S	Version
+0153	S	Actions
+0154	S	Ajouter un mot-clé
+0155	S	Aucun mot-clé pour l'instant. Ajoutez-en un ci-dessus, ou partez d'une description ci-dessous.
+0156	S	Aucun élément de ce type n'existe encore.
+0157	S	Chargement…
+0158	S	Choisir…
+0159	S	Cliquez sur « Utiliser » pour reprendre une description comme mot-clé, puis raccourcissez-la si besoin.
+0160	S	Lexique
+0161	S	Mot-clé
+0162	S	Mot-clé dans la description
+0163	S	Mots-clés du lexique et élément auquel chacun est relié
+0164	S	Relier à
+0165	S	Relié à
+0166	S	Transactions
+0167	S	Transactions sans lien
+0168	S	Type
+0169	S	Une transaction est reliée quand sa description contient le mot-clé (majuscules, accents et espaces ignorés). Si plusieurs mots-clés conviennent, le plus long l'emporte.
+0170	S	Utiliser
+0171	S	⚠ Élément supprimé : mot-clé ignoré
+0172	S	Au
+0173	S	Aucune ligne ne correspond à la recherche ou aux filtres.
+0174	S	Charger un relevé
+0175	S	Chargez le relevé de votre banque, puis reliez ses transactions à vos compagnies, vos employés et vos charges
+0176	S	Colonnes lues : 4 = date, 6 = description, 8 = retrait, 9 = dépôt. Un fichier déjà chargé peut être rechargé sans créer de doublons.
+0177	S	Date
+0178	S	Description
+0179	S	Du
+0180	S	Dépôt
+0181	S	Dépôts − retraits
+0182	S	Fichier CSV
+0183	S	Lignes
+0184	S	Lignes du relevé bancaire enregistrées. Cliquez sur un en-tête pour trier.
+0185	S	Lignes enregistrées
+0186	S	Lié à
+0187	S	Recherche
+0188	S	Relevé bancaire
+0189	S	Reliées
+0190	S	Retrait
+0191	S	Réinitialiser
+0192	S	Suivant ›
+0193	S	Total des dépôts
+0194	S	Total des retraits
+0195	S	Tout afficher
+0196	S	Validée
+0197	S	Validées
+0198	S	‹ Précédent
+0199	S	⬆ Charger le CSV
+0200	S	🏦 Relevé bancaire
+0201	S	📖 Lexique
+0202	S	+ Nouvelle charge
+0203	S	28 ? ' (ou le dernier jour du mois s\'il est plus court)' : '' }}. Chaque copie peut ensuite être modifiée ou supprimée séparément.
+0204	S	Aucun document.
+0205	S	Aucune charge ne correspond à la recherche.
+0206	S	Aucune charge. Cliquez sur "Nouvelle charge" pour en créer une.
+0207	S	Aucune compagnie disponible.
+0208	S	Aucune sélection = charge non associée à une compagnie.
+0209	S	Charge mensuelle
+0210	S	Charges
+0211	S	Cochez si cette charge revient chaque mois (loyer, assurance…). Le montant saisi est alors le montant d'un mois.
+0212	S	Cochez si le montant saisi contient déjà la TPS et la TVQ. Décochez s'il est hors taxes.
+0213	S	Date de la charge
+0214	S	Documents
+0215	S	Effacer
+0216	S	Enregistrement…
+0217	S	Gérer les charges partagées entre compagnies.
+0218	S	Les documents pourront être ajoutés après la création de la charge.
+0219	S	Montant
+0220	S	Montant max.
+0221	S	Montant min.
+0222	S	Montant total
+0223	S	Répartir également
+0224	S	Répartition
+0225	S	Taxes incluses dans le montant
+0226	S	Titre
+0227	S	Toutes
+0228	S	🔁 Charge générée automatiquement à partir d'une charge mensuelle. La modifier ne change ni la charge mensuelle ni les autres mois.
+0229	S	🔁 Générée
+0230	S	🔁 Mensuelle
+0231	S	Afficher les désactivés sans historique
+0232	S	Aucune communication
+0233	S	Date et heure
+0234	S	Effacer les filtres
+0235	S	Employés
+0236	S	Envoyé / appel fait
+0237	S	Envoyé par TimeGuard
+0238	S	Historique de communication ·
+0239	S	Modifier
+0240	S	Origine
+0241	S	Reçu
+0242	S	Résumé
+0243	S	Saisie manuelle
+0244	S	Sens
+0245	S	Sujet
+0246	S	Supprimer
+0247	S	Échec de l'envoi
+0248	S	＋ Ajouter une communication
+0249	S	Sélectionnez un employé pour gérer ses compagnies
+0250	S	— Sélectionner un employé —
+0251	S	● Non sauvegardé
+0252	S	✓ Sauvegarder
+0253	S	Jour du mois :
+0254	S	Jours 1 à 15 du mois
+0255	S	Nouvelle Compagnie
+0256	S	Personne responsable (facultatif — d'autres contacts s'ajoutent ensuite sur la fiche)
+0257	S	Remplissez les informations pour créer une nouvelle compagnie
+0258	S	✓ Ajouter
+0259	S	1 ? ' sujets demandent' : ' sujet demande') + ' votre attention.' }}
+0260	S	1 ? 's' : '' }} ce mois-ci
+0261	S	1 ? 's' : '' }} à venir d'ici la fin du mois
+0262	S	Accès rapide
+0263	S	Aucune facture envoyée n'attend de paiement.
+0264	S	Chargement du tableau de bord…
+0265	S	Envoyer les factures →
+0266	S	Factures en attente de paiement
+0267	S	Factures à envoyer
+0268	S	Paiements employés à transférer
+0269	S	Pointages à valider
+0270	S	Premiers pas
+0271	S	Tous les versements enregistrés sont transférés.
+0272	S	Toutes les factures enregistrées sont envoyées.
+0273	S	Toutes les semaines terminées sont validées.
+0274	S	Valider les semaines →
+0275	S	Voir les charges →
+0276	S	Voir les factures →
+0277	S	Voir les paiements →
+0278	S	↻ Actualiser
+0279	S	Aucun employé disponible
+0280	S	Aucune compagnie
+0281	S	Sélectionnez une compagnie pour gérer ses employés
+0282	S	— Sélectionner une compagnie —
+0283	S	+ Ajouter
+0284	S	Aucun document
+0285	S	Facultatif. Si le numéro TPS est renseigné, la TPS est ajoutée aux paiements de l'employé dans les Statistiques. Sans numéro, aucune TPS.
+0286	S	Facultatif. Si le numéro TVQ est renseigné, la TVQ est ajoutée aux paiements de l'employé dans les Statistiques. Sans numéro, aucune TVQ.
+0287	S	Fichiers attachés à l'employé
+0288	S	Identification de l'employé
+0289	S	Mode de rémunération par défaut
+0290	S	NAS
+0291	S	Nom complet
+0292	S	Nouvel employé
+0293	S	Numéro TPS
+0294	S	Numéro TVQ
+0295	S	Par heure (heure de début / fin)
+0296	S	Par visite (tarifs du planning)
+0297	S	Remplissez les informations pour créer un nouvel employé
+0298	S	S'applique à toutes ses compagnies, sauf réglage différent pour une compagnie dans Employés → Tarifs employés. Par heure : l'employé saisit ses heures et est payé heures × son taux, sinon le taux employé par défaut de la compagnie.
+0299	S	Suite / App
+0300	S	Terminer →
+0301	S	Type d'emploi
+0302	S	✓ Employé créé — ajoutez des documents puis cliquez sur Terminer
+0303	S	💼 Permanent
+0304	S	🔧 À la tâche
+0305	S	Aucun identifiant trouvé
+0306	S	Confirmer la suppression
+0307	S	Créer un accès de connexion pour un employé
+0308	S	Créez et gérez les accès de connexion des employés.
+0309	S	Employé
+0310	S	Groupes
+0311	S	Groupes (optionnel)
+0312	S	Identifiant
+0313	S	Identifiants employés
+0314	S	L'employé ne pourra plus se connecter.
+0315	S	Nom d'utilisateur
+0316	S	Nouveau mot de passe
+0317	S	Nouvel identifiant
+0318	S	Réinitialiser le mot de passe
+0319	S	Supprimer l'identifiant de
+0320	S	— Sélectionner —
+0321	S	＋ Nouvel identifiant
+0322	S	Chargement impossible
+0323	S	Choisissez un employé dans la liste pour afficher ses données.
+0324	S	Semaine validée par l'admin
+0325	S	Sélectionnez un employé
+0326	S	Tout ✓
+0327	S	✅ Valider la semaine
+0328	S	💾 Sauvegarder
+0329	S	🔓 Annuler la validation
+0330	S	Actifs
+0331	S	Aucun employé ne correspond
+0332	S	Désactivé
+0333	S	Désactivés
+0334	S	Sans chef
+0335	S	Validés
+0336	S	afficher tous
+0337	S	À valider
+0338	S	✓ Validé
+0339	S	✎ Modifier la fiche
+0340	S	Aucun pointage enregistré
+0341	S	· affichée
+0342	S	📅 Historique des semaines
+0343	S	Aucun employé
+0344	S	Sélectionnez un employé dans la liste
+0345	S	✉ Envoyer lien de réinitialisation
+0346	S	✓ Lien de réinitialisation envoyé par courriel à l'employé.
+0347	S	🔑 Aller à Identifiants
+0348	S	(un employé peut être payé à la visite chez une compagnie et à l'heure chez une autre, dans la même semaine).
+0349	S	Actuel
+0350	S	Aucun changement enregistré pour cette compagnie.
+0351	S	Aucun jour de travail actif défini pour cette compagnie.
+0352	S	Aucune compagnie assignée à cet employé
+0353	S	Chargement des tarifs...
+0354	S	Choisissez comment cet employé est payé
+0355	S	Défaut
+0356	S	Historique des changements de tarif
+0357	S	Mode de rémunération chez cette compagnie
+0358	S	Override
+0359	S	Paie = heures × taux appliqué ; laissez le taux vide pour utiliser celui de la compagnie.
+0360	S	Paie = tarifs à la visite ci-dessous.
+0361	S	Par heure
+0362	S	Par visite (tarifs ci-dessous)
+0363	S	Pointage en heures (début / fin) chez cette compagnie.
+0364	S	Premier tarif
+0365	S	S'applique aux pointages enregistrés ensuite (les montants déjà pointés ne sont pas recalculés).
+0366	S	Seuls les jours autorisés par le calendrier de la compagnie sont modifiables. Laissez le champ vide pour utiliser le tarif par défaut.
+0367	S	Statut
+0368	S	Sélectionnez un employé pour gérer ses tarifs
+0369	S	Sélectionnez une compagnie ci-dessus
+0370	S	Tarif compagnie
+0371	S	Tarifs personnalisés par compagnie assignée
+0372	S	Taux appliqué
+0373	S	Taux par défaut de la compagnie
+0374	S	Taux spécifique de l'employé ($/h)
+0375	S	Votre tarif
+0376	S	chez cette compagnie
+0377	S	Prendre une photo
+0378	S	Profil Employé
+0379	S	Profil employé — lecture seule
+0380	S	&nbsp;
+0381	S	(facultative)
+0382	S	(hors de la période affichée : non comptée)
+0383	S	0" [class.neg]="h.delta
+0384	S	Aucun enregistrement pour cette semaine.
+0385	S	Aucune semaine validée sur cette période.
+0386	S	Avant taxes
+0387	S	Avec taxes
+0388	S	Chargement des journées validées…
+0389	S	Choisissez un ou plusieurs employés pour afficher leurs semaines à payer.
+0390	S	Confirmer l'annulation
+0391	S	Date de paiement
+0392	S	Déjà versé
+0393	S	Enregistré le
+0394	S	Garder
+0395	S	Historique des enregistrements
+0396	S	Journées des pointages validés, par employé et par semaine — cochez les journées payées, puis enregistrez un ou plusieurs versements. Chaque versement est plafonné au reste à verser ; les taxes s'ajoutent si l'employé a un numéro TPS / TVQ. Les journées hors de la période choisie sont barrées et ne sont pas comptées.
+0397	S	Journées payées
+0398	S	Mois
+0399	S	Montant avant taxes
+0400	S	Montant réel transféré
+0401	S	Montant transféré
+0402	S	Non enregistrée
+0403	S	Paiement transféré
+0404	S	Paiements employés
+0405	S	Par
+0406	S	Plus aucun pointage dans cette semaine.
+0407	S	Raison
+0408	S	Raison du versement partiel
+0409	S	Reste à transférer
+0410	S	Reste à verser
+0411	S	Revenus sélectionnés
+0412	S	Semaines validées
+0413	S	Seuls les pointages des semaines validées sont affichés.
+0414	S	Total sélectionné
+0415	S	Tout sélectionner
+0416	S	Transféré
+0417	S	Versement
+0418	S	Versé après
+0419	S	Versé avant
+0420	S	aucune : l'employé n'a pas de numéro TPS / TVQ
+0421	S	avant taxes
+0422	S	avec taxes
+0423	S	État
+0424	S	✓ Transférée en entier
+0425	S	💾 Enregistrer le versement
+0426	S	📅 Période
+0427	S	📆 Intervalle
+0428	S	🕘 Historique
+0429	S	Ajouter une permission
+0430	S	Aucun employé trouvé
+0431	S	Aucun groupe créé
+0432	S	Aucune permission définie
+0433	S	Aucune permission définie.
+0434	S	Catalogue commun à toutes les entreprises — consultable ici, modifiable uniquement par l'administrateur de la plateforme.
+0435	S	Clé
+0436	S	Créez des groupes, définissez leurs accès et assignez des employés.
+0437	S	Définissez les permissions disponibles pour les groupes
+0438	S	Employés assignés
+0439	S	Gestion des permissions
+0440	S	Groupes &amp; permissions
+0441	S	Gérer les permissions →
+0442	S	Informations
+0443	S	Libellé
+0444	S	Module
+0445	S	Nom du groupe
+0446	S	Non
+0447	S	Oui
+0448	S	Permissions
+0449	S	Permissions existantes
+0450	S	Supprimer ?
+0451	S	Supprimer ce groupe définitivement ?
+0452	S	Sélectionnez un groupe ou créez-en un nouveau
+0453	S	⚙ Gérer les permissions
+0454	S	✕ Fermer
+0455	S	＋ Nouveau
+0456	S	+ Ajouter une ligne
+0457	S	Active
+0458	S	Année
+0459	S	Case 048 — Honoraires pour services rendus
+0460	S	Compagnies actives
+0461	S	Compagnies éligibles
+0462	S	Courriel propriétaire
+0463	S	Créer un espace entreprise
+0464	S	Date de facturation
+0465	S	Destinataires
+0466	S	Envoyer
+0467	S	Envoyées
+0468	S	Exporter ▾
+0469	S	Factures non envoyées
+0470	S	Feuillet T4A
+0471	S	Identifiant entreprise
+0472	S	Identifiant unique
+0473	S	Impayées
+0474	S	Mot de passe admin
+0475	S	Nom d'utilisateur admin
+0476	S	Nom de l'entreprise
+0477	S	Nombre de visites
+0478	S	Non envoyées
+0479	S	PDF Récapitulatif
+0480	S	PDFs fusionnés
+0481	S	PDFs séparés (ZIP)
+0482	S	Payeur
+0483	S	Payées
+0484	S	Prix unit.
+0485	S	Période
+0486	S	Période (AAAA-MM)
+0487	S	Qté
+0488	S	Regrouper (totaux seuls)
+0489	S	SUPPRIMER
+0490	S	Se connecter
+0491	S	Semaines non validées
+0492	S	Statistiques
+0493	S	Suppression définitive
+0494	S	TOTAL AVOIR
+0495	S	Total TTC
+0496	S	⏳ Semaines non validées
+0497	S	⚡ Suggérer les montants
+0498	S	✎ Modifier
+0499	S	⬇ Télécharger
+0500	S	👁 Visualiser PDF
+0501	S	💾 Enregistrer
+0502	S	📄 Générer le PDF
+0503	S	📋 Avoir
+0504	S	📤 Enregistrer et envoyer
+0505	S	📧 Enregistrer et envoyer
+0506	S	📧 Envoyer la facture
+0507	S	🔄 Statut seulement
+0508	S	🔍 Calculer
+0509	S	🖨 Aperçu PDF
+0510	S	🗑 Supprimer
+0511	S	Aucune facture ne correspond aux filtres.
+0512	S	Basée sur
+0513	S	Choisissez une période/statut puis cliquez sur Rechercher.
+0514	S	Date d'envoi
+0515	S	Factures sélectionnées en ZIP
+0516	S	Factures sélectionnées → un seul PDF (ZIP)
+0517	S	Génération…
+0518	S	Imprimer les factures sélectionnées
+0519	S	Non payées
+0520	S	N° Facture
+0521	S	Ouvre l’impression de toutes les factures (un seul document)
+0522	S	Sélectionnez une période, un statut, puis téléchargez.
+0523	S	Toutes les factures à la suite dans un seul PDF, compressé en ZIP
+0524	S	Téléchargement des factures
+0525	S	Télécharger ▾
+0526	S	Un PDF par facture (avec ses avoirs), regroupés dans un ZIP
+0527	S	— les avoirs liés sont inclus automatiquement dans le PDF de chaque facture
+0528	S	0 ? checkedRows.length + ' facture(s)' : 'les factures' }}
+0529	S	Aucune compagnie éligible pour cette période
+0530	S	Chargement des données...
+0531	S	En attente de validation
+0532	S	Facturation bloquée — des semaines ne sont pas encore validées
+0533	S	Facturation par pointages
+0534	S	Facturé à l'heure
+0535	S	Générez des factures à partir des heures validées par l'administrateur
+0536	S	Jours planifiés / Prix
+0537	S	Montant brut
+0538	S	Résultat
+0539	S	Sous-total
+0540	S	TPS (5 %)
+0541	S	TVQ (9,975 %)
+0542	S	Toutes les semaines ont été validées
+0543	S	Visites
+0544	S	Visites / Prix
+0545	S	⚠ Date de début Semaine 1 manquante
+0546	S	⚠️ Écart détecté sur au moins une compagnie (symbole ✕ rouge) — revérifiez la facture avant de la générer : le montant ou le nombre de visites ne correspond pas au planning.
+0547	S	Chargement tarif...
+0548	S	Date :
+0549	S	FACTURE
+0550	S	FACTURÉ À
+0551	S	Numéro :
+0552	S	Période :
+0553	S	Sélectionnez une compagnie pour créer une facture
+0554	S	TOTAL
+0555	S	À la sauvegarde
+0556	S	"Mettre à jour le statut" n'envoie aucun courriel — à utiliser seulement si la facture a déjà été transmise autrement.
+0557	S	+ Ligne
+0558	S	+ Nouvelle facture
+0559	S	/ page
+0560	S	Afficher
+0561	S	Aucun fichier attaché
+0562	S	Aucune facture trouvée
+0563	S	Cette action est irréversible.
+0564	S	Chargement des factures...
+0565	S	Créer la première facture
+0566	S	Créer un avoir
+0567	S	Facture non envoyée
+0568	S	Fermer
+0569	S	Fichier joint
+0570	S	Gestion des factures
+0571	S	Impossible de charger cette facture.
+0572	S	Mettre à jour le statut (sans courriel) ou envoyer réellement la facture ?
+0573	S	Paiement
+0574	S	Que voulez-vous faire pour la facture
+0575	S	Statut envoi
+0576	S	Supprimer définitivement cette facture ?
+0577	S	TOTAL TTC
+0578	S	de
+0579	S	⏳ Non envoyée
+0580	S	✓ Envoyée
+0581	S	📧 Envoyer
+0582	S	🔄 Mettre à jour le statut
+0583	S	🔍 Filtrer
+0584	S	🗑 Confirmer la suppression
+0585	S	🗑 Supprimer l'avoir
+0586	S	AVOIR
+0587	S	Ajoutez une ou plusieurs périodes.
+0588	S	Appliquer
+0589	S	Appliquez un filtre pour charger les factures.
+0590	S	Aucun résultat.
+0591	S	CSV récapitulatif
+0592	S	Confirmer
+0593	S	Données brutes des factures sélectionnées (séparateur ;)
+0594	S	Excel récapitulatif
+0595	S	Montant HT
+0596	S	Par date de création
+0597	S	Par période
+0598	S	Période(s) — sélectionnez et cliquez Appliquer
+0599	S	Rapport de factures
+0600	S	Sélectionner des compagnies
+0601	S	Sélectionnez un filtre, choisissez les factures et exportez.
+0602	S	Tableau consolidé de toutes les factures sélectionnées
+0603	S	Tableau des factures sélectionnées, modifiable dans Excel
+0604	S	Toutes — Modifier ▾
+0605	S	Un seul fichier PDF contenant chaque facture complète
+0606	S	Une archive ZIP avec un PDF par facture
+0607	S	(inactif)
+0608	S	+ Ajouter une pièce jointe
+0609	S	Appuyez sur
+0610	S	Aucun courriel
+0611	S	Aucune facture à envoyer
+0612	S	Client à jour · aucune facture impayée
+0613	S	Contacts de la compagnie
+0614	S	Factures impayées incluses dans le message
+0615	S	Génération du PDF…
+0616	S	La génération du PDF a échoué.
+0617	S	Message
+0618	S	Numéro
+0619	S	Ouvrir ↗
+0620	S	PDF
+0621	S	Pièce jointe
+0622	S	Régénérer
+0623	S	Sélectionnez une facture pour composer le courriel
+0624	S	pour ajouter un destinataire.
+0625	S	pour ce client — numéros inclus dans le message automatique.
+0626	S	Ce que TimeGuard fait pour vous
+0627	S	Créer mon espace gratuitement
+0628	S	Créer un espace
+0629	S	Démarrer en trois étapes
+0630	S	Essai gratuit — aucune carte bancaire requise.
+0631	S	J'ai déjà un compte
+0632	S	L'inscription prend deux minutes ; votre espace est utilisable dès sa validation. Il fonctionne sur ordinateur et sur téléphone, et s'installe sur l'écran d'accueil.
+0633	S	La page d'accueil : ce qui demande votre attention aujourd'hui. Données d'exemple.
+0634	S	Le pointage, la facturation et la paie de votre entreprise de services, au même endroit.
+0635	S	Prêt à essayer ?
+0636	S	TimeGuard suit les journées travaillées chez chaque client, en tire vos factures et calcule ce que vous devez à vos employés. Vous arrêtez de recopier d'un tableur à l'autre.
+0637	S	© TimeGuard
+0638	S	Code de vérification
+0639	S	Connexion
+0640	S	Connexion...
+0641	S	Découvrir TimeGuard
+0642	S	Gestion des présences et pointages
+0643	S	Ouvrez votre application d'authentification et saisissez le code affiché pour TimeGuard.
+0644	S	Pas encore de compte ?
+0645	S	Votre session a expiré. Reconnectez-vous pour revenir à la page où vous étiez.
+0646	S	→ Se connecter
+0647	S	La page demandée n'existe pas ou a été déplacée.
+0648	S	Page introuvable
+0649	S	→ Retour à l'accueil
+0650	S	Actives
+0651	S	Aucune description
+0652	S	Aucune note ne correspond aux filtres
+0653	S	Aucune note pour le moment
+0654	S	Cliquez sur un titre pour afficher sa description
+0655	S	Inactives
+0656	S	Tous les statuts
+0657	S	＋ Nouvelle note
+0658	S	🔍 Recherche
+0659	S	Gestion hebdomadaire des présences par compagnie
+0660	S	Pointage Employé
+0661	S	↓ Exporter
+0662	S	+ Nouveau provider
+0663	S	Administrateurs
+0664	S	Aucun administrateur
+0665	S	Aucun provider
+0666	S	Chargement des employés…
+0667	S	Courriel du propriétaire *
+0668	S	Créer une nouvelle entreprise cliente
+0669	S	Créé le
+0670	S	Employé *
+0671	S	Enterprise
+0672	S	Gestion des providers
+0673	S	Inactifs
+0674	S	Informations compagnie
+0675	S	Mot de passe *
+0676	S	Mot de passe admin *
+0677	S	Nom de l'entreprise *
+0678	S	Nouveau provider
+0679	S	Plan
+0680	S	Pro
+0681	S	Propriétaire
+0682	S	Slug (identifiant) *
+0683	S	Starter
+0684	S	Super Admin
+0685	S	Sélectionnez un provider pour voir les détails
+0686	S	Username *
+0687	S	Username admin *
+0688	S	✓ Créer l'administrateur
+0689	S	✓ Créer le provider
+0690	S	👤 Administrateurs
+0691	S	🔗 Ouvrir
+0692	S	🗑 Suppression définitive
+0693	S	1. Choisir l’élément
+0694	S	Action irréversible.
+0695	S	Conservé, mais la référence est retirée
+0696	S	Entreprise
+0697	S	Fichiers effacés du disque
+0698	S	Les données et les fichiers supprimés ne peuvent pas être récupérés depuis l’application (seule une sauvegarde de la base de données le permettrait).
+0699	S	Pour confirmer, saisissez
+0700	S	Supprime une facture, un employé ou une compagnie et toutes leurs références, ou les paiements d’un employé (une semaine, ou une ligne de l’historique) — sans retour possible.
+0701	S	Supprimé
+0702	S	enregistrement(s) et
+0703	S	fichier(s)/dossier(s) seront supprimés.
+0704	S	i.samples.length ? '…' : '' }}
+0705	S	Création en cours…
+0706	S	Déjà un compte ?
+0707	S	Essai gratuit — aucune carte bancaire requise
+0708	S	Redirection vers la connexion…
+0709	S	Utilisé à la connexion — lettres, chiffres et tirets uniquement
+0710	S	Votre espace sera utilisable dès qu'il aura été validé par l'administrateur de la plateforme. Vous pourrez alors vous connecter avec l'identifiant et le mot de passe choisis.
+0711	S	→ Créer mon espace
+0712	S	Choisissez le mot de passe de votre compte
+0713	S	Confirmer le mot de passe
+0714	S	Identifiant utilisateur
+0715	S	Mise à jour...
+0716	S	Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.
+0717	S	Vérification du lien…
+0718	S	→ Aller à la connexion
+0719	S	→ Mettre à jour le mot de passe
+0720	S	→ Retour à la connexion
+0721	S	✓ Mot de passe mis à jour
+0722	S	Aucune ligne pour cette période : le montant est de 0,00 $.
+0723	S	Aucune semaine validée pour cette période.
+0724	S	Dates travaillées
+0725	S	Détail compagnie
+0726	S	Visites validées
+0727	S	Aucune visite pour cette période.
+0728	S	Dates de visite
+0729	S	Détail employé
+0730	S	Journée non payée
+0731	S	Journée payée
+0732	S	Paiement total
+0733	S	Payée = sa paie est entièrement couverte par des versements marqués « transférés ». Montants avant taxes.
+0734	S	Visites totales
+0735	S	(argent réellement entré et sorti pendant la période)
+0736	S	(date de paiement dans la période)
+0737	S	(dépensées dans la période, avec taxes)
+0738	S	(sans taxes)
+0739	S	(total théorique à facturer / factures réellement envoyées)
+0740	S	(totaux de la période)
+0741	S	(versements transférés, date de paiement dans la période)
+0742	S	1 ? 's' : '' }} dans la période.
+0743	S	1 ? 's' : '' }} dont la date de paiement est dans la période.
+0744	S	Aucun paiement employé transféré pendant cette période.
+0745	S	Aucun pointage pour cette période.
+0746	S	Aucune charge pour cette période.
+0747	S	Aucune compagnie à comparer pour cette période.
+0748	S	Aucune facture payée pendant cette période.
+0749	S	Aucune facture pour cette période.
+0750	S	Aucune ligne de relevé bancaire chargée pour cette période (Finances → Relevé bancaire).
+0751	S	Charge
+0752	S	Charges ponctuelles créées dans la période et charges mensuelles (une fois par mois).
+0753	S	Compagnie / N° facture
+0754	S	Comparaison de facturation
+0755	S	Créée le
+0756	S	Dépensé
+0757	S	Dépensé (avec taxes)
+0758	S	Détail ↗
+0759	S	Encaissé (TTC)
+0760	S	Encaissé (avec taxes)
+0761	S	Encaissé − paiements − charges
+0762	S	Factures :
+0763	S	Factures envoyées
+0764	S	Factures par compagnie
+0765	S	Factures payées
+0766	S	Facturé
+0767	S	Facturée
+0768	S	Global
+0769	S	Le détail est masqué : décochez « Regrouper (totaux seuls) » pour afficher les paiements employés et les factures par compagnie.
+0770	S	Montant envoyé
+0771	S	Montants
+0772	S	Non payée
+0773	S	N° facture
+0774	S	Par compagnie
+0775	S	Par compagnie : théorique à facturer comparé aux factures envoyées, sans taxes. Pareil en vert, différent en rouge.
+0776	S	Payé le
+0777	S	Payée
+0778	S	Payée le
+0779	S	Registre bancaire
+0780	S	Revenus par employé et par compagnie
+0781	S	Sans taxes
+0782	S	Semaine du
+0783	S	Solde de la période
+0784	S	Statut du paiement
+0785	S	Théorique : planning des compagnies actives sur la période. Envoyées : factures de la période marquées envoyées, avoirs déduits. Écart positif = reste à facturer ; écart négatif = facturé au-delà du planning.
+0786	S	Théorique à facturer
+0787	S	Total HT
+0788	S	Total théorique à facturer comparé au total des factures envoyées, sans et avec taxes
+0789	S	Transféré (avec taxes)
+0790	S	Voir le détail ↗
+0791	S	Écart
+0792	S	Écart (théorique − envoyé)
+0793	S	Émise le
+0794	S	Adresse du payeur
+0795	S	Bénéficiaire
+0796	S	Case 012 — N° d'assurance sociale
+0797	S	Case 013 — N° de compte du bénéficiaire
+0798	S	Case 015 — Code prestations dentaires (payeur)
+0799	S	Case 016 — Prestations de retraite ou de pension
+0800	S	Case 018 — Paiement forfaitaire
+0801	S	Case 020 — Commissions
+0802	S	Case 022 — Impôt sur le revenu retenu
+0803	S	Case 024 — Rentes
+0804	S	Case 061 — Numéro de compte de programme du payeur
+0805	S	Choisir un employé...
+0806	S	Employé et année
+0807	S	Générer un feuillet T4A pour un employé et une année donnée
+0808	S	Initiale
+0809	S	Nom de famille
+0810	S	Nom du payeur
+0811	S	Prénom
+0812	S	Total des montants déclarés
+0813	S	1 ? 's' : '' }} d'équipe
+0814	S	Aucun employé.
+0815	S	Aucun responsable défini : cochez « Chef d'équipe » sur la fiche d'un responsable, puis rattachez-lui ses équipes.
+0816	S	Aucune compagnie ni pointage cette semaine.
+0817	S	Chef
+0818	S	Cliquez sur une personne pour voir son pointage (lecture seule) et ses notes.
+0819	S	Fiche
+0820	S	Mon équipe
+0821	S	Organigramme de l'entreprise : responsables, chefs d'équipe et employés.
+0822	S	Pointage
+0823	S	Rattacher →
+0824	S	Rechercher une personne
+0825	S	Responsable
+0826	S	Sans chef d'équipe
+0827	S	Tout déplier
+0828	S	Tout replier
+0829	S	Toute l'entreprise
+0830	S	Votre équipe, directe et indirecte.
+0831	S	Vous ne supervisez personne pour l'instant. Un administrateur vous rattache des membres depuis leur fiche employé (champ « Chef d'équipe »).
+0832	S	lecture seule
+0833	S	sans chef
+0834	S	· inactif
+0835	S	À rattacher à un chef d'équipe (obligatoire au prochain enregistrement de la fiche).
+0836	S	Équipe
+0837	S	— responsables
+0838	S	Retirer
+0839	S	Choix de la semaine
+0840	S	Semaine précédente
+0841	S	Semaine suivante
+0842	S	Rechercher…
+0843	S	Accueil
+0844	S	En ligne
+0845	S	Menu
+0846	S	Rechercher (Ctrl+K)
+0847	S	Version de l'application
+0848	S	Ajouter une plage (ex. après la pause)
+0849	S	Retirer cette plage
+0850	S	Fermer la recherche
+0851	S	Page, employé, compagnie, facture…
+0852	S	ACME-001
+0853	S	Acme Construction inc.
+0854	S	Date d'application (vide = toujours applicable)
+0855	S	Facultatif
+0856	S	Filtrer par statut
+0857	S	Jean Dupont
+0858	S	Jour du mois (1–31)
+0859	S	Liste des compagnies
+0860	S	Numéro du jour dans le mois
+0861	S	Rechercher une compagnie par son nom
+0862	S	Rechercher...
+0863	S	jean@exemple.com
+0864	S	/assets/logo.png
+0865	S	123 rue Principale
+0866	S	123456789 RT0001
+0867	S	1234567890 TQ0001
+0868	S	123456789RP0001
+0869	S	Banque : ...&#10;Transit : ...&#10;Folio : ...
+0870	S	Canada
+0871	S	Montréal
+0872	S	QC
+0873	S	Rammsis Cleaning...
+0874	S	contact@compagnie.com
+0875	S	info@compagnie.com
+0876	S	smtp.gmail.com
+0877	S	user@domaine.com
+0878	S	Ex. : Akram rahimi
+0879	S	Mots-clés du lexique
+0880	S	Lignes du relevé bancaire
+0881	S	Mot-clé dans toutes les colonnes…
+0882	S	Pages du relevé
+0883	S	Recherche et filtres des lignes du relevé
+0884	S	Tous les dépôts
+0885	S	Tous les liens
+0886	S	Tous les retraits
+0887	S	Toutes les dates
+0888	S	Toutes les descriptions
+0889	S	Copie générée automatiquement à partir d'une charge mensuelle
+0890	S	Ex. Assurance, Loyer, Comptabilité…
+0891	S	Optionnel
+0892	S	Titre, description, compagnie, document…
+0893	S	Nom, courriel ou téléphone
+0894	S	Choisir un employé
+0895	S	Rechercher un employé par son nom
+0896	S	Rechercher une compagnie…
+0897	S	Rechercher un employé…
+0898	S	Aide : mode de rémunération par défaut
+0899	S	Aide : numéro TPS
+0900	S	Aide : numéro TVQ
+0901	S	App 2
+0902	S	Porte bleue, 2e étage...
+0903	S	Sophie Martin
+0904	S	sophie@exemple.com
+0905	S	Ex : jdupont
+0906	S	Minimum 10 caractères
+0907	S	Rechercher par nom ou identifiant…
+0908	S	Pointage de la semaine
+0909	S	Aucun chef d'équipe : à compléter dans la fiche
+0910	S	Chargement des employés
+0911	S	Filtrer par statut de validation
+0912	S	Filtrer par état de l'employé
+0913	S	Rechercher un employé
+0914	S	Envoyer un courriel avec un lien pour choisir un nouveau mot de passe
+0915	S	Taux par défaut
+0916	S	Envoi en cours
+0917	S	Choisir des employés…
+0918	S	Ex. : premier versement, avance déjà versée, retenue matériel…
+0919	S	Type de période
+0920	S	Ex : Employés
+0921	S	Ex : Exporter
+0922	S	Ex : Superviseurs
+0923	S	Ex : employees.export
+0924	S	Filtrer par compagnie
+0925	S	Filtrer par date d'envoi (ex. 09/2026)
+0926	S	Filtrer par date de paiement (ex. 09/2026, ou — pour non payées)
+0927	S	Filtrer par numéro de facture
+0928	S	Filtrer…
+0929	S	Sélectionner toutes les factures
+0930	S	Total TTC maximum
+0931	S	Total TTC minimum
+0932	S	Téléchargement des factures sélectionnées
+0933	S	jj/mm/aaaa
+0934	S	jj/mm/aaaa ou —
+0935	S	max
+0936	S	min
+0937	S	Compagnie facturée par heure : montant = heures pointées × taux horaire client
+0938	S	Facturation bloquée
+0939	S	Renseignez « La Semaine 1 commence le » dans le planning de la compagnie
+0940	S	Sélectionner toutes les compagnies éligibles
+0941	S	Description du service...
+0942	S	Ex: Virement bancaire — Transit: 00123 Institution: 815 Compte: 1234567&#10;Chèque à l'ordre de : TimeGuard Inc.
+0943	S	Informations supplémentaires...
+0944	S	Pré-remplir depuis le tarif configuré
+0945	S	Date de début
+0946	S	Date de fin
+0947	S	Description...
+0948	S	Factures par page
+0949	S	Modifier la facture
+0950	S	Raison de l'avoir...
+0951	S	Rechercher par compagnie, numéro, montant...
+0952	S	Ajouter un destinataire manuellement…
+0953	S	Cliquer pour ouvrir le PDF
+0954	S	Retirer cette pièce jointe
+0955	S	Régénérer le message automatique
+0956	S	Sujet du courriel
+0957	S	Accès
+0958	S	Page d'accueil de TimeGuard : pointages à valider, factures en attente de paiement, paiements à transférer et charges du mois.
+0959	S	Code à 6 chiffres
+0960	S	Identifiant entreprise (ex: ramssis)
+0961	S	Description (optionnel)…
+0962	S	Description de la note
+0963	S	Employés cochés (ou l'une de leurs compagnies)
+0964	S	Rechercher (titre, description, lien, auteur)…
+0965	S	Rechercher dans les notes
+0966	S	Seul son auteur peut modifier cette note
+0967	S	Titre de la note
+0968	S	Titre de la note…
+0969	S	Tous les employés
+0970	S	Toutes les compagnies
+0971	S	Toutes les factures
+0972	S	Ex: ABC Cleaning
+0973	S	Ouvrir la compagnie avec les permissions de cet utilisateur
+0974	S	Supprimer cet administrateur
+0975	S	abc-cleaning
+0976	S	admin
+0977	S	admin@abc-cleaning.com
+0978	S	sophie.martin
+0979	S	Résultats
+0980	S	Ex: Ramssis Cleaning
+0981	S	admin@monentreprise.com
+0982	S	ramssis-cleaning
+0983	S	Compte concerné
+0984	S	Réconciliation comptable et bancaire
+0985	S	Voir le détail de l'employé (nouvel onglet)
+0986	S	1 à 5, laisser vide si non applicable
+0987	S	Couleurs des niveaux
+0988	S	Organigramme
+0989	S	Périmètre affiché
+0990	S	Rechercher une personne…
+0991	S	Semaine affichée
+0992	M	{0} · sera joint à l'enregistrement
+0993	M	{0}&nbsp;$
+0994	M	{0}&nbsp;h
+0995	M	· {0}&nbsp;$
+0996	M	{0}&nbsp;$/{1}
+0997	M	{0} Détail par compagnie
+0998	M	{0} employé(s)
+0999	M	{0} contact(s)
+1000	M	1 ? 's' : '' }} sur {0}
+1001	M	: {0} de retraits, {1} de dépôts.
+1002	M	Page {0} sur {1}
+1003	M	Total{0}
+1004	M	Documents ({0})
+1005	M	Total : {0} %
+1006	M	prochaine : {0}
+1007	M	{0}{1} charge(s) · {2} $
+1008	M	Sélectionnez {0} pour voir son historique de communication
+1009	M	{0} entrée(s)
+1010	M	{0} sur {1} entrée(s)
+1011	M	{0} entrée(s) · dernière le {1}
+1012	M	{0} compagnie(s)
+1013	M	{0} compagnie(s) assignée(s)
+1014	M	{0} compagnie(s) assignée(s) sur {1}
+1015	M	1 ? 's' : '' }} sur {0} — encore quelques réglages et votre espace est prêt.
+1016	M	1 ? 's' : '' }} · la plus ancienne : semaine du {0}
+1017	M	Charges — {0}
+1018	M	{0} $ enregistrés, pas encore envoyés aux clients.
+1019	M	{0} sem. · depuis le {1}
+1020	M	· {0} depuis plus de 30 jours
+1021	M	{0} employé(s) assigné(s)
+1022	M	{0} employé(s) assigné(s) sur {1}
+1023	M	Semaine du {0}
+1024	M	Compagnie facturée {0}.
+1025	M	Défaut compagnie : {0} $
+1026	M	Par défaut de l'employé ({0})
+1027	M	Historique des enregistrements — {0} — {1}. « Ancien » et « nouveau » montants = total versé pour la semaine, avant taxes ; « différence » = le versement.
+1028	M	TPS {0} : {1}
+1029	M	TVQ {0} : {1}
+1030	M	Versements enregistrés — {0} — {1}
+1031	M	Versé {0} sur {1}
+1032	M	dont {0} pour cette période
+1033	M	sur {0}
+1034	M	{0}{1} (reste à verser)
+1035	M	↺ Verser tout le reste ({0})
+1036	M	⚠ Les versements dépassent le total sélectionné de {0}. Recochez des journées ou annulez un versement.
+1037	M	{0} emp.
+1038	M	{0} perm.
+1039	M	Totaux — {0} facture(s) sélectionnée(s)
+1040	M	{0} / {1} facture(s) sélectionnée(s)
+1041	M	— {0} masquée(s) par les filtres
+1042	M	= {0}&nbsp;$
+1043	M	{0}&nbsp;h ×
+1044	M	Merci pour votre confiance — {0}
+1045	M	Nouvelle facture — {0}
+1046	M	Période {0}
+1047	M	{0} visite(s)
+1048	M	{0} visite(s) · {1} $
+1049	M	⚡ Pré-remplir ({0} $)
+1050	M	Détail — {0}
+1051	M	Réf. {0} — {1}
+1052	M	Voulez-vous supprimer {0}
+1053	M	{0}–{1} sur {2}
+1054	M	{0} facture(s) — {1} avoir(s) — page {2}/{3}
+1055	M	{0} sélectionnée(s) — Modifier ▾
+1056	M	Envoyer la facture {0}
+1057	M	{0} facture(s) impayée(s)
+1058	M	Notes inactives ({0})
+1059	M	{0} · lecture seule
+1060	M	Aucun résultat dans {0}.
+1061	M	Supprimer définitivement : {0}
+1062	M	Détail du calcul — période : {0}
+1063	M	{0} — lignes qui composent le montant
+1064	M	Employés et dates travaillées (semaines validées) — {0}
+1065	M	Compagnies et dates de visite — {0}
+1066	M	Aucune facture « {0} » pour cette période.
+1067	M	Factures {0} regroupées par compagnie, avec le total de chaque compagnie
+1068	M	Période : {0}
+1069	M	Aperçu — T4A {0} {1} {2}
+1070	M	Aucune note liée à {0}.
+1071	M	Aucune personne ne correspond à « {0} ».
+1072	M	Niveau {0}
+1073	M	· chef : {0}
+1074	M	· équipe : {0}
+1075	M	équipe : {0}
+1076	T	À la tâche
+1077	T	dépasse 10 Mo
+1078	T	fichier vide
+1079	T	type non autorisé (acceptés : PDF, images JPG / PNG, Word, Excel)
+1080	T	Facturation par heure : indiquez le taux horaire client (supérieur à 0).
+1081	T	Les taux horaires ne peuvent pas être négatifs.
+1082	T	employeeId manquant → pointages admin vides
+1083	T	réponse admin vide → pointages admin vides
+1084	T	employeeId manquant — aucun pointage chargé
+1085	T	save() → début
+1086	T	aoû
+1087	T	déc
+1088	T	fév
+1089	T	Non payé
+1090	T	Partiellement payé
+1091	T	Payé
+1092	T	Améthyste
+1093	T	Clair · beige et terre cuite
+1094	T	Clair · ivoire et or
+1095	T	Clair · lilas et violet
+1096	T	Clair · rose framboise
+1097	T	Forêt
+1098	T	Océan
+1099	T	Rosé
+1100	T	Sombre · bleu cyan
+1101	T	Sombre · doré
+1102	T	Sombre · gris et citron
+1103	T	Sombre · orange braise
+1104	T	Sombre · vert émeraude
+1105	T	Continuer la saisie
+1106	T	Modifications non enregistrées
+1107	T	Quitter sans enregistrer
+1108	T	Supprimer cette charge ?
+1109	T	Le fichier sera supprimé définitivement.
+1110	T	fichier introuvable
+1111	T	btn btn-outline
+1112	T	Août
+1113	T	Décembre
+1114	T	Février
+1115	T	Instructions livraison...
+1116	T	Note employé...
+1117	T	Numéro de téléphone
+1118	T	Tél
+1119	T	'Format d\'export de ' + label
+1120	T	Classeur .xlsx mis en forme
+1121	T	Document imprimable
+1122	T	Données brutes (séparateur ;)
+1123	T	les paiements employés
+1124	T	Tout sélectionner (résultats)
+1125	T	ms-item ms-all
+1126	T	éléments
+1127	T	Assigner compagnies
+1128	T	Assigner employés
+1129	T	Envoyer les factures
+1130	T	Facturer par pointages
+1131	T	Feuille de temps
+1132	T	Gérer les factures
+1133	T	Liste compagnies
+1134	T	Modifier employé
+1135	T	Nouvelle compagnie
+1136	T	Nouvelle facture
+1137	T	Pointage employé
+1138	T	Profil employé
+1139	T	Tarifs employés
+1140	T	avatar avatar-lg
+1141	T	badge badge-admin
+1142	T	badge badge-online
+1143	T	dropdown-panel user-panel
+1144	T	let it of sec.items
+1145	T	let sec of m.sections
+1146	T	mobile-link mobile-sub
+1147	T	mobile-link mobile-sub theme-opt
+1148	T	nav-dropdown user-dd
+1149	T	nav-link dropdown-btn
+1150	T	nav-link help-link
+1151	T	Note active
+1152	T	notes actives
+1153	T	Lier à des compagnies…
+1154	T	Lier à des employés…
+1155	T	Lier à des factures…
+1156	T	employés
+1157	T	Aucun résultat pour «
+1158	T	Tapez le nom d\\
+1159	T	un employé, d\\
+1160	T	earn-row earn-total
+1161	T	let co of svc.earnings()!.companies
+1162	T	val earn
+1163	T	Choisissez le chef d'équipe de cet employé.
+1164	T	field span-full
+1165	T	field span-full team-assign
+1166	T	inp inp-sel
+1167	T	— Aucun : sommet de la hiérarchie —
+1168	T	Aucune compagnie sélectionnée.
+1169	T	Erreur lors de l'ajout.
+1170	T	Erreur lors de la modification.
+1171	T	Erreur lors de la suppression.
+1172	T	Erreur lors du changement de statut.
+1173	T	Il ne recevra plus les factures.
+1174	T	Impossible de charger les contacts.
+1175	T	Le courriel du contact n’est pas valide (ex. nom@exemple.com).
+1176	T	Le nom est requis.
+1177	T	Modifications annulées
+1178	T	cette compagnie
+1179	T	Aucune modification détectée.
+1180	T	Configuration enregistrée.
+1181	T	Courriel compagnie
+1182	T	Courriel contact
+1183	T	Tél. contact
+1184	T	Téléphone compagnie
+1185	T	Version app
+1186	T	(aucun lien)
+1187	T	Fichier trop volumineux (5 Mo maximum).
+1188	T	La date de début doit être avant la date de fin.
+1189	T	Le fichier doit être un CSV (.csv).
+1190	T	Non validée
+1191	T	non validée
+1192	T	validée
+1193	T	Cette action est définitive.
+1194	T	Charge créée.
+1195	T	Charge mise à jour.
+1196	T	Charge supprimée.
+1197	T	La date de la charge est requise.
+1198	T	Le montant est requis.
+1199	T	Le titre est requis.
+1200	T	Les copies déjà générées restent ; plus aucune ne sera créée.
+1201	T	Son document sera supprimé aussi.
+1202	T	Entrée ajoutée
+1203	T	Entrée modifiée
+1204	T	Entrée supprimée
+1205	T	L'entrée en cours de saisie sera perdue.
+1206	T	La date est obligatoire.
+1207	T	Le sujet est obligatoire.
+1208	T	Sa pièce jointe sera supprimée aussi. Cette action est définitive.
+1209	T	cet employé
+1210	T	— les affectations ont été rechargées, vérifiez-les.
+1211	T	Abandonner la création ?
+1212	T	Contact non sauvegardé:
+1213	T	Indiquez le nom du contact (ou videz ses autres champs) : sans nom, le contact ne serait pas enregistré.
+1214	T	Le nom de la compagnie est requis.
+1215	T	Les informations saisies seront perdues.
+1216	T	Ajouter un employé
+1217	T	Avec ses jours de travail et ses prix.
+1218	T	Bon après-midi
+1219	T	Configurer l'envoi des courriels
+1220	T	Créer une première compagnie cliente
+1221	T	Créer une première facture
+1222	T	Impossible de charger le tableau de bord
+1223	T	Les journées travaillées servent à la paie et à la facturation.
+1224	T	Nom, adresse et numéros de taxes : ils apparaissent sur vos factures.
+1225	T	Ouvrir la configuration
+1226	T	Pour envoyer les factures aux clients directement depuis TimeGuard.
+1227	T	Puis l'assigner aux compagnies où il travaille.
+1228	T	Renseigner votre entreprise
+1229	T	Saisir un premier pointage
+1230	T	Valider les semaines
+1231	T	À partir des pointages validés.
+1232	T	Impossible de charger les compagnies.
+1233	T	Format courriel invalide.
+1234	T	Format téléphone invalide.
+1235	T	Veuillez corriger les champs en erreur.
+1236	T	Credential créé.
+1237	T	Credential supprimé.
+1238	T	Minimum 10 caractères.
+1239	T	Mot de passe : minimum 10 caractères.
+1240	T	Mot de passe réinitialisé.
+1241	T	Nom d'utilisateur requis.
+1242	T	Sélectionnez un employé.
+1243	T	réseau
+1244	T	🔓 Validation annulée.
+1245	T	Aucun employé sélectionné.
+1246	T	Modification de l'employé
+1247	T	Certains tarifs sont invalides (valeur négative ou incorrecte).
+1248	T	Impossible de charger les données de l'employé.
+1249	T	Rémunération enregistrée pour cette compagnie.
+1250	T	Taux invalide.
+1251	T	Impossible de lire la photo. Réessayez ou utilisez « + Ajouter ».
+1252	T	: reste à transférer
+1253	T	: transféré
+1254	T	Aucune journée
+1255	T	Choisissez la date de paiement.
+1256	T	Hors de la période affichée
+1257	T	Le montant avant taxes doit être supérieur à 0.
+1258	T	Non mémorisées
+1259	T	Versement remis « à transférer »
+1260	T	Clé requise.
+1261	T	Groupe enregistré.
+1262	T	Groupe supprimé.
+1263	T	Libellé requis.
+1264	T	Nouveau groupe
+1265	T	Permission ajoutée.
+1266	T	Permission supprimée.
+1267	T	Facture téléchargée (PDF).
+1268	T	Impression des factures
+1269	T	Sélectionnez au moins une facture visible.
+1270	T	Aucune compagnie en attente
+1271	T	Déjà facturée
+1272	T	Facturation depuis les pointages
+1273	T	Jours planifiés
+1274	T	Montant planifié
+1275	T	Planning incomplet
+1276	T	Écart planning
+1277	T	Ajoutez au moins une ligne de description.
+1278	T	Facture enregistrée, mais aucun contact courriel n'est configuré pour cette compagnie. Envoyez-la depuis la page « Envoyer factures ».
+1279	T	Facture enregistrée, mais l'envoi du courriel a échoué. Envoyez-la depuis la page « Envoyer factures ».
+1280	T	Impossible de charger la facture.
+1281	T	Sélectionnez une compagnie.
+1282	T	Création d'un avoir
+1283	T	Envoi de la facture
+1284	T	Envoyée
+1285	T	Fichier introuvable sur le serveur.
+1286	T	Fichier joint avec succès.
+1287	T	Impayée
+1288	T	La facture doit être envoyée avant de pouvoir être marquée payée
+1289	T	Non envoyée
+1290	T	Ouverture de la facture
+1291	T	Paiement de la facture
+1292	T	Suppression de la facture
+1293	T	décroissant
+1294	T	envoyées
+1295	T	impayée
+1296	T	impayées
+1297	T	non envoyées
+1298	T	payée
+1299	T	payées
+1300	T	Saisissez au moins une période (ex. 2026-06).
+1301	T	Sélectionnez au moins une facture.
+1302	T	Aucun contact et aucun clientEmail — destinataires vides
+1303	T	CompanyId résolu pour contacts: %s
+1304	T	Config chargée | fournisseur: %s | SMTP: %s:%s
+1305	T	Contact désélectionné: %s (%s)
+1306	T	Contact sélectionné: %s (%s)
+1307	T	Contacts chargés: %d total | actifs avec mail: %d
+1308	T	Destinataire retiré: %s | reste: %d
+1309	T	Destinataires après toggle: %o
+1310	T	Destinataires finaux: %o
+1311	T	Détail facture chargé: #%d | companyId: %s | filePath: %s | clientEmail: %s
+1312	T	Email ajouté manuellement: %s | total: %d
+1313	T	Email invalide: %s
+1314	T	Erreur chargement config
+1315	T	Erreur chargement contacts companyId=%s | HTTP %d
+1316	T	Erreur chargement détail facture #%d
+1317	T	Erreur chargement factures
+1318	T	Erreur chargement impayés
+1319	T	Erreur génération PDF #%d
+1320	T	Erreur ouverture PDF
+1321	T	Facture envoyée avec succès.
+1322	T	Factures non envoyées: %d total → %d après filtre isSent
+1323	T	Fallback clientEmail après erreur contacts: %s
+1324	T	Fallback clientEmail utilisé: %s
+1325	T	Impayés: %d trouvés pour %s
+1326	T	Impossible d'ouvrir le PDF.
+1327	T	Le message est requis.
+1328	T	Le sujet est requis.
+1329	T	PDF généré: %s
+1330	T	PDF téléchargé: %d bytes
+1331	T	Pièce jointe additionnelle ajoutée: %s (%d o)
+1332	T	Pièce jointe additionnelle retirée: %s
+1333	T	Présélection depuis query param billId=%d
+1334	T	Veuillez ajouter au moins un destinataire.
+1335	T	_loadCompanyContacts — companyId vide, contacts non chargés
+1336	T	_syncRecipientsFromContacts — aucun contact chargé
+1337	T	_syncRecipientsFromContacts — résultat: %o
+1338	T	billId=%d introuvable parmi les factures non envoyées
+1339	T	buildMessage — pas de détail facture
+1340	T	buildMessage — sujet: %s | corps: %d chars | impayés: %d
+1341	T	ngOnDestroy — suppression PDF non envoyé: %s
+1342	T	ngOnInit — chargement config + factures non envoyées
+1343	T	onExtraFileSelected — type refusé: %s (%s)
+1344	T	openAttachment — pas de détail
+1345	T	selectBill — facture déjà sélectionnée: #%d
+1346	T	selectBill — suppression ancien PDF: %s
+1347	T	selectBill — sélection: #%d %s | companyCode: %s | companyId: %s
+1348	T	send() — aucun destinataire
+1349	T	send() — aucune facture sélectionnée
+1350	T	send() — corps vide
+1351	T	send() — détail: #%s | destinataires: %o | sujet: %s | corps: %d chars
+1352	T	send() — sujet vide
+1353	T	send() — ✓ succès: %s
+1354	T	toggleContactSelection — contact sans email: %s
+1355	T	Ajoutez vos compagnies et vos employés
+1356	T	Ce qui est facturé, payé et en attente, les charges du mois et le rapprochement avec le relevé bancaire.
+1357	T	Chacun voit ce qui le concerne
+1358	T	Chaque employé saisit ses journées par compagnie. Le responsable valide la semaine en un clic.
+1359	T	Créez votre espace
+1360	T	Factures en quelques minutes
+1361	T	Le montant dû par semaine est calculé pour vous. Vous suivez les versements et ce qui reste à transférer.
+1362	T	Le nom de votre entreprise et un compte administrateur suffisent. Votre espace est activé après validation.
+1363	T	Le tableau de bord vous montre chaque jour ce qui demande votre attention.
+1364	T	Les accès se règlent par groupes et permissions. Les données de votre entreprise restent séparées des autres.
+1365	T	Les factures se créent à partir des pointages validés, avec vos prix et vos taxes, et partent par courriel.
+1366	T	Notes, pièces jointes et historique de communication : tout ce qui a été dit et envoyé reste au même endroit.
+1367	T	Paie des employés
+1368	T	Pointage simple
+1369	T	Suivi des clients et des employés
+1370	T	Un parcours « Premiers pas » vous guide sur la page d'accueil.
+1371	T	Vos chiffres, sans tableur
+1372	T	Aucune permission assignée. Contactez un administrateur.
+1373	T	Code de vérification incorrect ou déjà utilisé. Attendez le code suivant.
+1374	T	Erreur de connexion. Réessayez.
+1375	T	Identifiants incorrects.
+1376	T	Saisissez le code de vérification à 6 chiffres.
+1377	T	Trop de tentatives. Réessayez dans quelques minutes.
+1378	T	Veuillez remplir tous les champs.
+1379	T	Sans lien
+1380	T	Il ne pourra plus se connecter à cette entreprise.
+1381	T	Supprimer cet administrateur ?
+1382	T	Tous les champs sont obligatoires.
+1383	T	⛔ Provider désactivé.
+1384	T	✅ Administrateur créé.
+1385	T	✅ Administrateur supprimé.
+1386	T	✅ Provider activé.
+1387	T	✅ Provider créé avec succès.
+1388	T	Ligne d’historique de paiement
+1389	T	Nom de l’employé ou date de la semaine (ex. 2026-09-21)…
+1390	T	Nom de l’employé…
+1391	T	Nom ou code de la compagnie…
+1392	T	N° de facture, compagnie ou période (ex. 2026-09)…
+1393	T	Paiement employé (semaine)
+1394	T	votre entreprise
+1395	T	Identifiant : lettres minuscules, chiffres et tirets uniquement.
+1396	T	Le mot de passe doit contenir au moins 10 caractères.
+1397	T	Veuillez remplir tous les champs obligatoires.
+1398	T	Ce lien de réinitialisation est invalide ou a expiré.
+1399	T	Erreur lors de la mise à jour du mot de passe.
+1400	T	Les mots de passe ne correspondent pas.
+1401	T	Lien invalide : jeton manquant.
+1402	T	Plage de dates manquante.
+1403	T	Compagnie introuvable.
+1404	T	Employé introuvable.
+1405	T	Avoirs déduits.
+1406	T	Charges employés
+1407	T	Factures de la période déjà payées.
+1408	T	Factures de la période non payées.
+1409	T	Montant qui devrait être payé : semaines validées.
+1410	T	Paie de tous les pointages de la période.
+1411	T	Paiements employés effectués
+1412	T	Paiements employés à effectuer
+1413	T	Paiements marqués « transférés » dans Paiements employés.
+1414	T	Selon le planning des compagnies actives.
+1415	T	Sélectionnez les deux dates.
+1416	T	Sélectionnez une période.
+1417	T	Taxes selon le profil de chaque employé (numéro TPS / TVQ).
+1418	T	Total des factures envoyées
+1419	T	Total en attente de paiement
+1420	T	Total payé
+1421	T	Total théorique à facturer
+1422	T	Tout le théorique est facturé
+1423	T	⚖ Comparaison de facturation
+1424	T	🏦 Registre bancaire
+1425	T	📒 Registre comptable
+1426	T	Impossible d'afficher l'aperçu du PDF.
+1427	T	Indiquez une année.
+1428	T	toujours télécharger les PDF
+1429	T	'Détail — ' + m.name
+1430	T	'Fiche de ' + n.m.name
+1431	T	'Rattacher ' + m.name + ' à un chef (fiche)'
+1432	T	'Voir le pointage et les notes de ' + n.m.name
+1433	T	'node lvl-' + (n.m.depth % 5)
+1434	T	(isOpen(n) ? 'Replier' : 'Déplier') + ' l’équipe de ' + n.m.name
+1435	T	Chef d’équipe
+1436	T	Impossible de charger les notes.
+1437	T	Notes non accessibles pour cette personne.
+1438	T	btn btn-outline btn-sm
+1439	T	btn btn-sm
+1440	T	card orphan
+1441	T	pill pill-lead
+1442	T	pill pill-off
+1443	T	pill pill-top
+1444	T	stat stat-warn
+1445	T	Ce type de fichier n'est pas accepté.
+1446	T	Cet élément a été modifié entre-temps. Rechargez la page, puis réessayez.
+1447	T	Cette fonction n'est plus disponible. Rechargez la page pour utiliser la version à jour.
+1448	T	Connexion au serveur impossible. Vérifiez votre connexion Internet, puis réessayez.
+1449	T	L'élément demandé est introuvable. Il a peut-être été supprimé : rechargez la page.
+1450	T	Le fichier est trop volumineux.
+1451	T	Le serveur met trop de temps à répondre. Réessayez dans un instant.
+1452	T	Le service est momentanément indisponible (une mise à jour est peut-être en cours). Réessayez dans une minute.
+1453	T	Les informations envoyées ne sont pas valides. Vérifiez les champs, puis réessayez.
+1454	T	Trop de tentatives. Patientez un moment avant de réessayer.
+1455	T	Une erreur est survenue de notre côté. Réessayez ; si le problème continue, contactez votre administrateur.
+1456	T	Une erreur inattendue est survenue. Rechargez la page, puis réessayez.
+1457	T	Une erreur interne est survenue
+1458	T	Une erreur interne est survenue.
+1459	T	Votre session a expiré. Reconnectez-vous pour continuer.
+1460	T	Vous n'avez pas la permission d'effectuer cette action. Demandez l'accès à votre administrateur.

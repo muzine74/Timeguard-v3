@@ -5,10 +5,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin, map } from 'rxjs';
 import { EmployeesService } from '../../../state/employees/employees.service';
 import { MultiSelectComponent, MultiSelectOption } from '../../components/multi-select/multi-select.component';
-import { todayIso } from '../../shared/dates';
+import { todayIso, dateTimeLabel } from '../../shared/dates';
+import { locale } from '../../../state/i18n/i18n.service';
 import {
   EmployeePaymentsService, EmployeePaymentWeek, EmployeePaymentWorkDay, EmployeePaymentHistoryItem, EmployeePaymentInstallment,
 } from '../../../state/employee-payments/employee-payments.service';
+import { httpErrorMessage } from '../../shared/http-error';
 
 type FilterMode = 'period' | 'range';
 
@@ -199,7 +201,7 @@ export class EmployeeWorkedDaysComponent {
           this.weeks.set([]);
           this._loadedEmployees.set([]);
           this.loading.set(false);
-          this.error.set(err?.error?.message ?? `Impossible de charger les paiements (HTTP ${err?.status ?? '?'}).`);
+          this.error.set(httpErrorMessage(err, `Impossible de charger les paiements`));
         },
       });
   }
@@ -422,7 +424,7 @@ export class EmployeeWorkedDaysComponent {
         },
         error: err => this._patch(w, {
           saving: false, saveError: true, capped: w.capped,
-          saveMsg: err?.error?.message ?? `Échec de l'enregistrement (HTTP ${err?.status ?? '?'}).`,
+          saveMsg: httpErrorMessage(err, `Échec de l'enregistrement`),
         }),
       });
   }
@@ -445,7 +447,7 @@ export class EmployeeWorkedDaysComponent {
         },
         error: err => this._patch(w, {
           busyId: null, saveError: true,
-          saveMsg: err?.error?.message ?? `La modification a échoué (HTTP ${err?.status ?? '?'}).`,
+          saveMsg: httpErrorMessage(err, `La modification a échoué`),
         }),
       });
   }
@@ -468,7 +470,7 @@ export class EmployeeWorkedDaysComponent {
         },
         error: err => this._patch(w, {
           busyId: null, saveError: true,
-          saveMsg: err?.error?.message ?? `L'annulation a échoué (HTTP ${err?.status ?? '?'}).`,
+          saveMsg: httpErrorMessage(err, `L'annulation a échoué`),
         }),
       });
   }
@@ -490,7 +492,7 @@ export class EmployeeWorkedDaysComponent {
         next: list => this._patch(w, { historyLoading: false, history: list, saveMsg: this._current(w).saveMsg }),
         error: err => this._patch(w, {
           historyLoading: false, saveMsg: this._current(w).saveMsg,
-          historyError: err?.error?.message ?? `Impossible de charger l'historique (HTTP ${err?.status ?? '?'}).`,
+          historyError: httpErrorMessage(err, `Impossible de charger l'historique`),
         }),
       });
   }
@@ -513,26 +515,23 @@ export class EmployeeWorkedDaysComponent {
 
   // ── Affichage ──────────────────────────────────────────────────────────────
   weekLabel(w: WeekState): string {
-    const f = (s: string) => new Date(s + 'T00:00:00').toLocaleDateString('fr-CA', { day: 'numeric', month: 'short' });
+    const f = (s: string) => new Date(s + 'T00:00:00').toLocaleDateString(locale(), { day: 'numeric', month: 'short' });
     return `Semaine du ${f(w.weekStart)} au ${f(w.weekEnd)}`;
   }
 
   /** « 3 oct. 2026 à 12 h 40 » (heure locale) — moment d'un enregistrement. */
   paidAtLabel(iso: string): string {
-    const d = new Date(iso);
-    const date = d.toLocaleDateString('fr-CA', { day: 'numeric', month: 'short', year: 'numeric' });
-    const time = d.toLocaleTimeString('fr-CA', { hour: '2-digit', minute: '2-digit' });
-    return `${date} à ${time}`;
+    return dateTimeLabel(new Date(iso));
   }
 
   /** « 19 sept. 2026 » pour une date yyyy-MM-dd. */
   dateLabel(dateStr: string | null | undefined): string {
     if (!dateStr) return '—';
-    return new Date(dateStr + 'T00:00:00').toLocaleDateString('fr-CA', { day: 'numeric', month: 'short', year: 'numeric' });
+    return new Date(dateStr + 'T00:00:00').toLocaleDateString(locale(), { day: 'numeric', month: 'short', year: 'numeric' });
   }
 
   dayLabel(dateStr: string): string {
-    return new Date(dateStr + 'T00:00:00').toLocaleDateString('fr-CA', { weekday: 'short', day: 'numeric', month: 'short' });
+    return new Date(dateStr + 'T00:00:00').toLocaleDateString(locale(), { weekday: 'short', day: 'numeric', month: 'short' });
   }
 
   dayTooltip(d: EmployeePaymentWorkDay): string {

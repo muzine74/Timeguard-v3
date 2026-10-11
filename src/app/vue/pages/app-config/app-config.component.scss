@@ -49,6 +49,14 @@
 }
 .inp-textarea { resize: vertical; min-height: 80px; }
 
+// ── Téléphonie ───────────────────────────────────────────────────────────────
+.tel-help  { margin: 0; font-size: 12px; line-height: 1.5; color: var(--muted); }
+.tel-check { flex-direction: row; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.tel-url   { display: flex; gap: 8px; .inp { flex: 1; min-width: 0; } }
+.tel-actions { flex-direction: row; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 10px; }
+.tel-error { flex: 1 1 240px; font-size: 12px; font-weight: 600; color: var(--danger); }
+.tel-ok    { flex: 1 1 240px; font-size: 12px; font-weight: 600; color: var(--success, #2e7d32); }
+
 // ── Table fournisseur ────────────────────────────────────────────────────────
 .provider-table {
   width: 100%; border-collapse: collapse;

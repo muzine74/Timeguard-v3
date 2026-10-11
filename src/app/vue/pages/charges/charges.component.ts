@@ -6,6 +6,9 @@ import { ChargesService, ChargeItem, ChargeCompanyItem } from '../../../state/ch
 import { CompanyService, CompanySummary } from '../../../state/compagny/Company.service';
 
 import { downloadBlob } from '../../shared/download';
+import { locale } from '../../../state/i18n/i18n.service';
+import { ConfirmService } from '../../../state/ui/confirm.service';
+import { httpErrorMessage } from '../../shared/http-error';
 interface CompanyRow {
   companyId:   string;
   companyName: string;
@@ -20,6 +23,7 @@ interface CompanyRow {
     styleUrls: ['./charges.component.scss']
 })
 export class ChargesComponent implements OnInit {
+  private readonly confirmDlg = inject(ConfirmService);
   charges  = signal<ChargeItem[]>([]);
   companies = signal<CompanySummary[]>([]);
   loading  = signal(false);
@@ -126,7 +130,7 @@ export class ChargesComponent implements OnInit {
       .subscribe({
         next: list => { this.charges.set(list); this.loading.set(false); this.cdr.markForCheck(); },
         error: err => {
-          this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+          this.error.set(httpErrorMessage(err));
           this.loading.set(false);
           this.cdr.markForCheck();
         },
@@ -259,16 +263,19 @@ export class ChargesComponent implements OnInit {
         this.load();
       },
       error: err => {
-        this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.error.set(httpErrorMessage(err));
         this.saving.set(false);
         this.cdr.markForCheck();
       },
     });
   }
 
-  remove(charge: ChargeItem, event: Event): void {
+  async remove(charge: ChargeItem, event: Event): Promise<void> {
     event.stopPropagation();
-    if (!confirm(`Supprimer la charge "${charge.title}" et ses ${charge.documents.length} document(s) ?`)) return;
+    const docs = charge.documents.length;
+    const detail = (docs === 1 ? 'Son document sera supprimé aussi. ' : docs ? `Ses ${docs} documents seront supprimés aussi. ` : '')
+      + (charge.isMonthly ? 'Les copies déjà générées restent ; plus aucune ne sera créée.' : 'Cette action est définitive.');
+    if (!await this.confirmDlg.danger(`Supprimer la charge « ${charge.title} » ?`, detail)) return;
 
     this.chargesSvc.delete(charge.chargeId)
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -280,7 +287,7 @@ export class ChargesComponent implements OnInit {
           this.cdr.markForCheck();
         },
         error: err => {
-          this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+          this.error.set(httpErrorMessage(err));
           this.cdr.markForCheck();
         },
       });
@@ -303,7 +310,7 @@ export class ChargesComponent implements OnInit {
           this._reloadDocuments();
         },
         error: err => {
-          this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+          this.error.set(httpErrorMessage(err));
           this.uploading.set(false);
           input.value = '';
           this.cdr.markForCheck();
@@ -328,7 +335,7 @@ export class ChargesComponent implements OnInit {
       .subscribe({
         next: () => this._reloadDocuments(),
         error: err => {
-          this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+          this.error.set(httpErrorMessage(err));
           this.cdr.markForCheck();
         },
       });
@@ -359,10 +366,10 @@ export class ChargesComponent implements OnInit {
 
   /** Date yyyy-MM-dd affichée sans décalage de fuseau horaire. */
   fmtDay(day: string): string {
-    return day ? new Date(day + 'T12:00:00').toLocaleDateString('fr-CA', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
+    return day ? new Date(day + 'T12:00:00').toLocaleDateString(locale(), { year: 'numeric', month: 'short', day: 'numeric' }) : '';
   }
 
   fmtDate(iso: string): string {
-    return new Date(iso).toLocaleDateString('fr-CA', { year: 'numeric', month: 'short', day: 'numeric' });
+    return new Date(iso).toLocaleDateString(locale(), { year: 'numeric', month: 'short', day: 'numeric' });
   }
 }

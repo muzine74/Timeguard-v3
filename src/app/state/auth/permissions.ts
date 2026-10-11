@@ -14,6 +14,8 @@ export const PERM = {
   dataPurge:          'data.purge',
   credentialsManage:  'credentials.manage',
   paymentsManage:     'payments.manage',
+  callsMake:          'calls.make',
+  callsListen:        'calls.listen',
 } as const;
 
 export type PermKey = typeof PERM[keyof typeof PERM];

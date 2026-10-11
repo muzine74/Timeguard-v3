@@ -6,6 +6,7 @@ import { forkJoin } from 'rxjs';
 import {
   BankTransactionsService, BankLexicon, BankLexiconEntry, BankLexiconTargets, BankLinkType,
 } from '../../../../state/bank/bank-transactions.service';
+import { httpErrorMessage } from '../../../shared/http-error';
 
 export const LINK_LABEL: Record<BankLinkType, string> = { company: 'Compagnie', employee: 'Employé', charge: 'Charge' };
 export const LINK_ICON:  Record<BankLinkType, string> = { company: '🏢', employee: '👤', charge: '🧾' };
@@ -60,7 +61,7 @@ export class BankLexiconComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: r => { this.lexicon.set(r.lexicon); this.targets.set(r.targets); this.loading.set(false); },
-        error: err => { this.error.set(err?.error?.message ?? `Impossible de charger le lexique (HTTP ${err?.status ?? '?'}).`); this.loading.set(false); },
+        error: err => { this.error.set(httpErrorMessage(err, `Impossible de charger le lexique`)); this.loading.set(false); },
       });
   }
 
@@ -88,7 +89,7 @@ export class BankLexiconComponent implements OnInit {
       },
       error: err => {
         this.saving.set(false);
-        this.formError.set(err?.error?.message ?? `Le mot-clé n'a pas été enregistré (HTTP ${err?.status ?? '?'}).`);
+        this.formError.set(httpErrorMessage(err, `Le mot-clé n'a pas été enregistré`));
       },
     });
   }
@@ -107,7 +108,7 @@ export class BankLexiconComponent implements OnInit {
     this.deleting.set(e.id);
     this.svc.deleteLexiconEntry(e.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => { this.deleting.set(null); this.message.set(`Mot-clé « ${e.keyword} » supprimé.`); this._refresh(); },
-      error: err => { this.deleting.set(null); this.error.set(err?.error?.message ?? `La suppression a échoué (HTTP ${err?.status ?? '?'}).`); },
+      error: err => { this.deleting.set(null); this.error.set(httpErrorMessage(err, `La suppression a échoué`)); },
     });
   }
 

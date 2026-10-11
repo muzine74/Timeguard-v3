@@ -1,0 +1,300 @@
+0001	Preview mode	Modo vista previa	Modalità anteprima
+0002	STAGING — test environment · data copied from production · emails redirected	STAGING — entorno de prueba · datos copiados de producción · correos redirigidos	STAGING — ambiente di test · dati copiati dalla produzione · email reindirizzate
+0003	← Providers	← Proveedores	← Fornitori
+0004	Sending…	Enviando…	Invio in corso…
+0005	PDF, JPG, PNG, Word, Excel — 10 MB max.	PDF, JPG, PNG, Word, Excel — máx. 10 MB.	PDF, JPG, PNG, Word, Excel — max 10 MB.
+0006	📎 Attach a file	📎 Adjuntar un archivo	📎 Allega un file
+0007	Today	Hoy	Oggi
+0008	Target day	Día objetivo	Giorno di riferimento
+0009	Address	Dirección	Indirizzo
+0010	Confidential	Confidencial	Riservato
+0011	Credentials, contact details and address	Credenciales, datos de contacto y dirección	Credenziali, recapiti e indirizzo
+0012	Employee information	Información del empleado	Informazioni dipendente
+0013	Personal information	Información personal	Informazioni personali
+0014	Hidden	Oculto	Nascosto
+0015	✕ Cancel	✕ Cancelar	✕ Annulla
+0016	No results	Sin resultados	Nessun risultato
+0017	ADMIN	ADMIN	ADMIN
+0018	Help	Ayuda	Aiuto
+0019	Ctrl K	Ctrl K	Ctrl K
+0020	Colour theme	Tema de colores	Tema di colori
+0021	Log out	Cerrar sesión	Esci
+0022	Search	Buscar	Cerca
+0023	Log out	Cerrar sesión	Esci
+0024	TimeGuard	TimeGuard	TimeGuard
+0025	● Online	● En línea	● Online
+0026	-	-	-
+0027	Got it	Entendido	Ho capito
+0028	(today)	(hoy)	(oggi)
+0029	+ range	+ franja	+ fascia
+0030	Today	Hoy	Oggi
+0031	Check the days worked	Marque los días trabajados	Seleziona i giorni lavorati
+0032	Company	Empresa	Azienda
+0033	Companies billed per visit	Empresas por visita	Aziende a visita
+0034	Companies billed by the hour	Empresas por hora	Aziende a ore
+0035	Enter the start and end time — “+ range” for several time ranges in the day (total = sum)	Indique la hora de inicio y de fin — «+ franja» para varias franjas en el día (total = suma)	Indica l'ora di inizio e di fine — «+ fascia» per più fasce nella giornata (totale = somma)
+0036	Selected row	Fila seleccionada	Riga selezionata
+0037	Time range incomplete, reversed or overlapping another	Franja incompleta, invertida o que se solapa con otra	Fascia incompleta, invertita o sovrapposta a un'altra
+0038	Total	Total	Totale
+0039	Enter	Intro	Invio
+0040	select ·	elegir ·	scegli ·
+0041	close	cerrar	chiudi
+0042	open ·	abrir ·	apri ·
+0043	Esc	Esc	Esc
+0044	Companies	Empresas	Aziende
+0045	Unvalidated earnings	Ganancias no validadas	Guadagni non convalidati
+0046	Days / Week	Días / Semana	Giorni / Settimana
+0047	Employee timesheets	Fichajes del empleado	Timbrature dipendente
+0048	Validated by admin	Validados por admin	Convalidati dall'admin
+0049	📊 Statistics	📊 Estadísticas	📊 Statistiche
+0050	(supervises employees and/or other team leaders)	(supervisa a empleados y/u otros jefes de equipo)	(supervisiona dipendenti e/o altri capisquadra)
+0051	No team leader yet: check “Team leader” on a manager's record.	Aún no hay jefe de equipo: marque «Jefe de equipo» en la ficha de un responsable.	Nessun caposquadra per ora: seleziona «Caposquadra» nella scheda di un responsabile.
+0052	Team leader	Jefe de equipo	Caposquadra
+0053	The team leader views the timesheets and notes of their team (“Team” page).	El jefe de equipo consulta los fichajes y las notas de su equipo (página «Equipo»).	Il caposquadra consulta le timbrature e le note della sua squadra (pagina «Squadra»).
+0054	). Per-visit rates remain those of the schedule below.	). Las tarifas por visita siguen siendo las de la planificación de abajo.	). Le tariffe a visita restano quelle della pianificazione qui sotto.
+0055	+ Contact	+ Contacto	+ Contatto
+0056	+ Day	+ Día	+ Giorno
+0057	Active	Activo	Attivo
+0058	Active (included in mailings)	Activo (incluido en los envíos)	Attivo (incluso negli invii)
+0059	Cancel	Cancelar	Annulla
+0060	No contact — click “+ Contact”	Sin contactos — haga clic en «+ Contacto»	Nessun contatto — clicca su «+ Contatto»
+0061	No employee assigned to this company	Ningún empleado asignado a esta empresa	Nessun dipendente assegnato a questa azienda
+0062	Loading companies…	Cargando empresas…	Caricamento aziende…
+0063	Loading contacts…	Cargando contactos…	Caricamento contatti…
+0064	Loading...	Cargando...	Caricamento...
+0065	Co. $	Emp. $	Az. $
+0066	Click “+ Day” to add a day	Haga clic en «+ Día» para añadir un día	Clicca su «+ Giorno» per aggiungere un giorno
+0067	Code	Código	Codice
+0068	Postal code	Código postal	CAP
+0069	Company $	Empresa $	Azienda $
+0070	Contacts	Contactos	Contatti
+0071	Email	Correo	Email
+0072	Two alternating weeks	Dos semanas alternas	Due settimane alternate
+0073	As soon as the company is billed by the hour	En cuanto la empresa se factura por hora	Non appena l'azienda è fatturata a ore
+0074	Emp $	Empl. $	Dip. $
+0075	Employee $	Empleado $	Dipendente $
+0076	Associated employees	Empleados asociados	Dipendenti associati
+0077	Employees → Employee rates	Empleados → Tarifas de empleados	Dipendenti → Tariffe dipendenti
+0078	Payment frequency	Frecuencia de pago	Frequenza di pagamento
+0079	Work frequency	Frecuencia de trabajo	Frequenza di lavoro
+0080	Frequencies	Frecuencias	Frequenze
+0081	Identification	Identificación	Identificazione
+0082	Inactive	Inactivo	Inattivo
+0083	General information	Información general	Informazioni generali
+0084	Day	Día	Giorno
+0085	Days 1 to 15	Días 1 a 15	Giorni da 1 a 15
+0086	Days 1 — 8	Días 1 — 8	Giorni 1 — 8
+0087	Days 9 — 15	Días 9 — 15	Giorni 9 — 15
+0088	Work days	Días de trabajo	Giorni di lavoro
+0089	Week 1 starts on	La Semana 1 empieza el	La Settimana 1 inizia il
+0090	Location	Ubicación	Ubicazione
+0091	Billing mode	Modo de facturación	Modalità di fatturazione
+0092	Edit and save the information	Modifique y guarde la información	Modifica e salva le informazioni
+0093	Name	Nombre	Nome
+0094	Note	Nota	Nota
+0095	Address note	Nota de dirección	Nota indirizzo
+0096	Notes	Notas	Note
+0097	Applicable numbers	Números aplicables	Numeri applicabili
+0098	Street no.	N.º	N. civico
+0099	Payment and work	Pago y trabajo	Pagamento e lavoro
+0100	By the hour (hours logged × client rate)	Por hora (horas fichadas × tarifa del cliente)	A ore (ore timbrate × tariffa cliente)
+0101	Per visit (schedule price)	Por visita (precio de la planificación)	A visita (prezzo della pianificazione)
+0102	Country	País	Paese
+0103	Schedule — Biweekly	Planificación — Quincenal (cada 2 semanas)	Pianificazione — Bisettimanale
+0104	Schedule — Twice monthly	Planificación — Bimensual	Pianificazione — Bimensile
+0105	Schedule — Weekly	Planificación — Semanal	Pianificazione — Settimanale
+0106	Schedule — Monthly	Planificación — Mensual	Pianificazione — Mensile
+0107	Province	Provincia	Provincia
+0108	Then every other week, starting from the Monday of that week.	Después, una semana de cada dos, a partir del lunes de esa semana.	Poi una settimana su due, a partire dal lunedì di quella settimana.
+0109	Retry	Reintentar	Riprova
+0110	Week 1	Semana 1	Settimana 1
+0111	Week 2	Semana 2	Settimana 2
+0112	Suite	Oficina	Interno
+0113	Select a company from the list	Seleccione una empresa de la lista	Seleziona un'azienda dall'elenco
+0114	GST	TPS	TPS
+0115	QST	TVQ	TVQ
+0116	Client hourly rate ($/h)	Tarifa por hora del cliente ($/h)	Tariffa oraria cliente ($/h)
+0117	Default employee hourly rate ($/h)	Tarifa por hora del empleado por defecto ($/h)	Tariffa oraria dipendente predefinita ($/h)
+0118	Taxes	Impuestos	Imposte
+0119	All	Todos	Tutti
+0120	Worked	Trabajado	Lavorato
+0121	Phone	Teléfono	Telefono
+0122	A typical week	Una semana tipo	Una settimana tipo
+0123	City	Ciudad	Città
+0124	or	o	o
+0125	the employee is paid by the hour, time is logged in hours (start / end). The default employee rate applies to hourly employees without a specific rate (	el empleado cobra por hora, el fichaje se hace en horas (inicio / fin). La tarifa de empleado por defecto se aplica a los empleados por hora sin tarifa específica (	il dipendente è pagato a ore, la timbratura avviene in ore (inizio / fine). La tariffa dipendente predefinita vale per i dipendenti a ore senza tariffa specifica (
+0126	● Unsaved changes	● Cambios sin guardar	● Modifiche non salvate
+0127	⚠ Required: without this date, the scheduled days cannot be calculated.	⚠ Obligatorio: sin esta fecha no se pueden calcular los días planificados.	⚠ Da compilare: senza questa data i giorni pianificati non possono essere calcolati.
+0128	✓ Save	✓ Guardar	✓ Salva
+0129	Street address	Dirección postal	Indirizzo civico
+0130	Previous value	Valor anterior	Valore precedente
+0131	Application	Aplicación	Applicazione
+0132	Field	Campo	Campo
+0133	Settings	Configuración	Configurazione
+0134	Confirm the changes	Confirmar los cambios	Conferma le modifiche
+0135	Contact	Contacto	Contatto
+0136	Bank details	Datos bancarios	Coordinate bancarie
+0137	Payment details	Datos de pago	Dati di pagamento
+0138	Email (SMTP)	Correo (SMTP)	Email (SMTP)
+0139	Save	Guardar	Salva
+0140	Logo (path or URL)	Logotipo (ruta o URL)	Logo (percorso o URL)
+0141	Password	Contraseña	Password
+0142	New value	Nuevo valor	Nuovo valore
+0143	Payer's program account number	Número de cuenta de programa del pagador	Numero di conto di programma del pagatore
+0144	GST no.	N.º TPS	N. TPS
+0145	QST no.	N.º TVQ	N. TVQ
+0146	Global application settings	Parámetros globales de la aplicación	Impostazioni globali dell'applicazione
+0147	Port	Puerto	Porta
+0148	Server	Servidor	Server
+0149	GST rate (%)	Tasa TPS (%)	Aliquota TPS (%)
+0150	QST rate (%)	Tasa TVQ (%)	Aliquota TVQ (%)
+0151	User	Usuario	Utente
+0152	Version	Versión	Versione
+0153	Actions	Acciones	Azioni
+0154	Add a keyword	Añadir una palabra clave	Aggiungi una parola chiave
+0155	No keyword yet. Add one above, or start from a description below.	Aún no hay palabras clave. Añada una arriba o parta de una descripción de abajo.	Nessuna parola chiave per ora. Aggiungine una qui sopra o parti da una descrizione qui sotto.
+0156	No item of this type exists yet.	Aún no existe ningún elemento de este tipo.	Non esiste ancora alcun elemento di questo tipo.
+0157	Loading…	Cargando…	Caricamento…
+0158	Choose…	Elegir…	Scegli…
+0159	Click “Use” to take a description as a keyword, then shorten it if needed.	Haga clic en «Usar» para tomar una descripción como palabra clave y acórtela si es necesario.	Clicca su «Usa» per riprendere una descrizione come parola chiave, poi accorciala se serve.
+0160	Lexicon	Léxico	Lessico
+0161	Keyword	Palabra clave	Parola chiave
+0162	Keyword in the description	Palabra clave en la descripción	Parola chiave nella descrizione
+0163	Lexicon keywords and the item each one is linked to	Palabras clave del léxico y elemento al que está vinculada cada una	Parole chiave del lessico ed elemento a cui ciascuna è collegata
+0164	Link to	Vincular a	Collega a
+0165	Linked to	Vinculado a	Collegato a
+0166	Transactions	Transacciones	Transazioni
+0167	Unlinked transactions	Transacciones sin vínculo	Transazioni senza collegamento
+0168	Type	Tipo	Tipo
+0169	A transaction is linked when its description contains the keyword (case, accents and spaces ignored). If several keywords match, the longest one wins.	Una transacción queda vinculada cuando su descripción contiene la palabra clave (se ignoran mayúsculas, acentos y espacios). Si coinciden varias palabras clave, gana la más larga.	Una transazione è collegata quando la sua descrizione contiene la parola chiave (maiuscole, accenti e spazi ignorati). Se più parole chiave corrispondono, vince la più lunga.
+0170	Use	Usar	Usa
+0171	⚠ Item deleted: keyword ignored	⚠ Elemento eliminado: palabra clave ignorada	⚠ Elemento eliminato: parola chiave ignorata
+0172	To	Hasta	Al
+0173	No row matches the search or the filters.	Ninguna fila coincide con la búsqueda o los filtros.	Nessuna riga corrisponde alla ricerca o ai filtri.
+0174	Upload a statement	Cargar un extracto	Carica un estratto conto
+0175	Upload your bank statement, then link its transactions to your companies, employees and expenses	Cargue el extracto de su banco y vincule sus transacciones a sus empresas, empleados y gastos	Carica l'estratto conto della tua banca, poi collega le transazioni ad aziende, dipendenti e spese
+0176	Columns read: 4 = date, 6 = description, 8 = withdrawal, 9 = deposit. A file already uploaded can be uploaded again without creating duplicates.	Columnas leídas: 4 = fecha, 6 = descripción, 8 = retiro, 9 = depósito. Un archivo ya cargado puede volver a cargarse sin crear duplicados.	Colonne lette: 4 = data, 6 = descrizione, 8 = prelievo, 9 = versamento. Un file già caricato può essere ricaricato senza creare duplicati.
+0177	Date	Fecha	Data
+0178	Description	Descripción	Descrizione
+0179	From	Desde	Dal
+0180	Deposit	Depósito	Versamento
+0181	Deposits − withdrawals	Depósitos − retiros	Versamenti − prelievi
+0182	CSV file	Archivo CSV	File CSV
+0183	Rows	Filas	Righe
+0184	Saved bank statement rows. Click a header to sort.	Filas del extracto bancario guardadas. Haga clic en un encabezado para ordenar.	Righe dell'estratto conto salvate. Clicca su un'intestazione per ordinare.
+0185	Saved rows	Filas guardadas	Righe salvate
+0186	Linked to	Vinculado a	Collegato a
+0187	Search	Búsqueda	Ricerca
+0188	Bank statement	Extracto bancario	Estratto conto
+0189	Linked	Vinculadas	Collegate
+0190	Withdrawal	Retiro	Prelievo
+0191	Reset	Restablecer	Reimposta
+0192	Next ›	Siguiente ›	Successivo ›
+0193	Total deposits	Total de depósitos	Totale versamenti
+0194	Total withdrawals	Total de retiros	Totale prelievi
+0195	Show all	Mostrar todo	Mostra tutto
+0196	Validated	Validada	Convalidata
+0197	Validated	Validadas	Convalidate
+0198	‹ Previous	‹ Anterior	‹ Precedente
+0199	⬆ Upload the CSV	⬆ Cargar el CSV	⬆ Carica il CSV
+0200	🏦 Bank statement	🏦 Extracto bancario	🏦 Estratto conto
+0201	📖 Lexicon	📖 Léxico	📖 Lessico
+0202	+ New expense	+ Nuevo gasto	+ Nuova spesa
+0203	-	-	-
+0204	No document.	Ningún documento.	Nessun documento.
+0205	No expense matches the search.	Ningún gasto coincide con la búsqueda.	Nessuna spesa corrisponde alla ricerca.
+0206	No expenses. Click “New expense” to create one.	No hay gastos. Haga clic en «Nuevo gasto» para crear uno.	Nessuna spesa. Clicca su «Nuova spesa» per crearne una.
+0207	No company available.	Ninguna empresa disponible.	Nessuna azienda disponibile.
+0208	No selection = expense not tied to a company.	Sin selección = gasto no asociado a una empresa.	Nessuna selezione = spesa non associata a un'azienda.
+0209	Monthly expense	Gasto mensual	Spesa mensile
+0210	Expenses	Gastos	Spese
+0211	Check if this expense recurs every month (rent, insurance…). The amount entered is then the amount for one month.	Marque si este gasto se repite cada mes (alquiler, seguro…). El importe indicado es entonces el de un mes.	Seleziona se questa spesa ricorre ogni mese (affitto, assicurazione…). L'importo inserito è quindi quello di un mese.
+0212	Check if the amount entered already includes GST and QST. Uncheck if it is before taxes.	Marque si el importe indicado ya incluye la TPS y la TVQ. Desmarque si es sin impuestos.	Seleziona se l'importo inserito comprende già TPS e TVQ. Deseleziona se è al netto delle imposte.
+0213	Expense date	Fecha del gasto	Data della spesa
+0214	Documents	Documentos	Documenti
+0215	Clear	Borrar	Cancella
+0216	Saving…	Guardando…	Salvataggio…
+0217	Manage expenses shared between companies.	Gestione los gastos compartidos entre empresas.	Gestisci le spese condivise tra aziende.
+0218	Documents can be added once the expense has been created.	Los documentos podrán añadirse una vez creado el gasto.	I documenti potranno essere aggiunti dopo la creazione della spesa.
+0219	Amount	Importe	Importo
+0220	Max. amount	Importe máx.	Importo max.
+0221	Min. amount	Importe mín.	Importo min.
+0222	Total amount	Importe total	Importo totale
+0223	Split equally	Repartir a partes iguales	Ripartisci in parti uguali
+0224	Breakdown	Reparto	Ripartizione
+0225	Taxes included in the amount	Impuestos incluidos en el importe	Imposte incluse nell'importo
+0226	Title	Título	Titolo
+0227	All	Todas	Tutte
+0228	🔁 Expense generated automatically from a monthly expense. Editing it changes neither the monthly expense nor the other months.	🔁 Gasto generado automáticamente a partir de un gasto mensual. Modificarlo no cambia ni el gasto mensual ni los demás meses.	🔁 Spesa generata automaticamente da una spesa mensile. Modificarla non cambia né la spesa mensile né gli altri mesi.
+0229	🔁 Generated	🔁 Generado	🔁 Generata
+0230	🔁 Monthly	🔁 Mensual	🔁 Mensile
+0231	Show deactivated ones with no history	Mostrar los desactivados sin historial	Mostra i disattivati senza cronologia
+0232	No communication	Ninguna comunicación	Nessuna comunicazione
+0233	Date and time	Fecha y hora	Data e ora
+0234	Clear filters	Borrar los filtros	Cancella i filtri
+0235	Employees	Empleados	Dipendenti
+0236	Sent / call made	Enviado / llamada realizada	Inviato / chiamata fatta
+0237	Sent by TimeGuard	Enviado por TimeGuard	Inviato da TimeGuard
+0238	Communication history ·	Historial de comunicación ·	Cronologia delle comunicazioni ·
+0239	Edit	Modificar	Modifica
+0240	Origin	Origen	Origine
+0241	Received	Recibido	Ricevuto
+0242	Summary	Resumen	Riepilogo
+0243	Manual entry	Entrada manual	Inserimento manuale
+0244	Direction	Sentido	Direzione
+0245	Subject	Asunto	Oggetto
+0246	Delete	Eliminar	Elimina
+0247	Sending failed	Error de envío	Invio non riuscito
+0248	＋ Add a communication	＋ Añadir una comunicación	＋ Aggiungi una comunicazione
+0249	Select an employee to manage their companies	Seleccione un empleado para gestionar sus empresas	Seleziona un dipendente per gestire le sue aziende
+0250	— Select an employee —	— Seleccionar un empleado —	— Seleziona un dipendente —
+0251	● Not saved	● Sin guardar	● Non salvato
+0252	✓ Save	✓ Guardar	✓ Salva
+0253	Day of the month:	Día del mes:	Giorno del mese:
+0254	Days 1 to 15 of the month	Días 1 a 15 del mes	Giorni da 1 a 15 del mese
+0255	New company	Nueva empresa	Nuova azienda
+0256	Person in charge (optional — other contacts can be added later on the record)	Persona responsable (opcional — después se pueden añadir otros contactos en la ficha)	Persona responsabile (facoltativo — altri contatti si aggiungono poi nella scheda)
+0257	Fill in the information to create a new company	Rellene la información para crear una nueva empresa	Compila le informazioni per creare una nuova azienda
+0258	✓ Add	✓ Añadir	✓ Aggiungi
+0259	-	-	-
+0260	-	-	-
+0261	-	-	-
+0262	Quick access	Acceso rápido	Accesso rapido
+0263	No sent invoice is awaiting payment.	Ninguna factura enviada está pendiente de pago.	Nessuna fattura inviata è in attesa di pagamento.
+0264	Loading the dashboard…	Cargando el panel…	Caricamento della dashboard…
+0265	Send invoices →	Enviar las facturas →	Invia le fatture →
+0266	Invoices awaiting payment	Facturas pendientes de pago	Fatture in attesa di pagamento
+0267	Invoices to send	Facturas por enviar	Fatture da inviare
+0268	Employee payments to transfer	Pagos a empleados por transferir	Pagamenti dipendenti da trasferire
+0269	Timesheets to validate	Fichajes por validar	Timbrature da convalidare
+0270	Getting started	Primeros pasos	Primi passi
+0271	All recorded payments have been transferred.	Todos los pagos registrados están transferidos.	Tutti i versamenti registrati sono trasferiti.
+0272	All saved invoices have been sent.	Todas las facturas registradas están enviadas.	Tutte le fatture registrate sono inviate.
+0273	All completed weeks are validated.	Todas las semanas terminadas están validadas.	Tutte le settimane concluse sono convalidate.
+0274	Validate weeks →	Validar las semanas →	Convalida le settimane →
+0275	View expenses →	Ver los gastos →	Vedi le spese →
+0276	View invoices →	Ver las facturas →	Vedi le fatture →
+0277	View payments →	Ver los pagos →	Vedi i pagamenti →
+0278	↻ Refresh	↻ Actualizar	↻ Aggiorna
+0279	No employee available	Ningún empleado disponible	Nessun dipendente disponibile
+0280	No company	Ninguna empresa	Nessuna azienda
+0281	Select a company to manage its employees	Seleccione una empresa para gestionar sus empleados	Seleziona un'azienda per gestirne i dipendenti
+0282	— Select a company —	— Seleccionar una empresa —	— Seleziona un'azienda —
+0283	+ Add	+ Añadir	+ Aggiungi
+0284	No document	Ningún documento	Nessun documento
+0285	Optional. If the GST number is filled in, GST is added to the employee's payments in Statistics. Without a number, no GST.	Opcional. Si se indica el número TPS, la TPS se añade a los pagos del empleado en Estadísticas. Sin número, sin TPS.	Facoltativo. Se il numero TPS è compilato, la TPS viene aggiunta ai pagamenti del dipendente nelle Statistiche. Senza numero, nessuna TPS.
+0286	Optional. If the QST number is filled in, QST is added to the employee's payments in Statistics. Without a number, no QST.	Opcional. Si se indica el número TVQ, la TVQ se añade a los pagos del empleado en Estadísticas. Sin número, sin TVQ.	Facoltativo. Se il numero TVQ è compilato, la TVQ viene aggiunta ai pagamenti del dipendente nelle Statistiche. Senza numero, nessuna TVQ.
+0287	Files attached to the employee	Archivos adjuntos al empleado	File allegati al dipendente
+0288	Employee identification	Identificación del empleado	Identificazione del dipendente
+0289	Default pay mode	Modo de remuneración por defecto	Modalità di retribuzione predefinita
+0290	SIN	NAS	NAS
+0291	Full name	Nombre completo	Nome completo
+0292	New employee	Nuevo empleado	Nuovo dipendente
+0293	GST number	Número TPS	Numero TPS
+0294	QST number	Número TVQ	Numero TVQ
+0295	By the hour (start / end time)	Por hora (hora de inicio / fin)	A ore (ora di inizio / fine)
+0296	Per visit (schedule rates)	Por visita (tarifas de la planificación)	A visita (tariffe della pianificazione)
+0297	Fill in the information to create a new employee	Rellene la información para crear un nuevo empleado	Compila le informazioni per creare un nuovo dipendente
+0298	Applies to all their companies, unless set differently for a company in Employees → Employee rates. By the hour: the employee enters their hours and is paid hours × their rate, otherwise the company's default employee rate.	Se aplica a todas sus empresas, salvo ajuste distinto para una empresa en Empleados → Tarifas de empleados. Por hora: el empleado introduce sus horas y cobra horas × su tarifa; si no, la tarifa de empleado por defecto de la empresa.	Si applica a tutte le sue aziende, salvo impostazione diversa per un'azienda in Dipendenti → Tariffe dipendenti. A ore: il dipendente inserisce le ore ed è pagato ore × la sua tariffa, altrimenti la tariffa dipendente predefinita dell'azienda.
+0299	Suite / Apt	Oficina / Apto.	Interno / App.
+0300	Finish →	Terminar →	Fine →

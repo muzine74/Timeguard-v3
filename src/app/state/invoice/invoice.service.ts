@@ -1,6 +1,8 @@
 import { Injectable, signal, isDevMode } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { tap } from 'rxjs';
+import { httpErrorMessage } from '../../vue/shared/http-error';
+import { I18nService } from '../i18n/i18n.service';
 
 // ── Modèles ───────────────────────────────────────────────────────────────────
 export interface BillLine {
@@ -134,7 +136,7 @@ export class InvoiceService {
   private log(...a: unknown[])  { if (this._dev) console.log('[InvoiceService]', ...a); }
   private warn(...a: unknown[]) { if (this._dev) console.warn('[InvoiceService]', ...a); }
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private i18n: I18nService) {}
 
   // ── Liste filtrée ─────────────────────────────────────────────────────────
   getAll(filter: BillFilter = {}) {
@@ -162,7 +164,7 @@ export class InvoiceService {
         },
         error: err => {
           this.warn('✕ GET /api/bills', err);
-          this._error.set(`HTTP ${err.status}`);
+          this._error.set(httpErrorMessage(err));
           this._loading.set(false);
         },
       }),
@@ -195,7 +197,7 @@ export class InvoiceService {
     return this.http.post<{ billIdentifier: number; billNumber: string; message: string }>('/api/bills', payload).pipe(
       tap({
         next:  res => { this.log('✓ créée:', res); this._saving.set(false); },
-        error: err => { this.warn('✕ POST /api/bills', err); this._error.set(err?.error?.message ?? `HTTP ${err.status}`); this._saving.set(false); },
+        error: err => { this.warn('✕ POST /api/bills', err); this._error.set(httpErrorMessage(err)); this._saving.set(false); },
       }),
     );
   }
@@ -207,7 +209,7 @@ export class InvoiceService {
     return this.http.put<{ message: string }>(`/api/bills/${id}`, payload).pipe(
       tap({
         next:  res => { this.log('✓ mise à jour:', res); this._saving.set(false); },
-        error: err => { this.warn(`✕ PUT /api/bills/${id}`, err); this._error.set(err?.error?.message ?? `HTTP ${err.status}`); this._saving.set(false); },
+        error: err => { this.warn(`✕ PUT /api/bills/${id}`, err); this._error.set(httpErrorMessage(err)); this._saving.set(false); },
       }),
     );
   }
@@ -252,7 +254,7 @@ export class InvoiceService {
     return this.http.post<{ billIdentifier: number; billNumber: string; message: string }>(`/api/bills/${id}/avoir`, payload).pipe(
       tap({
         next:  res => { this.log('✓ avoir créé:', res); this._saving.set(false); },
-        error: err => { this.warn(`✕ POST /api/bills/${id}/avoir`, err); this._error.set(err?.error?.message ?? `HTTP ${err.status}`); this._saving.set(false); },
+        error: err => { this.warn(`✕ POST /api/bills/${id}/avoir`, err); this._error.set(httpErrorMessage(err)); this._saving.set(false); },
       }),
     );
   }
@@ -262,7 +264,7 @@ export class InvoiceService {
     this.log(`exportReport(${exportType}, ${billIds.length} facture(s))`);
     return this.http.post(
       '/api/bills/report/export',
-      { billIds, exportType, filterLabel },
+      { billIds, exportType, filterLabel: this.i18n.tText(filterLabel) },
       { responseType: 'blob' as const },
     );
   }

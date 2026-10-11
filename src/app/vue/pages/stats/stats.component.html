@@ -131,18 +131,21 @@
       <!-- Factures payées dans la période -->
       <h4 class="cmp-title">Factures payées <span class="section-sub">(date de paiement dans la période)</span></h4>
       <div class="table-wrap" *ngIf="b.invoices.length > 0">
-        <table class="stats-table">
+        <table class="stats-table" *ngIf="paidInvoices() as pi">
           <thead>
             <tr>
               <th scope="col">N° facture</th>
-              <th scope="col">Compagnie</th>
+              <th scope="col" class="th-filter"><span>Compagnie</span>
+                <app-multi-select class="compact" [floating]="true" [options]="paidCompanyOptions()" [selected]="paidCompanies()"
+                                  (selectedChange)="paidCompanies.set($event)" placeholder="Toutes" plural="compagnies"
+                                  role="group" aria-label="Filtrer par compagnie"></app-multi-select></th>
               <th scope="col">Payée le</th>
               <th scope="col" class="num">Total HT</th>
               <th scope="col" class="num">Encaissé (TTC)</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let i of b.invoices">
+            <tr *ngFor="let i of pi.rows">
               <td>{{ i.billNumber }}</td>
               <td>{{ i.companyName || '—' }}</td>
               <td>{{ i.paidDate }}</td>
@@ -151,7 +154,10 @@
             </tr>
           </tbody>
           <tfoot>
-            <tr class="total-row"><td colspan="3">Total</td><td class="num">{{ fmt(b.receivedHT) }}</td><td class="num green">{{ fmt(b.received) }}</td></tr>
+            <tr class="total-row">
+              <td colspan="3">Total<ng-container *ngIf="paidCompanies().length"> — {{ pi.rows.length }} facture{{ pi.rows.length > 1 ? 's' : '' }} sur {{ b.invoices.length }}</ng-container></td>
+              <td class="num">{{ fmt(pi.ht) }}</td><td class="num green">{{ fmt(pi.ttc) }}</td>
+            </tr>
           </tfoot>
         </table>
       </div>
@@ -261,18 +267,21 @@
       </p>
 
       <!-- Détail par compagnie : factures pareilles au théorique en vert, différentes en rouge -->
-      <ng-container *ngIf="s.comparaisonFacturation as rows">
+      <ng-container *ngIf="cmpRows() as rows">
         <h4 class="cmp-title">
           Par compagnie <span class="section-sub">(sans taxes)</span>
           <span class="st st-paid">{{ sameCount() }} pareille{{ sameCount() > 1 ? 's' : '' }}</span>
           <span class="st st-unpaid">{{ rows.length - sameCount() }} différente{{ rows.length - sameCount() > 1 ? 's' : '' }}</span>
         </h4>
-        <div class="table-wrap" *ngIf="rows.length > 0">
+        <div class="table-wrap" *ngIf="rows.length > 0 || cmpCompanies().length > 0">
           <table class="stats-table cmp-table">
             <caption class="sr-only">Par compagnie : théorique à facturer comparé aux factures envoyées, sans taxes. Pareil en vert, différent en rouge.</caption>
             <thead>
               <tr>
-                <th scope="col">Compagnie</th>
+                <th scope="col" class="th-filter"><span>Compagnie</span>
+                  <app-multi-select class="compact" [floating]="true" [options]="cmpCompanyOptions()" [selected]="cmpCompanies()"
+                                  (selectedChange)="cmpCompanies.set($event)" placeholder="Toutes" plural="compagnies"
+                                  role="group" aria-label="Filtrer par compagnie"></app-multi-select></th>
                 <th scope="col">Factures envoyées</th>
                 <th scope="col" class="num">Théorique à facturer</th>
                 <th scope="col" class="num">Montant envoyé</th>
@@ -292,7 +301,7 @@
             </tbody>
           </table>
         </div>
-        <div class="empty-msg" *ngIf="rows.length === 0">Aucune compagnie à comparer pour cette période.</div>
+        <div class="empty-msg" *ngIf="rows.length === 0 && cmpCompanies().length === 0">Aucune compagnie à comparer pour cette période.</div>
       </ng-container>
     </section>
     </ng-container>
@@ -376,12 +385,15 @@
             <app-export-buttons [build]="exportInvoices" [disabled]="groups().length === 0" label="les factures par compagnie"></app-export-buttons>
           </div>
         </header>
-      <div class="table-wrap" *ngIf="groups().length > 0">
+      <div class="table-wrap" *ngIf="groups().length > 0 || invCompanies().length > 0">
         <table class="stats-table inv-table">
           <caption class="sr-only">Factures {{ statutLabel() }} regroupées par compagnie, avec le total de chaque compagnie</caption>
           <thead>
             <tr>
-              <th scope="col" [attr.aria-sort]="sort.aria('num')"><button type="button" class="th-sort" (click)="sort.toggle('num')">Compagnie / N° facture <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('num') }}</span></button></th>
+              <th scope="col" [attr.aria-sort]="sort.aria('num')"><button type="button" class="th-sort" (click)="sort.toggle('num')">Compagnie / N° facture <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('num') }}</span></button>
+                <app-multi-select class="compact" [floating]="true" [options]="invCompanyOptions()" [selected]="invCompanies()"
+                                  (selectedChange)="invCompanies.set($event)" placeholder="Toutes" plural="compagnies"
+                                  role="group" aria-label="Filtrer par compagnie"></app-multi-select></th>
               <th scope="col" [attr.aria-sort]="sort.aria('period')"><button type="button" class="th-sort" (click)="sort.toggle('period')">Période <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('period') }}</span></button></th>
               <th scope="col" [attr.aria-sort]="sort.aria('date')"><button type="button" class="th-sort" (click)="sort.toggle('date')">Émise le <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('date') }}</span></button></th>
               <th scope="col" class="num" [attr.aria-sort]="sort.aria('visits')"><button type="button" class="th-sort" (click)="sort.toggle('visits')">Visites <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('visits') }}</span></button></th>
@@ -439,7 +451,7 @@
         </table>
       </div>
       <div class="empty-msg" *ngIf="s.parCompagnie.length > 0 && groups().length === 0">
-        Aucune facture « {{ statutLabel() }} » pour cette période.
+        Aucune facture « {{ statutLabel() }} » pour {{ invCompanies().length ? 'les compagnies choisies' : 'cette période' }}.
       </div>
       <div class="empty-msg" *ngIf="s.parCompagnie.length === 0">Aucune facture pour cette période.</div>
       </section>

@@ -1,10 +1,14 @@
-import { Component, signal, computed, ChangeDetectionStrategy, HostListener, effect } from '@angular/core';
+import { Component, signal, computed, ChangeDetectionStrategy, HostListener, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../state/auth/auth.service';
 import { ConfigService } from '../../../state/config/config.service';
 import { TeamService } from '../../../state/team/team.service';
 import { ThemeService } from '../../../state/theme/theme.service';
+import { DASHBOARD_PERMS } from '../../../state/auth/auth.guard';
+import { IconComponent } from '../icon/icon.component';
+import { QuickSearchService, QuickSearchPage } from '../../../state/ui/quick-search.service';
+import { LangSwitchComponent } from '../lang-switch/lang-switch.component';
 
 interface NavItem    { label: string; icon: string; link: string; exact?: boolean; show: () => boolean; }
 interface NavSection { title?: string; items: NavItem[]; }
@@ -13,12 +17,18 @@ interface NavMenu    { id: string; label: string; sections: NavSection[]; }
 @Component({
     selector: 'app-navbar',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, RouterLink, RouterLinkActive],
+    imports: [CommonModule, RouterLink, RouterLinkActive, IconComponent, LangSwitchComponent],
     template: `
     <nav class="navbar">
       <div class="brand">
-        <span class="dot"></span>
-        <span>TimeGuard</span>
+        <a routerLink="/" class="brand-home" title="Accueil">
+          <svg class="brand-logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+            <path d="M16 2.5 27.5 6.6v8.6c0 7-4.6 12-11.5 14.6C9.100 27.2 4.500 22.200 4.500 15.200V6.600Z" fill="currentColor" opacity=".16"/>
+            <path d="M16 2.5 27.5 6.6v8.6c0 7-4.6 12-11.5 14.6C9.100 27.2 4.500 22.200 4.500 15.200V6.600Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M16 9.500v7l4.500 2.700" fill="none" stroke="currentColor" stroke-width="2.200" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>TimeGuard</span>
+        </a>
         <span class="brand-ver" *ngIf="config.appVersion() as ver" title="Version de l'application">v{{ ver }}</span>
       </div>
 
@@ -35,7 +45,7 @@ interface NavMenu    { id: string; label: string; sections: NavSection[]; }
               <div class="dropdown-section" *ngIf="sec.title">{{ sec.title }}</div>
               <a *ngFor="let it of sec.items" class="dropdown-item" [routerLink]="it.link" routerLinkActive="active"
                  [routerLinkActiveOptions]="{ exact: !!it.exact }" (click)="closeDrop()">
-                <span class="di-icon" aria-hidden="true">{{ it.icon }}</span> {{ it.label }}
+                <app-icon class="di-icon" [name]="it.icon"></app-icon> {{ it.label }}
               </a>
             </ng-container>
           </div>
@@ -43,9 +53,13 @@ interface NavMenu    { id: string; label: string; sections: NavSection[]; }
       </div>
 
       <div class="nav-right">
+        <button type="button" class="qs-open" *ngIf="!auth.isSuperUser()" (click)="search.open()"
+                aria-label="Rechercher (Ctrl+K)" title="Rechercher (Ctrl+K)">
+          <app-icon name="search"></app-icon><span class="qs-open-txt">Rechercher</span><kbd class="qs-kbd">Ctrl K</kbd>
+        </button>
         <!-- Aide (guide utilisateur, accessible à tous) -->
         <a class="nav-link help-link" routerLink="/aide" routerLinkActive="active">
-          <span aria-hidden="true">❓</span><span class="help-txt">Aide</span>
+          <app-icon name="help"></app-icon><span class="help-txt">Aide</span>
         </a>
 
         <!-- Menu utilisateur : identité, statut, design de couleurs, déconnexion -->
@@ -85,10 +99,13 @@ interface NavMenu    { id: string; label: string; sections: NavSection[]; }
               </ng-container>
             </div>
 
-            <button type="button" class="user-logout" (click)="logout()"><span aria-hidden="true">⎋</span> Se déconnecter</button>
+            <div class="dropdown-section">Langue</div>
+            <div class="lang-row"><app-lang-switch></app-lang-switch></div>
+
+            <button type="button" class="user-logout" (click)="logout()"><app-icon name="logout"></app-icon> Se déconnecter</button>
           </div>
         </div>
-        <button class="hamburger" type="button" (click)="toggleMenu()" [attr.aria-expanded]="open()" aria-label="Menu">{{ open() ? '✕' : '☰' }}</button>
+        <button class="hamburger" type="button" (click)="toggleMenu()" [attr.aria-expanded]="open()" aria-label="Menu"><app-icon [name]="open() ? 'close' : 'menu'"></app-icon></button>
       </div>
     </nav>
 
@@ -100,11 +117,11 @@ interface NavMenu    { id: string; label: string; sections: NavSection[]; }
           <div class="mobile-subsection" *ngIf="sec.title">{{ sec.title }}</div>
           <a *ngFor="let it of sec.items" class="mobile-link mobile-sub" [routerLink]="it.link" routerLinkActive="active"
              [routerLinkActiveOptions]="{ exact: !!it.exact }" (click)="closeMenu()">
-            <span aria-hidden="true">{{ it.icon }}</span> {{ it.label }}
+            <app-icon [name]="it.icon"></app-icon> {{ it.label }}
           </a>
         </ng-container>
       </ng-container>
-      <a class="mobile-link" routerLink="/aide" routerLinkActive="active" (click)="closeMenu()">❓ Aide</a>
+      <a class="mobile-link" routerLink="/aide" routerLinkActive="active" (click)="closeMenu()"><app-icon name="help"></app-icon> Aide</a>
       <div class="mobile-section-label">Design de couleurs</div>
       <div class="mobile-themes" role="radiogroup" aria-label="Design de couleurs">
         <ng-container *ngFor="let g of theme.groups">
@@ -116,6 +133,9 @@ interface NavMenu    { id: string; label: string; sections: NavSection[]; }
           </button>
         </ng-container>
       </div>
+
+      <div class="mobile-section-label">Langue</div>
+      <div class="lang-row"><app-lang-switch></app-lang-switch></div>
 
       <div class="mobile-footer">
         <span class="badge badge-admin" *ngIf="auth.canManage()">ADMIN</span>
@@ -135,56 +155,57 @@ export class NavbarComponent {
    */
   private readonly NAV_MENUS: NavMenu[] = [
     { id: 'work', label: 'Mon travail', sections: [{ items: [
-      { label: 'Feuille de temps', icon: '🕐', link: '/pointage', show: () => this.has('pointage.view') },
-      { label: 'Équipe',           icon: '👥', link: '/team',     show: () => this.team.hasTeam() || this.has('employees.view') },
-      { label: 'Notes',            icon: '📝', link: '/notes',    show: () => true },
+      { label: 'Accueil',          icon: 'home', link: '/accueil',  show: () => DASHBOARD_PERMS.some(p => this.has(p)) },
+      { label: 'Feuille de temps', icon: 'clock', link: '/pointage', show: () => this.has('pointage.view') },
+      { label: 'Équipe',           icon: 'users', link: '/team',     show: () => this.team.hasTeam() || this.has('employees.view') },
+      { label: 'Notes',            icon: 'note', link: '/notes',    show: () => true },
     ] }] },
     { id: 'manage', label: 'Gestion', sections: [
       { title: 'Personnel', items: [
-        { label: 'Nouvel employé',     icon: '＋', link: '/employees/new',        show: () => this.has('employees.create') },
-        { label: 'Modifier employé',   icon: '✎',  link: '/employees/edit',       show: () => this.has('employees.edit') },
-        { label: 'Tarifs employés',    icon: '$',  link: '/employees/pricing',    show: () => this.has('employees.edit') },
+        { label: 'Nouvel employé',     icon: 'user-plus', link: '/employees/new',        show: () => this.has('employees.create') },
+        { label: 'Modifier employé',   icon: 'edit',  link: '/employees/edit',       show: () => this.has('employees.edit') },
+        { label: 'Tarifs employés',    icon: 'dollar',  link: '/employees/pricing',    show: () => this.has('employees.edit') },
       ] },
       { title: 'Clients', items: [
-        { label: 'Liste compagnies',   icon: '☰',  link: '/companies/edit',       show: () => this.has('companies.edit') },
-        { label: 'Nouvelle compagnie', icon: '＋', link: '/companies/new',        show: () => this.has('companies.edit') },
+        { label: 'Liste compagnies',   icon: 'building',  link: '/companies/edit',       show: () => this.has('companies.edit') },
+        { label: 'Nouvelle compagnie', icon: 'plus', link: '/companies/new',        show: () => this.has('companies.edit') },
       ] },
       { title: 'Pointage', items: [
-        { label: 'Pointage employé',   icon: '☰',  link: '/employees', exact: true, show: () => this.has('employees.view') },
-        { label: 'Profil employé',     icon: '✅', link: '/employees/validation', show: () => this.has('pointage.validate') },
+        { label: 'Pointage employé',   icon: 'list',  link: '/employees', exact: true, show: () => this.has('employees.view') },
+        { label: 'Profil employé',     icon: 'user-check', link: '/employees/validation', show: () => this.has('pointage.validate') },
       ] },
       { title: 'Affectations', items: [
-        { label: 'Assigner compagnies', icon: '⇄', link: '/companies/assign',    show: () => this.has('companies.edit') },
-        { label: 'Assigner employés',   icon: '⇄', link: '/employees/assign',    show: () => this.has('employees.edit') },
+        { label: 'Assigner compagnies', icon: 'swap', link: '/companies/assign',    show: () => this.has('companies.edit') },
+        { label: 'Assigner employés',   icon: 'swap', link: '/employees/assign',    show: () => this.has('employees.edit') },
       ] },
       { title: 'Suivi', items: [
-        { label: 'Communications',      icon: '💬', link: '/communications',      show: () => this.has('companies.edit') || this.has('employees.edit') },
+        { label: 'Communications',      icon: 'message', link: '/communications',      show: () => this.has('companies.edit') || this.has('employees.edit') },
       ] },
     ] },
     { id: 'finance', label: 'Finances', sections: [
       { title: 'Facturation', items: [
-        { label: 'Gérer les factures',     icon: '☰', link: '/invoices', exact: true, show: () => this.has('invoices.view') },
-        { label: 'Nouvelle facture',       icon: '＋', link: '/invoices/new',           show: () => this.has('invoices.edit') },
-        { label: 'Facturer par pointages', icon: '🕐', link: '/invoices/from-timesheets', show: () => this.has('invoices.edit') },
-        { label: 'Envoyer les factures',   icon: '✉', link: '/invoices/send',          show: () => this.has('invoices.send') },
-        { label: 'Téléchargement des factures', icon: '📥', link: '/invoices/download', show: () => this.has('invoices.view') },
+        { label: 'Gérer les factures',     icon: 'file', link: '/invoices', exact: true, show: () => this.has('invoices.view') },
+        { label: 'Nouvelle facture',       icon: 'file-plus', link: '/invoices/new',           show: () => this.has('invoices.edit') },
+        { label: 'Facturer par pointages', icon: 'clock', link: '/invoices/from-timesheets', show: () => this.has('invoices.edit') },
+        { label: 'Envoyer les factures',   icon: 'mail', link: '/invoices/send',          show: () => this.has('invoices.send') },
+        { label: 'Téléchargement des factures', icon: 'download', link: '/invoices/download', show: () => this.has('invoices.view') },
       ] },
       { title: 'Paie', items: [
-        { label: 'Paiements employés', icon: '💰', link: '/employees/payments', show: () => this.has('payments.manage') },
-        { label: 'Feuillet T4A',       icon: '📄', link: '/employees/t4a',      show: () => this.has('employees.edit') },
-        { label: 'Charges',            icon: '🧾', link: '/charges',            show: () => this.has('invoices.view') },
-        { label: 'Relevé bancaire',    icon: '🏦', link: '/bank-statement',     show: () => this.has('payments.manage') },
+        { label: 'Paiements employés', icon: 'card', link: '/employees/payments', show: () => this.has('payments.manage') },
+        { label: 'Feuillet T4A',       icon: 'note', link: '/employees/t4a',      show: () => this.has('employees.edit') },
+        { label: 'Charges',            icon: 'bag', link: '/charges',            show: () => this.has('invoices.view') },
+        { label: 'Relevé bancaire',    icon: 'bank', link: '/bank-statement',     show: () => this.has('payments.manage') },
       ] },
       { title: 'Analyse', items: [
-        { label: 'Rapports',     icon: '📋', link: '/invoices/report', show: () => this.has('invoices.view') },
-        { label: 'Statistiques', icon: '📊', link: '/stats',           show: () => this.has('stats.view') },
+        { label: 'Rapports',     icon: 'clipboard', link: '/invoices/report', show: () => this.has('invoices.view') },
+        { label: 'Statistiques', icon: 'chart', link: '/stats',           show: () => this.has('stats.view') },
       ] },
     ] },
     { id: 'admin', label: 'Administration', sections: [{ items: [
-      { label: 'Groupes',       icon: '🔐', link: '/groups',                show: () => this.has('groups.manage') },
-      { label: 'Identifiants',  icon: '🔑', link: '/employees/credentials', show: () => this.has('credentials.manage') },
-      { label: 'Configuration', icon: '⚙',  link: '/config',                show: () => this.has('config.manage') },
-      { label: 'Suppression définitive', icon: '🗑', link: '/purge',        show: () => this.has('data.purge') },
+      { label: 'Groupes',       icon: 'lock', link: '/groups',                show: () => this.has('groups.manage') },
+      { label: 'Identifiants',  icon: 'key', link: '/employees/credentials', show: () => this.has('credentials.manage') },
+      { label: 'Configuration', icon: 'settings',  link: '/config',                show: () => this.has('config.manage') },
+      { label: 'Suppression définitive', icon: 'trash', link: '/purge',        show: () => this.has('data.purge') },
     ] }] },
   ];
 
@@ -197,6 +218,14 @@ export class NavbarComponent {
         .filter(sec => sec.items.length) }))
       .filter(m => m.sections.length);
   });
+
+  /** Pages proposées par la recherche globale : celles du menu que l'utilisateur voit. */
+  readonly searchPages = computed<QuickSearchPage[]>(() => this.menus().flatMap(m => m.sections.flatMap(sec =>
+    sec.items.map(it => ({ label: it.label, icon: it.icon, link: it.link, group: sec.title ? `${m.label} · ${sec.title}` : m.label })))));
+
+  readonly search = inject(QuickSearchService);
+  // La fenêtre de recherche (montée à la racine) reçoit les pages visibles
+  private readonly _syncSearch = effect(() => this.search.pages.set(this.searchPages()));
 
   private has(p: string): boolean { return this.auth.hasPerm(p); }
   trackMenu(_: number, m: NavMenu): string { return m.id; }

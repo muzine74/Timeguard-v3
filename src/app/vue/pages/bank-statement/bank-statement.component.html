@@ -72,7 +72,7 @@
     </div>
 
     <div class="msg msg-err" role="alert" *ngIf="error()">⚠ {{ error() }}</div>
-    <div class="loading-wrap" role="status" *ngIf="loading()"><span class="spinner"></span> Chargement…</div>
+    <div class="sk-list" role="status" *ngIf="loading()"><span class="sr-only">Chargement…</span><div class="sk-row" *ngFor="let _ of [1, 2, 3, 4, 5, 6]"><i></i><i></i><i></i></div></div>
 
     <ng-container *ngIf="!loading() && list() as l">
 

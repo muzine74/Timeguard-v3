@@ -1,0 +1,191 @@
+E	Mon travail	My work	Mi trabajo	Il mio lavoro
+E	Gestion	Management	Gestión	Gestione
+E	Finances	Finance	Finanzas	Finanze
+E	Administration	Administration	Administración	Amministrazione
+E	Personnel	Staff	Personal	Personale
+E	Clients	Clients	Clientes	Clienti
+E	Affectations	Assignments	Asignaciones	Assegnazioni
+E	Suivi	Follow-up	Seguimiento	Monitoraggio
+E	Facturation	Invoicing	Facturación	Fatturazione
+E	Paie	Payroll	Nóminas	Paghe
+E	Analyse	Analysis	Análisis	Analisi
+E	Communications	Communications	Comunicaciones	Comunicazioni
+E	Identifiants	Credentials	Credenciales	Credenziali
+E	Rapports	Reports	Informes	Report
+E	Langue	Language	Idioma	Lingua
+E	Factures	Invoices	Facturas	Fatture
+E	Facture	Invoice	Factura	Fattura
+E	Avoir	Credit note	Abono	Nota di credito
+E	Envoi	Sending	Envío	Invio
+E	Heure	Hour	Hora	Ora
+E	Visite	Visit	Visita	Visita
+E	Defaut	Default	Por defecto	Predefinito
+E	Aucun	None	Ninguno	Nessuno
+E	Autre	Other	Otro	Altro
+E	Appel	Call	Llamada	Chiamata
+E	Rencontre	Meeting	Reunión	Incontro
+E	Texto	Text message	SMS	SMS
+E	Hebdomadaire	Weekly	Semanal	Settimanale
+E	Bi-hebdomadaire	Biweekly	Cada dos semanas	Bisettimanale
+E	Bi-mensuel	Twice monthly	Bimensual	Bimensile
+E	Mensuel	Monthly	Mensual	Mensile
+E	Mensuelle	Monthly	Mensual	Mensile
+E	Ponctuelle	One-off	Puntual	Occasionale
+E	Abandonner	Abandon	Abandonar	Abbandona
+E	Bonjour	Good morning	Buenos días	Buongiorno
+E	Bonsoir	Good evening	Buenas noches	Buonasera
+E	Erreur lors de la sauvegarde	Error while saving	Error al guardar	Errore durante il salvataggio
+E	Apt / Bureau	Apt / Office	Apto. / Oficina	App. / Ufficio
+E	Permanent	Permanent	Fijo	Fisso
+E	Exporter	Export	Exportar	Esporta
+E	✕ Erreur	✕ Error	✕ Error	✕ Errore
+E	Pointez, facturez, payez	Log time, invoice, pay	Fiche, facture, pague	Timbra, fattura, paga
+E	📊 Global	📊 Overview	📊 Global	📊 Globale
+E	Déplier	Expand	Desplegar	Espandi
+E	Replier	Collapse	Plegar	Comprimi
+E	Inactive	Inactive	Inactiva	Inattiva
+E	Logo (chemin)	Logo (path)	Logotipo (ruta)	Logo (percorso)
+E	Mot de passe SMTP	SMTP password	Contraseña SMTP	Password SMTP
+E	Nom compagnie	Company name	Nombre de la empresa	Nome azienda
+E	Nom contact	Contact name	Nombre del contacto	Nome contatto
+E	Port SMTP	SMTP port	Puerto SMTP	Porta SMTP
+E	Serveur SMTP	SMTP server	Servidor SMTP	Server SMTP
+E	Taux TPS	GST rate	Tasa TPS	Aliquota TPS
+E	Taux TVQ	QST rate	Tasa TVQ	Aliquota TVQ
+E	Utilisateur SMTP	SMTP user	Usuario SMTP	Utente SMTP
+E	Braise	Ember	Brasa	Brace
+E	Ciel	Sky	Cielo	Cielo
+E	Clair · bleu	Light · blue	Claro · azul	Chiaro · blu
+E	Clair · vert d’eau	Light · sea green	Claro · verde agua	Chiaro · verde acqua
+E	Clairs	Light	Claros	Chiari
+E	Sombres	Dark	Oscuros	Scuri
+E	Graphite	Graphite	Grafito	Grafite
+E	Lavande	Lavender	Lavanda	Lavanda
+E	Menthe	Mint	Menta	Menta
+E	Nuit	Night	Noche	Notte
+E	Jour	Day	Día	Giorno
+E	Sable	Sand	Arena	Sabbia
+E	Sombre · violet	Dark · violet	Oscuro · violeta	Scuro · viola
+E	Lundi	Monday	Lunes	Lunedì
+E	Mardi	Tuesday	Martes	Martedì
+E	Mercredi	Wednesday	Miércoles	Mercoledì
+E	Jeudi	Thursday	Jueves	Giovedì
+E	Vendredi	Friday	Viernes	Venerdì
+E	Samedi	Saturday	Sábado	Sabato
+E	Dimanche	Sunday	Domingo	Domenica
+E	Lun	Mon	Lun	Lun
+E	Mar	Tue	Mar	Mar
+E	Mer	Wed	Mié	Mer
+E	Jeu	Thu	Jue	Gio
+E	Ven	Fri	Vie	Ven
+E	Sam	Sat	Sáb	Sab
+E	Dim	Sun	Dom	Dom
+E	Janvier	January	Enero	Gennaio
+E	Mars	March	Marzo	Marzo
+E	Avril	April	Abril	Aprile
+E	Mai	May	Mayo	Maggio
+E	Juin	June	Junio	Giugno
+E	Juillet	July	Julio	Luglio
+E	Septembre	September	Septiembre	Settembre
+E	Octobre	October	Octubre	Ottobre
+E	Novembre	November	Noviembre	Novembre
+E	semaine	week	semana	settimana
+E	semaines	weeks	semanas	settimane
+E	facture	invoice	factura	fattura
+E	factures	invoices	facturas	fatture
+E	· Tout est à jour.	· Everything is up to date.	· Todo está al día.	· È tutto in ordine.
+E	· 1 sujet demande votre attention.	· 1 item needs your attention.	· 1 asunto requiere su atención.	· 1 questione richiede la tua attenzione.
+E	Ouvrir l'application	Open the application	Abrir la aplicación	Apri l'applicazione
+E	Tapez le nom d'une page, d'un employé, d'une compagnie ou un numéro de facture.	Type the name of a page, an employee, a company or an invoice number.	Escriba el nombre de una página, un empleado, una empresa o un número de factura.	Digita il nome di una pagina, di un dipendente, di un'azienda o un numero di fattura.
+E	Impossible de charger les compagnies	Unable to load the companies	No se pudieron cargar las empresas	Impossibile caricare le aziende
+E	La suppression a échoué	Deletion failed	Error al eliminar	Eliminazione non riuscita
+E	Impossible de charger le lexique	Unable to load the lexicon	No se pudo cargar el léxico	Impossibile caricare il lessico
+E	Impossible de charger le relevé	Unable to load the statement	No se pudo cargar el extracto	Impossibile caricare l'estratto conto
+E	Impossible de charger l'historique	Unable to load the history	No se pudo cargar el historial	Impossibile caricare la cronologia
+E	Impossible de charger la liste	Unable to load the list	No se pudo cargar la lista	Impossibile caricare l'elenco
+E	L'annulation a échoué	Cancellation failed	Error al anular	Annullamento non riuscito
+E	La modification a échoué	The change failed	Error al modificar	Modifica non riuscita
+E	Échec de l'enregistrement	Saving failed	Error al guardar	Salvataggio non riuscito
+E	Impossible de charger les employés	Unable to load the employees	No se pudieron cargar los empleados	Impossibile caricare i dipendenti
+E	Impossible de charger les pointages	Unable to load the timesheets	No se pudieron cargar los fichajes	Impossibile caricare le timbrature
+E	Impossible de charger l'employé	Unable to load the employee	No se pudo cargar el empleado	Impossibile caricare il dipendente
+E	La sauvegarde a échoué	Saving failed	Error al guardar	Salvataggio non riuscito
+E	Erreur chargement	Loading error	Error de carga	Errore di caricamento
+E	Erreur de recherche	Search error	Error de búsqueda	Errore di ricerca
+E	Erreur export	Export error	Error de exportación	Errore di esportazione
+E	Erreur chargement tarifs	Error loading rates	Error al cargar las tarifas	Errore di caricamento delle tariffe
+E	Impossible de charger la compagnie	Unable to load the company	No se pudo cargar la empresa	Impossibile caricare l'azienda
+E	Impossible de charger les paiements	Unable to load the payments	No se pudieron cargar los pagos	Impossibile caricare i pagamenti
+E	Impossible de charger	Unable to load	No se pudo cargar	Impossibile caricare
+E	Les tarifs n'ont pas été enregistrés	The rates were not saved	Las tarifas no se guardaron	Le tariffe non sono state salvate
+E	Suppression impossible	Unable to delete	No se pudo eliminar	Impossibile eliminare
+E	Enregistrement impossible	Unable to save	No se pudo guardar	Impossibile salvare
+E	Le mot-clé n'a pas été enregistré	The keyword was not saved	La palabra clave no se guardó	La parola chiave non è stata salvata
+E	Le chargement a échoué	Loading failed	Error de carga	Caricamento non riuscito
+E	La validation n'a pas été enregistrée	The validation was not saved	La validación no se guardó	La convalida non è stata salvata
+E	L'impression a échoué	Printing failed	Error de impresión	Stampa non riuscita
+E	Le téléchargement a échoué	Download failed	Error de descarga	Download non riuscito
+E	Impossible de charger le tableau de bord	Unable to load the dashboard	No se pudo cargar el panel	Impossibile caricare la dashboard
+E	Retirer	Remove	Quitar	Rimuovi
+E	Confirmer	Confirm	Confirmar	Conferma
+E	Cette action est définitive.	This action is permanent.	Esta acción es definitiva.	Questa azione è definitiva.
+E	Il ne recevra plus les factures.	They will no longer receive invoices.	Ya no recibirá las facturas.	Non riceverà più le fatture.
+E	une compagnie	a company	una empresa	un'azienda
+E	un employé	an employee	un empleado	un dipendente
+E	Envoyé	Sent	Enviado	Inviato
+E	Courriel	Email	Correo	Email
+E	Interlocuteur	Contact person	Interlocutor	Interlocutore
+E	À	To	Para	A
+E	De	From	De	Da
+E	▸ Voir le texte	▸ Show the text	▸ Ver el texto	▸ Mostra il testo
+E	▾ Masquer le texte	▾ Hide the text	▾ Ocultar el texto	▾ Nascondi il testo
+E	Nouvelle communication	New communication	Nueva comunicación	Nuova comunicazione
+E	Modifier la communication	Edit the communication	Modificar la comunicación	Modifica la comunicazione
+E	Aucune communication enregistrée. Les courriels envoyés par TimeGuard apparaîtront ici automatiquement.	No communication recorded. Emails sent by TimeGuard will appear here automatically.	Ninguna comunicación registrada. Los correos enviados por TimeGuard aparecerán aquí automáticamente.	Nessuna comunicazione registrata. Le email inviate da TimeGuard appariranno qui automaticamente.
+E	Aucune entrée ne correspond aux filtres.	No entry matches the filters.	Ninguna entrada coincide con los filtros.	Nessuna voce corrisponde ai filtri.
+E	Nouvelle charge	New expense	Nuevo gasto	Nuova spesa
+E	Modifier la charge	Edit the expense	Modificar el gasto	Modifica la spesa
+E	taxes incluses	taxes included	impuestos incluidos	imposte incluse
+E	hors taxes	before taxes	sin impuestos	al netto delle imposte
+E	Aucune compagnie active	No active company	Ninguna empresa activa	Nessuna azienda attiva
+E	Aucune compagnie ne correspond à la recherche.	No company matches the search.	Ninguna empresa coincide con la búsqueda.	Nessuna azienda corrisponde alla ricerca.
+E	✓ Modifications sauvegardées	✓ Changes saved	✓ Cambios guardados	✓ Modifiche salvate
+P	Bonjour, {0}	Good morning, {0}	Buenos días, {0}	Buongiorno, {0}
+P	Bon après-midi, {0}	Good afternoon, {0}	Buenas tardes, {0}	Buon pomeriggio, {0}
+P	Bonsoir, {0}	Good evening, {0}	Buenas noches, {0}	Buonasera, {0}
+P	· {0} sujets demandent votre attention.	· {0} items need your attention.	· {0} asuntos requieren su atención.	· {0} questioni richiedono la tua attenzione.
+P	{0} employé{1} · la plus ancienne : semaine du {2}	{0} employee{1} · oldest: week of {2}	{0} empleado{1} · la más antigua: semana del {2}	{0} dipendent{1|e|i} · la più vecchia: settimana del {2}
+P	{0} facture{1} envoyée{2}	{0} invoice{1} sent	{0} factura{1} enviada{2}	{0} fattur{1|a|e} inviat{2|a|e}
+P	{0} versement{1} pour {2} employé{3}, enregistré{4} mais pas encore transféré{5}.	{0} payment{1} for {2} employee{3}, recorded but not yet transferred.	{0} pago{1} para {2} empleado{3}, registrado{4} pero aún no transferido{5}.	{0} versament{1|o|i} per {2} dipendent{3|e|i}, registrat{4|o|i} ma non ancora trasferit{5|o|i}.
+P	{0} charge{1} ce mois-ci	{0} expense{1} this month	{0} gasto{1} este mes	{0} spes{1|a|e} questo mese
+P	· {0} mensuelle{1} à venir d'ici la fin du mois	· {0} monthly still to come by the end of the month	· {0} mensual{1||es} por llegar antes de fin de mes	· {0} mensil{1|e|i} in arrivo entro fine mese
+P	{0} étape{1} sur {2} — encore quelques réglages et votre espace est prêt.	{0} step{1} of {2} — a few more settings and your space is ready.	{0} paso{1} de {2} — unos ajustes más y su espacio estará listo.	{0} pass{1|o|i} su {2} — ancora qualche impostazione e il tuo spazio è pronto.
+P	{0} sur {1} charge(s) · {2} $	{0} of {1} expense(s) · {2} $	{0} de {1} gasto(s) · {2} $	{0} di {1} spesa/e · {2} $
+P	{0} charge(s) · {1} $	{0} expense(s) · {1} $	{0} gasto(s) · {1} $	{0} spesa/e · {1} $
+P	Supprimer la charge « {0} » ?	Delete the expense “{0}”?	¿Eliminar el gasto «{0}»?	Eliminare la spesa «{0}»?
+P	Retirer la pièce jointe « {0} » ?	Remove the attachment “{0}”?	¿Quitar el adjunto «{0}»?	Rimuovere l'allegato «{0}»?
+P	Supprimer l'entrée « {0} » ?	Delete the entry “{0}”?	¿Eliminar la entrada «{0}»?	Eliminare la voce «{0}»?
+P	Supprimer le contact « {0} » ?	Delete the contact “{0}”?	¿Eliminar el contacto «{0}»?	Eliminare il contatto «{0}»?
+P	Ses {0} documents seront supprimés aussi. {1}	Its {0} documents will be deleted too. {1}	Sus {0} documentos también se eliminarán. {1}	Anche i suoi {0} documenti saranno eliminati. {1}
+P	Son document sera supprimé aussi. {0}	Its document will be deleted too. {0}	Su documento también se eliminará. {0}	Anche il suo documento sarà eliminato. {0}
+P	Ses {0} pièces jointes seront supprimées aussi. Cette action est définitive.	Its {0} attachments will be deleted too. This action is permanent.	Sus {0} adjuntos también se eliminarán. Esta acción es definitiva.	Anche i suoi {0} allegati saranno eliminati. Questa azione è definitiva.
+P	Les affectations non sauvegardées de « {0} » seront perdues.	The unsaved assignments of “{0}” will be lost.	Las asignaciones sin guardar de «{0}» se perderán.	Le assegnazioni non salvate di «{0}» andranno perse.
+P	Les modifications non enregistrées de « {0} » seront perdues.	The unsaved changes to “{0}” will be lost.	Los cambios sin guardar de «{0}» se perderán.	Le modifiche non salvate di «{0}» andranno perse.
+P	Aucun résultat pour « {0} ».	No result for “{0}”.	Ningún resultado para «{0}».	Nessun risultato per «{0}».
+P	Une copie de cette charge sera générée automatiquement le {0} de chaque mois{1}. Chaque copie peut ensuite être modifiée ou supprimée séparément.	A copy of this expense will be generated automatically on day {0} of each month. Each copy can then be edited or deleted separately.	Se generará automáticamente una copia de este gasto el día {0} de cada mes. Después, cada copia puede modificarse o eliminarse por separado.	Una copia di questa spesa sarà generata automaticamente il giorno {0} di ogni mese. Ogni copia può poi essere modificata o eliminata separatamente.
+P	prochaine : {0}	next: {0}	próximo: {0}	prossima: {0}
+P	Prochaine copie générée le {0}	Next copy generated on {0}	Próxima copia generada el {0}	Prossima copia generata il {0}
+P	Mise en route : {0} sur {1}	Getting started: {0} of {1}	Puesta en marcha: {0} de {1}	Avvio: {0} su {1}
+P	Mon compte — {0}	My account — {0}	Mi cuenta — {0}	Il mio account — {0}
+P	Télécharger {0}	Download {0}	Descargar {0}	Scarica {0}
+P	Retirer la pièce jointe {0}	Remove the attachment {0}	Quitar el adjunto {0}	Rimuovi l'allegato {0}
+P	Retirer le fichier {0}	Remove the file {0}	Quitar el archivo {0}	Rimuovi il file {0}
+P	{0} · dernière le {1}	{0} · last on {1}	{0} · última el {1}	{0} · ultima il {1}
+P	Entrée ajoutée, mais {0} pièce(s) jointe(s) refusée(s) — {1}	Entry added, but {0} attachment(s) refused — {1}	Entrada añadida, pero {0} adjunto(s) rechazado(s) — {1}	Voce aggiunta, ma {0} allegato/i rifiutato/i — {1}
+P	Note créée, mais {0} pièce(s) jointe(s) refusée(s) — {1}	Note created, but {0} attachment(s) refused — {1}	Nota creada, pero {0} adjunto(s) rechazado(s) — {1}	Nota creata, ma {0} allegato/i rifiutato/i — {1}
+P	Envoyé par {0}	Sent by {0}	Enviado por {0}	Inviato da {0}
+P	Saisi par {0}	Entered by {0}	Introducido por {0}	Inserito da {0}
+P	À : {0}	To: {0}	Para: {0}	A: {0}
+P	De : {0}	From: {0}	De: {0}	Da: {0}
+P	Interlocuteur : {0}	Contact person: {0}	Interlocutor: {0}	Interlocutore: {0}
+P	{0}. {1}	{0}. {1}	{0}. {1}	{0}. {1}

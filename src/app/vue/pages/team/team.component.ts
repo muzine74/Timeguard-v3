@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TeamService, TeamMember, TeamNote } from '../../../state/team/team.service';
 import { AuthService } from '../../../state/auth/auth.service';
+import { locale } from '../../../state/i18n/i18n.service';
 import { WeekService } from '../../../state/pointage/week.service';
 import { PointageEmployeeService } from '../../../state/pointage/pointage-employee.service';
 import { PointageTableComponent } from '../../components/pointage-table/pointage-table.component';
@@ -136,7 +137,7 @@ type Scope = 'all' | 'mine';
                 <span class="pill" [class.pill-lead]="n.isActive" [class.pill-off]="!n.isActive">{{ n.isActive ? 'Active' : 'Inactive' }}</span>
               </div>
               <p class="note-desc" *ngIf="n.description">{{ n.description }}</p>
-              <p class="note-meta">{{ n.createdByEmployeeName }} · {{ n.createdAt | date:'d MMM y' }}</p>
+              <p class="note-meta">{{ n.createdByEmployeeName }} · {{ noteDate(n.createdAt) }}</p>
             </li>
           </ul>
         </section>
@@ -248,6 +249,10 @@ export class TeamComponent implements OnInit {
   readonly week  = inject(WeekService);
   readonly ptEmp = inject(PointageEmployeeService);
   private destroyRef = inject(DestroyRef);
+
+  noteDate(iso: string): string {
+    return new Date(iso).toLocaleDateString(locale(), { day: 'numeric', month: 'short', year: 'numeric' });
+  }
 
   /** Organigramme complet (gestion des employés). */
   readonly canSeeAll = this.auth.hasPerm('employees.view');

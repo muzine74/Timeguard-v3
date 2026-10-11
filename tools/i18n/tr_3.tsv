@@ -1,0 +1,300 @@
+0601	Select a filter, choose the invoices and export.	Seleccione un filtro, elija las facturas y exporte.	Seleziona un filtro, scegli le fatture ed esporta.
+0602	Consolidated table of all selected invoices	Tabla consolidada de todas las facturas seleccionadas	Tabella consolidata di tutte le fatture selezionate
+0603	Table of the selected invoices, editable in Excel	Tabla de las facturas seleccionadas, editable en Excel	Tabella delle fatture selezionate, modificabile in Excel
+0604	All — Edit ▾	Todas — Modificar ▾	Tutte — Modifica ▾
+0605	A single PDF file containing each complete invoice	Un solo archivo PDF con cada factura completa	Un solo file PDF contenente ogni fattura completa
+0606	A ZIP archive with one PDF per invoice	Un archivo ZIP con un PDF por factura	Un archivio ZIP con un PDF per fattura
+0607	(inactive)	(inactivo)	(inattivo)
+0608	+ Add an attachment	+ Añadir un adjunto	+ Aggiungi un allegato
+0609	Press	Pulse	Premi
+0610	No email	Sin correo	Nessuna email
+0611	No invoice to send	Ninguna factura por enviar	Nessuna fattura da inviare
+0612	Client up to date · no unpaid invoice	Cliente al día · ninguna factura impagada	Cliente in regola · nessuna fattura non pagata
+0613	Company contacts	Contactos de la empresa	Contatti dell'azienda
+0614	Unpaid invoices included in the message	Facturas impagadas incluidas en el mensaje	Fatture non pagate incluse nel messaggio
+0615	Generating the PDF…	Generando el PDF…	Generazione del PDF…
+0616	PDF generation failed.	Error al generar el PDF.	Generazione del PDF non riuscita.
+0617	Message	Mensaje	Messaggio
+0618	Number	Número	Numero
+0619	Open ↗	Abrir ↗	Apri ↗
+0620	PDF	PDF	PDF
+0621	Attachment	Adjunto	Allegato
+0622	Regenerate	Regenerar	Rigenera
+0623	Select an invoice to compose the email	Seleccione una factura para redactar el correo	Seleziona una fattura per comporre l'email
+0624	to add a recipient.	para añadir un destinatario.	per aggiungere un destinatario.
+0625	for this client — numbers included in the automatic message.	para este cliente — números incluidos en el mensaje automático.	per questo cliente — numeri inclusi nel messaggio automatico.
+0626	What TimeGuard does for you	Lo que TimeGuard hace por usted	Cosa fa TimeGuard per te
+0627	Create my space for free	Crear mi espacio gratis	Crea il mio spazio gratis
+0628	Create a space	Crear un espacio	Crea uno spazio
+0629	Get started in three steps	Empezar en tres pasos	Inizia in tre passi
+0630	Free trial — no credit card required.	Prueba gratuita — sin tarjeta bancaria.	Prova gratuita — nessuna carta di credito richiesta.
+0631	I already have an account	Ya tengo una cuenta	Ho già un account
+0632	Signing up takes two minutes; your space is usable as soon as it is approved. It works on computer and phone, and installs on the home screen.	El registro lleva dos minutos; su espacio se puede usar en cuanto se valida. Funciona en ordenador y en teléfono, y se instala en la pantalla de inicio.	La registrazione richiede due minuti; il tuo spazio è utilizzabile appena viene approvato. Funziona su computer e telefono e si installa nella schermata Home.
+0633	The home page: what needs your attention today. Sample data.	La página de inicio: lo que requiere su atención hoy. Datos de ejemplo.	La pagina iniziale: ciò che richiede la tua attenzione oggi. Dati di esempio.
+0634	Timesheets, invoicing and payroll for your service business, all in one place.	Los fichajes, la facturación y las nóminas de su empresa de servicios, en un mismo lugar.	Timbrature, fatturazione e paghe della tua impresa di servizi, in un unico posto.
+0635	Ready to try?	¿Listo para probar?	Pronto a provare?
+0636	TimeGuard tracks the days worked at each client, turns them into your invoices and calculates what you owe your employees. You stop copying from one spreadsheet to another.	TimeGuard registra los días trabajados en cada cliente, genera sus facturas y calcula lo que debe a sus empleados. Deja de copiar de una hoja de cálculo a otra.	TimeGuard tiene traccia delle giornate lavorate presso ogni cliente, ne ricava le tue fatture e calcola quanto devi ai tuoi dipendenti. Smetti di ricopiare da un foglio di calcolo all'altro.
+0637	© TimeGuard	© TimeGuard	© TimeGuard
+0638	Verification code	Código de verificación	Codice di verifica
+0639	Log in	Iniciar sesión	Accesso
+0640	Logging in...	Conectando...	Accesso in corso...
+0641	Discover TimeGuard	Descubrir TimeGuard	Scopri TimeGuard
+0642	Attendance and timesheet management	Gestión de asistencias y fichajes	Gestione di presenze e timbrature
+0643	Open your authenticator app and enter the code shown for TimeGuard.	Abra su aplicación de autenticación e introduzca el código mostrado para TimeGuard.	Apri la tua app di autenticazione e inserisci il codice mostrato per TimeGuard.
+0644	No account yet?	¿Aún no tiene cuenta?	Non hai ancora un account?
+0645	Your session has expired. Log in again to return to the page you were on.	Su sesión ha caducado. Vuelva a conectarse para regresar a la página en la que estaba.	La sessione è scaduta. Accedi di nuovo per tornare alla pagina in cui eri.
+0646	→ Log in	→ Iniciar sesión	→ Accedi
+0647	The requested page does not exist or has been moved.	La página solicitada no existe o se ha movido.	La pagina richiesta non esiste o è stata spostata.
+0648	Page not found	Página no encontrada	Pagina non trovata
+0649	→ Back to home	→ Volver al inicio	→ Torna alla pagina iniziale
+0650	Active	Activas	Attive
+0651	No description	Sin descripción	Nessuna descrizione
+0652	No note matches the filters	Ninguna nota coincide con los filtros	Nessuna nota corrisponde ai filtri
+0653	No notes yet	Aún no hay notas	Nessuna nota per ora
+0654	Click a title to show its description	Haga clic en un título para ver su descripción	Clicca su un titolo per visualizzarne la descrizione
+0655	Inactive	Inactivas	Inattive
+0656	All statuses	Todos los estados	Tutti gli stati
+0657	＋ New note	＋ Nueva nota	＋ Nuova nota
+0658	🔍 Search	🔍 Búsqueda	🔍 Ricerca
+0659	Weekly attendance management by company	Gestión semanal de asistencias por empresa	Gestione settimanale delle presenze per azienda
+0660	Employee timesheet	Fichaje del empleado	Timbratura dipendente
+0661	↓ Export	↓ Exportar	↓ Esporta
+0662	+ New provider	+ Nuevo proveedor	+ Nuovo fornitore
+0663	Administrators	Administradores	Amministratori
+0664	No administrator	Ningún administrador	Nessun amministratore
+0665	No provider	Ningún proveedor	Nessun fornitore
+0666	Loading employees…	Cargando empleados…	Caricamento dipendenti…
+0667	Owner email *	Correo del propietario *	Email del titolare *
+0668	Create a new client business	Crear una nueva empresa cliente	Crea una nuova impresa cliente
+0669	Created on	Creado el	Creato il
+0670	Employee *	Empleado *	Dipendente *
+0671	Enterprise	Enterprise	Enterprise
+0672	Provider management	Gestión de proveedores	Gestione dei fornitori
+0673	Inactive	Inactivos	Inattivi
+0674	Company information	Información de la empresa	Informazioni azienda
+0675	Password *	Contraseña *	Password *
+0676	Admin password *	Contraseña del admin *	Password admin *
+0677	Business name *	Nombre de la empresa *	Nome dell'impresa *
+0678	New provider	Nuevo proveedor	Nuovo fornitore
+0679	Plan	Plan	Piano
+0680	Pro	Pro	Pro
+0681	Owner	Propietario	Titolare
+0682	Slug (identifier) *	Slug (identificador) *	Slug (identificativo) *
+0683	Starter	Starter	Starter
+0684	Super Admin	Super Admin	Super Admin
+0685	Select a provider to see the details	Seleccione un proveedor para ver los detalles	Seleziona un fornitore per vedere i dettagli
+0686	Username *	Usuario *	Nome utente *
+0687	Admin username *	Usuario del admin *	Nome utente admin *
+0688	✓ Create the administrator	✓ Crear el administrador	✓ Crea l'amministratore
+0689	✓ Create the provider	✓ Crear el proveedor	✓ Crea il fornitore
+0690	👤 Administrators	👤 Administradores	👤 Amministratori
+0691	🔗 Open	🔗 Abrir	🔗 Apri
+0692	🗑 Permanent deletion	🗑 Eliminación definitiva	🗑 Eliminazione definitiva
+0693	1. Choose the item	1. Elegir el elemento	1. Scegli l'elemento
+0694	Irreversible action.	Acción irreversible.	Azione irreversibile.
+0695	Kept, but the reference is removed	Conservado, pero se retira la referencia	Mantenuto, ma il riferimento viene rimosso
+0696	Business	Empresa	Impresa
+0697	Files erased from disk	Archivos borrados del disco	File cancellati dal disco
+0698	Deleted data and files cannot be recovered from the application (only a database backup would allow it).	Los datos y archivos eliminados no se pueden recuperar desde la aplicación (solo una copia de seguridad de la base de datos lo permitiría).	I dati e i file eliminati non possono essere recuperati dall'applicazione (solo un backup del database lo permetterebbe).
+0699	To confirm, type	Para confirmar, escriba	Per confermare, digita
+0700	Deletes an invoice, an employee or a company and all their references, or an employee's payments (one week, or one history line) — with no way back.	Elimina una factura, un empleado o una empresa y todas sus referencias, o los pagos de un empleado (una semana o una línea del historial) — sin vuelta atrás.	Elimina una fattura, un dipendente o un'azienda e tutti i loro riferimenti, oppure i pagamenti di un dipendente (una settimana o una riga della cronologia) — senza possibilità di ritorno.
+0701	Deleted	Eliminado	Eliminato
+0702	record(s) and	registro(s) y	record e
+0703	file(s)/folder(s) will be deleted.	archivo(s)/carpeta(s) serán eliminados.	file/cartelle saranno eliminati.
+0704	-	-	-
+0705	Creating…	Creando…	Creazione in corso…
+0706	Already have an account?	¿Ya tiene una cuenta?	Hai già un account?
+0707	Free trial — no credit card required	Prueba gratuita — sin tarjeta bancaria	Prova gratuita — nessuna carta di credito richiesta
+0708	Redirecting to login…	Redirigiendo al inicio de sesión…	Reindirizzamento all'accesso…
+0709	Used at login — letters, digits and hyphens only	Se usa al conectarse — solo letras, cifras y guiones	Usato all'accesso — solo lettere, cifre e trattini
+0710	Your space will be usable as soon as it has been approved by the platform administrator. You will then be able to log in with the username and password you chose.	Su espacio se podrá usar en cuanto lo valide el administrador de la plataforma. Entonces podrá conectarse con el usuario y la contraseña elegidos.	Il tuo spazio sarà utilizzabile non appena sarà approvato dall'amministratore della piattaforma. Potrai allora accedere con il nome utente e la password scelti.
+0711	→ Create my space	→ Crear mi espacio	→ Crea il mio spazio
+0712	Choose the password for your account	Elija la contraseña de su cuenta	Scegli la password del tuo account
+0713	Confirm the password	Confirmar la contraseña	Conferma la password
+0714	Username	Usuario	Nome utente
+0715	Updating...	Actualizando...	Aggiornamento...
+0716	You can now log in with your new password.	Ya puede conectarse con su nueva contraseña.	Ora puoi accedere con la nuova password.
+0717	Checking the link…	Comprobando el enlace…	Verifica del link…
+0718	→ Go to login	→ Ir al inicio de sesión	→ Vai all'accesso
+0719	→ Update the password	→ Actualizar la contraseña	→ Aggiorna la password
+0720	→ Back to login	→ Volver al inicio de sesión	→ Torna all'accesso
+0721	✓ Password updated	✓ Contraseña actualizada	✓ Password aggiornata
+0722	No line for this period: the amount is $0.00.	Ninguna línea para este periodo: el importe es de 0,00 $.	Nessuna riga per questo periodo: l'importo è di 0,00 $.
+0723	No validated week for this period.	Ninguna semana validada para este periodo.	Nessuna settimana convalidata per questo periodo.
+0724	Dates worked	Fechas trabajadas	Date lavorate
+0725	Company detail	Detalle de la empresa	Dettaglio azienda
+0726	Validated visits	Visitas validadas	Visite convalidate
+0727	No visit for this period.	Ninguna visita para este periodo.	Nessuna visita per questo periodo.
+0728	Visit dates	Fechas de visita	Date di visita
+0729	Employee detail	Detalle del empleado	Dettaglio dipendente
+0730	Day not paid	Día no pagado	Giornata non pagata
+0731	Day paid	Día pagado	Giornata pagata
+0732	Total payment	Pago total	Pagamento totale
+0733	Paid = their pay is fully covered by payments marked “transferred”. Amounts before taxes.	Pagada = su paga está totalmente cubierta por pagos marcados como «transferidos». Importes antes de impuestos.	Pagata = la sua paga è interamente coperta da versamenti contrassegnati «trasferiti». Importi al netto delle imposte.
+0734	Total visits	Visitas totales	Visite totali
+0735	(money actually received and paid out during the period)	(dinero realmente ingresado y gastado durante el periodo)	(denaro effettivamente entrato e uscito nel periodo)
+0736	(payment date within the period)	(fecha de pago dentro del periodo)	(data di pagamento nel periodo)
+0737	(spent in the period, with taxes)	(gastados en el periodo, con impuestos)	(spese nel periodo, con imposte)
+0738	(before taxes)	(sin impuestos)	(senza imposte)
+0739	(theoretical total to bill / invoices actually sent)	(total teórico por facturar / facturas realmente enviadas)	(totale teorico da fatturare / fatture effettivamente inviate)
+0740	(period totals)	(totales del periodo)	(totali del periodo)
+0741	(transferred payments, payment date within the period)	(pagos transferidos, fecha de pago dentro del periodo)	(versamenti trasferiti, data di pagamento nel periodo)
+0742	-	-	-
+0743	-	-	-
+0744	No employee payment transferred during this period.	Ningún pago a empleados transferido durante este periodo.	Nessun pagamento dipendente trasferito in questo periodo.
+0745	No timesheet for this period.	Ningún fichaje para este periodo.	Nessuna timbratura per questo periodo.
+0746	No expense for this period.	Ningún gasto para este periodo.	Nessuna spesa per questo periodo.
+0747	No company to compare for this period.	Ninguna empresa que comparar para este periodo.	Nessuna azienda da confrontare per questo periodo.
+0748	No invoice paid during this period.	Ninguna factura pagada durante este periodo.	Nessuna fattura pagata in questo periodo.
+0749	No invoice for this period.	Ninguna factura para este periodo.	Nessuna fattura per questo periodo.
+0750	No bank statement row loaded for this period (Finance → Bank statement).	Ninguna fila de extracto bancario cargada para este periodo (Finanzas → Extracto bancario).	Nessuna riga di estratto conto caricata per questo periodo (Finanze → Estratto conto).
+0751	Expense	Gasto	Spesa
+0752	One-off expenses created in the period and monthly expenses (once a month).	Gastos puntuales creados en el periodo y gastos mensuales (una vez al mes).	Spese occasionali create nel periodo e spese mensili (una volta al mese).
+0753	Company / Invoice no.	Empresa / N.º de factura	Azienda / N. fattura
+0754	Billing comparison	Comparación de facturación	Confronto di fatturazione
+0755	Created on	Creada el	Creata il
+0756	Spent	Gastado	Speso
+0757	Spent (with taxes)	Gastado (con impuestos)	Speso (con imposte)
+0758	Detail ↗	Detalle ↗	Dettaglio ↗
+0759	Collected (incl. tax)	Cobrado (con impuestos)	Incassato (IVA incl.)
+0760	Collected (with taxes)	Cobrado (con impuestos)	Incassato (con imposte)
+0761	Collected − payments − expenses	Cobrado − pagos − gastos	Incassato − pagamenti − spese
+0762	Invoices:	Facturas:	Fatture:
+0763	Invoices sent	Facturas enviadas	Fatture inviate
+0764	Invoices by company	Facturas por empresa	Fatture per azienda
+0765	Invoices paid	Facturas pagadas	Fatture pagate
+0766	Billed	Facturado	Fatturato
+0767	Billed	Facturada	Fatturata
+0768	Overview	Global	Globale
+0769	The detail is hidden: uncheck “Group (totals only)” to show employee payments and invoices by company.	El detalle está oculto: desmarque «Agrupar (solo totales)» para ver los pagos a empleados y las facturas por empresa.	Il dettaglio è nascosto: deseleziona «Raggruppa (solo totali)» per mostrare i pagamenti dipendenti e le fatture per azienda.
+0770	Amount sent	Importe enviado	Importo inviato
+0771	Amounts	Importes	Importi
+0772	Unpaid	No pagada	Non pagata
+0773	Invoice no.	N.º de factura	N. fattura
+0774	By company	Por empresa	Per azienda
+0775	By company: theoretical amount to bill compared with invoices sent, before taxes. Same in green, different in red.	Por empresa: teórico por facturar comparado con las facturas enviadas, sin impuestos. Igual en verde, distinto en rojo.	Per azienda: teorico da fatturare confrontato con le fatture inviate, senza imposte. Uguale in verde, diverso in rosso.
+0776	Paid on	Pagado el	Pagato il
+0777	Paid	Pagada	Pagata
+0778	Paid on	Pagada el	Pagata il
+0779	Bank register	Registro bancario	Registro bancario
+0780	Income by employee and by company	Ingresos por empleado y por empresa	Redditi per dipendente e per azienda
+0781	Before taxes	Sin impuestos	Senza imposte
+0782	Week of	Semana del	Settimana del
+0783	Period balance	Saldo del periodo	Saldo del periodo
+0784	Payment status	Estado del pago	Stato del pagamento
+0785	Theoretical: schedule of the companies active over the period. Sent: invoices of the period marked as sent, credit notes deducted. Positive gap = still to bill; negative gap = billed beyond the schedule.	Teórico: planificación de las empresas activas en el periodo. Enviadas: facturas del periodo marcadas como enviadas, abonos deducidos. Diferencia positiva = queda por facturar; diferencia negativa = facturado por encima de la planificación.	Teorico: pianificazione delle aziende attive nel periodo. Inviate: fatture del periodo contrassegnate come inviate, note di credito dedotte. Scostamento positivo = resta da fatturare; scostamento negativo = fatturato oltre la pianificazione.
+0786	Theoretical amount to bill	Teórico por facturar	Teorico da fatturare
+0787	Total excl. tax	Total sin impuestos	Totale IVA escl.
+0788	Theoretical total to bill compared with the total of invoices sent, before and with taxes	Total teórico por facturar comparado con el total de facturas enviadas, sin y con impuestos	Totale teorico da fatturare confrontato con il totale delle fatture inviate, senza e con imposte
+0789	Transferred (with taxes)	Transferido (con impuestos)	Trasferito (con imposte)
+0790	View detail ↗	Ver el detalle ↗	Vedi il dettaglio ↗
+0791	Gap	Diferencia	Scostamento
+0792	Gap (theoretical − sent)	Diferencia (teórico − enviado)	Scostamento (teorico − inviato)
+0793	Issued on	Emitida el	Emessa il
+0794	Payer's address	Dirección del pagador	Indirizzo del pagatore
+0795	Recipient	Beneficiario	Beneficiario
+0796	Box 012 — Social insurance number	Casilla 012 — N.º de seguro social	Casella 012 — N. di assicurazione sociale
+0797	Box 013 — Recipient's account number	Casilla 013 — N.º de cuenta del beneficiario	Casella 013 — N. di conto del beneficiario
+0798	Box 015 — Payer-offered dental benefits code	Casilla 015 — Código de prestaciones dentales (pagador)	Casella 015 — Codice prestazioni dentistiche (pagatore)
+0799	Box 016 — Pension or superannuation	Casilla 016 — Prestaciones de jubilación o pensión	Casella 016 — Prestazioni pensionistiche
+0800	Box 018 — Lump-sum payment	Casilla 018 — Pago a tanto alzado	Casella 018 — Pagamento forfettario
+0801	Box 020 — Commissions	Casilla 020 — Comisiones	Casella 020 — Commissioni
+0802	Box 022 — Income tax deducted	Casilla 022 — Impuesto sobre la renta retenido	Casella 022 — Imposta sul reddito trattenuta
+0803	Box 024 — Annuities	Casilla 024 — Rentas	Casella 024 — Rendite
+0804	Box 061 — Payer's program account number	Casilla 061 — Número de cuenta de programa del pagador	Casella 061 — Numero di conto di programma del pagatore
+0805	Choose an employee...	Elegir un empleado...	Scegli un dipendente...
+0806	Employee and year	Empleado y año	Dipendente e anno
+0807	Generate a T4A slip for an employee and a given year	Generar un formulario T4A para un empleado y un año determinado	Genera un modulo T4A per un dipendente e un determinato anno
+0808	Initial	Inicial	Iniziale
+0809	Last name	Apellido	Cognome
+0810	Payer's name	Nombre del pagador	Nome del pagatore
+0811	First name	Nombre	Nome
+0812	Total amounts reported	Total de importes declarados	Totale degli importi dichiarati
+0813	-	-	-
+0814	No employee.	Ningún empleado.	Nessun dipendente.
+0815	No manager defined: check “Team leader” on a manager's record, then attach their teams to them.	Ningún responsable definido: marque «Jefe de equipo» en la ficha de un responsable y asígnele sus equipos.	Nessun responsabile definito: seleziona «Caposquadra» nella scheda di un responsabile, poi assegnagli le sue squadre.
+0816	No company or timesheet this week.	Ninguna empresa ni fichaje esta semana.	Nessuna azienda né timbratura questa settimana.
+0817	Leader	Jefe	Capo
+0818	Click a person to see their timesheet (read only) and notes.	Haga clic en una persona para ver su fichaje (solo lectura) y sus notas.	Clicca su una persona per vederne la timbratura (sola lettura) e le note.
+0819	Record	Ficha	Scheda
+0820	My team	Mi equipo	La mia squadra
+0821	Company org chart: managers, team leaders and employees.	Organigrama de la empresa: responsables, jefes de equipo y empleados.	Organigramma dell'impresa: responsabili, capisquadra e dipendenti.
+0822	Timesheet	Fichaje	Timbratura
+0823	Attach →	Asignar →	Assegna →
+0824	Search for a person	Buscar una persona	Cerca una persona
+0825	Manager	Responsable	Responsabile
+0826	No team leader	Sin jefe de equipo	Senza caposquadra
+0827	Expand all	Desplegar todo	Espandi tutto
+0828	Collapse all	Plegar todo	Comprimi tutto
+0829	Whole business	Toda la empresa	Tutta l'impresa
+0830	Your team, direct and indirect.	Su equipo, directo e indirecto.	La tua squadra, diretta e indiretta.
+0831	You do not supervise anyone yet. An administrator attaches members to you from their employee record (“Team leader” field).	Aún no supervisa a nadie. Un administrador le asigna miembros desde su ficha de empleado (campo «Jefe de equipo»).	Per ora non supervisioni nessuno. Un amministratore ti assegna i membri dalla loro scheda dipendente (campo «Caposquadra»).
+0832	read only	solo lectura	sola lettura
+0833	no leader	sin jefe	senza capo
+0834	· inactive	· inactivo	· inattivo
+0835	To be attached to a team leader (required at the next save of the record).	Debe asignarse a un jefe de equipo (obligatorio la próxima vez que se guarde la ficha).	Da assegnare a un caposquadra (obbligatorio al prossimo salvataggio della scheda).
+0836	Team	Equipo	Squadra
+0837	— managers	— responsables	— responsabili
+0838	Remove	Quitar	Rimuovi
+0839	Week selection	Elección de la semana	Scelta della settimana
+0840	Previous week	Semana anterior	Settimana precedente
+0841	Next week	Semana siguiente	Settimana successiva
+0842	Search…	Buscar…	Cerca…
+0843	Home	Inicio	Home
+0844	Online	En línea	Online
+0845	Menu	Menú	Menu
+0846	Search (Ctrl+K)	Buscar (Ctrl+K)	Cerca (Ctrl+K)
+0847	Application version	Versión de la aplicación	Versione dell'applicazione
+0848	Add a range (e.g. after the break)	Añadir una franja (p. ej. después de la pausa)	Aggiungi una fascia (es. dopo la pausa)
+0849	Remove this range	Quitar esta franja	Rimuovi questa fascia
+0850	Close search	Cerrar la búsqueda	Chiudi la ricerca
+0851	Page, employee, company, invoice…	Página, empleado, empresa, factura…	Pagina, dipendente, azienda, fattura…
+0852	-	-	-
+0853	-	-	-
+0854	Effective date (empty = always applicable)	Fecha de aplicación (vacío = siempre aplicable)	Data di applicazione (vuoto = sempre applicabile)
+0855	Optional	Opcional	Facoltativo
+0856	Filter by status	Filtrar por estado	Filtra per stato
+0857	-	-	-
+0858	Day of the month (1–31)	Día del mes (1–31)	Giorno del mese (1–31)
+0859	Company list	Lista de empresas	Elenco delle aziende
+0860	Day number in the month	Número del día en el mes	Numero del giorno nel mese
+0861	Search for a company by name	Buscar una empresa por su nombre	Cerca un'azienda per nome
+0862	Search...	Buscar...	Cerca...
+0863	-	-	-
+0864	-	-	-
+0865	-	-	-
+0866	-	-	-
+0867	-	-	-
+0868	-	-	-
+0869	-	-	-
+0870	-	-	-
+0871	-	-	-
+0872	-	-	-
+0873	-	-	-
+0874	-	-	-
+0875	-	-	-
+0876	-	-	-
+0877	-	-	-
+0878	-	-	-
+0879	Lexicon keywords	Palabras clave del léxico	Parole chiave del lessico
+0880	Bank statement rows	Filas del extracto bancario	Righe dell'estratto conto
+0881	Keyword in all columns…	Palabra clave en todas las columnas…	Parola chiave in tutte le colonne…
+0882	Statement pages	Páginas del extracto	Pagine dell'estratto conto
+0883	Search and filters for the statement rows	Búsqueda y filtros de las filas del extracto	Ricerca e filtri delle righe dell'estratto conto
+0884	All deposits	Todos los depósitos	Tutti i versamenti
+0885	All links	Todos los vínculos	Tutti i collegamenti
+0886	All withdrawals	Todos los retiros	Tutti i prelievi
+0887	All dates	Todas las fechas	Tutte le date
+0888	All descriptions	Todas las descripciones	Tutte le descrizioni
+0889	Copy generated automatically from a monthly expense	Copia generada automáticamente a partir de un gasto mensual	Copia generata automaticamente da una spesa mensile
+0890	E.g. Insurance, Rent, Accounting…	P. ej. Seguro, Alquiler, Contabilidad…	Es. Assicurazione, Affitto, Contabilità…
+0891	Optional	Opcional	Facoltativo
+0892	Title, description, company, document…	Título, descripción, empresa, documento…	Titolo, descrizione, azienda, documento…
+0893	Name, email or phone	Nombre, correo o teléfono	Nome, email o telefono
+0894	Choose an employee	Elegir un empleado	Scegli un dipendente
+0895	Search for an employee by name	Buscar un empleado por su nombre	Cerca un dipendente per nome
+0896	Search for a company…	Buscar una empresa…	Cerca un'azienda…
+0897	Search for an employee…	Buscar un empleado…	Cerca un dipendente…
+0898	Help: default pay mode	Ayuda: modo de remuneración por defecto	Aiuto: modalità di retribuzione predefinita
+0899	Help: GST number	Ayuda: número TPS	Aiuto: numero TPS
+0900	Help: QST number	Ayuda: número TVQ	Aiuto: numero TVQ

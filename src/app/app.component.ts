@@ -3,12 +3,16 @@ import { RouterOutlet, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from './vue/components/navbar/navbar.component';
 import { NoteAlertComponent } from './vue/components/note-alert/note-alert.component';
+import { ConfirmDialogComponent } from './vue/components/confirm-dialog/confirm-dialog.component';
+import { QuickSearchComponent } from './vue/components/quick-search/quick-search.component';
+import { CallBarComponent } from './vue/components/call-bar/call-bar.component';
 import { AuthService } from './state/auth/auth.service';
 import { ThemeService } from './state/theme/theme.service';
+import { I18nService } from './state/i18n/i18n.service';
 
 @Component({
     selector: 'app-root',
-    imports: [RouterOutlet, NavbarComponent, NoteAlertComponent, CommonModule, RouterLink],
+    imports: [RouterOutlet, NavbarComponent, NoteAlertComponent, ConfirmDialogComponent, QuickSearchComponent, CallBarComponent, CommonModule, RouterLink],
     template: `
     <div class="staging-bar" *ngIf="isStaging" role="status">STAGING — environnement de test · données copiées de la prod · courriels redirigés</div>
     <app-navbar *ngIf="auth.loggedIn()"></app-navbar>
@@ -19,6 +23,9 @@ import { ThemeService } from './state/theme/theme.service';
     </div>
     <router-outlet></router-outlet>
     <app-note-alert *ngIf="auth.loggedIn()"></app-note-alert>
+    <app-quick-search *ngIf="auth.loggedIn() && !auth.isSuperUser()"></app-quick-search>
+    <app-call-bar *ngIf="auth.loggedIn()"></app-call-bar>
+    <app-confirm-dialog></app-confirm-dialog>
   `,
     styles: [`
     .staging-bar {
@@ -50,5 +57,8 @@ export class AppComponent {
   readonly isStaging = location.hostname.toLowerCase().startsWith('staging.');
 
   // ThemeService instancié dès le démarrage : le design de l'utilisateur s'applique aussi à la page de connexion
-  constructor(public auth: AuthService, private theme: ThemeService) {}
+  constructor(public auth: AuthService, private theme: ThemeService, i18n: I18nService) {
+    // Langue d'affichage mémorisée : appliquée dès le démarrage, page de connexion comprise
+    i18n.start();
+  }
 }

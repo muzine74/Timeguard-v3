@@ -2,6 +2,7 @@ import { Injectable, signal, isDevMode } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, tap } from 'rxjs';
 import { CompanyForm } from '../../models';
+import { httpErrorMessage } from '../../vue/shared/http-error';
 
 export interface ContactItem {
   contactId: string;
@@ -138,7 +139,7 @@ export class CompanyService {
         error: err => {
           this.warn(`✕ POST échoué (${err.status})`, err.error);
           // Message du serveur (ex. code déjà utilisé) plutôt que le statut HTTP brut
-          this._error.set(err?.error?.message ?? `HTTP ${err.status} — ${err.message}`);
+          this._error.set(httpErrorMessage(err));
           this._saving.set(false);
         }
       })
@@ -160,7 +161,7 @@ export class CompanyService {
         error: err => {
           this.warn(`✕ PUT /api/companies/${id} échoué (${err.status})`, err.error);
           // Message du serveur (ex. code déjà utilisé) plutôt que le statut HTTP brut
-          this._error.set(err?.error?.message ?? `HTTP ${err.status} — ${err.message}`);
+          this._error.set(httpErrorMessage(err));
           this._saving.set(false);
         }
       })

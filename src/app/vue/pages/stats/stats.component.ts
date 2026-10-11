@@ -5,11 +5,14 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DestroyRef, inject } from '@angular/core';
 import {
   StatsService, StatsResponse, StatsCompanyRow, StatsInvoiceRow, StatsEmployeeRow, StatsPaymentStatus, PAYMENT_STATUS_LABEL,
+  StatsBillingComparisonRow,
 } from '../../../state/stats/stats.service';
 import { TableSort, SortValue } from '../../shared/table-sort';
 import { todayIso } from '../../shared/dates';
 import { ExportButtonsComponent } from '../../components/export-buttons/export-buttons.component';
 import { ExportDoc, ExportRow, TableExportService } from '../../../state/export/table-export.service';
+import { httpErrorMessage } from '../../shared/http-error';
+import { MultiSelectComponent, MultiSelectOption } from '../../components/multi-select/multi-select.component';
 
 type FilterMode = 'period' | 'range';
 type StatutFilter = 'facturee' | 'nonpayee' | 'payee';
@@ -32,7 +35,7 @@ const EMPTY_ID = '00000000-0000-0000-0000-000000000000';
 @Component({
     selector: 'app-stats',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule, ExportButtonsComponent],
+    imports: [CommonModule, FormsModule, ExportButtonsComponent, MultiSelectComponent],
     templateUrl: './stats.component.html',
     styleUrls: ['./stats.component.scss']
 })
@@ -66,13 +69,55 @@ export class StatsComponent {
   /** Groupes repliés par défaut : clés des compagnies dépliées. */
   expanded = signal<ReadonlySet<string>>(new Set());
 
+  // ── Filtres de la colonne « Compagnie » : un par tableau, indépendants (aucune cochée = toutes) ──
+  /** Factures par compagnie (clé du groupe). */
+  invCompanies  = signal<string[]>([]);
+  /** Registre bancaire, Factures payées (nom de la compagnie : la ligne n'a pas d'identifiant). */
+  paidCompanies = signal<string[]>([]);
+  /** Comparaison de facturation, Par compagnie (clé de la ligne). */
+  cmpCompanies  = signal<string[]>([]);
+
+  private _options(items: { id: string; label: string }[]): MultiSelectOption[] {
+    const byId = new Map(items.map(i => [i.id, { id: i.id, label: i.label || '—' }]));
+    return [...byId.values()].sort((a, b) => a.label.localeCompare(b.label, 'fr', { sensitivity: 'base' }));
+  }
+
+  invCompanyOptions  = computed(() => this._options((this.stats()?.parCompagnie ?? []).map(c => ({ id: this.groupKey(c), label: c.companyName }))));
+  paidCompanyOptions = computed(() => this._options((this.stats()?.banqueFacturesPayees ?? []).map(i => ({ id: i.companyName, label: i.companyName }))));
+  cmpCompanyOptions  = computed(() => this._options((this.stats()?.comparaisonFacturation ?? []).map(r => ({ id: this.cmpKey(r), label: r.companyName }))));
+
+  cmpKey(r: StatsBillingComparisonRow): string { return r.companyId && r.companyId !== EMPTY_ID ? r.companyId : '?' + r.companyName; }
+
+  /** Factures payées du registre bancaire retenues par le filtre de la colonne Compagnie, avec leur total. */
+  paidInvoices = computed(() => {
+    const kept = this.paidCompanies();
+    const rows = (this.stats()?.banqueFacturesPayees ?? []).filter(i => !kept.length || kept.includes(i.companyName));
+    const sum = (k: 'totalHT' | 'totalTTC') => this._round2(rows.reduce((t, i) => t + i[k], 0));
+    return { rows, ht: sum('totalHT'), ttc: sum('totalTTC') };
+  });
+
+  /** Lignes « Par compagnie » de la comparaison retenues par le filtre de la colonne Compagnie. */
+  cmpRows = computed(() => {
+    const kept = this.cmpCompanies();
+    return (this.stats()?.comparaisonFacturation ?? []).filter(r => !kept.length || kept.includes(this.cmpKey(r)));
+  });
+
+  /** Un nouveau calcul peut ne plus contenir une compagnie cochée : elle est retirée du filtre. */
+  private _pruneColumnFilters(): void {
+    const keep = (selected: string[], options: MultiSelectOption[]) => selected.filter(id => options.some(o => o.id === id));
+    this.invCompanies.set(keep(this.invCompanies(), this.invCompanyOptions()));
+    this.paidCompanies.set(keep(this.paidCompanies(), this.paidCompanyOptions()));
+    this.cmpCompanies.set(keep(this.cmpCompanies(), this.cmpCompanyOptions()));
+  }
+
   /**
-   * Factures retenues par le filtre de statut, regroupées par compagnie.
+   * Factures retenues par le filtre de statut et par le filtre de la colonne Compagnie, regroupées par compagnie.
    * Un avoir suit le statut de sa facture d'origine (il en réduit le montant dû).
    */
   groups = computed<CompanyGroup[]>(() => {
     const statut = this.statutFilter();
-    return (this.stats()?.parCompagnie ?? []).map(company => {
+    const kept = this.invCompanies();
+    return (this.stats()?.parCompagnie ?? []).filter(c => !kept.length || kept.includes(this.groupKey(c))).map(company => {
       const factures = company.factures ?? [];
       const paidById = new Map(factures.map(f => [f.billIdentifier, f.isPaid]));
       const invoices = factures.filter(f => {
@@ -197,7 +242,8 @@ export class StatsComponent {
     return {
       fileName: TableExportService.fileName('Factures_par_compagnie', this.statutLabel(), this.periodeLabel()),
       title: 'Statistiques',
-      subtitle: `${this._exportSubtitle()} — factures : ${this.statutLabel()}`,
+      subtitle: `${this._exportSubtitle()} — factures : ${this.statutLabel()}`
+        + (this.invCompanies().length ? ` — compagnies : ${this.groups().map(g => g.company.companyName || '—').join(', ')}` : ''),
       landscape: true,
       tables: [{
         title: 'Factures par compagnie',
@@ -299,7 +345,7 @@ export class StatsComponent {
   });
 
   /** Compagnies dont les factures envoyées égalent le théorique. */
-  sameCount = computed(() => (this.stats()?.comparaisonFacturation ?? []).filter(r => r.ecart === 0).length);
+  sameCount = computed(() => this.cmpRows().filter(r => r.ecart === 0).length);
 
   private _round2(n: number): number { return Math.round(n * 100) / 100; }
 
@@ -353,11 +399,12 @@ export class StatsComponent {
     obs.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: data => {
         this.stats.set(data);
+        this._pruneColumnFilters();
         this.loading.set(false);
         this.cdr.markForCheck();
       },
       error: err => {
-        this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.error.set(httpErrorMessage(err));
         this.loading.set(false);
         this.cdr.markForCheck();
       },

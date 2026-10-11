@@ -1,0 +1,379 @@
+E	Élément introuvable.	Item not found.	Elemento no encontrado.	Elemento non trovato.
+E	Aucun fichier fourni.	No file provided.	No se proporcionó ningún archivo.	Nessun file fornito.
+E	Le fichier dépasse 10 Mo.	The file exceeds 10 MB.	El archivo supera los 10 MB.	Il file supera i 10 MB.
+E	Pièce jointe introuvable.	Attachment not found.	Archivo adjunto no encontrado.	Allegato non trovato.
+E	Fichier introuvable sur le disque.	File not found on disk.	Archivo no encontrado en el disco.	File non trovato sul disco.
+E	Type d'élément invalide.	Invalid item type.	Tipo de elemento no válido.	Tipo di elemento non valido.
+E	Le fichier est vide.	The file is empty.	El archivo está vacío.	Il file è vuoto.
+E	sans extension	no extension	sin extensión	senza estensione
+P	Type de fichier non autorisé ({0}). Acceptés : PDF, images JPG / PNG, Word, Excel.	File type not allowed ({0}). Accepted: PDF, JPG / PNG images, Word, Excel.	Tipo de archivo no permitido ({0}). Aceptados: PDF, imágenes JPG / PNG, Word, Excel.	Tipo di file non consentito ({0}). Accettati: PDF, immagini JPG / PNG, Word, Excel.
+P	Maximum de {0} pièces jointes atteint.	Maximum of {0} attachments reached.	Se alcanzó el máximo de {0} archivos adjuntos.	Raggiunto il massimo di {0} allegati.
+P	Trop de tentatives de connexion. Réessayez dans {0} minute{1}.	Too many sign-in attempts. Try again in {0} minute{1}.	Demasiados intentos de inicio de sesión. Inténtelo de nuevo en {0} minuto{1}.	Troppi tentativi di accesso. Riprova tra {0} minut{1|o|i}.
+E	Endpoint désactivé. Utilisez Administration → Identifiants.	Endpoint disabled. Use Administration → Credentials.	Endpoint desactivado. Use Administración → Credenciales.	Endpoint disattivato. Usa Amministrazione → Credenziali.
+E	Credential créé.	Credential created.	Credencial creada.	Credenziale creata.
+E	Mot de passe réinitialisé.	Password reset.	Contraseña restablecida.	Password reimpostata.
+E	Lien de réinitialisation envoyé.	Reset link sent.	Enlace de restablecimiento enviado.	Link di reimpostazione inviato.
+E	Mot de passe mis à jour.	Password updated.	Contraseña actualizada.	Password aggiornata.
+E	Credential supprimé.	Credential deleted.	Credencial eliminada.	Credenziale eliminata.
+E	Le mot de passe doit contenir au moins 10 caractères.	The password must be at least 10 characters long.	La contraseña debe tener al menos 10 caracteres.	La password deve contenere almeno 10 caratteri.
+E	Nom d'utilisateur ou mot de passe incorrect.	Incorrect username or password.	Nombre de usuario o contraseña incorrectos.	Nome utente o password errati.
+E	Employé associé introuvable.	Linked employee not found.	Empleado asociado no encontrado.	Dipendente associato non trovato.
+E	Code de vérification requis.	Verification code required.	Se requiere el código de verificación.	Codice di verifica richiesto.
+E	Code de vérification incorrect ou déjà utilisé.	Verification code incorrect or already used.	Código de verificación incorrecto o ya utilizado.	Codice di verifica errato o già utilizzato.
+E	Ce nom d'utilisateur est déjà pris.	This username is already taken.	Este nombre de usuario ya está en uso.	Questo nome utente è già in uso.
+E	Session expirée. Reconnectez-vous.	Session expired. Please sign in again.	Sesión caducada. Vuelva a iniciar sesión.	Sessione scaduta. Accedi di nuovo.
+E	Mot-clé introuvable.	Keyword not found.	Palabra clave no encontrada.	Parola chiave non trovata.
+E	Le mot-clé doit contenir au moins 3 caractères.	The keyword must be at least 3 characters long.	La palabra clave debe tener al menos 3 caracteres.	La parola chiave deve contenere almeno 3 caratteri.
+E	Le mot-clé ne peut pas dépasser 100 caractères.	The keyword cannot exceed 100 characters.	La palabra clave no puede superar los 100 caracteres.	La parola chiave non può superare i 100 caratteri.
+E	Choisissez un type : compagnie, employé ou charge.	Choose a type: company, employee or expense.	Elija un tipo: empresa, empleado o gasto.	Scegli un tipo: azienda, dipendente o spesa.
+E	L'élément choisi est introuvable.	The selected item was not found.	El elemento elegido no se encuentra.	L'elemento scelto non è stato trovato.
+P	Le mot-clé « {0} » existe déjà dans le lexique.	The keyword “{0}” already exists in the lexicon.	La palabra clave «{0}» ya existe en el léxico.	La parola chiave «{0}» esiste già nel lessico.
+E	Transaction introuvable.	Transaction not found.	Transacción no encontrada.	Transazione non trovata.
+E	Choisissez un fichier CSV.	Choose a CSV file.	Elija un archivo CSV.	Scegli un file CSV.
+E	Fichier trop volumineux (5 Mo maximum).	File too large (5 MB maximum).	Archivo demasiado grande (máximo 5 MB).	File troppo grande (massimo 5 MB).
+E	Le fichier doit être un CSV (.csv).	The file must be a CSV (.csv).	El archivo debe ser un CSV (.csv).	Il file deve essere un CSV (.csv).
+E	Aucune ligne lisible dans ce fichier.	No readable line in this file.	Ninguna línea legible en este archivo.	Nessuna riga leggibile in questo file.
+P	Ligne {0#} : {1}	Line {0}: {1}	Línea {0}: {1}	Riga {0}: {1}
+P	{0} colonnes au lieu de 9 au minimum	{0} columns instead of at least 9	{0} columnas en lugar de 9 como mínimo	{0} colonne invece di almeno 9
+P	date invalide « {0} »	invalid date “{0}”	fecha no válida «{0}»	data non valida «{0}»
+P	retrait invalide « {0} »	invalid withdrawal “{0}”	retiro no válido «{0}»	prelievo non valido «{0}»
+P	dépôt invalide « {0} »	invalid deposit “{0}”	depósito no válido «{0}»	deposito non valido «{0}»
+E	ni retrait ni dépôt	neither withdrawal nor deposit	ni retiro ni depósito	né prelievo né deposito
+E	Erreur lors de la création de la facture.	Error while creating the invoice.	Error al crear la factura.	Errore durante la creazione della fattura.
+P	Facture {0!} créée.	Invoice {0} created.	Factura {0} creada.	Fattura {0} creata.
+E	Facture mise à jour.	Invoice updated.	Factura actualizada.	Fattura aggiornata.
+E	Facture marquée comme envoyée.	Invoice marked as sent.	Factura marcada como enviada.	Fattura contrassegnata come inviata.
+E	Facture marquée payée.	Invoice marked as paid.	Factura marcada como pagada.	Fattura contrassegnata come pagata.
+E	Facture marquée impayée.	Invoice marked as unpaid.	Factura marcada como impagada.	Fattura contrassegnata come non pagata.
+E	Facture supprimée.	Invoice deleted.	Factura eliminada.	Fattura eliminata.
+E	Avoir supprimé.	Credit note deleted.	Abono eliminado.	Nota di credito eliminata.
+P	Type de fichier non autorisé ({0}).	File type not allowed ({0}).	Tipo de archivo no permitido ({0}).	Tipo di file non consentito ({0}).
+E	Facture introuvable.	Invoice not found.	Factura no encontrada.	Fattura non trovata.
+E	Fichier enregistré.	File saved.	Archivo guardado.	File salvato.
+E	Fichier introuvable sur le serveur.	File not found on the server.	Archivo no encontrado en el servidor.	File non trovato sul server.
+E	Paramètre 'period' requis (format: YYYY-MM).	The 'period' parameter is required (format: YYYY-MM).	Se requiere el parámetro 'period' (formato: YYYY-MM).	Parametro 'period' richiesto (formato: YYYY-MM).
+E	Aucune facture sélectionnée.	No invoice selected.	Ninguna factura seleccionada.	Nessuna fattura selezionata.
+P	Avoir {0!} créé.	Credit note {0} created.	Abono {0} creado.	Nota di credito {0} creata.
+E	PDF supprimé.	PDF deleted.	PDF eliminado.	PDF eliminato.
+E	Aucun destinataire fourni.	No recipient provided.	No se indicó ningún destinatario.	Nessun destinatario fornito.
+P	Type de pièce jointe non autorisé ({0}).	Attachment type not allowed ({0}).	Tipo de archivo adjunto no permitido ({0}).	Tipo di allegato non consentito ({0}).
+E	Facture envoyée par courriel.	Invoice sent by email.	Factura enviada por correo.	Fattura inviata per email.
+E	Format requis: YYYY-MM	Required format: YYYY-MM	Formato requerido: YYYY-MM	Formato richiesto: YYYY-MM
+E	Format requis: YYYY-MM-DD	Required format: YYYY-MM-DD	Formato requerido: YYYY-MM-DD	Formato richiesto: YYYY-MM-DD
+E	Au moins une facture requise.	At least one invoice is required.	Se requiere al menos una factura.	È richiesta almeno una fattura.
+E	Au moins un destinataire requis.	At least one recipient is required.	Se requiere al menos un destinatario.	È richiesto almeno un destinatario.
+E	Cette compagnie a déjà une facture pour cette période.	This company already has an invoice for this period.	Esta empresa ya tiene una factura para este periodo.	Questa azienda ha già una fattura per questo periodo.
+E	Impossible de modifier une facture déjà envoyée. Créez un avoir.	An invoice that has already been sent cannot be edited. Create a credit note.	No se puede modificar una factura ya enviada. Cree un abono.	Impossibile modificare una fattura già inviata. Crea una nota di credito.
+E	Impossible de supprimer une facture déjà envoyée au client.	An invoice already sent to the client cannot be deleted.	No se puede eliminar una factura ya enviada al cliente.	Impossibile eliminare una fattura già inviata al cliente.
+E	Avoir introuvable.	Credit note not found.	Abono no encontrado.	Nota di credito non trovata.
+E	Cette entrée n'est pas un avoir.	This entry is not a credit note.	Esta entrada no es un abono.	Questa voce non è una nota di credito.
+E	Aucun fichier associé à cette facture.	No file attached to this invoice.	Ningún archivo asociado a esta factura.	Nessun file associato a questa fattura.
+E	Format de période invalide. Attendu: YYYY-MM	Invalid period format. Expected: YYYY-MM	Formato de periodo no válido. Esperado: YYYY-MM	Formato del periodo non valido. Atteso: YYYY-MM
+E	La facture n'a pas encore été envoyée. Modifiez-la directement.	The invoice has not been sent yet. Edit it directly.	La factura aún no se ha enviado. Modifíquela directamente.	La fattura non è ancora stata inviata. Modificala direttamente.
+E	Aucune facture trouvée pour les identifiants fournis.	No invoice found for the given identifiers.	No se encontró ninguna factura para los identificadores indicados.	Nessuna fattura trovata per gli identificativi forniti.
+E	Charge créée.	Expense created.	Gasto creado.	Spesa creata.
+E	Charge introuvable.	Expense not found.	Gasto no encontrado.	Spesa non trovata.
+E	Charge mise à jour.	Expense updated.	Gasto actualizado.	Spesa aggiornata.
+E	Charge supprimée.	Expense deleted.	Gasto eliminado.	Spesa eliminata.
+P	Type non autorisé ({0}).	Type not allowed ({0}).	Tipo no permitido ({0}).	Tipo non consentito ({0}).
+E	Document ajouté.	Document added.	Documento añadido.	Documento aggiunto.
+E	Document supprimé.	Document deleted.	Documento eliminado.	Documento eliminato.
+E	Document introuvable.	Document not found.	Documento no encontrado.	Documento non trovato.
+E	La date de la charge n'est pas valide.	The expense date is not valid.	La fecha del gasto no es válida.	La data della spesa non è valida.
+E	La date de la charge ne peut pas dépasser un an dans le futur.	The expense date cannot be more than one year in the future.	La fecha del gasto no puede superar un año en el futuro.	La data della spesa non può superare un anno nel futuro.
+E	Une compagnie ne peut être associée qu'une seule fois à la charge.	A company can be linked to the expense only once.	Una empresa solo puede asociarse una vez al gasto.	Un'azienda può essere associata alla spesa una sola volta.
+P	La somme des pourcentages doit être égale à 100 % (actuellement {0} %).	The percentages must add up to 100% (currently {0}%).	La suma de los porcentajes debe ser igual al 100 % (actualmente {0} %).	La somma delle percentuali deve essere pari al 100 % (attualmente {0} %).
+E	Une ou plusieurs compagnies sont introuvables.	One or more companies were not found.	No se encuentran una o varias empresas.	Una o più aziende non sono state trovate.
+E	Compagnie ou employé introuvable.	Company or employee not found.	Empresa o empleado no encontrado.	Azienda o dipendente non trovato.
+E	Entrée introuvable.	Entry not found.	Entrada no encontrada.	Voce non trovata.
+E	Choisissez une compagnie ou un employé.	Choose a company or an employee.	Elija una empresa o un empleado.	Scegli un'azienda o un dipendente.
+E	Compagnie introuvable.	Company not found.	Empresa no encontrada.	Azienda non trovata.
+E	Un envoi enregistré par TimeGuard ne peut pas être modifié.	A message recorded by TimeGuard cannot be edited.	Un envío registrado por TimeGuard no se puede modificar.	Un invio registrato da TimeGuard non può essere modificato.
+E	Un envoi enregistré par TimeGuard ne peut pas être supprimé.	A message recorded by TimeGuard cannot be deleted.	Un envío registrado por TimeGuard no se puede eliminar.	Un invio registrato da TimeGuard non può essere eliminato.
+E	(sans objet)	(no subject)	(sin asunto)	(senza oggetto)
+E	Choisissez un type : courriel, appel, rencontre, texto ou autre.	Choose a type: email, call, meeting, text message or other.	Elija un tipo: correo, llamada, reunión, SMS u otro.	Scegli un tipo: email, chiamata, incontro, SMS o altro.
+E	Choisissez le sens : envoyé ou reçu.	Choose the direction: sent or received.	Elija el sentido: enviado o recibido.	Scegli la direzione: inviato o ricevuto.
+E	Le sujet est obligatoire.	The subject is required.	El asunto es obligatorio.	L'oggetto è obbligatorio.
+E	Le sujet ne peut pas dépasser 300 caractères.	The subject cannot exceed 300 characters.	El asunto no puede superar los 300 caracteres.	L'oggetto non può superare i 300 caratteri.
+E	Le résumé ne peut pas dépasser 4000 caractères.	The summary cannot exceed 4000 characters.	El resumen no puede superar los 4000 caracteres.	Il riepilogo non può superare i 4000 caratteri.
+E	L'interlocuteur ne peut pas dépasser 500 caractères.	The contact person cannot exceed 500 characters.	El interlocutor no puede superar los 500 caracteres.	L'interlocutore non può superare i 500 caratteri.
+E	La date est obligatoire.	The date is required.	La fecha es obligatoria.	La data è obbligatoria.
+E	La date ne peut pas être dans le futur.	The date cannot be in the future.	La fecha no puede estar en el futuro.	La data non può essere nel futuro.
+E	La date n'est pas valide.	The date is not valid.	La fecha no es válida.	La data non è valida.
+P	Compagnie '{0}' créée avec succès.	Company '{0}' created successfully.	Empresa '{0}' creada correctamente.	Azienda '{0}' creata con successo.
+P	Compagnie '{0}' mise à jour.	Company '{0}' updated.	Empresa '{0}' actualizada.	Azienda '{0}' aggiornata.
+E	Le nom de la compagnie est requis.	The company name is required.	El nombre de la empresa es obligatorio.	Il nome dell'azienda è obbligatorio.
+E	Le planning hebdomadaire est requis.	The weekly schedule is required.	La planificación semanal es obligatoria.	La pianificazione settimanale è obbligatoria.
+E	La semaine 1 est requise pour le planning bi-hebdomadaire.	Week 1 is required for the biweekly schedule.	La semana 1 es obligatoria para la planificación quincenal.	La settimana 1 è obbligatoria per la pianificazione bisettimanale.
+E	La semaine 2 est requise pour le planning bi-hebdomadaire.	Week 2 is required for the biweekly schedule.	La semana 2 es obligatoria para la planificación quincenal.	La settimana 2 è obbligatoria per la pianificazione bisettimanale.
+E	Le planning bi-mensuel est requis.	The twice-monthly schedule is required.	La planificación bimensual es obligatoria.	La pianificazione bimensile è obbligatoria.
+E	Le planning mensuel est requis.	The monthly schedule is required.	La planificación mensual es obligatoria.	La pianificazione mensile è obbligatoria.
+E	Le tarif compagnie doit être positif ou nul.	The company rate must be zero or positive.	La tarifa de la empresa debe ser positiva o cero.	La tariffa dell'azienda deve essere positiva o nulla.
+E	Le tarif employé doit être positif ou nul.	The employee rate must be zero or positive.	La tarifa del empleado debe ser positiva o cero.	La tariffa del dipendente deve essere positiva o nulla.
+E	Le jour doit être entre 1 et 31.	The day must be between 1 and 31.	El día debe estar entre 1 y 31.	Il giorno deve essere compreso tra 1 e 31.
+E	Aucune compagnie trouvée pour cet employé.	No company found for this employee.	No se encontró ninguna empresa para este empleado.	Nessuna azienda trovata per questo dipendente.
+P	Compagnie {0} introuvable.	Company {0} not found.	Empresa {0} no encontrada.	Azienda {0} non trovata.
+P	Le code « {0} » est déjà utilisé par la compagnie « {1} ».	The code “{0}” is already used by the company “{1}”.	El código «{0}» ya lo usa la empresa «{1}».	Il codice «{0}» è già usato dall'azienda «{1}».
+E	Les taux horaires ne peuvent pas être négatifs.	Hourly rates cannot be negative.	Las tarifas por hora no pueden ser negativas.	Le tariffe orarie non possono essere negative.
+E	Facturation par heure : indiquez le taux horaire client.	Hourly billing: enter the client hourly rate.	Facturación por hora: indique la tarifa por hora del cliente.	Fatturazione oraria: indica la tariffa oraria del cliente.
+E	❌ NON CONFIGURÉ	❌ NOT CONFIGURED	❌ NO CONFIGURADO	❌ NON CONFIGURATO
+E	✓ (défini)	✓ (set)	✓ (definido)	✓ (impostato)
+E	SmtpServer manquant — configurez-le dans /config.	SmtpServer missing — set it in /config.	Falta SmtpServer — configúrelo en /config.	SmtpServer mancante — configuralo in /config.
+E	SmtpUser et CompanyEmail tous les deux vides.	SmtpUser and CompanyEmail are both empty.	SmtpUser y CompanyEmail están ambos vacíos.	SmtpUser e CompanyEmail sono entrambi vuoti.
+P	Courriel envoyé à {0}	Email sent to {0}	Correo enviado a {0}	Email inviata a {0}
+E	Configuration enregistrée.	Settings saved.	Configuración guardada.	Configurazione salvata.
+E	Ce nom d'entreprise est déjà utilisé par une autre entreprise : leurs documents seraient rangés dans le même dossier. Choisissez un nom différent.	This business name is already used by another business: their documents would be stored in the same folder. Choose a different name.	Este nombre de empresa ya lo usa otra empresa: sus documentos se guardarían en la misma carpeta. Elija un nombre diferente.	Questo nome di impresa è già usato da un'altra impresa: i loro documenti verrebbero salvati nella stessa cartella. Scegli un nome diverso.
+E	Contact mis à jour.	Contact updated.	Contacto actualizado.	Contatto aggiornato.
+E	Statut du contact mis à jour.	Contact status updated.	Estado del contacto actualizado.	Stato del contatto aggiornato.
+E	Contact supprimé.	Contact deleted.	Contacto eliminado.	Contatto eliminato.
+E	Le courriel du contact n'est pas valide.	The contact's email is not valid.	El correo del contacto no es válido.	L'email del contatto non è valida.
+E	Le nom du contact est requis.	The contact name is required.	El nombre del contacto es obligatorio.	Il nome del contatto è obbligatorio.
+E	Contact introuvable.	Contact not found.	Contacto no encontrado.	Contatto non trovato.
+P	Le nom d'utilisateur « {0} » est déjà pris.	The username “{0}” is already taken.	El nombre de usuario «{0}» ya está en uso.	Il nome utente «{0}» è già in uso.
+P	Le nom d'utilisateur '{0}' est déjà pris.	The username '{0}' is already taken.	El nombre de usuario '{0}' ya está en uso.	Il nome utente '{0}' è già in uso.
+E	Credential introuvable.	Credential not found.	Credencial no encontrada.	Credenziale non trovata.
+E	Cet employé n'a pas encore de compte de connexion : le lien ne peut pas être envoyé. Créez d'abord son identifiant (nom d'utilisateur + mot de passe temporaire) dans Administration → Identifiants, puis revenez ici cliquer sur « Envoyer lien de réinitialisation » pour qu'il choisisse son propre mot de passe.	This employee does not have a sign-in account yet: the link cannot be sent. First create their credential (username + temporary password) in Administration → Credentials, then come back here and click “Send reset link” so they can choose their own password.	Este empleado aún no tiene cuenta de acceso: no se puede enviar el enlace. Cree primero su credencial (nombre de usuario + contraseña temporal) en Administración → Credenciales y luego vuelva aquí y haga clic en «Enviar enlace de restablecimiento» para que elija su propia contraseña.	Questo dipendente non ha ancora un account di accesso: il link non può essere inviato. Crea prima la sua credenziale (nome utente + password temporanea) in Amministrazione → Credenziali, poi torna qui e clicca su «Invia link di reimpostazione» perché scelga la propria password.
+E	Aucune adresse courriel enregistrée pour cet employé.	No email address on file for this employee.	No hay ninguna dirección de correo registrada para este empleado.	Nessun indirizzo email registrato per questo dipendente.
+E	Réinitialisation de votre mot de passe	Reset your password	Restablecimiento de su contraseña	Reimpostazione della password
+E	Lien de réinitialisation du mot de passe (valide 24 heures).	Password reset link (valid for 24 hours).	Enlace de restablecimiento de contraseña (válido 24 horas).	Link di reimpostazione della password (valido 24 ore).
+E	Jeton manquant.	Missing token.	Falta el token.	Token mancante.
+E	Ce lien de réinitialisation est invalide ou a expiré.	This reset link is invalid or has expired.	Este enlace de restablecimiento no es válido o ha caducado.	Questo link di reimpostazione non è valido o è scaduto.
+P	Employé {0} introuvable.	Employee {0} not found.	Empleado {0} no encontrado.	Dipendente {0} non trovato.
+P	Employé '{0}' créé avec succès.	Employee '{0}' created successfully.	Empleado '{0}' creado correctamente.	Dipendente '{0}' creato con successo.
+P	Employé '{0}' mis à jour.	Employee '{0}' updated.	Empleado '{0}' actualizado.	Dipendente '{0}' aggiornato.
+E	Taux horaire enregistré.	Hourly rate saved.	Tarifa por hora guardada.	Tariffa oraria salvata.
+E	Tarifs sauvegardés.	Rates saved.	Tarifas guardadas.	Tariffe salvate.
+P	Format de semaine invalide: '{0}'. Attendu: YYYY-MM-DD.	Invalid week format: '{0}'. Expected: YYYY-MM-DD.	Formato de semana no válido: '{0}'. Esperado: YYYY-MM-DD.	Formato della settimana non valido: '{0}'. Atteso: YYYY-MM-DD.
+P	Format de semaine invalide: {0}	Invalid week format: {0}	Formato de semana no válido: {0}	Formato della settimana non valido: {0}
+E	Fichier introuvable.	File not found.	Archivo no encontrado.	File non trovato.
+E	La date de début doit précéder la date de fin.	The start date must be before the end date.	La fecha de inicio debe ser anterior a la fecha de fin.	La data di inizio deve precedere la data di fine.
+E	Période trop longue (maximum 400 jours).	Period too long (maximum 400 days).	Periodo demasiado largo (máximo 400 días).	Periodo troppo lungo (massimo 400 giorni).
+E	Employé introuvable.	Employee not found.	Empleado no encontrado.	Dipendente non trovato.
+E	Employée introuvable.	Employee not found.	Empleada no encontrada.	Dipendente non trovata.
+E	Versement introuvable.	Payment not found.	Pago no encontrado.	Versamento non trovato.
+E	Aucun paiement enregistré pour cette semaine.	No payment recorded for this week.	Ningún pago registrado para esta semana.	Nessun pagamento registrato per questa settimana.
+E	Endpoint désactivé. Utilisez les versements (Paiements employés).	Endpoint disabled. Use payments (Employee payments).	Endpoint desactivado. Use los pagos (Pagos a empleados).	Endpoint disattivato. Usa i versamenti (Pagamenti dipendenti).
+E	Semaine invalide (du lundi au dimanche).	Invalid week (Monday to Sunday).	Semana no válida (de lunes a domingo).	Settimana non valida (da lunedì a domenica).
+E	Choisissez la date de paiement.	Choose the payment date.	Elija la fecha de pago.	Scegli la data di pagamento.
+E	Le montant avant taxes doit être supérieur à 0.	The amount before tax must be greater than 0.	El importe antes de impuestos debe ser mayor que 0.	L'importo prima delle imposte deve essere maggiore di 0.
+E	Cette semaine n'est pas validée.	This week has not been approved.	Esta semana no está validada.	Questa settimana non è convalidata.
+P	Le montant avant taxes ({0} $) dépasse le total sélectionné ({1} $).	The amount before tax ({0} $) exceeds the selected total ({1} $).	El importe antes de impuestos ({0} $) supera el total seleccionado ({1} $).	L'importo prima delle imposte ({0} $) supera il totale selezionato ({1} $).
+P	Le montant avant taxes ({0} $) dépasse le reste à verser : {1} $ (total sélectionné {2} $ − déjà versé {3} $).	The amount before tax ({0} $) exceeds the remaining balance: {1} $ (selected total {2} $ − already paid {3} $).	El importe antes de impuestos ({0} $) supera el resto por pagar: {1} $ (total seleccionado {2} $ − ya pagado {3} $).	L'importo prima delle imposte ({0} $) supera il residuo da versare: {1} $ (totale selezionato {2} $ − già versato {3} $).
+E	Date de paiement invalide.	Invalid payment date.	Fecha de pago no válida.	Data di pagamento non valida.
+E	Choisissez la date de paiement avant de cocher « Paiement transféré ».	Choose the payment date before ticking “Payment transferred”.	Elija la fecha de pago antes de marcar «Pago transferido».	Scegli la data di pagamento prima di spuntare «Pagamento trasferito».
+P	Versement de {0} $ marqué transféré	Payment of {0} $ marked as transferred	Pago de {0} $ marcado como transferido	Versamento di {0} $ contrassegnato come trasferito
+P	Versement de {0} $ remis « à transférer »	Payment of {0} $ set back to “to transfer”	Pago de {0} $ devuelto a «por transferir»	Versamento di {0} $ riportato a «da trasferire»
+P	Versement de {0} $ annulé	Payment of {0} $ cancelled	Pago de {0} $ anulado	Versamento di {0} $ annullato
+E	Enregistrement annulé	Record cancelled	Registro anulado	Registrazione annullata
+E	Employé ou compagnie introuvable.	Employee or company not found.	Empleado o empresa no encontrado.	Dipendente o azienda non trovato.
+E	Le taux horaire ne peut pas être négatif.	The hourly rate cannot be negative.	La tarifa por hora no puede ser negativa.	La tariffa oraria non può essere negativa.
+E	L'employé n'est pas affecté à cette compagnie.	The employee is not assigned to this company.	El empleado no está asignado a esta empresa.	Il dipendente non è assegnato a questa azienda.
+E	Certains jours ne sont pas autorisés pour cette compagnie.	Some days are not allowed for this company.	Algunos días no están permitidos para esta empresa.	Alcuni giorni non sono consentiti per questa azienda.
+E	Une erreur interne est survenue.	An internal error occurred.	Se produjo un error interno.	Si è verificato un errore interno.
+E	Permission créée.	Permission created.	Permiso creado.	Permesso creato.
+E	Permission supprimée.	Permission deleted.	Permiso eliminado.	Permesso eliminato.
+E	Groupe créé.	Group created.	Grupo creado.	Gruppo creato.
+E	Groupe mis à jour.	Group updated.	Grupo actualizado.	Gruppo aggiornato.
+E	Groupe supprimé.	Group deleted.	Grupo eliminado.	Gruppo eliminato.
+P	Groupe #{0} introuvable.	Group #{0} not found.	Grupo #{0} no encontrado.	Gruppo #{0} non trovato.
+P	La permission « {0} » existe déjà.	The permission “{0}” already exists.	El permiso «{0}» ya existe.	Il permesso «{0}» esiste già.
+P	Permission #{0} introuvable.	Permission #{0} not found.	Permiso #{0} no encontrado.	Permesso #{0} non trovato.
+E	heures incomplètes ou invalides : indiquez le début et la fin de chaque plage (HH:mm)	incomplete or invalid hours: enter the start and end of each time range (HH:mm)	horas incompletas o no válidas: indique el inicio y el fin de cada franja (HH:mm)	ore incomplete o non valide: indica l'inizio e la fine di ogni fascia (HH:mm)
+P	la fin doit être après le début ({0} → {1})	the end must be after the start ({0} → {1})	el fin debe ser posterior al inicio ({0} → {1})	la fine deve essere dopo l'inizio ({0} → {1})
+P	plages qui se chevauchent ({0} et {1})	overlapping time ranges ({0} and {1})	franjas que se solapan ({0} y {1})	fasce che si sovrappongono ({0} e {1})
+E	Note créée.	Note created.	Nota creada.	Nota creata.
+E	Note mise à jour.	Note updated.	Nota actualizada.	Nota aggiornata.
+E	Statut mis à jour.	Status updated.	Estado actualizado.	Stato aggiornato.
+E	Note supprimée.	Note deleted.	Nota eliminada.	Nota eliminata.
+E	Le titre de la note est requis.	The note title is required.	El título de la nota es obligatorio.	Il titolo della nota è obbligatorio.
+E	Note introuvable.	Note not found.	Nota no encontrada.	Nota non trovata.
+E	Type de lien invalide (employee, company ou bill).	Invalid link type (employee, company or bill).	Tipo de vínculo no válido (employee, company o bill).	Tipo di collegamento non valido (employee, company o bill).
+E	L'entité liée est requise.	The linked item is required.	El elemento vinculado es obligatorio.	L'elemento collegato è obbligatorio.
+E	Pointage sauvegardé.	Timesheet saved.	Fichaje guardado.	Timbratura salvata.
+P	Validation de la semaine du {0} annulée.	Approval of the week of {0} cancelled.	Validación de la semana del {0} anulada.	Convalida della settimana del {0} annullata.
+P	Semaine du {0} validée. Le pointage est maintenant verrouillé.	Week of {0} approved. The timesheet is now locked.	Semana del {0} validada. El fichaje queda ahora bloqueado.	Settimana del {0} convalidata. La timbratura è ora bloccata.
+P	Design inconnu. Valeurs possibles : {0}.	Unknown design. Possible values: {0}.	Diseño desconocido. Valores posibles: {0}.	Design sconosciuto. Valori possibili: {0}.
+E	Aucune fiche employé pour enregistrer la préférence.	No employee record to save the preference to.	No hay ficha de empleado donde guardar la preferencia.	Nessuna scheda dipendente in cui salvare la preferenza.
+E	Confirmation manquante : saisir SUPPRIMER.	Confirmation missing: type SUPPRIMER.	Falta la confirmación: escriba SUPPRIMER.	Conferma mancante: digita SUPPRIMER.
+P	{0} (référence {1})	{0} (reference {1})	{0} (referencia {1})	{0} (riferimento {1})
+E	La recherche a échoué.	The search failed.	La búsqueda falló.	La ricerca non è riuscita.
+P	{0} — semaine du {1}	{0} — week of {1}	{0} — semana del {1}	{0} — settimana del {1}
+P	Enregistré le {0} UTC — versement {1} $	Recorded on {0} UTC — payment {1} $	Registrado el {0} UTC — pago {1} $	Registrato il {0} UTC — versamento {1} $
+P	Enregistré le {0} UTC — versement {1} $ — {2}	Recorded on {0} UTC — payment {1} $ — {2}	Registrado el {0} UTC — pago {1} $ — {2}	Registrato il {0} UTC — versamento {1} $ — {2}
+P	{0} — du {1#} au {2#}	{0} — from {1} to {2}	{0} — del {1} al {2}	{0} — dal {1} al {2}
+P	{0} versement(s) — {1} $ avant taxes — {2} ligne(s) d'historique	{0} payment(s) — {1} $ before tax — {2} history line(s)	{0} pago(s) — {1} $ antes de impuestos — {2} línea(s) de historial	{0} versamento/i — {1} $ prima delle imposte — {2} riga/righe di cronologia
+E	L’analyse des références a échoué.	The reference check failed.	El análisis de las referencias falló.	L'analisi dei riferimenti non è riuscita.
+E	L’analyse des références a échoué : rien n’a été supprimé.	The reference check failed: nothing was deleted.	El análisis de las referencias falló: no se eliminó nada.	L'analisi dei riferimenti non è riuscita: non è stato eliminato nulla.
+E	La suppression a échoué : rien n’a été supprimé en base.	The deletion failed: nothing was deleted from the database.	La eliminación falló: no se eliminó nada de la base de datos.	L'eliminazione non è riuscita: non è stato eliminato nulla dal database.
+P	Fichier non supprimé : {0} (référence {1}) — à effacer manuellement.	File not deleted: {0} (reference {1}) — to be removed manually.	Archivo no eliminado: {0} (referencia {1}) — debe borrarse manualmente.	File non eliminato: {0} (riferimento {1}) — da cancellare manualmente.
+E	Entreprise non précisée.	Business not specified.	Empresa no indicada.	Impresa non specificata.
+P	Facture {0!}	Invoice {0}	Factura {0}	Fattura {0}
+E	Paiement introuvable.	Payment not found.	Pago no encontrado.	Pagamento non trovato.
+P	Paiements de {0} — du {1} au {2}	Payments of {0} — from {1} to {2}	Pagos de {0} — del {1} al {2}	Pagamenti di {0} — dal {1} al {2}
+E	Versements (transferts)	Payments (transfers)	Pagos (transferencias)	Versamenti (trasferimenti)
+P	{0} $ transféré	{0} $ transferred	{0} $ transferido	{0} $ trasferito
+P	{0} $ à transférer	{0} $ to transfer	{0} $ por transferir	{0} $ da trasferire
+E	Historique des enregistrements	Record history	Historial de registros	Cronologia delle registrazioni
+E	La semaine redeviendra « non payée » : les journées pourront être versées de nouveau.	The week will become “unpaid” again: the days can be paid again.	La semana volverá a estar «no pagada»: los días podrán pagarse de nuevo.	La settimana tornerà «non pagata»: le giornate potranno essere versate di nuovo.
+E	Ligne d'historique introuvable.	History line not found.	Línea de historial no encontrada.	Riga di cronologia non trovata.
+P	Ligne d'historique du {0} UTC — {1}, semaine du {2}	History line of {0} UTC — {1}, week of {2}	Línea de historial del {0} UTC — {1}, semana del {2}	Riga di cronologia del {0} UTC — {1}, settimana del {2}
+E	Ligne d'historique	History line	Línea de historial	Riga di cronologia
+P	versement {0} $	payment {0} $	pago {0} $	versamento {0} $
+P	versement {0} $ — {1}	payment {0} $ — {1}	pago {0} $ — {1}	versamento {0} $ — {1}
+E	Seule cette ligne de l'historique est supprimée : les versements enregistrés pour la semaine ne changent pas.	Only this history line is deleted: the payments recorded for the week do not change.	Solo se elimina esta línea del historial: los pagos registrados para la semana no cambian.	Viene eliminata solo questa riga della cronologia: i versamenti registrati per la settimana non cambiano.
+E	Type d'élément invalide (bill | employee | company | paymentWeek | paymentHistory).	Invalid item type (bill | employee | company | paymentWeek | paymentHistory).	Tipo de elemento no válido (bill | employee | company | paymentWeek | paymentHistory).	Tipo di elemento non valido (bill | employee | company | paymentWeek | paymentHistory).
+E	Identifiants de messagerie (ancienne table)	Messaging credentials (old table)	Credenciales de mensajería (tabla antigua)	Credenziali di messaggistica (vecchia tabella)
+E	Clients (ancienne table)	Clients (old table)	Clientes (tabla antigua)	Clienti (vecchia tabella)
+E	Travaux (ancienne table)	Jobs (old table)	Trabajos (tabla antigua)	Lavori (vecchia tabella)
+E	Lignes de facture	Invoice lines	Líneas de factura	Righe di fattura
+E	PDF / pièces jointes de factures	Invoice PDFs / attachments	PDF / adjuntos de facturas	PDF / allegati delle fatture
+E	Liens d'adresse	Address links	Vínculos de dirección	Collegamenti di indirizzo
+E	Affectations aux compagnies	Company assignments	Asignaciones a empresas	Assegnazioni alle aziende
+E	Tarifs employé	Employee rates	Tarifas del empleado	Tariffe del dipendente
+E	Paiements employé	Employee payments	Pagos al empleado	Pagamenti al dipendente
+E	Historique des paiements	Payment history	Historial de pagos	Cronologia dei pagamenti
+E	Validations de semaines	Week approvals	Validaciones de semanas	Convalide delle settimane
+E	Détail des validations	Approval details	Detalle de las validaciones	Dettaglio delle convalide
+E	Fichiers de l'employé	Employee files	Archivos del empleado	File del dipendente
+E	Identifiants de connexion	Sign-in credentials	Credenciales de acceso	Credenziali di accesso
+E	Appartenance aux groupes	Group memberships	Pertenencia a grupos	Appartenenza ai gruppi
+E	Employés dont il était le responsable (responsable retiré)	Employees they were responsible for (manager removed)	Empleados de los que era responsable (responsable retirado)	Dipendenti di cui era responsabile (responsabile rimosso)
+E	Validations faites par lui (validateur retiré)	Approvals made by them (approver removed)	Validaciones hechas por él (validador retirado)	Convalide fatte da lui (convalidatore rimosso)
+E	Fichiers sur disque	Files on disk	Archivos en disco	File su disco
+E	Un autre employé porte le même nom : seuls les fichiers enregistrés de cet employé sont effacés, pas le dossier partagé (ex. T4A).	Another employee has the same name: only this employee's recorded files are erased, not the shared folder (e.g. T4A).	Otro empleado tiene el mismo nombre: solo se borran los archivos registrados de este empleado, no la carpeta compartida (p. ej., T4A).	Un altro dipendente ha lo stesso nome: vengono cancellati solo i file registrati di questo dipendente, non la cartella condivisa (es. T4A).
+E	Dossier de l'employé sur disque (fichiers, T4A)	Employee folder on disk (files, T4A)	Carpeta del empleado en disco (archivos, T4A)	Cartella del dipendente su disco (file, T4A)
+E	Planning / tarifs de la compagnie	Company schedule / rates	Planificación / tarifas de la empresa	Pianificazione / tariffe dell'azienda
+E	Tarifs employés chez la compagnie	Employee rates at the company	Tarifas de empleados en la empresa	Tariffe dei dipendenti presso l'azienda
+E	Affectations d'employés	Employee assignments	Asignaciones de empleados	Assegnazioni di dipendenti
+E	Pointages chez la compagnie	Timesheets at the company	Fichajes en la empresa	Timbrature presso l'azienda
+E	Liens vers des charges	Links to expenses	Vínculos con gastos	Collegamenti a spese
+E	Charges propres à la compagnie	Expenses specific to the company	Gastos propios de la empresa	Spese proprie dell'azienda
+E	Documents de ces charges	Documents of these expenses	Documentos de esos gastos	Documenti di queste spese
+E	Dossiers de documents de charges	Expense document folders	Carpetas de documentos de gastos	Cartelle dei documenti delle spese
+P	Le code « {0} » est aussi utilisé par une autre compagnie : seules les factures enregistrées sous l'identifiant de cette compagnie sont supprimées.	The code “{0}” is also used by another company: only the invoices recorded under this company's identifier are deleted.	El código «{0}» también lo usa otra empresa: solo se eliminan las facturas registradas con el identificador de esta empresa.	Il codice «{0}» è usato anche da un'altra azienda: vengono eliminate solo le fatture registrate con l'identificativo di questa azienda.
+E	Historique de communication	Communication history	Historial de comunicación	Cronologia delle comunicazioni
+E	Enregistrements d'appels sur disque	Call recordings on disk	Grabaciones de llamadas en disco	Registrazioni delle chiamate su disco
+E	Trace des écoutes d'enregistrements	Recording playback log	Registro de escuchas de grabaciones	Traccia degli ascolti delle registrazioni
+E	Pièces jointes	Attachments	Archivos adjuntos	Allegati
+E	Pièces jointes sur disque	Attachments on disk	Archivos adjuntos en disco	Allegati su disco
+E	Liens de notes	Note links	Vínculos de notas	Collegamenti delle note
+E	Notes (liées uniquement à cet élément)	Notes (linked only to this item)	Notas (vinculadas solo a este elemento)	Note (collegate solo a questo elemento)
+E	Notes rédigées par lui (auteur retiré)	Notes written by them (author removed)	Notas redactadas por él (autor retirado)	Note scritte da lui (autore rimosso)
+E	Serveur SMTP manquant.	SMTP server missing.	Falta el servidor SMTP.	Server SMTP mancante.
+P	Port SMTP non autorisé ({0}). Ports acceptés : {1}.	SMTP port not allowed ({0}). Accepted ports: {1}.	Puerto SMTP no permitido ({0}). Puertos aceptados: {1}.	Porta SMTP non consentita ({0}). Porte accettate: {1}.
+E	Serveur SMTP introuvable (nom non résolu).	SMTP server not found (name not resolved).	Servidor SMTP no encontrado (nombre no resuelto).	Server SMTP non trovato (nome non risolto).
+E	Serveur SMTP non autorisé : adresse locale ou privée.	SMTP server not allowed: local or private address.	Servidor SMTP no permitido: dirección local o privada.	Server SMTP non consentito: indirizzo locale o privato.
+P	Impossible de charger la configuration SMTP: {0}	Unable to load the SMTP configuration: {0}	No se puede cargar la configuración SMTP: {0}	Impossibile caricare la configurazione SMTP: {0}
+E	Configuration SMTP manquante (SmtpServer vide). Configurez le serveur SMTP dans Paramètres → Configuration.	SMTP configuration missing (SmtpServer empty). Set the SMTP server in Settings → Configuration.	Falta la configuración SMTP (SmtpServer vacío). Configure el servidor SMTP en Ajustes → Configuración.	Configurazione SMTP mancante (SmtpServer vuoto). Configura il server SMTP in Impostazioni → Configurazione.
+E	Adresse d'expédition manquante (SmtpUser et CompanyEmail vides).	Sender address missing (SmtpUser and CompanyEmail empty).	Falta la dirección de envío (SmtpUser y CompanyEmail vacíos).	Indirizzo del mittente mancante (SmtpUser e CompanyEmail vuoti).
+E	Aucun destinataire valide fourni.	No valid recipient provided.	No se indicó ningún destinatario válido.	Nessun destinatario valido fornito.
+P	Échec authentification SMTP — vérifiez l'utilisateur et le mot de passe. ({0})	SMTP authentication failed — check the user and password. ({0})	Fallo de autenticación SMTP — compruebe el usuario y la contraseña. ({0})	Autenticazione SMTP non riuscita — verifica l'utente e la password. ({0})
+P	Erreur SMTP {0}: {1}	SMTP error {0}: {1}	Error SMTP {0}: {1}	Errore SMTP {0}: {1}
+P	Impossible de contacter le serveur SMTP {0} — vérifiez le serveur et le port. ({1})	Unable to reach the SMTP server {0} — check the server and port. ({1})	No se puede contactar con el servidor SMTP {0} — compruebe el servidor y el puerto. ({1})	Impossibile contattare il server SMTP {0} — verifica il server e la porta. ({1})
+P	Délai dépassé (30s) lors de la connexion à {0}.	Timed out (30s) while connecting to {0}.	Tiempo de espera agotado (30 s) al conectar con {0}.	Tempo scaduto (30 s) durante la connessione a {0}.
+P	Erreur inattendue: {0} — {1}	Unexpected error: {0} — {1}	Error inesperado: {0} — {1}	Errore imprevisto: {0} — {1}
+E	Envoi de courriels désactivé en STAGING (aucune adresse Email:RedirectTo configurée).	Email sending disabled in STAGING (no Email:RedirectTo address configured).	Envío de correos desactivado en STAGING (ninguna dirección Email:RedirectTo configurada).	Invio di email disattivato in STAGING (nessun indirizzo Email:RedirectTo configurato).
+E	Carte inconnue.	Unknown card.	Tarjeta desconocida.	Scheda sconosciuta.
+E	Format période invalide. Attendu : YYYY-MM	Invalid period format. Expected: YYYY-MM	Formato de periodo no válido. Esperado: YYYY-MM	Formato del periodo non valido. Atteso: YYYY-MM
+E	Format date invalide. Attendu : YYYY-MM-DD	Invalid date format. Expected: YYYY-MM-DD	Formato de fecha no válido. Esperado: YYYY-MM-DD	Formato della data non valido. Atteso: YYYY-MM-DD
+E	La date de début doit être antérieure à la date de fin.	The start date must be earlier than the end date.	La fecha de inicio debe ser anterior a la fecha de fin.	La data di inizio deve essere anteriore alla data di fine.
+E	Fournir ?period=YYYY-MM ou ?from=YYYY-MM-DD&to=YYYY-MM-DD	Provide ?period=YYYY-MM or ?from=YYYY-MM-DD&to=YYYY-MM-DD	Indique ?period=YYYY-MM o ?from=YYYY-MM-DD&to=YYYY-MM-DD	Fornire ?period=YYYY-MM oppure ?from=YYYY-MM-DD&to=YYYY-MM-DD
+E	Non comptée : bi-hebdo sans date de début	Not counted: biweekly without a start date	No contada: quincenal sin fecha de inicio	Non conteggiata: bisettimanale senza data di inizio
+E	N° facture	Invoice no.	N.º de factura	N. fattura
+E	Émise le	Issued on	Emitida el	Emessa il
+E	Sans taxes	Before tax	Sin impuestos	Senza imposte
+E	Avec taxes	With tax	Con impuestos	Con imposte
+P	Total : {0} ligne{1}	Total: {0} row{1}	Total: {0} línea{1}	Totale: {0} rig{1|a|he}
+P	Total : {0} employé{1}	Total: {0} employee{1}	Total: {0} empleado{1}	Totale: {0} dipendent{1|e|i}
+P	Total : {0} compagnie{1}	Total: {0} compan{1|y|ies}	Total: {0} empresa{1}	Totale: {0} aziend{1|a|e}
+P	{0} Taxes : celles enregistrées avec chaque paiement.	{0} Taxes: those recorded with each payment.	{0} Impuestos: los registrados con cada pago.	{0} Imposte: quelle registrate con ogni pagamento.
+P	{0} Taxes selon le profil de chaque employé : TPS s'il a un numéro TPS, TVQ s'il a un numéro TVQ.	{0} Taxes according to each employee's profile: GST if they have a GST number, QST if they have a QST number.	{0} Impuestos según el perfil de cada empleado: TPS si tiene número de TPS, TVQ si tiene número de TVQ.	{0} Imposte secondo il profilo di ogni dipendente: TPS se ha un numero TPS, TVQ se ha un numero TVQ.
+E	Numéro TPS	GST number	Número de TPS	Numero TPS
+E	Numéro TVQ	QST number	Número de TVQ	Numero TVQ
+E	Semaines (lundi)	Weeks (Monday)	Semanas (lunes)	Settimane (lunedì)
+P	TPS ({0} %)	GST ({0}%)	TPS ({0} %)	TPS ({0} %)
+P	TVQ ({0} %)	QST ({0}%)	TVQ ({0} %)	TVQ ({0} %)
+E	Total théorique à facturer	Theoretical total to invoice	Total teórico por facturar	Totale teorico da fatturare
+E	Pour chaque compagnie active : jours cochés dans son planning pendant la période × son prix. Les taxes (taux de la configuration) sont calculées sur le total.	For each active company: days ticked in its schedule during the period × its price. Taxes (rates from the settings) are calculated on the total.	Para cada empresa activa: días marcados en su planificación durante el periodo × su precio. Los impuestos (tipos de la configuración) se calculan sobre el total.	Per ogni azienda attiva: giorni spuntati nella sua pianificazione durante il periodo × il suo prezzo. Le imposte (aliquote della configurazione) sono calcolate sul totale.
+E	Jours planifiés	Scheduled days	Días planificados	Giorni pianificati
+E	Total des factures envoyées	Total of invoices sent	Total de facturas enviadas	Totale delle fatture inviate
+P	Les factures du mois {0} qui sont marquées envoyées. Un avoir suit sa facture d'origine et vient en déduction.	The invoices of month {0} that are marked as sent. A credit note follows its original invoice and is deducted.	Las facturas del mes {0} marcadas como enviadas. Un abono sigue a su factura de origen y se deduce.	Le fatture del mese {0} contrassegnate come inviate. Una nota di credito segue la fattura di origine e viene dedotta.
+E	Les factures émises pendant l'intervalle qui sont marquées envoyées. Un avoir suit sa facture d'origine et vient en déduction.	The invoices issued during the interval that are marked as sent. A credit note follows its original invoice and is deducted.	Las facturas emitidas durante el intervalo marcadas como enviadas. Un abono sigue a su factura de origen y se deduce.	Le fatture emesse nell'intervallo contrassegnate come inviate. Una nota di credito segue la fattura di origine e viene dedotta.
+E	Envoyée le	Sent on	Enviada el	Inviata il
+E	Total payé	Total paid	Total pagado	Totale pagato
+P	Les factures du mois {0} qui sont marquées payées. Un avoir suit sa facture d'origine : l'avoir d'une facture payée vient en déduction ici.	The invoices of month {0} that are marked as paid. A credit note follows its original invoice: the credit note of a paid invoice is deducted here.	Las facturas del mes {0} marcadas como pagadas. Un abono sigue a su factura de origen: el abono de una factura pagada se deduce aquí.	Le fatture del mese {0} contrassegnate come pagate. Una nota di credito segue la fattura di origine: la nota di credito di una fattura pagata viene dedotta qui.
+E	Les factures émises pendant l'intervalle qui sont marquées payées. Un avoir suit sa facture d'origine : l'avoir d'une facture payée vient en déduction ici.	The invoices issued during the interval that are marked as paid. A credit note follows its original invoice: the credit note of a paid invoice is deducted here.	Las facturas emitidas durante el intervalo marcadas como pagadas. Un abono sigue a su factura de origen: el abono de una factura pagada se deduce aquí.	Le fatture emesse nell'intervallo contrassegnate come pagate. Una nota di credito segue la fattura di origine: la nota di credito di una fattura pagata viene dedotta qui.
+E	Payée le	Paid on	Pagada el	Pagata il
+E	Total en attente de paiement	Total awaiting payment	Total pendiente de pago	Totale in attesa di pagamento
+P	Les factures du mois {0} qui ne sont pas payées. Un avoir suit sa facture d'origine : seuls les avoirs des factures non payées viennent en déduction.	The invoices of month {0} that are not paid. A credit note follows its original invoice: only the credit notes of unpaid invoices are deducted.	Las facturas del mes {0} que no están pagadas. Un abono sigue a su factura de origen: solo se deducen los abonos de las facturas no pagadas.	Le fatture del mese {0} non pagate. Una nota di credito segue la fattura di origine: vengono dedotte solo le note di credito delle fatture non pagate.
+E	Les factures émises pendant l'intervalle qui ne sont pas payées. Un avoir suit sa facture d'origine : seuls les avoirs des factures non payées viennent en déduction.	The invoices issued during the interval that are not paid. A credit note follows its original invoice: only the credit notes of unpaid invoices are deducted.	Las facturas emitidas durante el intervalo que no están pagadas. Un abono sigue a su factura de origen: solo se deducen los abonos de las facturas no pagadas.	Le fatture emesse nell'intervallo non pagate. Una nota di credito segue la fattura di origine: vengono dedotte solo le note di credito delle fatture non pagate.
+E	Charges employés	Employee costs	Costes de empleados	Costi dei dipendenti
+E	Paie de tous les pointages de la période, validés ou non.	Pay for all timesheets in the period, approved or not.	Pago de todos los fichajes del periodo, validados o no.	Paga di tutte le timbrature del periodo, convalidate o meno.
+E	Paiements employés à effectuer	Employee payments to make	Pagos a empleados por efectuar	Pagamenti ai dipendenti da effettuare
+E	Montant qui devrait être payé : paie des journées de la période qui appartiennent à une semaine validée (comme la page Paiements employés ; les journées d'une semaine qui débordent sur un autre mois ne sont pas comptées).	Amount that should be paid: pay for the days in the period that belong to an approved week (as on the Employee payments page; days of a week that spill into another month are not counted).	Importe que debería pagarse: pago de los días del periodo que pertenecen a una semana validada (como en la página Pagos a empleados; los días de una semana que pasan a otro mes no se cuentan).	Importo che dovrebbe essere pagato: paga delle giornate del periodo che appartengono a una settimana convalidata (come nella pagina Pagamenti dipendenti; le giornate di una settimana che sconfinano in un altro mese non sono conteggiate).
+E	Paiements employés effectués	Employee payments made	Pagos a empleados efectuados	Pagamenti ai dipendenti effettuati
+E	Versements marqués « Paiement transféré » dans Paiements employés, pour la part qui porte sur des journées de la période.	Payments marked “Payment transferred” in Employee payments, for the part covering days in the period.	Pagos marcados «Pago transferido» en Pagos a empleados, por la parte que corresponde a días del periodo.	Versamenti contrassegnati «Pagamento trasferito» in Pagamenti dipendenti, per la parte relativa a giornate del periodo.
+E	Semaines payées	Weeks paid	Semanas pagadas	Settimane pagate
+E	L'employé n'a pas d'adresse courriel enregistrée.	The employee has no email address on file.	El empleado no tiene dirección de correo registrada.	Il dipendente non ha un indirizzo email registrato.
+P	Feuillet T4A {0#}	T4A slip {0}	Formulario T4A {0}	Modulo T4A {0}
+E	Un employé doit avoir un chef d'équipe.	An employee must have a team leader.	Un empleado debe tener un jefe de equipo.	Un dipendente deve avere un caposquadra.
+E	Un employé ne peut pas être son propre chef d'équipe.	An employee cannot be their own team leader.	Un empleado no puede ser su propio jefe de equipo.	Un dipendente non può essere il caposquadra di se stesso.
+E	Chef d'équipe introuvable.	Team leader not found.	Jefe de equipo no encontrado.	Caposquadra non trovato.
+E	La personne choisie n'est pas chef d'équipe.	The selected person is not a team leader.	La persona elegida no es jefe de equipo.	La persona scelta non è caposquadra.
+E	Boucle impossible : le chef choisi fait partie de l'équipe de cet employé.	Loop not allowed: the selected leader is part of this employee's team.	Bucle imposible: el jefe elegido forma parte del equipo de este empleado.	Ciclo impossibile: il caposquadra scelto fa parte della squadra di questo dipendente.
+P	Cet employé supervise encore {0} personne(s) : réaffectez-les à un autre chef avant de lui retirer le rôle de chef d'équipe.	This employee still supervises {0} person(s): reassign them to another leader before removing the team leader role.	Este empleado todavía supervisa a {0} persona(s): reasígnelas a otro jefe antes de quitarle el rol de jefe de equipo.	Questo dipendente supervisiona ancora {0} persona/e: riassegnale a un altro caposquadra prima di togliergli il ruolo di caposquadra.
+E	Cet employé ne fait pas partie de votre équipe.	This employee is not part of your team.	Este empleado no forma parte de su equipo.	Questo dipendente non fa parte della tua squadra.
+E	Appel introuvable.	Call not found.	Llamada no encontrada.	Chiamata non trovata.
+E	Aucun enregistrement pour cet appel.	No recording for this call.	Ninguna grabación para esta llamada.	Nessuna registrazione per questa chiamata.
+E	Cet appel n'est pas autorisé.	This call is not allowed.	Esta llamada no está permitida.	Questa chiamata non è consentita.
+E	L'identifiant du compte (Account SID) doit commencer par AC et compter 34 caractères.	The account identifier (Account SID) must start with AC and be 34 characters long.	El identificador de la cuenta (Account SID) debe empezar por AC y tener 34 caracteres.	L'identificativo dell'account (Account SID) deve iniziare con AC e contare 34 caratteri.
+E	La clé d'API (API Key SID) doit commencer par SK et compter 34 caractères.	The API key (API Key SID) must start with SK and be 34 characters long.	La clave de API (API Key SID) debe empezar por SK y tener 34 caracteres.	La chiave API (API Key SID) deve iniziare con SK e contare 34 caratteri.
+E	L'application TwiML (TwiML App SID) doit commencer par AP et compter 34 caractères.	The TwiML application (TwiML App SID) must start with AP and be 34 characters long.	La aplicación TwiML (TwiML App SID) debe empezar por AP y tener 34 caracteres.	L'applicazione TwiML (TwiML App SID) deve iniziare con AP e contare 34 caratteri.
+E	Choisissez si les appels sont enregistrés ou non.	Choose whether calls are recorded or not.	Elija si las llamadas se graban o no.	Scegli se le chiamate vengono registrate o no.
+E	Le message d'avis ne peut pas dépasser 500 caractères.	The notice message cannot exceed 500 characters.	El mensaje de aviso no puede superar los 500 caracteres.	Il messaggio di avviso non può superare i 500 caratteri.
+P	La durée de conservation doit être comprise entre 0 et {0} jours.	The retention period must be between 0 and {0} days.	El periodo de conservación debe estar entre 0 y {0} días.	La durata di conservazione deve essere compresa tra 0 e {0} giorni.
+E	Le numéro affiché doit être un numéro du Canada ou des États-Unis, par exemple 514 555-0123.	The displayed number must be a Canadian or US number, for example 514 555-0123.	El número mostrado debe ser un número de Canadá o de Estados Unidos, por ejemplo 514 555-0123.	Il numero visualizzato deve essere un numero del Canada o degli Stati Uniti, per esempio 514 555-0123.
+E	L'adresse du site n'est pas valide.	The site address is not valid.	La dirección del sitio no es válida.	L'indirizzo del sito non è valido.
+E	Pour activer la téléphonie, renseignez le compte, le jeton d'authentification, la clé d'API et son secret, l'application TwiML et le numéro affiché.	To enable telephony, fill in the account, the authentication token, the API key and its secret, the TwiML application and the displayed number.	Para activar la telefonía, indique la cuenta, el token de autenticación, la clave de API y su secreto, la aplicación TwiML y el número mostrado.	Per attivare la telefonia, indica l'account, il token di autenticazione, la chiave API e il suo segreto, l'applicazione TwiML e il numero visualizzato.
+E	L'adresse du site est manquante : rechargez la page et enregistrez de nouveau.	The site address is missing: reload the page and save again.	Falta la dirección del sitio: recargue la página y guarde de nuevo.	Manca l'indirizzo del sito: ricarica la pagina e salva di nuovo.
+E	Saisissez le message d'avis lu à la personne appelée : elle doit être informée que l'appel est enregistré.	Enter the notice message read to the person called: they must be told that the call is recorded.	Escriba el mensaje de aviso que se lee a la persona llamada: debe ser informada de que la llamada se graba.	Inserisci il messaggio di avviso letto alla persona chiamata: deve essere informata che la chiamata è registrata.
+E	Le secret de la clé d'API est illisible : saisissez-le de nouveau dans la Configuration.	The API key secret cannot be read: enter it again in the Settings.	El secreto de la clave de API es ilegible: escríbalo de nuevo en la Configuración.	Il segreto della chiave API è illeggibile: inseriscilo di nuovo nella Configurazione.
+E	Numéro refusé : seuls les numéros du Canada et des États-Unis sont acceptés, par exemple 514 555-0123.	Number refused: only Canadian and US numbers are accepted, for example 514 555-0123.	Número rechazado: solo se aceptan números de Canadá y de Estados Unidos, por ejemplo 514 555-0123.	Numero rifiutato: sono accettati solo numeri del Canada e degli Stati Uniti, per esempio 514 555-0123.
+P	Appel à {0}	Call to {0}	Llamada a {0}	Chiamata a {0}
+P	Appel au {0}	Call to {0}	Llamada al {0}	Chiamata al {0}
+E	La téléphonie n'est pas configurée.	Telephony is not configured.	La telefonía no está configurada.	La telefonia non è configurata.
+E	La téléphonie n'est pas activée pour votre entreprise.	Telephony is not enabled for your business.	La telefonía no está activada para su empresa.	La telefonia non è attivata per la tua impresa.
+E	Ressource introuvable.	Resource not found.	Recurso no encontrado.	Risorsa non trovata.
+E	Le slug ne peut contenir que des lettres minuscules, chiffres et tirets.	The slug may only contain lowercase letters, digits and hyphens.	El slug solo puede contener letras minúsculas, cifras y guiones.	Lo slug può contenere solo lettere minuscole, cifre e trattini.
+P	Le slug '{0}' est déjà utilisé.	The slug '{0}' is already in use.	El slug '{0}' ya está en uso.	Lo slug '{0}' è già in uso.
+E	Ce nom d'entreprise est déjà utilisé. Choisissez-en un autre.	This business name is already in use. Choose another one.	Este nombre de empresa ya está en uso. Elija otro.	Questo nome di impresa è già in uso. Scegline un altro.
+E	Accès complet	Full access	Acceso completo	Accesso completo
+E	Tenant introuvable ou inactif.	Tenant not found or inactive.	Tenant no encontrado o inactivo.	Tenant non trovato o inattivo.
+E	Employé introuvable dans ce tenant.	Employee not found in this tenant.	Empleado no encontrado en este tenant.	Dipendente non trovato in questo tenant.
+E	EmployeeName requis si aucun employé sélectionné.	EmployeeName is required when no employee is selected.	EmployeeName es obligatorio si no se selecciona ningún empleado.	EmployeeName richiesto se non è selezionato alcun dipendente.
+E	Tenant introuvable.	Tenant not found.	Tenant no encontrado.	Tenant non trovato.
+E	Secret TOTP invalide (Base32 attendu).	Invalid TOTP secret (Base32 expected).	Secreto TOTP no válido (se espera Base32).	Segreto TOTP non valido (atteso Base32).
+E	Le contenu du fichier ne correspond pas à son extension.	The file content does not match its extension.	El contenido del archivo no corresponde a su extensión.	Il contenuto del file non corrisponde alla sua estensione.
+E	Cette semaine est déjà validée.	This week is already approved.	Esta semana ya está validada.	Questa settimana è già convalidata.
+E	EmployeeId manquant.	EmployeeId missing.	Falta EmployeeId.	EmployeeId mancante.
+E	Ce pointage a été validé par l'admin et ne peut plus être modifié.	This timesheet has been approved by the admin and can no longer be edited.	Este fichaje fue validado por el administrador y ya no se puede modificar.	Questa timbratura è stata convalidata dall'amministratore e non può più essere modificata.
+P	Aucun taux horaire employé pour « {0} » : définissez le taux de l'employé (Tarifs employés) ou le taux employé par défaut de la compagnie.	No employee hourly rate for “{0}”: set the employee's rate (Employee rates) or the company's default employee rate.	No hay tarifa por hora del empleado para «{0}»: defina la tarifa del empleado (Tarifas de empleados) o la tarifa de empleado predeterminada de la empresa.	Nessuna tariffa oraria del dipendente per «{0}»: definisci la tariffa del dipendente (Tariffe dipendenti) o la tariffa dipendente predefinita dell'azienda.
+P	Aucun taux horaire client pour « {0} » (fiche compagnie).	No client hourly rate for “{0}” (company record).	No hay tarifa por hora del cliente para «{0}» (ficha de la empresa).	Nessuna tariffa oraria del cliente per «{0}» (scheda azienda).
+P	Exporté le {0}	Exported on {0}	Exportado el {0}	Esportato il {0}
+E	page	page	página	pagina
+E	Feuille	Sheet	Hoja	Foglio
+P	Facture {0!} — {1}	Invoice {0} — {1}	Factura {0} — {1}	Fattura {0} — {1}
+E	Bonjour,	Hello,	Buenos días:	Buongiorno,
+P	Veuillez trouver en pièce jointe la facture {0} d'un montant de {1} pour la période {2}.	Please find attached invoice {0} in the amount of {1} for the period {2}.	Adjunto encontrará la factura {0} por un importe de {1} correspondiente al periodo {2}.	In allegato trova la fattura {0} per un importo di {1} relativa al periodo {2}.
+E	Nous vous rappelons que les factures suivantes sont en attente de paiement :	We remind you that the following invoices are awaiting payment:	Le recordamos que las siguientes facturas están pendientes de pago:	Le ricordiamo che le seguenti fatture sono in attesa di pagamento:
+E	Nous vous saurions gré de bien vouloir régulariser ces paiements dans les meilleurs délais.	We would be grateful if you could settle these payments as soon as possible.	Le agradeceríamos que regularizara estos pagos a la mayor brevedad.	Le saremmo grati se volesse regolarizzare questi pagamenti al più presto.
+P	NB : Veuillez indiquer le numéro de facture ({0}) lors de votre paiement afin d'en assurer un bon suivi.	Note: please quote the invoice number ({0}) with your payment so that it can be tracked properly.	Nota: indique el número de factura ({0}) al realizar el pago para garantizar su correcto seguimiento.	NB: indichi il numero di fattura ({0}) al momento del pagamento per garantirne il corretto tracciamento.
+E	Merci pour votre confiance.	Thank you for your trust.	Gracias por su confianza.	Grazie per la fiducia.
+E	Cordialement,	Regards,	Atentamente,	Cordiali saluti,
+P	— le {0#} à {1#}	— on {0} at {1}	— el {0} a las {1}	— il {0} alle {1}
+P	{0#} à {1#}	{0} at {1}	{0} a las {1}	{0} alle {1}
+P	{0#} compagnies	{0} companies	{0} empresas	{0} aziende
+E	compagnies	companies	empresas	aziende
+E	Filtrer par compagnie	Filter by company	Filtrar por empresa	Filtra per azienda
+P	— {0#} facture{1} sur {2#}	— {0} invoice{1} of {2}	— {0} factura{1} de {2}	— {0} fattur{1|a|e} su {2}
+P	Aucune facture « {0} » pour les compagnies choisies.	No “{0}” invoice for the selected companies.	Ninguna factura «{0}» para las empresas elegidas.	Nessuna fattura «{0}» per le aziende scelte.

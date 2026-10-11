@@ -1,0 +1,280 @@
+1181	Company email	Correo de la empresa	Email azienda
+1182	Contact email	Correo del contacto	Email contatto
+1183	Contact phone	Tel. del contacto	Tel. contatto
+1184	Company phone	Teléfono de la empresa	Telefono azienda
+1185	App version	Versión de la app	Versione app
+1186	(no link)	(sin vínculo)	(nessun collegamento)
+1187	File too large (5 MB maximum).	Archivo demasiado grande (máximo 5 MB).	File troppo grande (massimo 5 MB).
+1188	The start date must be before the end date.	La fecha de inicio debe ser anterior a la fecha de fin.	La data di inizio deve precedere la data di fine.
+1189	The file must be a CSV (.csv).	El archivo debe ser un CSV (.csv).	Il file deve essere un CSV (.csv).
+1190	Not validated	No validada	Non convalidata
+1191	not validated	no validada	non convalidata
+1192	validated	validada	convalidata
+1193	This action is permanent.	Esta acción es definitiva.	Questa azione è definitiva.
+1194	Expense created.	Gasto creado.	Spesa creata.
+1195	Expense updated.	Gasto actualizado.	Spesa aggiornata.
+1196	Expense deleted.	Gasto eliminado.	Spesa eliminata.
+1197	The expense date is required.	La fecha del gasto es obligatoria.	La data della spesa è obbligatoria.
+1198	The amount is required.	El importe es obligatorio.	L'importo è obbligatorio.
+1199	The title is required.	El título es obligatorio.	Il titolo è obbligatorio.
+1200	Copies already generated remain; no more will be created.	Las copias ya generadas permanecen; no se creará ninguna más.	Le copie già generate restano; non ne verranno create altre.
+1201	Its document will be deleted too.	Su documento también se eliminará.	Anche il suo documento sarà eliminato.
+1202	Entry added	Entrada añadida	Voce aggiunta
+1203	Entry updated	Entrada modificada	Voce modificata
+1204	Entry deleted	Entrada eliminada	Voce eliminata
+1205	The entry being typed will be lost.	La entrada que está escribiendo se perderá.	La voce in corso di inserimento andrà persa.
+1206	The date is required.	La fecha es obligatoria.	La data è obbligatoria.
+1207	The subject is required.	El asunto es obligatorio.	L'oggetto è obbligatorio.
+1208	Its attachment will be deleted too. This action is permanent.	Su adjunto también se eliminará. Esta acción es definitiva.	Anche il suo allegato sarà eliminato. Questa azione è definitiva.
+1209	this employee	este empleado	questo dipendente
+1210	— the assignments have been reloaded, please check them.	— las asignaciones se han recargado, compruébelas.	— le assegnazioni sono state ricaricate, verificale.
+1211	Abandon the creation?	¿Abandonar la creación?	Abbandonare la creazione?
+1212	Contact not saved:	Contacto no guardado:	Contatto non salvato:
+1213	Enter the contact's name (or clear their other fields): without a name, the contact would not be saved.	Indique el nombre del contacto (o vacíe sus otros campos): sin nombre, el contacto no se guardaría.	Indica il nome del contatto (o svuota gli altri campi): senza nome il contatto non verrebbe salvato.
+1214	The company name is required.	El nombre de la empresa es obligatorio.	Il nome dell'azienda è obbligatorio.
+1215	The information entered will be lost.	La información introducida se perderá.	Le informazioni inserite andranno perse.
+1216	Add an employee	Añadir un empleado	Aggiungi un dipendente
+1217	With its work days and prices.	Con sus días de trabajo y sus precios.	Con i suoi giorni di lavoro e i suoi prezzi.
+1218	Good afternoon	Buenas tardes	Buon pomeriggio
+1219	Set up email sending	Configurar el envío de correos	Configura l'invio delle email
+1220	Create a first client company	Crear una primera empresa cliente	Crea una prima azienda cliente
+1221	Create a first invoice	Crear una primera factura	Crea una prima fattura
+1222	Unable to load the dashboard	No se pudo cargar el panel	Impossibile caricare la dashboard
+1223	Days worked are used for payroll and invoicing.	Los días trabajados sirven para las nóminas y la facturación.	Le giornate lavorate servono per le paghe e la fatturazione.
+1224	Name, address and tax numbers: they appear on your invoices.	Nombre, dirección y números fiscales: aparecen en sus facturas.	Nome, indirizzo e numeri fiscali: compaiono sulle tue fatture.
+1225	Open settings	Abrir la configuración	Apri la configurazione
+1226	To send invoices to clients directly from TimeGuard.	Para enviar las facturas a los clientes directamente desde TimeGuard.	Per inviare le fatture ai clienti direttamente da TimeGuard.
+1227	Then assign them to the companies where they work.	Después, asígnelo a las empresas donde trabaja.	Poi assegnalo alle aziende in cui lavora.
+1228	Fill in your business details	Indicar los datos de su empresa	Compila i dati della tua impresa
+1229	Enter a first timesheet	Introducir un primer fichaje	Inserisci una prima timbratura
+1230	Validate weeks	Validar las semanas	Convalida le settimane
+1231	From validated timesheets.	A partir de los fichajes validados.	A partire dalle timbrature convalidate.
+1232	Unable to load the companies.	No se pudieron cargar las empresas.	Impossibile caricare le aziende.
+1233	Invalid email format.	Formato de correo no válido.	Formato email non valido.
+1234	Invalid phone format.	Formato de teléfono no válido.	Formato telefono non valido.
+1235	Please correct the fields in error.	Corrija los campos con errores.	Correggi i campi in errore.
+1236	Login created.	Credencial creada.	Credenziale creata.
+1237	Login deleted.	Credencial eliminada.	Credenziale eliminata.
+1238	Minimum 10 characters.	Mínimo 10 caracteres.	Minimo 10 caratteri.
+1239	Password: minimum 10 characters.	Contraseña: mínimo 10 caracteres.	Password: minimo 10 caratteri.
+1240	Password reset.	Contraseña restablecida.	Password reimpostata.
+1241	Username required.	Nombre de usuario obligatorio.	Nome utente obbligatorio.
+1242	Select an employee.	Seleccione un empleado.	Seleziona un dipendente.
+1243	network	red	rete
+1244	🔓 Validation cancelled.	🔓 Validación anulada.	🔓 Convalida annullata.
+1245	No employee selected.	Ningún empleado seleccionado.	Nessun dipendente selezionato.
+1246	Editing the employee	Modificación del empleado	Modifica del dipendente
+1247	Some rates are invalid (negative or incorrect value).	Algunas tarifas no son válidas (valor negativo o incorrecto).	Alcune tariffe non sono valide (valore negativo o errato).
+1248	Unable to load the employee's data.	No se pudieron cargar los datos del empleado.	Impossibile caricare i dati del dipendente.
+1249	Pay settings saved for this company.	Remuneración guardada para esta empresa.	Retribuzione salvata per questa azienda.
+1250	Invalid rate.	Tarifa no válida.	Tariffa non valida.
+1251	Unable to read the photo. Try again or use “+ Add”.	No se pudo leer la foto. Inténtelo de nuevo o use «+ Añadir».	Impossibile leggere la foto. Riprova o usa «+ Aggiungi».
+1252	: left to transfer	: resto por transferir	: residuo da trasferire
+1253	: transferred	: transferido	: trasferito
+1254	No day	Ningún día	Nessuna giornata
+1255	Choose the payment date.	Elija la fecha de pago.	Scegli la data di pagamento.
+1256	Outside the displayed period	Fuera del periodo mostrado	Fuori dal periodo visualizzato
+1257	The amount before taxes must be greater than 0.	El importe antes de impuestos debe ser mayor que 0.	L'importo al netto delle imposte deve essere maggiore di 0.
+1258	Not saved	No memorizadas	Non memorizzate
+1259	Payment set back to “to transfer”	Pago devuelto a «por transferir»	Versamento riportato a «da trasferire»
+1260	Key required.	Clave obligatoria.	Chiave obbligatoria.
+1261	Group saved.	Grupo guardado.	Gruppo salvato.
+1262	Group deleted.	Grupo eliminado.	Gruppo eliminato.
+1263	Label required.	Etiqueta obligatoria.	Etichetta obbligatoria.
+1264	New group	Nuevo grupo	Nuovo gruppo
+1265	Permission added.	Permiso añadido.	Permesso aggiunto.
+1266	Permission deleted.	Permiso eliminado.	Permesso eliminato.
+1267	Invoice downloaded (PDF).	Factura descargada (PDF).	Fattura scaricata (PDF).
+1268	Printing invoices	Impresión de facturas	Stampa delle fatture
+1269	Select at least one visible invoice.	Seleccione al menos una factura visible.	Seleziona almeno una fattura visibile.
+1270	No company pending	Ninguna empresa pendiente	Nessuna azienda in attesa
+1271	Already billed	Ya facturada	Già fatturata
+1272	Billing from timesheets	Facturación desde los fichajes	Fatturazione dalle timbrature
+1273	Scheduled days	Días planificados	Giorni pianificati
+1274	Scheduled amount	Importe planificado	Importo pianificato
+1275	Incomplete schedule	Planificación incompleta	Pianificazione incompleta
+1276	Schedule gap	Diferencia con la planificación	Scostamento dalla pianificazione
+1277	Add at least one description line.	Añada al menos una línea de descripción.	Aggiungi almeno una riga di descrizione.
+1278	Invoice saved, but no email contact is set up for this company. Send it from the “Send invoices” page.	Factura guardada, pero no hay ningún contacto de correo configurado para esta empresa. Envíela desde la página «Enviar facturas».	Fattura salvata, ma nessun contatto email è configurato per questa azienda. Inviala dalla pagina «Invia fatture».
+1279	Invoice saved, but sending the email failed. Send it from the “Send invoices” page.	Factura guardada, pero falló el envío del correo. Envíela desde la página «Enviar facturas».	Fattura salvata, ma l'invio dell'email non è riuscito. Inviala dalla pagina «Invia fatture».
+1280	Unable to load the invoice.	No se pudo cargar la factura.	Impossibile caricare la fattura.
+1281	Select a company.	Seleccione una empresa.	Seleziona un'azienda.
+1282	Creating a credit note	Creación de un abono	Creazione di una nota di credito
+1283	Sending the invoice	Envío de la factura	Invio della fattura
+1284	Sent	Enviada	Inviata
+1285	File not found on the server.	Archivo no encontrado en el servidor.	File non trovato sul server.
+1286	File attached successfully.	Archivo adjuntado correctamente.	File allegato correttamente.
+1287	Unpaid	Impagada	Non pagata
+1288	The invoice must be sent before it can be marked as paid	La factura debe enviarse antes de poder marcarla como pagada	La fattura deve essere inviata prima di poter essere contrassegnata come pagata
+1289	Not sent	No enviada	Non inviata
+1290	Opening the invoice	Apertura de la factura	Apertura della fattura
+1291	Invoice payment	Pago de la factura	Pagamento della fattura
+1292	Deleting the invoice	Eliminación de la factura	Eliminazione della fattura
+1293	descending	descendente	decrescente
+1294	sent	enviadas	inviate
+1295	unpaid	impagada	non pagata
+1296	unpaid	impagadas	non pagate
+1297	not sent	no enviadas	non inviate
+1298	paid	pagada	pagata
+1299	paid	pagadas	pagate
+1300	Enter at least one period (e.g. 2026-06).	Introduzca al menos un periodo (p. ej. 2026-06).	Inserisci almeno un periodo (es. 2026-06).
+1301	Select at least one invoice.	Seleccione al menos una factura.	Seleziona almeno una fattura.
+1302	-	-	-
+1303	-	-	-
+1304	-	-	-
+1305	-	-	-
+1306	-	-	-
+1307	-	-	-
+1308	-	-	-
+1309	-	-	-
+1310	-	-	-
+1311	-	-	-
+1312	-	-	-
+1313	-	-	-
+1314	-	-	-
+1315	-	-	-
+1316	-	-	-
+1317	-	-	-
+1318	-	-	-
+1319	-	-	-
+1320	-	-	-
+1321	Invoice sent successfully.	Factura enviada correctamente.	Fattura inviata correttamente.
+1322	-	-	-
+1323	-	-	-
+1324	-	-	-
+1325	-	-	-
+1326	Unable to open the PDF.	No se pudo abrir el PDF.	Impossibile aprire il PDF.
+1327	The message is required.	El mensaje es obligatorio.	Il messaggio è obbligatorio.
+1328	The subject is required.	El asunto es obligatorio.	L'oggetto è obbligatorio.
+1329	-	-	-
+1330	-	-	-
+1331	-	-	-
+1332	-	-	-
+1333	-	-	-
+1334	Please add at least one recipient.	Añada al menos un destinatario.	Aggiungi almeno un destinatario.
+1335	-	-	-
+1336	-	-	-
+1337	-	-	-
+1338	-	-	-
+1339	-	-	-
+1340	-	-	-
+1341	-	-	-
+1342	-	-	-
+1343	-	-	-
+1344	-	-	-
+1345	-	-	-
+1346	-	-	-
+1347	-	-	-
+1348	-	-	-
+1349	-	-	-
+1350	-	-	-
+1351	-	-	-
+1352	-	-	-
+1353	-	-	-
+1354	-	-	-
+1355	Add your companies and employees	Añada sus empresas y empleados	Aggiungi le tue aziende e i tuoi dipendenti
+1356	What is billed, paid and pending, the month's expenses and reconciliation with the bank statement.	Lo facturado, pagado y pendiente, los gastos del mes y la conciliación con el extracto bancario.	Ciò che è fatturato, pagato e in attesa, le spese del mese e la riconciliazione con l'estratto conto.
+1357	Everyone sees what concerns them	Cada uno ve lo que le corresponde	Ognuno vede ciò che lo riguarda
+1358	Each employee enters their days per company. The manager validates the week in one click.	Cada empleado introduce sus días por empresa. El responsable valida la semana con un clic.	Ogni dipendente inserisce le sue giornate per azienda. Il responsabile convalida la settimana con un clic.
+1359	Create your space	Cree su espacio	Crea il tuo spazio
+1360	Invoices in a few minutes	Facturas en unos minutos	Fatture in pochi minuti
+1361	The amount due per week is calculated for you. You track the payments and what is left to transfer.	El importe debido por semana se calcula por usted. Usted sigue los pagos y lo que queda por transferir.	L'importo dovuto per settimana viene calcolato per te. Segui i versamenti e ciò che resta da trasferire.
+1362	Your business name and an administrator account are enough. Your space is activated after approval.	Basta con el nombre de su empresa y una cuenta de administrador. Su espacio se activa tras la validación.	Bastano il nome della tua impresa e un account amministratore. Il tuo spazio viene attivato dopo l'approvazione.
+1363	The dashboard shows you every day what needs your attention.	El panel le muestra cada día lo que requiere su atención.	La dashboard ti mostra ogni giorno ciò che richiede la tua attenzione.
+1364	Access is set through groups and permissions. Your business's data stays separate from the others.	Los accesos se regulan por grupos y permisos. Los datos de su empresa permanecen separados de los demás.	Gli accessi si regolano tramite gruppi e permessi. I dati della tua impresa restano separati dagli altri.
+1365	Invoices are created from validated timesheets, with your prices and taxes, and go out by email.	Las facturas se crean a partir de los fichajes validados, con sus precios e impuestos, y salen por correo.	Le fatture si creano dalle timbrature convalidate, con i tuoi prezzi e le tue imposte, e partono via email.
+1366	Notes, attachments and communication history: everything that was said and sent stays in the same place.	Notas, adjuntos e historial de comunicación: todo lo dicho y enviado queda en el mismo lugar.	Note, allegati e cronologia delle comunicazioni: tutto ciò che è stato detto e inviato resta nello stesso posto.
+1367	Employee payroll	Nóminas de los empleados	Paghe dei dipendenti
+1368	Simple timesheets	Fichaje sencillo	Timbratura semplice
+1369	Client and employee follow-up	Seguimiento de clientes y empleados	Monitoraggio di clienti e dipendenti
+1370	A “Getting started” guide walks you through on the home page.	Un recorrido de «Primeros pasos» le guía en la página de inicio.	Un percorso «Primi passi» ti guida nella pagina iniziale.
+1371	Your figures, without a spreadsheet	Sus cifras, sin hoja de cálculo	I tuoi numeri, senza foglio di calcolo
+1372	No permission assigned. Contact an administrator.	Ningún permiso asignado. Contacte con un administrador.	Nessun permesso assegnato. Contatta un amministratore.
+1373	Verification code incorrect or already used. Wait for the next code.	Código de verificación incorrecto o ya utilizado. Espere al siguiente código.	Codice di verifica errato o già utilizzato. Attendi il codice successivo.
+1374	Login error. Try again.	Error de conexión. Inténtelo de nuevo.	Errore di accesso. Riprova.
+1375	Incorrect credentials.	Credenciales incorrectas.	Credenziali errate.
+1376	Enter the 6-digit verification code.	Introduzca el código de verificación de 6 cifras.	Inserisci il codice di verifica a 6 cifre.
+1377	Too many attempts. Try again in a few minutes.	Demasiados intentos. Inténtelo de nuevo en unos minutos.	Troppi tentativi. Riprova tra qualche minuto.
+1378	Please fill in all the fields.	Rellene todos los campos.	Compila tutti i campi.
+1379	No link	Sin vínculo	Senza collegamento
+1380	They will no longer be able to log in to this business.	Ya no podrá conectarse a esta empresa.	Non potrà più accedere a questa impresa.
+1381	Delete this administrator?	¿Eliminar este administrador?	Eliminare questo amministratore?
+1382	All fields are required.	Todos los campos son obligatorios.	Tutti i campi sono obbligatori.
+1383	⛔ Provider deactivated.	⛔ Proveedor desactivado.	⛔ Fornitore disattivato.
+1384	✅ Administrator created.	✅ Administrador creado.	✅ Amministratore creato.
+1385	✅ Administrator deleted.	✅ Administrador eliminado.	✅ Amministratore eliminato.
+1386	✅ Provider activated.	✅ Proveedor activado.	✅ Fornitore attivato.
+1387	✅ Provider created successfully.	✅ Proveedor creado correctamente.	✅ Fornitore creato correttamente.
+1388	Payment history line	Línea del historial de pagos	Riga della cronologia dei pagamenti
+1389	Employee name or week date (e.g. 2026-09-21)…	Nombre del empleado o fecha de la semana (p. ej. 2026-09-21)…	Nome del dipendente o data della settimana (es. 2026-09-21)…
+1390	Employee name…	Nombre del empleado…	Nome del dipendente…
+1391	Company name or code…	Nombre o código de la empresa…	Nome o codice dell'azienda…
+1392	Invoice no., company or period (e.g. 2026-09)…	N.º de factura, empresa o periodo (p. ej. 2026-09)…	N. fattura, azienda o periodo (es. 2026-09)…
+1393	Employee payment (week)	Pago a empleado (semana)	Pagamento dipendente (settimana)
+1394	your business	su empresa	la tua impresa
+1395	Identifier: lowercase letters, digits and hyphens only.	Identificador: solo letras minúsculas, cifras y guiones.	Identificativo: solo lettere minuscole, cifre e trattini.
+1396	The password must contain at least 10 characters.	La contraseña debe tener al menos 10 caracteres.	La password deve contenere almeno 10 caratteri.
+1397	Please fill in all the required fields.	Rellene todos los campos obligatorios.	Compila tutti i campi obbligatori.
+1398	This reset link is invalid or has expired.	Este enlace de restablecimiento no es válido o ha caducado.	Questo link di reimpostazione non è valido o è scaduto.
+1399	Error while updating the password.	Error al actualizar la contraseña.	Errore durante l'aggiornamento della password.
+1400	The passwords do not match.	Las contraseñas no coinciden.	Le password non corrispondono.
+1401	Invalid link: missing token.	Enlace no válido: falta el token.	Link non valido: token mancante.
+1402	Missing date range.	Falta el intervalo de fechas.	Intervallo di date mancante.
+1403	Company not found.	Empresa no encontrada.	Azienda non trovata.
+1404	Employee not found.	Empleado no encontrado.	Dipendente non trovato.
+1405	Credit notes deducted.	Abonos deducidos.	Note di credito dedotte.
+1406	Employee costs	Costes de empleados	Costi dei dipendenti
+1407	Invoices of the period already paid.	Facturas del periodo ya pagadas.	Fatture del periodo già pagate.
+1408	Invoices of the period not paid.	Facturas del periodo no pagadas.	Fatture del periodo non pagate.
+1409	Amount that should be paid: validated weeks.	Importe que debería pagarse: semanas validadas.	Importo che dovrebbe essere pagato: settimane convalidate.
+1410	Pay for all timesheets of the period.	Paga de todos los fichajes del periodo.	Paga di tutte le timbrature del periodo.
+1411	Employee payments made	Pagos a empleados realizados	Pagamenti dipendenti effettuati
+1412	Employee payments to make	Pagos a empleados por realizar	Pagamenti dipendenti da effettuare
+1413	Payments marked “transferred” in Employee payments.	Pagos marcados como «transferidos» en Pagos a empleados.	Pagamenti contrassegnati «trasferiti» in Pagamenti dipendenti.
+1414	According to the schedule of active companies.	Según la planificación de las empresas activas.	Secondo la pianificazione delle aziende attive.
+1415	Select both dates.	Seleccione las dos fechas.	Seleziona entrambe le date.
+1416	Select a period.	Seleccione un periodo.	Seleziona un periodo.
+1417	Taxes according to each employee's profile (GST / QST number).	Impuestos según el perfil de cada empleado (número TPS / TVQ).	Imposte secondo il profilo di ogni dipendente (numero TPS / TVQ).
+1418	Total invoices sent	Total de facturas enviadas	Totale delle fatture inviate
+1419	Total awaiting payment	Total pendiente de pago	Totale in attesa di pagamento
+1420	Total paid	Total pagado	Totale pagato
+1421	Theoretical total to bill	Total teórico por facturar	Totale teorico da fatturare
+1422	Everything theoretical has been billed	Todo lo teórico está facturado	Tutto il teorico è fatturato
+1423	⚖ Billing comparison	⚖ Comparación de facturación	⚖ Confronto di fatturazione
+1424	🏦 Bank register	🏦 Registro bancario	🏦 Registro bancario
+1425	📒 Accounting register	📒 Registro contable	📒 Registro contabile
+1426	Unable to display the PDF preview.	No se pudo mostrar la vista previa del PDF.	Impossibile visualizzare l'anteprima del PDF.
+1427	Enter a year.	Indique un año.	Indica un anno.
+1428	always download PDFs	descargar siempre los PDF	scarica sempre i PDF
+1429	-	-	-
+1430	-	-	-
+1431	-	-	-
+1432	-	-	-
+1433	-	-	-
+1434	-	-	-
+1435	Team leader	Jefe de equipo	Caposquadra
+1436	Unable to load the notes.	No se pudieron cargar las notas.	Impossibile caricare le note.
+1437	Notes not accessible for this person.	Notas no accesibles para esta persona.	Note non accessibili per questa persona.
+1438	-	-	-
+1439	-	-	-
+1440	-	-	-
+1441	-	-	-
+1442	-	-	-
+1443	-	-	-
+1444	-	-	-
+1445	This file type is not accepted.	Este tipo de archivo no se acepta.	Questo tipo di file non è accettato.
+1446	This item was changed in the meantime. Reload the page, then try again.	Este elemento se ha modificado entretanto. Recargue la página y vuelva a intentarlo.	Questo elemento è stato modificato nel frattempo. Ricarica la pagina, poi riprova.
+1447	This feature is no longer available. Reload the page to use the up-to-date version.	Esta función ya no está disponible. Recargue la página para usar la versión actualizada.	Questa funzione non è più disponibile. Ricarica la pagina per usare la versione aggiornata.
+1448	Unable to reach the server. Check your Internet connection, then try again.	No se puede conectar con el servidor. Compruebe su conexión a Internet y vuelva a intentarlo.	Impossibile connettersi al server. Controlla la connessione Internet, poi riprova.
+1449	The requested item cannot be found. It may have been deleted: reload the page.	No se encuentra el elemento solicitado. Puede que se haya eliminado: recargue la página.	L'elemento richiesto non è stato trovato. Potrebbe essere stato eliminato: ricarica la pagina.
+1450	The file is too large.	El archivo es demasiado grande.	Il file è troppo grande.
+1451	The server is taking too long to respond. Try again in a moment.	El servidor tarda demasiado en responder. Inténtelo de nuevo en un momento.	Il server impiega troppo tempo a rispondere. Riprova tra un momento.
+1452	The service is temporarily unavailable (an update may be in progress). Try again in a minute.	El servicio no está disponible temporalmente (puede que haya una actualización en curso). Inténtelo de nuevo en un minuto.	Il servizio è momentaneamente non disponibile (potrebbe essere in corso un aggiornamento). Riprova tra un minuto.
+1453	The information sent is not valid. Check the fields, then try again.	La información enviada no es válida. Compruebe los campos y vuelva a intentarlo.	Le informazioni inviate non sono valide. Controlla i campi, poi riprova.
+1454	Too many attempts. Wait a moment before trying again.	Demasiados intentos. Espere un momento antes de volver a intentarlo.	Troppi tentativi. Attendi un momento prima di riprovare.
+1455	An error occurred on our side. Try again; if the problem continues, contact your administrator.	Se produjo un error por nuestra parte. Inténtelo de nuevo; si el problema continúa, contacte con su administrador.	Si è verificato un errore da parte nostra. Riprova; se il problema continua, contatta il tuo amministratore.
+1456	An unexpected error occurred. Reload the page, then try again.	Se produjo un error inesperado. Recargue la página y vuelva a intentarlo.	Si è verificato un errore imprevisto. Ricarica la pagina, poi riprova.
+1457	An internal error occurred	Se produjo un error interno	Si è verificato un errore interno
+1458	An internal error occurred.	Se produjo un error interno.	Si è verificato un errore interno.
+1459	Your session has expired. Log in again to continue.	Su sesión ha caducado. Vuelva a conectarse para continuar.	La sessione è scaduta. Accedi di nuovo per continuare.
+1460	You do not have permission to perform this action. Ask your administrator for access.	No tiene permiso para realizar esta acción. Pida acceso a su administrador.	Non hai il permesso di eseguire questa azione. Chiedi l'accesso al tuo amministratore.

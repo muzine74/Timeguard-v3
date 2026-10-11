@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { I18nService } from '../i18n/i18n.service';
 import { downloadBlob } from '../../vue/shared/download';
 
 /**
@@ -42,8 +43,29 @@ const GOLD = 'C9A227';
 
 @Injectable({ providedIn: 'root' })
 export class TableExportService {
+  private i18n = inject(I18nService);
+
+  /**
+   * Document dans la langue affichée : titres, en-têtes de colonnes et libellés des cellules.
+   * Les noms et les données saisies ne sont pas dans le dictionnaire : ils restent tels quels.
+   */
+  private _localized(doc: ExportDoc): ExportDoc {
+    if (this.i18n.lang() === 'fr') return doc;
+    const t = (s: string) => this.i18n.tText(s);
+    return {
+      ...doc,
+      title: t(doc.title),
+      subtitle: doc.subtitle ? t(doc.subtitle) : doc.subtitle,
+      tables: doc.tables.map(table => ({
+        title: t(table.title),
+        columns: table.columns.map(c => ({ ...c, header: t(c.header) })),
+        rows: table.rows.map(r => ({ ...r, cells: r.cells.map(v => typeof v === 'string' ? t(v) : v) })),
+      })),
+    };
+  }
 
   async toExcel(doc: ExportDoc): Promise<void> {
+    doc = this._localized(doc);
     const ExcelJS = (await import('exceljs')).default;
     const wb = new ExcelJS.Workbook();
     wb.creator = 'TimeGuard';
@@ -108,6 +130,7 @@ export class TableExportService {
    * pour rester calculables. Plusieurs tableaux : l'un sous l'autre, précédés de leur titre.
    */
   toCsv(doc: ExportDoc): void {
+    doc = this._localized(doc);
     const esc = (v: string) => /[;"\r\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
     const cell = (v: ExportCell, col?: ExportColumn): string => {
       if (v === null || v === undefined || v === '') return '';
@@ -129,6 +152,7 @@ export class TableExportService {
   }
 
   async toPdf(doc: ExportDoc): Promise<void> {
+    doc = this._localized(doc);
     const [{ jsPDF }, { autoTable }] = await Promise.all([import('jspdf'), import('jspdf-autotable')]);
     const pdf = new jsPDF({ orientation: doc.landscape ? 'landscape' : 'portrait', unit: 'pt', format: 'letter' });
     const margin = 36;
@@ -137,7 +161,7 @@ export class TableExportService {
     pdf.setFont('helvetica', 'bold').setFontSize(15).text(this._pdfText(doc.title), margin, margin + 8);
     pdf.setFont('helvetica', 'normal').setFontSize(9).setTextColor(100);
     if (doc.subtitle) pdf.text(this._pdfText(doc.subtitle), margin, margin + 24);
-    pdf.text(this._pdfText(`Exporté le ${this._now()}`), pageW - margin, margin + 8, { align: 'right' });
+    pdf.text(this._pdfText(this.i18n.t(`Exporté le ${this._now()}`)), pageW - margin, margin + 8, { align: 'right' });
     pdf.setTextColor(0);
 
     let y = margin + 44;
@@ -174,7 +198,7 @@ export class TableExportService {
         didDrawPage: () => {
           const h = pdf.internal.pageSize.getHeight();
           pdf.setFont('helvetica', 'normal').setFontSize(8).setTextColor(130);
-          pdf.text(this._pdfText(`${doc.title} — page ${pdf.getCurrentPageInfo().pageNumber}`), pageW - margin, h - 16, { align: 'right' });
+          pdf.text(this._pdfText(`${doc.title} — ${this.i18n.t('page')} ${pdf.getCurrentPageInfo().pageNumber}`), pageW - margin, h - 16, { align: 'right' });
           pdf.setTextColor(0);
         },
       });
@@ -209,7 +233,7 @@ export class TableExportService {
   }
 
   private _sheetName(title: string, used: Set<string>): string {
-    const base = (title.replace(/[\\/*?:[\]]/g, ' ').trim() || 'Feuille').slice(0, 28);
+    const base = (title.replace(/[\\/*?:[\]]/g, ' ').trim() || this.i18n.t('Feuille')).slice(0, 28);
     let name = base, i = 2;
     while (used.has(name.toLowerCase())) name = `${base} ${i++}`;
     used.add(name.toLowerCase());

@@ -194,6 +194,9 @@
   margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid var(--accent);
 }
 .sec-title { margin: 0; font-size: 1rem; font-weight: 600; color: var(--text); }
+// En-tête de colonne avec son filtre « Compagnie » (choix multiple) sous le libellé
+.stats-table th app-multi-select { margin-top: 6px; }
+.stats-table th.th-filter > span { display: block; }
 .sec-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .section-sub { font-size: .78rem; font-weight: 500; color: var(--muted); }
 

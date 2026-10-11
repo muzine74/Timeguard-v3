@@ -37,7 +37,14 @@ export interface Communication {
   error:       string | null;   // envoi échoué : message d'erreur
   createdBy:   string | null;
   attachments: AttachmentItem[];
+  // Appel passé depuis TimeGuard (null / faux pour toute autre entrée)
+  callNumber:      string | null;
+  callStatus:      'pending' | 'in-progress' | 'completed' | 'no-answer' | 'busy' | 'failed' | 'canceled' | null;
+  durationSeconds: number | null;
+  hasRecording:    boolean;
 }
+
+export interface CommEmail { label: string; email: string; }
 
 /** Entrée saisie à la main. */
 export interface CommSave {
@@ -65,4 +72,14 @@ export class CommunicationsService {
   add(req: CommSave)                { return this.http.post<Communication>('/api/communications', req); }
   update(id: string, req: CommSave) { return this.http.put<Communication>(`/api/communications/${id}`, req); }
   delete(id: string)                { return this.http.delete<void>(`/api/communications/${id}`); }
+
+  /** Courriels des contacts actifs d'une compagnie, ou courriel de l'employé. */
+  getEmails(targetType: CommTargetType, targetId: string) {
+    const params = new HttpParams().set('targetType', targetType).set('targetId', targetId);
+    return this.http.get<CommEmail[]>('/api/communications/emails', { params });
+  }
+
+  /** Envoie pour de bon un courriel saisi (avec ses pièces jointes). L'entrée revient envoyée (`isAutomatic`),
+   *  ou avec `error` si le serveur de courriel a échoué. */
+  send(id: string) { return this.http.post<Communication>(`/api/communications/${id}/send`, {}); }
 }

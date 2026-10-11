@@ -1,0 +1,147 @@
+<div class="dash">
+
+  <header class="dash-hdr">
+    <div>
+      <h1 class="dash-title">{{ greeting }}{{ userName ? ', ' + userName : '' }}</h1>
+      <p class="dash-sub" *ngIf="data() as d">
+        <span class="dash-date">{{ day(d.today, true) }}</span>
+        <ng-container *ngIf="hasSections()">
+          · {{ attention() === 0 ? 'Tout est à jour.' : attention() + (attention() > 1 ? ' sujets demandent' : ' sujet demande') + ' votre attention.' }}
+        </ng-container>
+      </p>
+    </div>
+    <button type="button" class="btn btn-outline" [disabled]="loading()" (click)="load()">↻ Actualiser</button>
+  </header>
+
+  <!-- Erreur de chargement -->
+  <div class="dash-error" role="alert" *ngIf="error()">
+    <span>⚠ {{ error() }}</span>
+    <button type="button" class="btn btn-outline" (click)="load()">Réessayer</button>
+  </div>
+
+  <!-- Chargement : la forme de la page, pas un cercle -->
+  <div class="dash-grid" *ngIf="loading() && !data()" aria-hidden="true">
+    <div class="card skeleton" *ngFor="let i of [1, 2, 3, 4]">
+      <div class="sk sk-label"></div><div class="sk sk-number"></div><div class="sk sk-line"></div><div class="sk sk-line sk-short"></div>
+    </div>
+  </div>
+  <span class="sr-only" role="status" aria-live="polite" *ngIf="loading()">Chargement du tableau de bord…</span>
+
+  <ng-container *ngIf="data() as d">
+
+    <!-- Premiers pas (nouvelle entreprise) -->
+    <section class="setup" *ngIf="setupSteps().length" aria-labelledby="setup-title">
+      <div class="setup-hdr">
+        <div>
+          <h2 class="setup-title" id="setup-title">Premiers pas</h2>
+          <p class="setup-sub">{{ setupDone() }} étape{{ setupDone() > 1 ? 's' : '' }} sur {{ setupSteps().length }} — encore quelques réglages et votre espace est prêt.</p>
+        </div>
+        <div class="setup-bar" role="progressbar" [attr.aria-valuenow]="setupDone()" aria-valuemin="0" [attr.aria-valuemax]="setupSteps().length"
+             [attr.aria-label]="'Mise en route : ' + setupDone() + ' sur ' + setupSteps().length">
+          <span [style.width.%]="setupDone() * 100 / setupSteps().length"></span>
+        </div>
+      </div>
+      <ol class="setup-steps">
+        <li *ngFor="let s of setupSteps()" [class.step-done]="s.done">
+          <span class="step-mark" aria-hidden="true"><app-icon *ngIf="s.done" name="check"></app-icon></span>
+          <span class="step-text"><b>{{ s.label }}</b><span class="sr-only">{{ s.done ? ' — fait' : ' — à faire' }}</span><small>{{ s.hint }}</small></span>
+          <a class="btn btn-outline step-cta" *ngIf="!s.done" [routerLink]="s.link">{{ s.cta }}</a>
+        </li>
+      </ol>
+    </section>
+
+    <div class="dash-grid" *ngIf="hasSections()">
+
+      <!-- Semaines à valider -->
+      <section class="card" *ngIf="d.weeks as w" [class.card-todo]="w.count > 0" [class.card-ok]="w.count === 0">
+        <div class="card-label">Pointages à valider</div>
+        <ng-container *ngIf="w.count > 0; else weeksOk">
+          <div class="card-number">{{ w.count }} <span class="card-unit">semaine{{ w.count > 1 ? 's' : '' }}</span></div>
+          <p class="card-text">{{ w.employees }} employé{{ w.employees > 1 ? 's' : '' }} · la plus ancienne : semaine du {{ day(w.oldestWeek) }}</p>
+          <ul class="card-list">
+            <li *ngFor="let r of w.top">
+              <span class="li-main">{{ r.employeeName }}</span>
+              <span class="li-side">{{ r.weeks }} sem. · depuis le {{ day(r.oldestWeek) }}</span>
+            </li>
+          </ul>
+          <a class="card-cta" routerLink="/employees/validation">Valider les semaines →</a>
+        </ng-container>
+        <ng-template #weeksOk>
+          <div class="card-number card-check">✓</div>
+          <p class="card-text">Toutes les semaines terminées sont validées.</p>
+        </ng-template>
+      </section>
+
+      <!-- Factures impayées -->
+      <section class="card" *ngIf="d.invoices as i" [class.card-todo]="i.unpaidCount > 0" [class.card-late]="i.lateCount > 0" [class.card-ok]="i.unpaidCount === 0">
+        <div class="card-label">Factures en attente de paiement</div>
+        <ng-container *ngIf="i.unpaidCount > 0; else invoicesOk">
+          <div class="card-number">{{ i.unpaidTotal | number:'1.2-2' }} <span class="card-unit">$</span></div>
+          <p class="card-text">
+            {{ i.unpaidCount }} facture{{ i.unpaidCount > 1 ? 's' : '' }} envoyée{{ i.unpaidCount > 1 ? 's' : '' }}
+            <span class="late" *ngIf="i.lateCount > 0"> · {{ i.lateCount }} depuis plus de 30 jours</span>
+          </p>
+          <ul class="card-list">
+            <li *ngFor="let b of i.oldest" [class.li-late]="b.days > 30">
+              <span class="li-main">{{ b.billNumber }} — {{ b.companyName }}</span>
+              <span class="li-side">{{ b.total | number:'1.2-2' }} $ · {{ b.days }} j</span>
+            </li>
+          </ul>
+          <a class="card-cta" routerLink="/invoices">Voir les factures →</a>
+        </ng-container>
+        <ng-template #invoicesOk>
+          <div class="card-number card-check">✓</div>
+          <p class="card-text">Aucune facture envoyée n'attend de paiement.</p>
+        </ng-template>
+      </section>
+
+      <!-- Factures à envoyer -->
+      <section class="card" *ngIf="d.invoices as i" [class.card-todo]="i.toSendCount > 0" [class.card-ok]="i.toSendCount === 0">
+        <div class="card-label">Factures à envoyer</div>
+        <ng-container *ngIf="i.toSendCount > 0; else sendOk">
+          <div class="card-number">{{ i.toSendCount }} <span class="card-unit">facture{{ i.toSendCount > 1 ? 's' : '' }}</span></div>
+          <p class="card-text">{{ i.toSendTotal | number:'1.2-2' }} $ enregistrés, pas encore envoyés aux clients.</p>
+          <a class="card-cta" routerLink="/invoices/send">Envoyer les factures →</a>
+        </ng-container>
+        <ng-template #sendOk>
+          <div class="card-number card-check">✓</div>
+          <p class="card-text">Toutes les factures enregistrées sont envoyées.</p>
+        </ng-template>
+      </section>
+
+      <!-- Paiements à transférer -->
+      <section class="card" *ngIf="d.payments as p" [class.card-todo]="p.count > 0" [class.card-ok]="p.count === 0">
+        <div class="card-label">Paiements employés à transférer</div>
+        <ng-container *ngIf="p.count > 0; else paymentsOk">
+          <div class="card-number">{{ p.total | number:'1.2-2' }} <span class="card-unit">$</span></div>
+          <p class="card-text">{{ p.count }} versement{{ p.count > 1 ? 's' : '' }} pour {{ p.employees }} employé{{ p.employees > 1 ? 's' : '' }}, enregistré{{ p.count > 1 ? 's' : '' }} mais pas encore transféré{{ p.count > 1 ? 's' : '' }}.</p>
+          <a class="card-cta" routerLink="/employees/payments">Voir les paiements →</a>
+        </ng-container>
+        <ng-template #paymentsOk>
+          <div class="card-number card-check">✓</div>
+          <p class="card-text">Tous les versements enregistrés sont transférés.</p>
+        </ng-template>
+      </section>
+
+      <!-- Charges du mois (information) -->
+      <section class="card card-info" *ngIf="d.charges as c">
+        <div class="card-label">Charges — {{ monthName(c.month) }}</div>
+        <div class="card-number">{{ c.total | number:'1.2-2' }} <span class="card-unit">$</span></div>
+        <p class="card-text">
+          {{ c.count }} charge{{ c.count > 1 ? 's' : '' }} ce mois-ci
+          <ng-container *ngIf="c.upcoming > 0"> · {{ c.upcoming }} mensuelle{{ c.upcoming > 1 ? 's' : '' }} à venir d'ici la fin du mois</ng-container>
+        </p>
+        <a class="card-cta" routerLink="/charges">Voir les charges →</a>
+      </section>
+    </div>
+
+    <!-- Raccourcis -->
+    <h2 class="dash-h2">Accès rapide</h2>
+    <nav class="shortcuts" aria-label="Accès rapide">
+      <a class="shortcut" *ngFor="let s of shortcuts()" [routerLink]="s.link">
+        <span class="shortcut-icon"><app-icon [name]="s.icon"></app-icon></span>
+        <span>{{ s.label }}</span>
+      </a>
+    </nav>
+  </ng-container>
+</div>

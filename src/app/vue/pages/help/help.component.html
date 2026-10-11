@@ -1,10 +1,20 @@
 <div class="help-wrap">
 
   <!-- ── Sommaire ─────────────────────────────────────────────────────────── -->
-  <nav class="toc">
+  <nav class="toc" aria-label="Sommaire du guide">
     <div class="toc-title">Sommaire</div>
-    <a *ngFor="let s of sections()" href="#{{ s.id }}" (click)="goTo(s.id, $event)">{{ s.title }}</a>
+    <a *ngFor="let s of tocSections()" href="#{{ s.id }}" [attr.data-id]="s.id"
+       [class.active]="active() === s.id" [attr.aria-current]="active() === s.id ? 'true' : null"
+       (click)="goTo(s.id, $event)">{{ s.title }}</a>
   </nav>
+
+  <!-- Raccourcis vers les pages décrites par une section (selon les permissions) -->
+  <ng-template #pageLinks let-id>
+    <nav class="page-links" *ngIf="linksOf(id).length" aria-label="Ouvrir une page de cette section">
+      <span class="page-links-lbl">Ouvrir :</span>
+      <a *ngFor="let l of linksOf(id)" [routerLink]="l.link">{{ l.label }} →</a>
+    </nav>
+  </ng-template>
 
   <article class="guide">
     <h1>Guide utilisateur TimeGuard</h1>
@@ -14,8 +24,22 @@
       l'administrateur valide, puis facture et paie.
     </p>
 
+    <!-- ── Recherche ──────────────────────────────────────────────────────── -->
+    <div class="help-search">
+      <input #q type="search" aria-label="Rechercher dans le guide" placeholder="Rechercher dans le guide (ex. avoir, T4A, mot de passe)…"
+             [value]="query()" (input)="onSearch(q.value)" />
+      <span class="help-search-count" role="status" aria-live="polite">
+        {{ searching() ? tocSections().length + ' section(s) sur ' + sections().length : '' }}
+      </span>
+    </div>
+    <div class="empty-state" *ngIf="searching() && tocSections().length === 0">
+      <span class="empty-icon" aria-hidden="true">🔍</span>
+      <p>Aucune section ne contient « {{ query() }} ».</p>
+      <button type="button" class="btn btn-outline" (click)="clearSearch()">Effacer la recherche</button>
+    </div>
+
     <!-- ── Premiers pas ───────────────────────────────────────────────────── -->
-    <section id="premiers-pas" *ngIf="show('premiers-pas')">
+    <section id="premiers-pas" *ngIf="show('premiers-pas')" [class.is-hidden]="!hit('premiers-pas')">
       <h2>Premiers pas</h2>
       <p>Pour vous connecter, il faut trois informations : l'identifiant de votre entreprise, votre nom d'utilisateur et votre mot de passe.</p>
 
@@ -30,9 +54,9 @@
       <h3>Se connecter</h3>
       <ol>
         <li>Saisissez l'<b>Identifiant entreprise</b>, votre <b>Identifiant</b> et votre <b>Mot de passe</b>.</li>
-        <li>Cliquez sur <b>Se connecter</b>. Vous arrivez directement sur l'écran qui correspond à vos droits : la Feuille de temps pour un employé, le Pointage employé pour un administrateur.</li>
+        <li>Cliquez sur <b>Se connecter</b>. Vous arrivez sur l'écran qui correspond à vos droits : l'<b>Accueil</b> si vous gérez l'entreprise, la Feuille de temps si vous êtes employé.</li>
       </ol>
-      <p>La session dure 8 heures, après quoi il faut se reconnecter. Le bouton <b>Déconnexion</b> est en haut à droite.</p>
+      <p>La session dure 8 heures, après quoi il faut se reconnecter. Pour vous déconnecter, cliquez sur votre nom en haut à droite, puis sur <b>Se déconnecter</b>.</p>
 
       <h3>Mot de passe oublié</h3>
       <p>Il n'y a pas de lien « mot de passe oublié » sur la page de connexion : c'est l'administrateur qui envoie le lien.</p>
@@ -46,12 +70,12 @@
       <h3>Les menus</h3>
       <p>La barre du haut est organisée en quatre menus, selon le rôle de chacun :</p>
       <ul>
-        <li><b>Mon travail</b> — votre Feuille de temps, votre Équipe (si vous supervisez quelqu'un) et les Notes.</li>
-        <li><b>Gestion</b> — le personnel (nouvel employé, modification, tarifs), les clients (compagnies), le pointage des employés (consultation, validation) et les affectations employés ⇄ compagnies.</li>
-        <li><b>Finances</b> — la facturation, la paie (paiements, feuillets T4A, charges) et l'analyse (rapports, statistiques).</li>
-        <li><b>Administration</b> — groupes de permissions, identifiants de connexion et configuration.</li>
+        <li><b>Mon travail</b> — l'Accueil, votre Feuille de temps, votre Équipe (si vous supervisez quelqu'un) et les Notes.</li>
+        <li><b>Gestion</b> — le personnel (nouvel employé, modification, tarifs), les clients (compagnies), le pointage des employés (consultation, validation), les affectations employés ⇄ compagnies et le suivi des communications.</li>
+        <li><b>Finances</b> — la facturation, la paie (paiements, feuillets T4A, charges, relevé bancaire) et l'analyse (rapports, statistiques).</li>
+        <li><b>Administration</b> — groupes de permissions, identifiants de connexion, configuration et suppression définitive.</li>
       </ul>
-      <p>À droite : 🎨 pour choisir votre design de couleurs (enregistré sur votre compte) et ❓ Aide.</p>
+      <p>À droite : <b>❓ Aide</b>, puis votre nom. Cliquez sur votre nom pour choisir votre <b>design de couleurs</b> (enregistré sur votre compte) ou vous déconnecter. Le nom <b>TimeGuard</b>, à gauche, ramène à votre page d'accueil.</p>
 
       <h3>Qui voit quoi</h3>
       <p>Chaque menu n'apparaît que si vous avez la permission correspondante, et ce guide n'affiche que les sections qui correspondent à vos menus. Les permissions sont regroupées dans des <b>groupes</b>, et un employé cumule les permissions de tous ses groupes.</p>
@@ -64,18 +88,39 @@
           <tr><td><code>employees.view</code> / <code>create</code> / <code>edit</code></td><td>Liste, création et modification des employés, tarifs, T4A</td></tr>
           <tr><td><code>companies.edit</code></td><td>Compagnies et affectations</td></tr>
           <tr><td><code>invoices.view</code> / <code>edit</code> / <code>send</code></td><td>Consulter, créer et envoyer les factures ; rapports ; charges</td></tr>
-          <tr><td><code>payments.manage</code></td><td>Paiements employés</td></tr>
+          <tr><td><code>payments.manage</code></td><td>Paiements employés, relevé bancaire</td></tr>
           <tr><td><code>stats.view</code></td><td>Statistiques</td></tr>
           <tr><td><code>groups.manage</code> / <code>credentials.manage</code> / <code>config.manage</code></td><td>Groupes, identifiants de connexion, configuration</td></tr>
+          <tr><td><code>calls.make</code> / <code>calls.listen</code></td><td>Passer des appels depuis Communications ; écouter les enregistrements d'appels</td></tr>
+          <tr><td><code>data.purge</code></td><td>Suppression définitive</td></tr>
         </tbody>
       </table>
       <p>Les pages <b>Notes</b> et <b>Aide</b> sont ouvertes à tous les utilisateurs connectés.</p>
     </section>
 
+    <!-- ── Accueil (tableau de bord) ──────────────────────────────────────── -->
+    <section id="accueil" *ngIf="show('accueil')" [class.is-hidden]="!hit('accueil')">
+      <h2>L'Accueil : ce qui demande votre attention</h2>
+      <ng-container *ngTemplateOutlet="pageLinks; context: { $implicit: 'accueil' }"></ng-container>
+      <p>L'Accueil s'ouvre à la connexion et réunit ce qu'il reste à faire. Chaque carte n'apparaît que si vous avez la permission correspondante, et mène directement à la page concernée.</p>
+      <table>
+        <thead><tr><th>Carte</th><th>Ce qu'elle montre</th></tr></thead>
+        <tbody>
+          <tr><td><b>Pointages à valider</b></td><td>Le nombre de semaines terminées et non validées, les employés concernés et la plus ancienne semaine</td></tr>
+          <tr><td><b>Factures en attente de paiement</b></td><td>Le total des factures envoyées et non payées ; celles qui attendent depuis plus de 30 jours sont signalées</td></tr>
+          <tr><td><b>Factures à envoyer</b></td><td>Les factures enregistrées qui ne sont pas encore parties chez le client</td></tr>
+          <tr><td><b>Paiements employés à transférer</b></td><td>Les versements enregistrés mais pas encore marqués transférés</td></tr>
+          <tr><td><b>Charges</b></td><td>Le total des charges du mois et les charges mensuelles à venir d'ici la fin du mois</td></tr>
+        </tbody>
+      </table>
+      <p>Une carte à jour affiche <b>✓</b>. <b>↻ Actualiser</b> recharge les chiffres, et <b>Accès rapide</b>, en bas, regroupe les pages les plus utilisées.</p>
+    </section>
+
     <!-- ── Pointage employé ───────────────────────────────────────────────── -->
-    <section id="pointage" *ngIf="show('pointage')">
+    <section id="pointage" *ngIf="show('pointage')" [class.is-hidden]="!hit('pointage')">
       <h2>Pour les employés : saisir son pointage</h2>
-      <p>Chaque semaine, l'employé coche ses jours de travail pour chaque compagnie, puis clique sur <b>Sauvegarder</b>.</p>
+      <ng-container *ngTemplateOutlet="pageLinks; context: { $implicit: 'pointage' }"></ng-container>
+      <p>Chaque semaine, l'employé coche ses jours de travail pour chaque compagnie (ou saisit ses heures, selon la compagnie), puis clique sur <b>Sauvegarder</b>.</p>
       <ol>
         <li>Ouvrez <b>Feuille de temps</b>. La semaine en cours s'affiche, avec une ligne par compagnie qui vous est affectée.</li>
         <li>Cochez les jours travaillés dans chaque ligne. <b>Tout ✓</b> coche toute la semaine, <b>Effacer</b> vide tout.</li>
@@ -85,13 +130,22 @@
       <p>Le prix de chaque visite est calculé automatiquement à partir du calendrier tarifaire de la compagnie, et des tarifs propres à l'employé s'il y en a. La barre du haut affiche vos gains de la semaine et vos gains cumulés.</p>
       <p>Le panneau <b>⏳ Semaines non validées</b> liste vos semaines déjà saisies mais pas encore validées. Cliquez sur une semaine pour y aller.</p>
 
+      <h3>Compagnies à l'heure</h3>
+      <p>Si une compagnie est facturée à l'heure, ou si vous y êtes payé à l'heure, elle apparaît dans le bloc <b>Compagnies à l'heure</b> : au lieu de cocher, vous saisissez vos heures.</p>
+      <ol>
+        <li>Dans la case du jour, saisissez l'heure de <b>début</b> et l'heure de <b>fin</b>, par exemple 08:00 → 11:30. Le total du jour s'affiche (« 3.5 h »).</li>
+        <li>Pour une journée en deux parties, cliquez sur <b>+ plage</b> et saisissez la deuxième plage. Une plage en trop se retire avec <b>×</b>.</li>
+        <li>Cliquez sur <b>💾 Sauvegarder</b>. Des plages qui se chevauchent sont refusées.</li>
+      </ol>
+
       <h3>Quand la semaine est validée</h3>
       <p>Une fois que l'administrateur a validé votre semaine, un bandeau <b>🔒 Semaine validée par l'admin</b> apparaît avec la date. La semaine est verrouillée : vous ne pouvez plus la modifier. Pour corriger une erreur, demandez à l'administrateur d'annuler la validation.</p>
     </section>
 
     <!-- ── Employés ───────────────────────────────────────────────────────── -->
-    <section id="employes" *ngIf="show('employes')">
+    <section id="employes" *ngIf="show('employes')" [class.is-hidden]="!hit('employes')">
       <h2>Gérer les employés</h2>
+      <ng-container *ngTemplateOutlet="pageLinks; context: { $implicit: 'employes' }"></ng-container>
       <p>Un employé est prêt à pointer quand il a une fiche, au moins une compagnie affectée et un identifiant de connexion. Tout se fait depuis le menu <b>Gestion</b>.</p>
 
       <h3>Créer un employé</h3>
@@ -139,8 +193,9 @@
     </section>
 
     <!-- ── Compagnies ─────────────────────────────────────────────────────── -->
-    <section id="compagnies" *ngIf="show('compagnies')">
+    <section id="compagnies" *ngIf="show('compagnies')" [class.is-hidden]="!hit('compagnies')">
       <h2>Gérer les compagnies</h2>
+      <ng-container *ngTemplateOutlet="pageLinks; context: { $implicit: 'compagnies' }"></ng-container>
       <p>Une compagnie est un client chez qui vos employés travaillent. Son planning fixe deux prix par jour de travail : ce que vous facturez au client et ce que vous payez à l'employé.</p>
 
       <h3>Créer une compagnie</h3>
@@ -179,7 +234,7 @@
     </section>
 
     <!-- ── Combinaisons employé × compagnie ───────────────────────────────── -->
-    <section id="combinaisons" *ngIf="show('combinaisons')">
+    <section id="combinaisons" *ngIf="show('combinaisons')" [class.is-hidden]="!hit('combinaisons')">
       <h2>Employé et compagnie : toutes les combinaisons</h2>
       <p>Deux réglages indépendants décident de la façon dont un employé pointe chez une compagnie, dont il est payé et dont la compagnie est facturée.</p>
 
@@ -298,8 +353,9 @@
     </section>
 
     <!-- ── Validation ─────────────────────────────────────────────────────── -->
-    <section id="validation" *ngIf="show('validation')">
+    <section id="validation" *ngIf="show('validation')" [class.is-hidden]="!hit('validation')">
       <h2>Valider le pointage</h2>
+      <ng-container *ngTemplateOutlet="pageLinks; context: { $implicit: 'validation' }"></ng-container>
       <p>La validation verrouille la semaine d'un employé et fige son historique. Seules les semaines validées peuvent être facturées et payées.</p>
 
       <svg class="diagram" viewBox="0 0 760 290" role="img" aria-label="Seule une semaine validée est facturée et payée" font-size="13">
@@ -360,8 +416,9 @@
     </section>
 
     <!-- ── Facturation ────────────────────────────────────────────────────── -->
-    <section id="facturation" *ngIf="show('facturation')">
+    <section id="facturation" *ngIf="show('facturation')" [class.is-hidden]="!hit('facturation')">
       <h2>Facturer vos compagnies</h2>
+      <ng-container *ngTemplateOutlet="pageLinks; context: { $implicit: 'facturation' }"></ng-container>
       <p>Le plus rapide est de facturer directement à partir des pointages validés. On peut aussi créer une facture à la main. Les taux de TPS et de TVQ viennent de <b>Administration → Configuration</b>.</p>
 
       <h3>Facturer par pointages</h3>
@@ -410,13 +467,27 @@
         <li><b>Finances → Téléchargement des factures</b> : choisissez une période (sur la date d'envoi ou de paiement) et un statut, <b>Rechercher</b>, puis <b>Télécharger</b>. Une facture donne un PDF ; plusieurs donnent un ZIP. Les avoirs sont fusionnés avec leur facture.</li>
         <li><b>Finances → Rapports</b> : filtrez par date, période ou compagnies, cochez les factures, puis <b>Exporter ▾</b> : <b>PDF Récapitulatif</b> (un tableau consolidé), <b>PDFs fusionnés</b> (un seul fichier) ou <b>PDFs séparés (ZIP)</b>.</li>
         <li><b>Finances → Relevé bancaire</b> : choisissez le fichier CSV de votre relevé, puis <b>⬆ Charger le CSV</b>. Chaque ligne est enregistrée avec sa date, sa description, son retrait et son dépôt. Recharger le même fichier ne crée pas de doublons. Dans le tableau : recherche par mot-clé, tri au clic sur un en-tête, valeurs à afficher par colonne, et case <b>Validée</b> à cocher pour chaque transaction vérifiée. L'onglet <b>📖 Lexique</b> relie les transactions à vos compagnies, employés et charges : ajoutez un mot-clé (par exemple le nom qui apparaît dans la description) et choisissez l'élément ; toutes les transactions dont la description contient ce mot-clé affichent ce lien dans la colonne <b>Lié à</b>.</li>
-        <li><b>Finances → Charges</b> : vos dépenses partagées entre plusieurs compagnies (assurance, loyer…), réparties en pourcentage, avec leurs justificatifs.</li>
       </ul>
+
+      <ng-container *ngIf="can(P.invoicesView)">
+      <h3>Charges</h3>
+      <p><b>Finances → Charges</b> enregistre vos dépenses (assurance, loyer, comptabilité…), avec leur date, leur répartition entre compagnies et leurs justificatifs.</p>
+      <ol>
+        <li>Cliquez sur <b>+ Nouvelle charge</b>, puis saisissez le <b>Titre</b>, le <b>Montant total</b> et la <b>Date de la charge</b>.</li>
+        <li>Cochez <b>Charge mensuelle</b> si elle revient chaque mois : le montant saisi est celui d'un mois, et une copie est générée automatiquement le même jour de chaque mois (le dernier jour du mois s'il est plus court).</li>
+        <li>Cochez <b>Taxes incluses dans le montant</b> si le montant contient déjà la TPS et la TVQ ; décochez s'il est hors taxes.</li>
+        <li>Dans <b>Compagnies</b>, cochez celles qui partagent la charge et donnez à chacune son pourcentage. <b>Répartir également</b> le calcule pour vous ; le total doit faire 100 %. Sans compagnie cochée, la charge n'est associée à aucune compagnie.</li>
+        <li>Cliquez sur <b>Créer</b>. Les documents s'ajoutent ensuite, en rouvrant la charge avec <b>✏️</b>.</li>
+      </ol>
+      <p>Dans la liste, <b>🔁 Mensuelle</b> marque la charge d'origine, avec la date de sa prochaine copie, et <b>🔁 Générée</b> marque chaque copie. Une copie se modifie ou se supprime séparément, sans toucher à la charge mensuelle ni aux autres mois.</p>
+      <p>La recherche combine un <b>Mot-clé</b>, une période <b>Du / Au</b> et un <b>Montant min. / max.</b> ; le nombre de charges affichées et leur total suivent les filtres. Cliquez sur une ligne pour voir sa répartition et ses documents.</p>
+      </ng-container>
     </section>
 
     <!-- ── Paiements ──────────────────────────────────────────────────────── -->
-    <section id="paiements" *ngIf="show('paiements')">
+    <section id="paiements" *ngIf="show('paiements')" [class.is-hidden]="!hit('paiements')">
       <h2>Payer vos employés</h2>
+      <ng-container *ngTemplateOutlet="pageLinks; context: { $implicit: 'paiements' }"></ng-container>
       <p>La page Paiements employés affiche, pour chaque employé, ses semaines dont le pointage est validé, et vous permet d'enregistrer ce que vous lui payez pour chacune.</p>
 
       <h3>Enregistrer un paiement</h3>
@@ -443,9 +514,54 @@
       <p>Le <b>Numéro de compte de programme du payeur</b> (case 061) se règle une fois dans <b>Administration → Configuration</b>.</p>
     </section>
 
+    <!-- ── Communications ─────────────────────────────────────────────────── -->
+    <section id="communications" *ngIf="show('communications')" [class.is-hidden]="!hit('communications')">
+      <h2>Suivre les communications</h2>
+      <ng-container *ngTemplateOutlet="pageLinks; context: { $implicit: 'communications' }"></ng-container>
+      <p><b>Gestion → Communications</b> garde l'historique des échanges avec chaque compagnie et chaque employé. Les courriels envoyés par TimeGuard s'y ajoutent tout seuls ; vous y notez le reste (appels, rencontres, courriels reçus).</p>
+
+      <h3>Consulter un historique</h3>
+      <ol>
+        <li>Choisissez l'onglet <b>Compagnies</b> ou <b>Employés</b>, puis l'élément dans la liste de gauche. La recherche aide à le trouver, et chaque ligne indique le nombre d'entrées et la date de la dernière.</li>
+        <li>L'historique s'affiche du plus récent au plus ancien. L'étiquette <b>TimeGuard</b> marque un envoi automatique ; <b>Échec de l'envoi</b> signale un courriel qui n'est pas parti, avec la raison.</li>
+        <li>Filtrez par <b>Type</b>, <b>Origine</b> (envoyé par TimeGuard ou saisie manuelle) et période <b>Du / Au</b>. <b>▸ Voir le texte</b> affiche le contenu d'une entrée.</li>
+      </ol>
+
+      <h3>Noter une communication</h3>
+      <ol>
+        <li>Cliquez sur <b>＋ Ajouter une communication</b>.</li>
+        <li>Renseignez la <b>Date et heure</b>, le <b>Type</b>, le <b>Sens</b> (envoyé ou reçu), la personne contactée, le <b>Sujet</b> et un <b>Résumé</b>. Vous pouvez joindre des fichiers.</li>
+        <li>Cliquez sur <b>✓ Enregistrer</b>.</li>
+      </ol>
+      <p>Une entrée saisie à la main se modifie ou se supprime ; un envoi automatique de TimeGuard ne se modifie pas.</p>
+
+      <h3>Envoyer un courriel depuis Communications</h3>
+      <ol>
+        <li>Cliquez sur <b>＋ Ajouter une communication</b>, puis choisissez le type <b>Courriel</b> et le sens <b>Envoyé</b>.</li>
+        <li>Le champ <b>À</b> reçoit d'office les courriels des contacts actifs de la compagnie (ou celui de l'employé) : retirez ceux qui ne doivent pas le recevoir, ajoutez-en d'autres séparés par « ; ».</li>
+        <li>Saisissez le <b>Sujet</b>, le message et, au besoin, des pièces jointes.</li>
+        <li>Cochez <b>Envoyer ce courriel aux destinataires à l'enregistrement</b>, puis cliquez sur <b>✉ Enregistrer et envoyer</b>.</li>
+      </ol>
+      <p>Sans la case cochée, rien n'est envoyé : l'entrée est seulement notée dans l'historique. Vous pouvez l'envoyer plus tard avec <b>✉ Envoyer ce courriel</b>, dans l'entrée. Un courriel envoyé ne se modifie plus ; si l'envoi échoue, la raison s'affiche et <b>Réessayer l'envoi</b> le relance.</p>
+
+      <ng-container *ngIf="can(P.callsMake, P.callsListen, P.configManage)">
+      <h3>Appeler depuis TimeGuard</h3>
+      <p>Si la téléphonie est activée pour votre entreprise, vous appelez directement depuis votre navigateur, avec un casque ou le micro de l'ordinateur. La personne appelée voit le numéro de l'entreprise.</p>
+      <ol>
+        <li>Choisissez la compagnie ou l'employé, puis cliquez sur <b>📞 Appeler</b> (permission <code>calls.make</code>).</li>
+        <li>Cliquez sur <b>Appeler</b> à côté d'un numéro connu (contacts actifs de la compagnie, téléphone de l'employé), ou saisissez un <b>Autre numéro</b>. Seuls les numéros du Canada et des États-Unis sont acceptés.</li>
+        <li>Au premier appel, le navigateur demande l'accès au micro : acceptez.</li>
+        <li>La barre d'appel, en bas de l'écran, reste visible sur toutes les pages : durée, <b>Muet</b>, <b>Clavier</b> (pour les menus vocaux) et <b>Raccrocher</b>.</li>
+      </ol>
+      <p>L'appel s'ajoute tout seul à l'historique, avec son issue (terminé, sans réponse, occupé…) et sa durée.</p>
+      <p>Si l'entreprise enregistre ses appels, un message en avise la personne appelée dès qu'elle décroche, et la barre d'appel affiche <b>● Enregistré</b>. <b>▶ Écouter l'enregistrement</b> apparaît ensuite dans l'entrée de l'appel pour les utilisateurs qui ont la permission <code>calls.listen</code> ; chaque écoute est tracée.</p>
+      </ng-container>
+    </section>
+
     <!-- ── Notes ──────────────────────────────────────────────────────────── -->
-    <section id="notes" *ngIf="show('notes')">
+    <section id="notes" *ngIf="show('notes')" [class.is-hidden]="!hit('notes')">
       <h2>Notes et alertes</h2>
+      <ng-container *ngTemplateOutlet="pageLinks; context: { $implicit: 'notes' }"></ng-container>
       <p>Une note active liée à un employé, une compagnie ou une facture s'affiche automatiquement chaque fois qu'on agit sur cet élément. Une note inactive ne s'affiche jamais.</p>
 
       <h3>Créer une note</h3>
@@ -480,8 +596,9 @@
     </section>
 
     <!-- ── Administration ─────────────────────────────────────────────────── -->
-    <section id="administration" *ngIf="show('administration')">
+    <section id="administration" *ngIf="show('administration')" [class.is-hidden]="!hit('administration')">
       <h2>Statistiques et administration</h2>
+      <ng-container *ngTemplateOutlet="pageLinks; context: { $implicit: 'administration' }"></ng-container>
       <p *ngIf="can(P.configManage)">Avant la première facture, réglez la <b>Configuration</b> : vos taxes, vos coordonnées et votre serveur de courriel apparaissent sur chaque facture et chaque envoi.</p>
 
       <ng-container *ngIf="can(P.configManage)">
@@ -498,6 +615,28 @@
         </tbody>
       </table>
       <p>À l'enregistrement, un récapitulatif montre l'<b>Ancienne valeur</b> et la <b>Nouvelle valeur</b> de chaque champ modifié ; cliquez sur <b>Confirmer les modifications</b>.</p>
+
+      <h3>Courriels reçus (Microsoft 365)</h3>
+      <p>La carte <b>Courriels reçus (Microsoft 365)</b> fait lire à TimeGuard la boîte de courriel de l'entreprise, toutes les cinq minutes. Un courriel reçu d'une adresse présente dans les <b>contacts d'une compagnie</b> est ajouté à l'historique de cette compagnie, dans Communications, comme <b>Courriel reçu</b> (non modifiable). Les autres courriels sont ignorés ; la boîte n'est jamais modifiée.</p>
+      <p>La préparation se fait une seule fois, dans <b>Microsoft Entra</b> (entra.microsoft.com), avec un compte administrateur de Microsoft 365 :</p>
+      <ol>
+        <li><b>Applications → Inscriptions d'applications → Nouvelle inscription</b> : donnez un nom (« TimeGuard »), gardez « Comptes de cet annuaire uniquement », puis <b>Inscrire</b>.</li>
+        <li>Sur la page de l'application, copiez l'<b>ID d'application (client)</b> et l'<b>ID de l'annuaire (locataire)</b>.</li>
+        <li><b>Certificats et secrets → Nouveau secret client</b> : copiez tout de suite sa <b>Valeur</b> (elle n'est montrée qu'une fois ; ce n'est pas l'« ID de secret »).</li>
+        <li><b>API autorisées → Ajouter une autorisation → Microsoft Graph → Autorisations d'application → Mail.Read</b>, puis <b>Accorder un consentement d'administrateur</b>.</li>
+        <li>Dans TimeGuard, saisissez la boîte à lire, les deux identifiants et le secret, cochez la case, puis <b>Enregistrer les courriels reçus</b>. <b>Lire maintenant</b> vérifie que la connexion fonctionne.</li>
+      </ol>
+      <p>Par défaut, seuls les courriels reçus après l'activation sont lus. Pour reprendre aussi les plus récents, saisissez un nombre de jours avant d'enregistrer. Le secret a une date d'expiration : à l'échéance, créez-en un nouveau et saisissez-le ici. La permission <b>Mail.Read</b> donne à l'application l'accès à toutes les boîtes de l'organisation ; votre administrateur Microsoft 365 peut la limiter à une seule boîte (stratégie d'accès aux applications d'Exchange Online).</p>
+
+      <h3>Téléphonie (Twilio)</h3>
+      <p>La carte <b>Téléphonie (Twilio)</b>, en bas de la Configuration, relie TimeGuard à votre compte Twilio pour appeler depuis la page Communications. Elle a son propre bouton <b>Enregistrer la téléphonie</b>.</p>
+      <ol>
+        <li>Dans Twilio, achetez (ou transférez) un numéro, créez une <b>clé d'API</b> et une <b>application TwiML</b>.</li>
+        <li>Dans TimeGuard, saisissez le <b>Compte</b>, le <b>Jeton d'authentification</b>, la <b>Clé d'API</b> et son <b>Secret</b>, l'<b>Application TwiML</b> et le <b>Numéro affiché</b>, puis enregistrez.</li>
+        <li>Copiez l'<b>Adresse à saisir dans Twilio</b> qui s'affiche, et collez-la dans l'application TwiML (Voice → Request URL, méthode POST).</li>
+        <li>Cochez <b>Activer la téléphonie</b>, enregistrez, puis donnez la permission <b>Passer des appels</b> aux groupes concernés.</li>
+      </ol>
+      <p><b>Enregistrement des appels</b> : si vous choisissez d'enregistrer, le <b>message d'avis</b> est obligatoire, car la personne appelée doit savoir que l'appel est enregistré et pourquoi. Les enregistrements sont conservés sur le serveur de TimeGuard, et supprimés automatiquement après la <b>durée de conservation</b> choisie (0 = sans limite). Dans Twilio, limitez les destinations autorisées au Canada et aux États-Unis.</p>
 
       </ng-container>
       <ng-container *ngIf="can(P.groupsManage)">
@@ -522,10 +661,16 @@
       </ul>
       <p><b>Regrouper (totaux seuls)</b> masque le détail. Cliquez sur un employé ou une compagnie pour voir son détail.</p>
       </ng-container>
+
+      <ng-container *ngIf="can(P.dataPurge)">
+      <h3>Suppression définitive</h3>
+      <p><b>Administration → 🗑 Suppression définitive</b> (permission <code>data.purge</code>) efface une facture, un employé ou une compagnie avec toutes leurs références, ou les paiements d'un employé. Choisissez le type, cherchez l'élément, relisez la liste de ce qui sera effacé, puis saisissez <b>SUPPRIMER</b> pour confirmer.</p>
+      <p><b>Cette action est irréversible</b> : les données et les fichiers supprimés ne se récupèrent pas depuis l'application. Pour simplement retirer un employé ou une compagnie des listes, préférez <b>Désactiver</b>.</p>
+      </ng-container>
     </section>
 
     <!-- ── FAQ ────────────────────────────────────────────────────────────── -->
-    <section id="faq" *ngIf="show('faq')">
+    <section id="faq" *ngIf="show('faq')" [class.is-hidden]="!hit('faq')">
       <h2>Questions fréquentes</h2>
       <table>
         <thead><tr><th>Problème</th><th>Cause et solution</th></tr></thead>
@@ -539,9 +684,13 @@
           <tr><td>Une compagnie n'apparaît pas dans <b>Facturer par pointages</b></td><td>Au moins une semaine de la période n'est pas validée : voir <b>Semaines non validées</b> sur la même page.</td></tr>
           <tr><td>La facture n'est pas partie par courriel</td><td>Vérifiez le serveur <b>Courriel (SMTP)</b> dans la Configuration et qu'au moins un contact de la compagnie est <b>Actif (inclus dans les envois)</b>.</td></tr>
           <tr><td>Une alerte de note s'affiche trop souvent</td><td>Décochez <b>Active</b> sur la note dans <b>📝 Notes</b> : elle reste consultable mais ne s'affiche plus.</td></tr>
+          <tr><td>Une charge apparaît plusieurs fois</td><td>C'est une <b>charge mensuelle</b> : elle génère une copie par mois, marquée <b>🔁 Générée</b>. Supprimez la copie d'un mois si elle n'a pas lieu d'être.</td></tr>
+          <tr><td>Je ne trouve plus le choix des couleurs ni la déconnexion</td><td>Cliquez sur votre nom, en haut à droite.</td></tr>
           <tr><td>L'écran n'affiche pas la dernière version</td><td>Rechargez la page avec <b>Ctrl+F5</b>, ou fermez l'onglet et rouvrez le site.</td></tr>
         </tbody>
       </table>
     </section>
   </article>
+
+  <button type="button" class="btn btn-outline to-top" *ngIf="showTop()" (click)="toTop()">↑ Haut de page</button>
 </div>

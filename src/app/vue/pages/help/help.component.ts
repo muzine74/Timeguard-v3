@@ -1,10 +1,18 @@
-import { Component, ChangeDetectionStrategy, computed, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, DestroyRef, ElementRef, afterNextRender, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../state/auth/auth.service';
+import { DASHBOARD_PERMS } from '../../../state/auth/auth.guard';
 import { PERM, PermKey } from '../../../state/auth/permissions';
 
+/** Raccourci vers une page décrite par une section (mêmes libellés et mêmes permissions que la barre de menus). */
+interface HelpLink { label: string; link: string; perms: readonly PermKey[]; }
+
 /** Section du guide. `perms` : affichée si l'utilisateur a AU MOINS UNE de ces permissions (vide = tout le monde). */
-interface HelpSection { id: string; title: string; perms: readonly PermKey[]; }
+interface HelpSection { id: string; title: string; perms: readonly PermKey[]; links?: readonly HelpLink[]; }
+
+/** Texte comparable pour la recherche : minuscules, sans accents. */
+const norm = (s: string): string => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
 /**
  * Guide utilisateur. La page est ouverte à tous les utilisateurs connectés, mais chaque section ne s'affiche
@@ -15,26 +23,85 @@ interface HelpSection { id: string; title: string; perms: readonly PermKey[]; }
 @Component({
     selector: 'app-help',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule],
+    imports: [CommonModule, RouterLink],
     templateUrl: './help.component.html',
     styleUrls: ['./help.component.scss']
 })
 export class HelpComponent {
   private readonly auth = inject(AuthService);
+  private readonly host: ElementRef<HTMLElement> = inject(ElementRef);
 
   private static readonly ALL_SECTIONS: readonly HelpSection[] = [
     { id: 'premiers-pas',   title: 'Premiers pas',                              perms: [] },
-    { id: 'pointage',       title: 'Pour les employés : saisir son pointage',   perms: [] },
-    { id: 'employes',       title: 'Gérer les employés',                        perms: [PERM.employeesView, PERM.employeesCreate, PERM.employeesEdit] },
-    { id: 'compagnies',     title: 'Gérer les compagnies',                      perms: [PERM.companiesEdit] },
+    { id: 'accueil',        title: 'L’Accueil : ce qui demande votre attention', perms: DASHBOARD_PERMS as PermKey[], links: [
+      { label: 'Accueil', link: '/accueil', perms: [] },
+    ] },
+    { id: 'pointage',       title: 'Pour les employés : saisir son pointage',   perms: [], links: [
+      { label: 'Feuille de temps', link: '/pointage', perms: [PERM.pointageView] },
+    ] },
+    { id: 'employes',       title: 'Gérer les employés',                        perms: [PERM.employeesView, PERM.employeesCreate, PERM.employeesEdit], links: [
+      { label: 'Nouvel employé',      link: '/employees/new',         perms: [PERM.employeesCreate] },
+      { label: 'Modifier employé',    link: '/employees/edit',        perms: [PERM.employeesEdit] },
+      { label: 'Tarifs employés',     link: '/employees/pricing',     perms: [PERM.employeesEdit] },
+      { label: 'Assigner compagnies', link: '/companies/assign',      perms: [PERM.companiesEdit] },
+      { label: 'Identifiants',        link: '/employees/credentials', perms: [PERM.credentialsManage] },
+    ] },
+    { id: 'compagnies',     title: 'Gérer les compagnies',                      perms: [PERM.companiesEdit], links: [
+      { label: 'Liste compagnies',   link: '/companies/edit',   perms: [PERM.companiesEdit] },
+      { label: 'Nouvelle compagnie', link: '/companies/new',    perms: [PERM.companiesEdit] },
+      { label: 'Assigner employés',  link: '/employees/assign', perms: [PERM.employeesEdit] },
+    ] },
     { id: 'combinaisons',   title: 'Employé et compagnie : les combinaisons',   perms: [PERM.companiesEdit, PERM.employeesEdit, PERM.pointageValidate] },
-    { id: 'validation',     title: 'Valider le pointage',                       perms: [PERM.pointageValidate] },
-    { id: 'facturation',    title: 'Facturer vos compagnies',                   perms: [PERM.invoicesView, PERM.invoicesEdit, PERM.invoicesSend] },
-    { id: 'paiements',      title: 'Payer vos employés',                        perms: [PERM.paymentsManage, PERM.employeesEdit] },
-    { id: 'notes',          title: 'Notes et alertes',                          perms: [] },
-    { id: 'administration', title: 'Statistiques et administration',            perms: [PERM.statsView, PERM.groupsManage, PERM.configManage, PERM.credentialsManage] },
+    { id: 'validation',     title: 'Valider le pointage',                       perms: [PERM.pointageValidate], links: [
+      { label: 'Pointage employé', link: '/employees',            perms: [PERM.employeesView] },
+      { label: 'Profil employé',   link: '/employees/validation', perms: [PERM.pointageValidate] },
+    ] },
+    { id: 'facturation',    title: 'Facturer vos compagnies',                   perms: [PERM.invoicesView, PERM.invoicesEdit, PERM.invoicesSend], links: [
+      { label: 'Facturer par pointages',      link: '/invoices/from-timesheets', perms: [PERM.invoicesEdit] },
+      { label: 'Nouvelle facture',            link: '/invoices/new',             perms: [PERM.invoicesEdit] },
+      { label: 'Gérer les factures',          link: '/invoices',                 perms: [PERM.invoicesView] },
+      { label: 'Envoyer les factures',        link: '/invoices/send',            perms: [PERM.invoicesSend] },
+      { label: 'Téléchargement des factures', link: '/invoices/download',        perms: [PERM.invoicesView] },
+      { label: 'Rapports',                    link: '/invoices/report',          perms: [PERM.invoicesView] },
+      { label: 'Charges',                     link: '/charges',                  perms: [PERM.invoicesView] },
+      { label: 'Relevé bancaire',             link: '/bank-statement',           perms: [PERM.paymentsManage] },
+    ] },
+    { id: 'paiements',      title: 'Payer vos employés',                        perms: [PERM.paymentsManage, PERM.employeesEdit], links: [
+      { label: 'Paiements employés', link: '/employees/payments', perms: [PERM.paymentsManage] },
+      { label: 'Feuillet T4A',       link: '/employees/t4a',      perms: [PERM.employeesEdit] },
+    ] },
+    { id: 'communications', title: 'Suivre les communications',                 perms: [PERM.companiesEdit, PERM.employeesEdit], links: [
+      { label: 'Communications', link: '/communications', perms: [] },
+    ] },
+    { id: 'notes',          title: 'Notes et alertes',                          perms: [], links: [
+      { label: 'Notes', link: '/notes', perms: [] },
+    ] },
+    { id: 'administration', title: 'Statistiques et administration',            perms: [PERM.statsView, PERM.groupsManage, PERM.configManage, PERM.credentialsManage, PERM.dataPurge], links: [
+      { label: 'Statistiques',           link: '/stats',                 perms: [PERM.statsView] },
+      { label: 'Groupes',                link: '/groups',                perms: [PERM.groupsManage] },
+      { label: 'Identifiants',           link: '/employees/credentials', perms: [PERM.credentialsManage] },
+      { label: 'Configuration',          link: '/config',                perms: [PERM.configManage] },
+      { label: 'Suppression définitive', link: '/purge',                 perms: [PERM.dataPurge] },
+    ] },
     { id: 'faq',            title: 'Questions fréquentes',                      perms: [] },
   ];
+
+  constructor() {
+    const destroyRef = inject(DestroyRef);
+    // Sommaire : surligne la section en cours de lecture (bande située sous la barre de navigation).
+    afterNextRender(() => {
+      const visible = new Set<string>();
+      const io = new IntersectionObserver(entries => {
+        for (const e of entries) {
+          if (e.isIntersecting) visible.add(e.target.id); else visible.delete(e.target.id);
+        }
+        const first = this.sections().find(s => visible.has(s.id));
+        if (first) this._setActive(first.id);
+      }, { rootMargin: '-120px 0px -60% 0px' });
+      this.host.nativeElement.querySelectorAll('section[id]').forEach(el => io.observe(el));
+      destroyRef.onDestroy(() => io.disconnect());
+    });
+  }
 
   /** Au moins une des permissions (le super utilisateur les a toutes ; liste vide = tout le monde). */
   can(...perms: PermKey[]): boolean {
@@ -133,9 +200,56 @@ export class HelpComponent {
     { label: 'à l’heure', cells: [this.combos[1], this.combos[3]] },
   ];
 
+  /** Raccourcis de la section que cet utilisateur peut ouvrir. */
+  linksOf(id: string): HelpLink[] {
+    return (HelpComponent.ALL_SECTIONS.find(s => s.id === id)?.links ?? []).filter(l => this.can(...l.perms));
+  }
+
+  // ── Recherche dans le guide ──────────────────────────────────────────────
+  readonly query = signal('');
+  /** Sections dont le texte contient tous les mots cherchés (null = pas de recherche). */
+  private readonly _hits = signal<Set<string> | null>(null);
+
+  onSearch(value: string): void {
+    this.query.set(value);
+    const words = norm(value).split(/\s+/).filter(Boolean);
+    if (!words.length) { this._hits.set(null); return; }
+    const hits = new Set<string>();
+    for (const s of this.sections()) {
+      // Le texte est lu dans la page : une section masquée par la recherche précédente reste lisible.
+      const text = norm(document.getElementById(s.id)?.textContent ?? '');
+      if (words.every(w => text.includes(w))) hits.add(s.id);
+    }
+    this._hits.set(hits);
+  }
+  clearSearch(): void { this.onSearch(''); }
+
+  readonly searching = computed(() => this._hits() !== null);
+  hit(id: string): boolean { return this._hits()?.has(id) ?? true; }
+  /** Sections du sommaire : toutes, ou seulement celles qui correspondent à la recherche. */
+  readonly tocSections = computed(() => this.sections().filter(s => this.hit(s.id)));
+
+  // ── Section en cours de lecture ──────────────────────────────────────────
+  readonly active = signal('');
+  /** Bouton « Haut de page » : dès qu'on a dépassé la première section. */
+  readonly showTop = computed(() => !!this.active() && this.active() !== this.sections()[0]?.id);
+
+  private _setActive(id: string): void {
+    if (this.active() === id) return;
+    this.active.set(id);
+    // Sur mobile le sommaire est une bande horizontale : garder l'entrée active visible.
+    const toc = this.host.nativeElement.querySelector<HTMLElement>('.toc');
+    const link = toc?.querySelector<HTMLElement>(`a[data-id="${id}"]`);
+    if (toc && link && toc.scrollWidth > toc.clientWidth) toc.scrollLeft = link.offsetLeft - 12;
+  }
+
   /** Défilement vers une section (les ancres #id seraient interceptées par le routeur). */
   goTo(id: string, event: Event): void {
     event.preventDefault();
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  toTop(): void {
+    this.host.nativeElement.querySelector('.help-wrap')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 }

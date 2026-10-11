@@ -11,6 +11,8 @@ import { ActivatedRoute } from '@angular/router';
 import { InvoiceService, BillSummary, BillDetail } from '../../../state/invoice/invoice.service';
 import { ConfigService } from '../../../state/config/config.service';
 import { CompanyService, ContactItem } from '../../../state/compagny/Company.service';
+import { httpErrorMessage } from '../../shared/http-error';
+import { I18nService } from '../../../state/i18n/i18n.service';
 
 const L = (msg: string, ...args: unknown[]) => console.log(`[InvoiceSend] ${msg}`, ...args);
 const W = (msg: string, ...args: unknown[]) => console.warn(`[InvoiceSend] ⚠ ${msg}`, ...args);
@@ -69,6 +71,7 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
 
   private _providerName = '';
   private destroyRef    = inject(DestroyRef);
+  private i18n          = inject(I18nService);
 
   constructor(
     private invoiceSvc:  InvoiceService,
@@ -322,7 +325,7 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
     const unpaid = this.unpaidBills();
     const amount = d.totalWithTax.toLocaleString('fr-CA', { minimumFractionDigits: 2 }) + ' $';
 
-    this.subject = `Facture ${d.billNumber} — ${d.companyName}`;
+    this.subject = this.i18n.t(`Facture ${d.billNumber} — ${d.companyName}`);
     let msg = `Bonjour,\n\n`;
     msg += `Veuillez trouver en pièce jointe la facture ${d.billNumber} d'un montant de ${amount} pour la période ${d.period}.\n`;
     if (unpaid.length > 0) {
@@ -335,7 +338,7 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
     }
     msg += `\n\nNB : Veuillez indiquer le numéro de facture (${d.billNumber}) lors de votre paiement afin d'en assurer un bon suivi.\n`;
     msg += `\nMerci pour votre confiance.\n\nCordialement,\n${this._providerName}`;
-    this.body = msg;
+    this.body = this.i18n.tLines(msg);
     L('buildMessage — sujet: %s | corps: %d chars | impayés: %d', this.subject, msg.length, unpaid.length);
   }
 
@@ -474,7 +477,7 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
       error: err => {
         E('send() — HTTP %d: %s', err.status, err?.error?.message ?? err.message);
         this.sending.set(false);
-        this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.error.set(httpErrorMessage(err));
         this.cdr.markForCheck();
       },
     });

@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../state/auth/auth.service';
+import { LangSwitchComponent } from '../../components/lang-switch/lang-switch.component';
 
 @Component({
     selector: 'app-login',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule, RouterLink],
+    imports: [CommonModule, FormsModule, RouterLink, LangSwitchComponent],
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss']
 })
@@ -92,9 +93,10 @@ export class LoginComponent {
         const back = this._returnUrl();
         if (back) { this.router.navigateByUrl(back); return; }   // les gardes vérifient encore la permission
 
-        const dest = this.auth.canManage() ? '/employees' : '/pointage';
-        this.log(`→ navigation vers ${dest}`);
-        this.router.navigate([dest]);
+        // La racine choisit la page d'arrivée selon les permissions (homeGuard) : accueil pour un rôle
+        // de gestion, feuille de temps ou liste des employés sinon.
+        this.log('→ navigation vers la page de départ');
+        this.router.navigate(['/']);
       },
       error: err => {
         this.loading.set(false);

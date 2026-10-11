@@ -35,7 +35,32 @@
     text-decoration: none;
 
     &:hover { background: rgba(var(--overlay-rgb), .04); color: var(--accent); }
+    &:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+    // Section en cours de lecture
+    &.active { background: rgba(var(--accent-rgb), .1); color: var(--accent); font-weight: 600; }
   }
+}
+
+// ── Recherche ────────────────────────────────────────────────────────────
+.help-search {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px;
+  margin: 0 0 20px;
+
+  input {
+    flex: 1 1 260px; min-width: 0;
+    padding: 9px 12px; border-radius: 9px;
+    background: var(--surface); color: var(--text);
+    border: 1px solid var(--border);
+    font: inherit; font-size: .9rem;
+    &:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  }
+}
+.help-search-count { font-size: .8rem; color: var(--muted); &:empty { display: none; } }
+
+// Bouton « Haut de page »
+.to-top {
+  position: fixed; right: 20px; bottom: 20px; z-index: 20;
+  background: var(--surface); box-shadow: 0 4px 14px rgba(0, 0, 0, .25);
 }
 
 // ── Contenu ──────────────────────────────────────────────────────────────
@@ -55,7 +80,23 @@
     padding: 20px 24px;
     margin-bottom: 20px;
     scroll-margin-top: 74px;   // le titre ne passe pas sous la barre de navigation
+    &.is-hidden { display: none; }   // section écartée par la recherche
   }
+
+  // Raccourcis vers les pages de la section
+  .page-links {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+    margin: 0 0 12px;
+
+    a {
+      padding: 4px 10px; border-radius: 999px;
+      font-size: .8rem; font-weight: 600; text-decoration: none;
+      color: var(--accent); background: rgba(var(--accent-rgb), .06); border: 1px solid rgba(var(--accent-rgb), .3);
+      &:hover { background: rgba(var(--accent-rgb), .14); }
+      &:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    }
+  }
+  .page-links-lbl { font-size: .8rem; color: var(--muted); }
 
   h2 { font-size: 1.2rem; margin: 0 0 10px; color: var(--accent); }
   h3 { font-size: .98rem; margin: 20px 0 6px; }
@@ -119,9 +160,17 @@
 }
 
 @media (max-width: 860px) {
-  .help-wrap { grid-template-columns: 1fr; padding: 16px 12px; }
-  .toc { position: static; }
-  .guide section { padding: 16px; }
+  .help-wrap { grid-template-columns: 1fr; gap: 16px; padding: 16px 12px; }
+  // Sommaire : bande horizontale défilante, collée sous la barre de navigation
+  .toc {
+    top: 58px; z-index: 5;
+    display: flex; gap: 4px; overflow-x: auto;
+    padding: 6px;
+    .toc-title { display: none; }
+    a { flex: none; white-space: nowrap; padding: 8px 12px; }
+  }
+  .guide section { padding: 16px; scroll-margin-top: 116px; }   // barre de navigation + sommaire
+  .to-top { right: 12px; bottom: 12px; }
   .guide table { display: block; overflow-x: auto; }
   .guide .cm-row { grid-template-columns: 1fr; }
   .guide .cm-corner { display: none; }

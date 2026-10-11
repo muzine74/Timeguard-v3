@@ -10,6 +10,7 @@ import {
 } from '../../../state/groups/groups.service';
 import { EmployeesService } from '../../../state/employees/employees.service';
 import { AuthService } from '../../../state/auth/auth.service';
+import { httpErrorMessage } from '../../shared/http-error';
 
 @Component({
     selector: 'app-groups-manage',
@@ -190,7 +191,7 @@ export class GroupsManageComponent implements OnInit {
       },
       error: err => {
         this.saving.set(false);
-        this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.error.set(httpErrorMessage(err));
       },
     });
   }
@@ -212,7 +213,7 @@ export class GroupsManageComponent implements OnInit {
       },
       error: err => {
         this.deleting.set(false);
-        this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.error.set(httpErrorMessage(err));
         this.confirmDelete.set(false);
       },
     });
@@ -250,7 +251,7 @@ export class GroupsManageComponent implements OnInit {
       },
       error: err => {
         this.permSaving.set(false);
-        this.permError.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.permError.set(httpErrorMessage(err));
       },
     });
   }
@@ -267,7 +268,7 @@ export class GroupsManageComponent implements OnInit {
         this._loadPermissions();
         this._showToast('Permission supprimée.');
       },
-      error: err => this.permError.set(err?.error?.message ?? `Erreur HTTP ${err.status}`),
+      error: err => this.permError.set(httpErrorMessage(err)),
     });
   }
 

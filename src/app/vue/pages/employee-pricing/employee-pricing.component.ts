@@ -9,6 +9,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EmployeesService } from '../../../state/employees/employees.service';
 import { PricingService } from '../../../state/employees/pricing.service';
 import { DayPricingHistory, Employee, EmployeeCompagnie, EmployeeHourlyRate } from '../../../models';
+import { httpErrorMessage } from '../../shared/http-error';
 
 interface PricingRow {
   calendarId:    string;
@@ -143,7 +144,7 @@ export class EmployeePricingComponent implements OnInit {
           this.loading.set(false);
         },
         error: err => {
-          this.error.set(`Erreur chargement tarifs (HTTP ${err.status})`);
+          this.error.set(httpErrorMessage(err, `Erreur chargement tarifs`));
           this.loading.set(false);
         },
       });
@@ -190,7 +191,7 @@ export class EmployeePricingComponent implements OnInit {
         },
         error: err => {
           this.hourlySaving.set(false);
-          this.hourlyError.set(err?.error?.message ?? `Erreur (HTTP ${err.status})`);
+          this.hourlyError.set(httpErrorMessage(err));
         },
       });
   }
@@ -219,7 +220,7 @@ export class EmployeePricingComponent implements OnInit {
           this.historyLoading.set(false);
         },
         error: err => {
-          this.historyError.set(`Erreur (HTTP ${err.status})`);
+          this.historyError.set(httpErrorMessage(err));
           this.historyLoading.set(false);
         },
       });
@@ -281,7 +282,7 @@ export class EmployeePricingComponent implements OnInit {
           setTimeout(() => this.saved.set(false), 3000);
         },
         error: err => {
-          this.error.set(`Erreur sauvegarde (HTTP ${err.status}) — ${err.error?.message ?? ''}`);
+          this.error.set(httpErrorMessage(err, `Les tarifs n'ont pas été enregistrés`));
           this.saving.set(false);
         },
       });

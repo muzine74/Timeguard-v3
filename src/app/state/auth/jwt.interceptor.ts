@@ -3,6 +3,7 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
+import { currentLang } from '../i18n/i18n.service';
 
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   const auth   = inject(AuthService);
@@ -13,6 +14,8 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   let headers = req.headers;
   if (token) headers = headers.set('Authorization', `Bearer ${token}`);
   if (slug)  headers = headers.set('X-Tenant-Slug', slug);
+  // Langue des PDF et courriels écrits par l'API (seulement vers l'API, pas vers les fichiers du site)
+  if (req.url.startsWith('/api/') && currentLang() !== 'fr') headers = headers.set('X-Lang', currentLang());
 
   const r = headers !== req.headers ? req.clone({ headers }) : req;
 

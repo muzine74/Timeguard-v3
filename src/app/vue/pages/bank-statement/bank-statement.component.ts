@@ -6,6 +6,8 @@ import { BankTransactionsService, BankTransactionList, BankTransactionRow, BankI
 import { BankLexiconComponent, LINK_ICON, LINK_LABEL } from './bank-lexicon/bank-lexicon.component';
 import { TableSort, SortValue } from '../../shared/table-sort';
 import { MultiSelectComponent, MultiSelectOption } from '../../components/multi-select/multi-select.component';
+import { httpErrorMessage } from '../../shared/http-error';
+import { locale } from '../../../state/i18n/i18n.service';
 
 type Column = 'date' | 'description' | 'withdrawal' | 'deposit' | 'linkName' | 'validated';
 const COLUMNS: Column[] = ['date', 'description', 'withdrawal', 'deposit', 'linkName', 'validated'];
@@ -140,7 +142,7 @@ export class BankStatementComponent implements OnInit {
       error: err => {
         this._replace(row);
         this._saving(row.bankTransactionId, false);
-        this.validateError.set(err?.error?.message ?? `La validation n'a pas été enregistrée (HTTP ${err?.status ?? '?'}).`);
+        this.validateError.set(httpErrorMessage(err, `La validation n'a pas été enregistrée`));
       },
     });
   }
@@ -159,7 +161,7 @@ export class BankStatementComponent implements OnInit {
 
   validatedTitle(r: BankTransactionRow): string {
     if (!r.validated || !r.validatedAt) return '';
-    const d = new Date(r.validatedAt).toLocaleString('fr-CA', { dateStyle: 'medium', timeStyle: 'short' });
+    const d = new Date(r.validatedAt).toLocaleString(locale(), { dateStyle: 'medium', timeStyle: 'short' });
     return `Validée le ${d}${r.validatedBy ? ' par ' + r.validatedBy : ''}`;
   }
 
@@ -214,7 +216,7 @@ export class BankStatementComponent implements OnInit {
       },
       error: err => {
         this.importing.set(false);
-        this.importError.set(err?.error?.message ?? `Le chargement a échoué (HTTP ${err?.status ?? '?'}).`);
+        this.importError.set(httpErrorMessage(err, `Le chargement a échoué`));
         this.importErrorLines.set(err?.error?.errors ?? []);
       },
     });
@@ -239,7 +241,7 @@ export class BankStatementComponent implements OnInit {
         }));
         this.page.set(1);
       },
-      error: err => { this.error.set(err?.error?.message ?? `Impossible de charger le relevé (HTTP ${err?.status ?? '?'}).`); this.loading.set(false); },
+      error: err => { this.error.set(httpErrorMessage(err, `Impossible de charger le relevé`)); this.loading.set(false); },
     });
   }
 

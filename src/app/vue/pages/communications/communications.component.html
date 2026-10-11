@@ -81,7 +81,11 @@
             <ng-template #total>{{ items().length }} entrée(s)</ng-template>
           </p>
         </div>
-        <button type="button" class="btn btn-primary" [disabled]="loading() || saving()" (click)="openNew()">＋ Ajouter une communication</button>
+        <div class="main-hdr-actions">
+          <button type="button" class="btn btn-outline" *ngIf="tel.status()?.canCall" [disabled]="loading() || callBusy()"
+                  [attr.aria-expanded]="callPanel()" (click)="callPanel() ? closeCall() : openCall()">📞 Appeler</button>
+          <button type="button" class="btn btn-primary" [disabled]="loading() || saving()" (click)="openNew()">＋ Ajouter une communication</button>
+        </div>
       </div>
 
       <!-- Filtres -->
@@ -114,6 +118,37 @@
 
       <div class="main-scroll">
 
+        <!-- Appel depuis TimeGuard : choix du numéro -->
+        <section class="comm-form call-panel" *ngIf="callPanel()" aria-labelledby="call-panel-title">
+          <h2 class="form-title" id="call-panel-title">Appeler {{ sel.name }}</h2>
+          <p class="call-note" *ngIf="tel.status()?.recording">● Cet appel sera enregistré. Un message en avise la personne appelée dès qu'elle décroche.</p>
+
+          <div class="loading-wrap" role="status" aria-live="polite" *ngIf="callNumbersLoading()">
+            <div class="mini-spinner"></div><span>Chargement des numéros…</span>
+          </div>
+          <ul class="call-list" *ngIf="callNumbers().length">
+            <li *ngFor="let n of callNumbers()">
+              <span class="call-who">{{ n.label }}</span>
+              <span class="call-num">{{ n.number }}</span>
+              <button type="button" class="btn btn-primary" [disabled]="callBusy()" (click)="dial(n.number, n.label)">Appeler</button>
+            </li>
+          </ul>
+          <p class="call-note" *ngIf="!callNumbersLoading() && !callNumbers().length">
+            {{ tab() === 'company' ? 'Aucun contact actif de cette compagnie n\'a de numéro de téléphone.' : 'Aucun numéro de téléphone dans la fiche de cet employé.' }}
+          </p>
+
+          <form class="call-other" (ngSubmit)="dial(callOther(), '')">
+            <label class="f-field">
+              <span>Autre numéro (Canada ou États-Unis)</span>
+              <input type="tel" name="callOther" placeholder="514 555-0123" autocomplete="off"
+                     [ngModel]="callOther()" (ngModelChange)="callOther.set($event)" />
+            </label>
+            <button type="submit" class="btn btn-outline" [disabled]="callBusy() || !callOther().trim()">Appeler ce numéro</button>
+            <button type="button" class="btn btn-outline" (click)="closeCall()">Fermer</button>
+          </form>
+          <div class="form-error" role="alert" *ngIf="callError()">⚠ {{ callError() }}</div>
+        </section>
+
         <!-- Formulaire d'ajout / de modification -->
         <form class="comm-form" *ngIf="form() as f" (ngSubmit)="save()">
           <h2 class="form-title">{{ f.id ? 'Modifier la communication' : 'Nouvelle communication' }}</h2>
@@ -124,21 +159,26 @@
             </label>
             <label class="f-field">
               <span>Type</span>
-              <select name="channel" [ngModel]="f.channel" (ngModelChange)="patch({ channel: $event })">
+              <select name="channel" [ngModel]="f.channel" (ngModelChange)="setKind({ channel: $event })">
                 <option *ngFor="let c of CHANNELS" [value]="c.key">{{ c.label }}</option>
               </select>
             </label>
             <label class="f-field">
               <span>Sens</span>
-              <select name="direction" [ngModel]="f.direction" (ngModelChange)="patch({ direction: $event })">
+              <select name="direction" [ngModel]="f.direction" (ngModelChange)="setKind({ direction: $event })">
                 <option value="out">Envoyé / appel fait</option>
                 <option value="in">Reçu</option>
               </select>
             </label>
-            <label class="f-field">
-              <span>{{ contactLabel(f) }}</span>
-              <input type="text" name="contact" maxlength="500" placeholder="Nom, courriel ou téléphone"
+            <label class="f-field" [class.f-wide]="canSend(f)">
+              <span>{{ contactLabel(f) }}{{ canSend(f) ? ' (adresses séparées par « ; »)' : '' }}</span>
+              <input type="text" name="contact" maxlength="500"
+                     [placeholder]="canSend(f) ? 'nom@exemple.com; autre@exemple.com' : 'Nom, courriel ou téléphone'"
                      [ngModel]="f.contact" (ngModelChange)="patch({ contact: $event })" />
+              <small class="f-hint" *ngIf="canSend(f) && knownEmails() as known">
+                {{ known.length ? 'Courriels des contacts actifs ajoutés d\'office : retirez ceux qui ne doivent pas le recevoir.'
+                    : (tab() === 'company' ? 'Aucun contact actif de cette compagnie n\'a de courriel.' : 'Aucun courriel dans la fiche de cet employé.') }}
+              </small>
             </label>
             <label class="f-field f-wide">
               <span>Sujet</span>
@@ -146,9 +186,14 @@
                      [ngModel]="f.subject" (ngModelChange)="patch({ subject: $event })" />
             </label>
             <label class="f-field f-wide">
-              <span>Résumé</span>
+              <span>{{ f.sendEmail && canSend(f) ? 'Message du courriel' : 'Résumé' }}</span>
               <textarea name="body" rows="4" maxlength="4000"
                         [ngModel]="f.body" (ngModelChange)="patch({ body: $event })"></textarea>
+            </label>
+            <label class="f-check f-wide" *ngIf="canSend(f)">
+              <input type="checkbox" name="sendEmail" [ngModel]="f.sendEmail" (ngModelChange)="patch({ sendEmail: $event })" />
+              <span>Envoyer ce courriel aux destinataires à l'enregistrement
+                <small>Non coché : l'entrée est seulement notée dans l'historique, rien n'est envoyé.</small></span>
             </label>
           </div>
           <!-- Nouvelle entrée : fichiers joints à l'enregistrement. Entrée existante : on joint depuis l'historique. -->
@@ -158,15 +203,13 @@
           <div class="form-actions">
             <button type="button" class="btn btn-outline" [disabled]="saving()" (click)="cancelForm()">Annuler</button>
             <button type="submit" class="btn btn-primary" [disabled]="saving()">
-              <span *ngIf="!saving()">✓ Enregistrer</span>
+              <span *ngIf="!saving()">{{ f.sendEmail && canSend(f) ? '✉ Enregistrer et envoyer' : '✓ Enregistrer' }}</span>
               <span *ngIf="saving()" class="spinner"></span>
             </button>
           </div>
         </form>
 
-        <div class="loading-wrap" role="status" aria-live="polite" *ngIf="loading()">
-          <div class="mini-spinner"></div><span>Chargement…</span>
-        </div>
+        <div class="sk-list" role="status" aria-live="polite" *ngIf="loading()"><span class="sr-only">Chargement…</span><div class="sk-row" *ngFor="let _ of [1, 2, 3, 4, 5, 6]"><i></i><i></i><i></i></div></div>
 
         <div class="empty" role="alert" *ngIf="error()">
           ⚠ {{ error() }}
@@ -189,12 +232,29 @@
                 <span class="tag">{{ channelLabel(i.channel) }}</span>
                 <span class="tag" [class.tag-in]="i.direction === 'in'">{{ i.direction === 'in' ? 'Reçu' : 'Envoyé' }}</span>
                 <span class="tag tag-auto" *ngIf="i.isAutomatic">TimeGuard</span>
+                <span class="tag" *ngIf="sendable(i) && !i.error">Non envoyé par TimeGuard</span>
                 <span class="tag tag-fail" *ngIf="i.error">Échec de l'envoi</span>
               </div>
               <div class="entry-subject">{{ i.subject }}</div>
               <div class="entry-meta" *ngIf="i.contact">{{ contactLabel(i) }} : {{ i.contact }}</div>
               <div class="entry-meta" *ngIf="i.attachment">📎 {{ i.attachment }}</div>
               <div class="entry-error" *ngIf="i.error">{{ i.error }}</div>
+
+              <!-- Appel passé depuis TimeGuard : issue, durée, enregistrement -->
+              <ng-container *ngIf="i.callNumber">
+                <div class="entry-meta" *ngIf="callSummary(i) as summary">{{ summary }}</div>
+                <ng-container *ngIf="i.hasRecording && tel.status()?.canListen">
+                  <button type="button" class="link-btn" *ngIf="playing()?.id !== i.id" [disabled]="playLoading() === i.id" (click)="listen(i)">
+                    {{ playLoading() === i.id ? 'Chargement…' : '▶ Écouter l\'enregistrement' }}
+                  </button>
+                  <div class="entry-audio" *ngIf="playing() as p">
+                    <ng-container *ngIf="p.id === i.id">
+                      <audio controls autoplay [src]="p.url" [attr.aria-label]="'Enregistrement — ' + i.subject"></audio>
+                      <button type="button" class="link-btn" (click)="stopListening()">Fermer</button>
+                    </ng-container>
+                  </div>
+                </ng-container>
+              </ng-container>
 
               <button type="button" class="link-btn" *ngIf="i.body" [attr.aria-expanded]="isOpen(i.id)" (click)="toggle(i.id)">
                 {{ isOpen(i.id) ? '▾ Masquer le texte' : '▸ Voir le texte' }}
@@ -206,8 +266,9 @@
                                (attachmentsChange)="setAttachments(i, $event)"></app-attachments>
 
               <div class="entry-foot">
-                <span *ngIf="i.createdBy">{{ i.isAutomatic ? 'Envoyé par' : 'Saisi par' }} {{ i.createdBy }}</span>
+                <span *ngIf="i.createdBy">{{ i.callNumber ? 'Appelé par' : i.isAutomatic ? 'Envoyé par' : 'Saisi par' }} {{ i.createdBy }}</span>
                 <span class="entry-actions" *ngIf="!i.isAutomatic">
+                  <button type="button" class="link-btn" *ngIf="sendable(i)" [disabled]="saving()" (click)="sendNow(i)">✉ {{ i.error ? 'Réessayer l\'envoi' : 'Envoyer ce courriel' }}</button>
                   <button type="button" class="link-btn" [disabled]="saving()" (click)="edit(i)">Modifier</button>
                   <button type="button" class="link-btn link-danger" [disabled]="saving()" (click)="remove(i)">Supprimer</button>
                 </span>

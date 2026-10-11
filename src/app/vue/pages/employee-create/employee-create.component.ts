@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { EmployeesService } from '../../../state/employees/employees.service';
 import { TeamAssignmentComponent } from '../../components/team-assignment/team-assignment.component';
 import { EmployeeFile, EmployeeForm } from '../../../models';
+import { httpErrorMessage } from '../../shared/http-error';
 
 @Component({
     selector: 'app-employee-create',
@@ -105,7 +106,7 @@ export class EmployeeCreateComponent {
       this.fieldErrors.set(mapped);
       this.error.set('Veuillez corriger les champs en erreur.');
     } else {
-      this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+      this.error.set(httpErrorMessage(err));
     }
   }
 
@@ -123,7 +124,7 @@ export class EmployeeCreateComponent {
         input.value = '';
       },
       error: err => {
-        this.fileError.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.fileError.set(httpErrorMessage(err));
         this.fileUploading.set(false);
         input.value = '';
       },
@@ -141,14 +142,14 @@ export class EmployeeCreateComponent {
         a.click();
         setTimeout(() => URL.revokeObjectURL(url), 10000);
       },
-      error: err => this.fileError.set(err?.error?.message ?? `Erreur HTTP ${err.status}`),
+      error: err => this.fileError.set(httpErrorMessage(err)),
     });
   }
 
   removeFile(fileId: string): void {
     this.empSvc.deleteFile(this.createdId(), fileId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => this._loadFiles(),
-      error: err => this.fileError.set(err?.error?.message ?? `Erreur HTTP ${err.status}`),
+      error: err => this.fileError.set(httpErrorMessage(err)),
     });
   }
 

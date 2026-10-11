@@ -17,6 +17,7 @@ import { SaveStateService }        from '../../../state/pointage/save-state.serv
 import { EmployeesService }        from '../../../state/employees/employees.service';
 import { AuthService }             from '../../../state/auth/auth.service';
 import { Employee, EmployeeForm }  from '../../../models';
+import { httpErrorMessage } from '../../shared/http-error';
 
 @Component({
     selector: 'app-pointage-page',
@@ -101,7 +102,7 @@ export class PointagePage implements OnInit {
         },
         error: err => {
           this.warn(`✕ getOne(${id}) échoué — HTTP ${err.status}`);
-          this.empError.set(`Impossible de charger l'employé — HTTP ${err.status}`);
+          this.empError.set(httpErrorMessage(err, `Impossible de charger l'employé`));
           this.empLoading.set(false);
         },
       });

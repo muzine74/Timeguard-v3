@@ -1,0 +1,128 @@
+.dash { max-width: 1180px; margin: 0 auto; padding: 28px 28px 40px; }
+
+.dash-hdr {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  margin-bottom: 22px;
+  .btn { cursor: pointer; font-family: inherit; }
+}
+.dash-title { font-size: 24px; font-weight: 700; letter-spacing: -.5px; margin: 0; }
+.dash-sub   { font-size: 13px; color: var(--muted); margin: 6px 0 0; }
+.dash-date::first-letter { text-transform: uppercase; }
+.dash-h2    { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin: 30px 0 12px; }
+
+.dash-error {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+  padding: 12px 16px; margin-bottom: 18px; border-radius: 10px;
+  background: rgba(224, 82, 82, .1); border: 1px solid rgba(224, 82, 82, .3); color: var(--danger-text);
+  font-size: 13px;
+  .btn { cursor: pointer; font-family: inherit; }
+}
+
+// ── Cartes ────────────────────────────────────────────────
+.dash-grid {
+  display: grid; gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+.card {
+  display: flex; flex-direction: column; min-width: 0;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 18px 20px 16px;
+  border-top: 3px solid var(--border);
+  &.card-todo { border-top-color: var(--accent); }
+  &.card-late { border-top-color: var(--danger); }
+  &.card-ok   { border-top-color: var(--success-text); }
+  &.card-info { border-top-color: var(--border); }
+}
+.card-label  { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; }
+.card-number { font-size: 30px; font-weight: 700; letter-spacing: -1px; margin-top: 8px; font-variant-numeric: tabular-nums; line-height: 1.15; }
+.card-unit   { font-size: 14px; font-weight: 600; color: var(--muted); letter-spacing: 0; }
+.card-check  { color: var(--success-text); }
+.card-text   { font-size: 13px; color: var(--muted); margin: 6px 0 0; line-height: 1.5; }
+.late        { color: var(--danger-text); font-weight: 600; }
+
+.card-list {
+  list-style: none; margin: 12px 0 0; padding: 0;
+  border-top: 1px solid var(--border);
+  li {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+    padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 12px;
+    &.li-late .li-side { color: var(--danger-text); font-weight: 600; }
+  }
+}
+.li-main { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+.li-side { flex-shrink: 0; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+.card-cta {
+  margin-top: auto; padding-top: 14px;
+  color: var(--accent); font-size: 13px; font-weight: 600; text-decoration: none;
+  &:hover { text-decoration: underline; }
+  &:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+}
+
+// ── Chargement (forme de la page) ─────────────────────────
+.skeleton { border-top-color: var(--border); }
+.sk {
+  border-radius: 6px; background: var(--surface2);
+  animation: sk-pulse 1.2s ease-in-out infinite;
+}
+.sk-label  { width: 45%; height: 10px; }
+.sk-number { width: 55%; height: 30px; margin-top: 12px; }
+.sk-line   { width: 90%; height: 10px; margin-top: 12px; }
+.sk-short  { width: 60%; }
+@keyframes sk-pulse { 50% { opacity: .45; } }
+@media (prefers-reduced-motion: reduce) { .sk { animation: none; } }
+
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+// ── Raccourcis ────────────────────────────────────────────
+.shortcuts { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+.shortcut {
+  display: flex; align-items: center; gap: 10px; min-width: 0;
+  padding: 12px 14px; border-radius: 11px;
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text); font-size: 13px; font-weight: 600; text-decoration: none; transition: all .15s;
+  &:hover { border-color: rgba(var(--accent-rgb), .4); background: rgba(var(--accent-rgb), .05); }
+  &:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+}
+.shortcut-icon {
+  width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 15px;
+  background: rgba(var(--accent-rgb), .12); color: var(--accent);
+}
+
+@media (max-width: 640px) {
+  .dash { padding: 18px 14px 32px; }
+  .dash-title { font-size: 20px; }
+  .dash-grid { grid-template-columns: 1fr; }
+  .shortcuts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+// ── Premiers pas ──────────────────────────────────────────
+.setup {
+  background: var(--surface); border: 1px solid rgba(var(--accent-rgb), .35); border-radius: 14px;
+  padding: 18px 20px; margin-bottom: 18px;
+}
+.setup-hdr   { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+.setup-title { font-size: 16px; font-weight: 700; margin: 0; }
+.setup-sub   { font-size: 13px; color: var(--muted); margin: 4px 0 0; }
+.setup-bar {
+  width: 200px; max-width: 100%; height: 8px; border-radius: 99px; background: var(--surface2); overflow: hidden; flex-shrink: 0;
+  span { display: block; height: 100%; border-radius: 99px; background: var(--accent); transition: width .3s; }
+}
+.setup-steps {
+  list-style: none; margin: 14px 0 0; padding: 0;
+  li {
+    display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--border);
+    &.step-done .step-text b { color: var(--muted); text-decoration: line-through; }
+    &.step-done .step-mark   { background: var(--success-text); border-color: var(--success-text); color: var(--surface); }
+  }
+}
+.step-mark {
+  width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--border);
+}
+.step-text { flex: 1; min-width: 0; display: flex; flex-direction: column; font-size: 13px;
+  small { font-size: 12px; color: var(--muted); margin-top: 2px; } }
+.step-cta  { flex-shrink: 0; padding: 6px 12px; font-size: 12px; text-decoration: none; }
+@media (max-width: 640px) { .setup-steps li { flex-wrap: wrap; } .step-cta { margin-left: 34px; } }

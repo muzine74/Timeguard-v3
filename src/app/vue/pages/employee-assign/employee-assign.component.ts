@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { forkJoin, pairwise, filter, take } from 'rxjs';
 import { EmployeesService } from '../../../state/employees/employees.service';
 import { CompanyService, CompanySummary } from '../../../state/compagny/Company.service';
+import { httpErrorMessage } from '../../shared/http-error';
 
 @Component({
     selector: 'app-employee-assign',
@@ -148,7 +149,7 @@ export class EmployeeAssignComponent implements OnInit {
         setTimeout(() => this.saved.set(false), 3000);
       },
       error: err => {
-        this.error.set(`HTTP ${err.status} — ${err.message}`);
+        this.error.set(httpErrorMessage(err));
         this.saving.set(false);
       },
     });

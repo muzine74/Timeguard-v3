@@ -2,6 +2,7 @@ import { Injectable, signal, computed, isDevMode } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Compagnie, WeekDay, TimeLogQueryResultDto, HourEntry } from '../../models';
 import { WeekService } from './week.service';
+import { httpErrorMessage } from '../../vue/shared/http-error';
 
 /** État d'une semaine : ses lignes de compagnies (propres à la semaine — une semaine validée
  *  a ses compagnies figées) avec leurs coches et prix. */
@@ -107,7 +108,7 @@ export class PointageEmployeeService {
       },
       error: err => {
         this.warn(`✕ GET ${url} échoué (${err.status})`);
-        this._error.set(`Impossible de charger les pointages — HTTP ${err.status}`);
+        this._error.set(httpErrorMessage(err, `Impossible de charger les pointages`));
         this._compagnies.set([]);
         this._savedSig.set('');
         this._loading.set(false);

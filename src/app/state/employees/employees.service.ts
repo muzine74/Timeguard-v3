@@ -2,6 +2,7 @@ import { Injectable, signal, isDevMode } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { map, tap } from 'rxjs';
 import { Employee, EmployeeFile, EmployeeForm } from '../../models';
+import { httpErrorMessage } from '../../vue/shared/http-error';
 
 @Injectable({ providedIn: 'root' })
 export class EmployeesService {
@@ -88,7 +89,7 @@ export class EmployeesService {
       },
       error: err => {
         this.warn('✕ GET /api/employee échoué', err.status);
-        this._error.set(`Impossible de charger les employés — HTTP ${err.status}`);
+        this._error.set(httpErrorMessage(err, `Impossible de charger les employés`));
         this._loading.set(false);
       }
     });
@@ -128,7 +129,7 @@ export class EmployeesService {
     }).pipe(
       tap({
         next:  () => this._loading.set(false),
-        error: err => { this._error.set(`HTTP ${err.status}`); this._loading.set(false); },
+        error: err => { this._error.set(httpErrorMessage(err)); this._loading.set(false); },
       }),
     );
   }
@@ -161,7 +162,7 @@ export class EmployeesService {
     }).pipe(
       tap({
         next:  () => this._loading.set(false),
-        error: err => { this._error.set(`HTTP ${err.status}`); this._loading.set(false); },
+        error: err => { this._error.set(httpErrorMessage(err)); this._loading.set(false); },
       }),
     );
   }

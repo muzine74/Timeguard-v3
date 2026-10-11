@@ -53,12 +53,20 @@ export const superUserGuard: CanActivateFn = () => {
   return router.createUrlTree(['/']);
 };
 
+/** Permissions qui donnent une section ou un intérêt au tableau de bord. */
+export const DASHBOARD_PERMS: string[] = [
+  PERM.pointageValidate, PERM.invoicesView, PERM.invoicesEdit, PERM.invoicesSend,
+  PERM.paymentsManage, PERM.statsView, PERM.companiesEdit, PERM.employeesEdit, PERM.configManage,
+];
+
 /** Route racine — redirige selon les permissions. */
 export const homeGuard: CanActivateFn = () => {
   const auth = inject(AuthService); const router = inject(Router);
   if (!auth.loggedIn()) return router.createUrlTree(['/login']);
   // Super user sans entreprise cible → panneau providers
   if (auth.isSuperUser()) return router.createUrlTree(['/providers']);
+  // Rôles de gestion : page d'accueil (tableau de bord). Un simple employé arrive directement sur sa page.
+  if (DASHBOARD_PERMS.some(p => auth.hasPerm(p))) return router.createUrlTree(['/accueil']);
   if (auth.hasPerm(PERM.employeesView))   return router.createUrlTree(['/employees']);
   if (auth.hasPerm(PERM.pointageView))    return router.createUrlTree(['/pointage']);
   if (auth.hasPerm(PERM.invoicesView))    return router.createUrlTree(['/invoices']);

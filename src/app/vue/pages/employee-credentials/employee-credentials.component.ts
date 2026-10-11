@@ -8,6 +8,7 @@ import { takeUntilDestroyed }     from '@angular/core/rxjs-interop';
 import { CredentialsService, CredentialResponse } from '../../../state/auth/credentials.service';
 import { EmployeesService }       from '../../../state/employees/employees.service';
 import { GroupsService, GroupSummary } from '../../../state/groups/groups.service';
+import { httpErrorMessage } from '../../shared/http-error';
 
 @Component({
     selector: 'app-employee-credentials',
@@ -120,7 +121,7 @@ export class EmployeeCredentialsComponent implements OnInit {
       next: () => this._onCreateDone(),
       error: err => {
         this.saving.set(false);
-        this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.error.set(httpErrorMessage(err));
       },
     });
   }
@@ -148,7 +149,7 @@ export class EmployeeCredentialsComponent implements OnInit {
       },
       error: err => {
         this.saving.set(false);
-        this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.error.set(httpErrorMessage(err));
       },
     });
   }
@@ -170,7 +171,7 @@ export class EmployeeCredentialsComponent implements OnInit {
       },
       error: err => {
         this.saving.set(false);
-        this.error.set(err?.error?.message ?? `Erreur HTTP ${err.status}`);
+        this.error.set(httpErrorMessage(err));
       },
     });
   }
