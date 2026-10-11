@@ -1,0 +1,176 @@
+// Mêmes repères que la page Statistiques : carte d'entrées, puis tableau de résultat.
+.page-wrap { padding: 24px; max-width: 1100px; margin: 0 auto; }
+
+.page-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+
+// ── Entrées ───────────────────────────────────────────────────────────────
+.filter-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px;
+  margin-bottom: 28px;
+}
+
+.filter-section {
+  padding: 18px 0;
+
+  &:first-child { padding-top: 0; }
+  &:last-child  { padding-bottom: 0; }
+  &:not(:last-child) { border-bottom: 1px solid var(--border); }
+}
+
+.filter-fields {
+  display: flex;
+  align-items: flex-end;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label { font-size: .78rem; color: var(--muted); font-weight: 500; }
+  .inp  { width: 190px; }
+  .inp-short { width: 120px; }
+}
+
+.field-lbl { display: block; margin-bottom: 8px; font-size: .78rem; color: var(--muted); font-weight: 500; }
+// Dans une ligne de champs, le libellé du groupe s'aligne sur ceux des champs voisins
+.filter-field .field-lbl { margin-bottom: 0; }
+
+.inp {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: .88rem;
+  outline: none;
+
+  &:focus { border-color: var(--accent); }
+}
+
+.toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: .85rem;
+  color: var(--muted);
+  padding-bottom: 8px; // aligne visuellement avec les champs
+
+  input { accent-color: var(--accent); }
+}
+
+// Fréquence : quatre choix, un seul actif
+.freq-group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 3px;
+}
+
+.freq-opt {
+  border: none;
+  background: transparent;
+  padding: 8px 18px;
+  font-size: .85rem;
+  font-family: inherit;
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: 19px;
+  white-space: nowrap;
+  transition: background .2s, color .2s;
+
+  &:hover { color: var(--text); }
+  &:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  &.active { background: var(--accent); color: var(--on-accent); font-weight: 600; }
+}
+
+.card-note { margin: 12px 0 0; font-size: .78rem; color: var(--muted); line-height: 1.5; }
+
+// ── Résultat ──────────────────────────────────────────────────────────────
+.stats-section { margin-bottom: 28px; }
+
+.sec-hdr {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px 16px; flex-wrap: wrap;
+  margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid var(--accent);
+}
+.sec-title   { margin: 0; font-size: 1rem; font-weight: 600; color: var(--text); }
+.section-sub { font-size: .78rem; font-weight: 500; color: var(--muted); }
+
+.table-wrap {
+  overflow-x: auto;
+  margin-bottom: 8px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .85rem;
+
+  thead th {
+    background: var(--surface-alt, var(--surface));
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+
+    &.num { text-align: right; }
+  }
+
+  td, .row-lbl {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .row-lbl { text-align: left; font-weight: 600; white-space: nowrap; }
+
+  td {
+    &.num   { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    &.muted { color: var(--muted); }
+    &.bold  { font-weight: 600; }
+  }
+
+  tbody tr:last-child td, tbody tr:last-child .row-lbl { border-bottom: none; }
+
+  // Achat : ce qui est retiré des revenus ; revenu net : le résultat, mis en avant
+  .row-purchase td { color: var(--danger-text); }
+  .row-net {
+    background: var(--surface-alt, var(--surface));
+
+    td, .row-lbl { border-top: 2px solid var(--border); font-weight: 700; }
+    td.num:last-child { color: var(--success-text); }
+  }
+
+  // Ligne de la fréquence choisie : c'est le montant saisi
+  .row-entered { background: rgba(var(--accent-rgb), .08); }
+}
+
+.st {
+  display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 10px;
+  font-size: .68rem; font-weight: 600; vertical-align: middle;
+}
+.st-entered { background: rgba(var(--accent-rgb), .18); color: var(--accent); }
+
+@media (max-width: 640px) {
+  .page-wrap   { padding: 16px; }
+  .filter-card { padding: 18px; }
+  .filter-fields { gap: 14px; }
+  .filter-field .inp, .filter-field .inp-short { width: 100%; }
+  .filter-field { flex: 1 1 140px; }
+}

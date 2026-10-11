@@ -1,0 +1,137 @@
+<div class="page-wrap">
+
+  <header class="page-hdr">
+    <div>
+      <h1 class="page-title">Calcul de prix</h1>
+      <p class="page-sub">Prix d'un service de nettoyage, revenus annuels et achat</p>
+    </div>
+  </header>
+
+  <!-- ── Entrées ─────────────────────────────────────────────────────────── -->
+  <div class="filter-card">
+    <div class="filter-section">
+      <span class="field-lbl" id="price-freq-lbl">Fréquence du montant</span>
+      <div class="freq-group" role="group" aria-labelledby="price-freq-lbl">
+        <button type="button" class="freq-opt" *ngFor="let f of frequencies" [class.active]="frequency() === f.id"
+                [attr.aria-pressed]="frequency() === f.id" (click)="frequency.set(f.id)">{{ f.label }}</button>
+      </div>
+    </div>
+
+    <div class="filter-section filter-fields">
+      <div class="filter-field">
+        <label for="price-amount">Montant</label>
+        <input id="price-amount" class="inp" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0,00"
+               [ngModel]="amount()" (ngModelChange)="setAmount($event)" />
+      </div>
+
+      <label class="toggle-wrap">
+        <input type="checkbox" [checked]="taxIncluded()" (change)="taxIncluded.set(!taxIncluded())">
+        <span class="toggle-lbl">Taxes incluses</span>
+      </label>
+
+      <div class="filter-field">
+        <label for="price-purchase">% d'achat</label>
+        <input id="price-purchase" class="inp inp-short" type="number" min="0" step="0.5" inputmode="decimal" placeholder="0"
+               [ngModel]="purchasePercent()" (ngModelChange)="setPurchase($event)" />
+      </div>
+    </div>
+
+    <div class="filter-section filter-fields">
+      <div class="filter-field">
+        <label for="price-visits">Nombre de visites</label>
+        <input id="price-visits" class="inp inp-short" type="number" min="1" step="1" inputmode="numeric"
+               [ngModel]="visits()" (ngModelChange)="setVisits($event)" />
+      </div>
+      <div class="filter-field">
+        <span class="field-lbl" id="price-visitfreq-lbl">Visites par</span>
+        <div class="freq-group" role="group" aria-labelledby="price-visitfreq-lbl">
+          <button type="button" class="freq-opt" *ngFor="let f of visitFrequencies" [class.active]="visitFrequency() === f.id"
+                  [attr.aria-pressed]="visitFrequency() === f.id" (click)="visitFrequency.set(f.id)">{{ f.label }}</button>
+        </div>
+      </div>
+    </div>
+    <p class="card-note">{{ amountHelp() }}</p>
+  </div>
+
+  <div class="empty-msg" *ngIf="hint()">{{ hint() }}</div>
+
+  <ng-container *ngIf="result() as res">
+
+    <!-- ── Prix par période : seulement les périodes utiles pour la fréquence choisie ── -->
+    <section class="stats-section" aria-labelledby="price-result">
+      <header class="sec-hdr">
+        <h2 id="price-result" class="sec-title">Revenus
+          <span class="section-sub">({{ visitsLabel() }}, montant saisi {{ taxIncluded() ? 'taxes incluses' : 'avant taxes' }})</span>
+        </h2>
+      </header>
+
+      <div class="table-wrap">
+        <table class="stats-table">
+          <caption class="sr-only">Montant avant taxes, TPS, TVQ et total, par période</caption>
+          <thead>
+            <tr>
+              <th scope="col"><span class="sr-only">Période</span></th>
+              <th scope="col" class="num">Avant taxes</th>
+              <th scope="col" class="num">TPS ({{ num(tpsRate()) }} %)</th>
+              <th scope="col" class="num">TVQ ({{ num(tvqRate()) }} %)</th>
+              <th scope="col" class="num">Total TTC</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let r of res.rows; trackBy: trackRow" [class.row-entered]="r.entered">
+              <th scope="row" class="row-lbl">{{ r.label }}
+                <span class="st st-entered" *ngIf="r.entered">Montant saisi</span>
+              </th>
+              <td class="num">{{ fmt(r.ht) }}</td>
+              <td class="num muted">{{ fmt(r.tps) }}</td>
+              <td class="num muted">{{ fmt(r.tvq) }}</td>
+              <td class="num bold">{{ fmt(r.ttc) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="card-note">
+        Une année compte 52 semaines, 26 périodes de 2 semaines et 12 mois, soit {{ num(res.visitsPerYear) }} visite{{ res.visitsPerYear > 1 ? 's' : '' }} par année.
+      </p>
+    </section>
+
+    <!-- ── Achat annuel : toujours affiché ── -->
+    <section class="stats-section" aria-labelledby="price-purchase-title">
+      <header class="sec-hdr">
+        <h2 id="price-purchase-title" class="sec-title">Achat annuel
+          <span class="section-sub">(revenus annuels × {{ num(purchasePercent() ?? 0) }} %)</span>
+        </h2>
+      </header>
+
+      <div class="table-wrap">
+        <table class="stats-table">
+          <caption class="sr-only">Revenus annuels, achat annuel et revenu net de la première année</caption>
+          <thead>
+            <tr>
+              <th scope="col"><span class="sr-only">Ligne</span></th>
+              <th scope="col" class="num">Avant taxes</th>
+              <th scope="col" class="num">TPS ({{ num(tpsRate()) }} %)</th>
+              <th scope="col" class="num">TVQ ({{ num(tvqRate()) }} %)</th>
+              <th scope="col" class="num">Total TTC</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let r of res.purchase; trackBy: trackRow" [class.row-net]="r.key === 'net'" [class.row-purchase]="r.key === 'purchase'">
+              <th scope="row" class="row-lbl">{{ r.label }}</th>
+              <td class="num" [class.bold]="r.key === 'net'">{{ r.key === 'purchase' && r.ht > 0 ? '− ' : '' }}{{ fmt(r.ht) }}</td>
+              <td class="num muted">{{ r.key === 'purchase' && r.tps > 0 ? '− ' : '' }}{{ fmt(r.tps) }}</td>
+              <td class="num muted">{{ r.key === 'purchase' && r.tvq > 0 ? '− ' : '' }}{{ fmt(r.tvq) }}</td>
+              <td class="num bold">{{ r.key === 'purchase' && r.ttc > 0 ? '− ' : '' }}{{ fmt(r.ttc) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="card-note">
+        Achat annuel = revenus annuels × % d'achat. Revenu net de la 1re année = revenus annuels − achat annuel.
+        La TPS et la TVQ sont calculées séparément sur le montant avant taxes ; chaque montant est arrondi au cent.
+      </p>
+    </section>
+
+  </ng-container>
+
+</div>

@@ -187,6 +187,13 @@ export const routes: Routes = [
         .then(m => m.InvoiceDownloadComponent)
   },
   {
+    path: 'prix',
+    canActivate: [permGuard(PERM.invoicesView)],
+    loadComponent: () =>
+      import('./vue/pages/price-calculator/price-calculator.component')
+        .then(m => m.PriceCalculatorComponent)
+  },
+  {
     path: 'charges',
     canActivate: [permGuard(PERM.invoicesView)],
     loadComponent: () =>

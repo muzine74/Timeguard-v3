@@ -189,6 +189,7 @@ export class NavbarComponent {
         { label: 'Facturer par pointages', icon: 'clock', link: '/invoices/from-timesheets', show: () => this.has('invoices.edit') },
         { label: 'Envoyer les factures',   icon: 'mail', link: '/invoices/send',          show: () => this.has('invoices.send') },
         { label: 'Téléchargement des factures', icon: 'download', link: '/invoices/download', show: () => this.has('invoices.view') },
+        { label: 'Calcul de prix',         icon: 'dollar', link: '/prix',                   show: () => this.has('invoices.view') },
       ] },
       { title: 'Paie', items: [
         { label: 'Paiements employés', icon: 'card', link: '/employees/payments', show: () => this.has('payments.manage') },

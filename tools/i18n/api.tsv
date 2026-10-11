@@ -377,3 +377,43 @@ E	compagnies	companies	empresas	aziende
 E	Filtrer par compagnie	Filter by company	Filtrar por empresa	Filtra per azienda
 P	— {0#} facture{1} sur {2#}	— {0} invoice{1} of {2}	— {0} factura{1} de {2}	— {0} fattur{1|a|e} su {2}
 P	Aucune facture « {0} » pour les compagnies choisies.	No “{0}” invoice for the selected companies.	Ninguna factura «{0}» para las empresas elegidas.	Nessuna fattura «{0}» per le aziende scelte.
+E	Calcul de prix	Price calculator	Cálculo de precio	Calcolo del prezzo
+E	Prix d'un service de nettoyage, revenus annuels et achat	Price of a cleaning service, annual income and purchase	Precio de un servicio de limpieza, ingresos anuales y compra	Prezzo di un servizio di pulizia, ricavi annuali e acquisto
+E	Fréquence du montant	Amount frequency	Frecuencia del importe	Frequenza dell'importo
+E	Par visite	Per visit	Por visita	Per visita
+E	Hebdomadaire	Weekly	Semanal	Settimanale
+E	Mensuelle	Monthly	Mensual	Mensile
+E	Annuelle	Yearly	Anual	Annuale
+E	Montant	Amount	Importe	Importo
+E	Taxes incluses	Taxes included	Impuestos incluidos	Imposte incluse
+E	% d'achat	Purchase %	% de compra	% di acquisto
+E	Saisissez un montant pour voir le calcul.	Enter an amount to see the calculation.	Introduzca un importe para ver el cálculo.	Inserisci un importo per vedere il calcolo.
+E	Le montant doit être supérieur à 0.	The amount must be greater than 0.	El importe debe ser mayor que 0.	L'importo deve essere maggiore di 0.
+E	Le nombre de visites doit être supérieur à 0.	The number of visits must be greater than 0.	El número de visitas debe ser mayor que 0.	Il numero di visite deve essere maggiore di 0.
+E	Le pourcentage d'achat ne peut pas être négatif.	The purchase percentage cannot be negative.	El porcentaje de compra no puede ser negativo.	La percentuale di acquisto non può essere negativa.
+E	Revenus	Income	Ingresos	Ricavi
+P	({0} visite{1} par semaine, montant saisi {2})	({0} visit{1} per week, amount entered {2})	({0} visita{1} por semana, importe introducido {2})	({0} visit{1|a|e} a settimana, importo inserito {2})
+P	({0} visite{1} par mois, montant saisi {2})	({0} visit{1} per month, amount entered {2})	({0} visita{1} por mes, importe introducido {2})	({0} visit{1|a|e} al mese, importo inserito {2})
+P	({0} visite{1} par année, montant saisi {2})	({0} visit{1} per year, amount entered {2})	({0} visita{1} por año, importe introducido {2})	({0} visit{1|a|e} all'anno, importo inserito {2})
+E	taxes incluses	taxes included	impuestos incluidos	imposte incluse
+E	avant taxes	before tax	antes de impuestos	prima delle imposte
+E	Avant taxes	Before tax	Antes de impuestos	Prima delle imposte
+E	Par semaine	Per week	Por semana	A settimana
+E	Par mois	Per month	Por mes	Al mese
+E	Par année	Per year	Por año	All'anno
+E	Montant saisi	Amount entered	Importe introducido	Importo inserito
+E	Achat annuel	Annual purchase	Compra anual	Acquisto annuale
+P	(revenus annuels × {0} %)	(annual income × {0}%)	(ingresos anuales × {0} %)	(ricavi annuali × {0} %)
+E	Revenus annuels	Annual income	Ingresos anuales	Ricavi annuali
+E	Revenu net de la 1re année	Net income for the 1st year	Ingreso neto del 1.er año	Ricavo netto del 1º anno
+E	Achat annuel = revenus annuels × % d'achat. Revenu net de la 1re année = revenus annuels − achat annuel. La TPS et la TVQ sont calculées séparément sur le montant avant taxes ; chaque montant est arrondi au cent.	Annual purchase = annual income × purchase %. Net income for the 1st year = annual income − annual purchase. GST and QST are each calculated on the amount before tax; each amount is rounded to the cent.	Compra anual = ingresos anuales × % de compra. Ingreso neto del 1.er año = ingresos anuales − compra anual. La TPS y la TVQ se calculan por separado sobre el importe antes de impuestos; cada importe se redondea al céntimo.	Acquisto annuale = ricavi annuali × % di acquisto. Ricavo netto del 1º anno = ricavi annuali − acquisto annuale. TPS e TVQ sono calcolate separatamente sull'importo prima delle imposte; ogni importo è arrotondato al centesimo.
+E	Montant avant taxes, TPS, TVQ et total, par période	Amount before tax, GST, QST and total, per period	Importe antes de impuestos, TPS, TVQ y total, por periodo	Importo prima delle imposte, TPS, TVQ e totale, per periodo
+E	Revenus annuels, achat annuel et revenu net de la première année	Annual income, annual purchase and net income for the first year	Ingresos anuales, compra anual e ingreso neto del primer año	Ricavi annuali, acquisto annuale e ricavo netto del primo anno
+E	Ligne	Row	Línea	Riga
+E	Toutes les 2 semaines	Every 2 weeks	Cada 2 semanas	Ogni 2 settimane
+E	Par 2 semaines	Per 2 weeks	Cada 2 semanas	Ogni 2 settimane
+E	Visites par	Visits per	Visitas por	Visite per
+E	Revenus annuels = prix d'une visite × nombre de visites par année.	Annual income = price of one visit × number of visits per year.	Ingresos anuales = precio de una visita × número de visitas por año.	Ricavi annuali = prezzo di una visita × numero di visite all'anno.
+E	Revenus annuels = montant × nombre de périodes par année. Les visites ne changent pas les revenus : elles donnent le prix d'une visite.	Annual income = amount × number of periods per year. Visits do not change the income: they give the price of one visit.	Ingresos anuales = importe × número de periodos por año. Las visitas no cambian los ingresos: dan el precio de una visita.	Ricavi annuali = importo × numero di periodi all'anno. Le visite non cambiano i ricavi: danno il prezzo di una visita.
+P	({0} visite{1} par 2 semaines, montant saisi {2})	({0} visit{1} per 2 weeks, amount entered {2})	({0} visita{1} cada 2 semanas, importe introducido {2})	({0} visit{1|a|e} ogni 2 settimane, importo inserito {2})
+P	Une année compte 52 semaines, 26 périodes de 2 semaines et 12 mois, soit {0} visite{1} par année.	A year has 52 weeks, 26 two-week periods and 12 months, i.e. {0} visit{1} per year.	Un año tiene 52 semanas, 26 periodos de 2 semanas y 12 meses, es decir, {0} visita{1} por año.	Un anno conta 52 settimane, 26 periodi di 2 settimane e 12 mesi, cioè {0} visit{1|a|e} all'anno.
