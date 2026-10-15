@@ -239,6 +239,13 @@ export const routes: Routes = [
     loadComponent: () => import('./vue/pages/notes/notes.component').then(m => m.NotesComponent)
   },
   {
+    // Calendrier personnel (événements, rendez-vous, rencontres) : tout utilisateur lié à un employé.
+    // « calendar.manage » : calendriers de tous les employés.
+    path: 'calendrier',
+    canActivate: [authGuard],
+    loadComponent: () => import('./vue/pages/calendar/calendar.component').then(m => m.CalendarComponent)
+  },
+  {
     path: 'team',
     canActivate: [authGuard],
     loadComponent: () => import('./vue/pages/team/team.component').then(m => m.TeamComponent)

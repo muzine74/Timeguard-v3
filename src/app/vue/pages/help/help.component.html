@@ -559,6 +559,35 @@
     </section>
 
     <!-- ── Notes ──────────────────────────────────────────────────────────── -->
+    <section id="calendrier" *ngIf="show('calendrier')" [class.is-hidden]="!hit('calendrier')">
+      <h2>Calendrier, rappels et notifications</h2>
+      <ng-container *ngTemplateOutlet="pageLinks; context: { $implicit: 'calendrier' }"></ng-container>
+      <p>Chaque utilisateur a son calendrier personnel : <b>Mon travail → Calendrier</b>. Il contient les événements qu'il crée et ceux auxquels il est invité. Trois affichages : <b>Mois</b>, <b>Semaine</b> et <b>Liste</b> (les 60 prochains jours).</p>
+
+      <h3>Créer un événement, un rendez-vous ou une rencontre</h3>
+      <ol>
+        <li>Cliquez sur <b>Nouvel événement</b>, ou sur un jour du calendrier.</li>
+        <li>Saisissez le <b>titre</b>, choisissez le <b>type</b> (Événement, Rendez-vous, Rencontre), la <b>date et l'heure</b> de début et de fin (ou <b>Journée entière</b>), et si besoin le <b>lieu</b> et une <b>description</b>.</li>
+        <li><b>Participants</b> : cochez les personnes à inviter. Vous pouvez inviter vos collègues (mêmes compagnies), votre équipe et vos responsables ; avec la permission <code>employees.view</code> ou <code>calendar.manage</code>, tout employé actif.</li>
+        <li><b>Rappels</b> : jusqu'à cinq, de « Au début » à « 1 semaine avant », par <b>notification</b> dans TimeGuard, par <b>courriel</b> ou les deux.</li>
+        <li>Laissez <b>Envoyer les invitations par courriel</b> coché pour que les participants reçoivent aussi un courriel, puis cliquez sur <b>Enregistrer</b>.</li>
+      </ol>
+
+      <h3>Invitations et réponses</h3>
+      <ul>
+        <li>Chaque participant reçoit une notification (cloche en haut à droite) et, s'il a une adresse courriel, un courriel avec un fichier <b>invitation.ics</b> : l'ouvrir ajoute la rencontre à son calendrier personnel (Outlook, Google Agenda, Apple Calendrier).</li>
+        <li>Les invitations sans réponse apparaissent en haut du Calendrier : <b>Accepter</b>, <b>Peut-être</b> ou <b>Refuser</b>. L'organisateur est prévenu de chaque réponse et voit le décompte dans la fiche de l'événement.</li>
+        <li>Si l'organisateur change la date, chaque participant est prévenu et doit confirmer de nouveau. Un participant retiré, ou un événement supprimé, est annoncé par une notification et un courriel d'annulation.</li>
+        <li><b>Ajouter à mon calendrier</b> télécharge le fichier .ics de n'importe quel événement de votre calendrier.</li>
+      </ul>
+
+      <h3>Rappels et notifications</h3>
+      <p>Les rappels partent à l'heure prévue, à vous et aux participants qui n'ont pas refusé. Un rappel dont l'heure est déjà passée à l'enregistrement n'est pas envoyé. La cloche affiche le nombre de notifications non lues et se met à jour toutes les minutes ; une nouvelle notification s'affiche aussi quelques secondes en bas à droite. Cliquez sur une notification pour ouvrir l'événement.</p>
+
+      <h3>Qui voit quoi</h3>
+      <p>Seuls l'organisateur et les participants voient un événement, et seul l'organisateur le modifie ou le supprime. La permission <code>calendar.manage</code> (Gérer tous les calendriers) donne accès au calendrier de chaque employé et à celui de toute l'entreprise, avec le droit de modifier tous les événements ; l'organisateur est alors prévenu.</p>
+    </section>
+
     <section id="notes" *ngIf="show('notes')" [class.is-hidden]="!hit('notes')">
       <h2>Notes et alertes</h2>
       <ng-container *ngTemplateOutlet="pageLinks; context: { $implicit: 'notes' }"></ng-container>

@@ -72,6 +72,9 @@ export class HelpComponent {
     { id: 'communications', title: 'Suivre les communications',                 perms: [PERM.companiesEdit, PERM.employeesEdit], links: [
       { label: 'Communications', link: '/communications', perms: [] },
     ] },
+    { id: 'calendrier',     title: 'Calendrier, rappels et notifications',      perms: [], links: [
+      { label: 'Calendrier', link: '/calendrier', perms: [] },
+    ] },
     { id: 'notes',          title: 'Notes et alertes',                          perms: [], links: [
       { label: 'Notes', link: '/notes', perms: [] },
     ] },

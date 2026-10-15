@@ -17,6 +17,7 @@ export const PERM = {
   callsMake:          'calls.make',
   callsListen:        'calls.listen',
   journalView:        'journal.view',
+  calendarManage:     'calendar.manage',
 } as const;
 
 export type PermKey = typeof PERM[keyof typeof PERM];

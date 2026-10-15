@@ -15,6 +15,7 @@ const PAGE_RULES: [RegExp, string][] = [
   [/^\/pointage(\/|$)/,                  'page.pointage'],
   [/^\/team(\/|$)/,                      'page.team'],
   [/^\/notes(\/|$)/,                     'page.notes'],
+  [/^\/calendrier(\/|$)/,                'page.calendar'],
   [/^\/employees\/new(\/|$)/,            'page.employees.new'],
   [/^\/employees\/edit(\/|$)/,           'page.employees.edit'],
   [/^\/employees\/[^/]+\/edit(\/|$)/,    'page.employees.edit'],

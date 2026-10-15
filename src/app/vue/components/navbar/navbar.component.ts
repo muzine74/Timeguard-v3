@@ -9,6 +9,7 @@ import { DASHBOARD_PERMS } from '../../../state/auth/auth.guard';
 import { IconComponent } from '../icon/icon.component';
 import { QuickSearchService, QuickSearchPage } from '../../../state/ui/quick-search.service';
 import { LangSwitchComponent } from '../lang-switch/lang-switch.component';
+import { NotificationBellComponent } from '../notification-bell/notification-bell.component';
 
 interface NavItem    { label: string; icon: string; link: string; exact?: boolean; show: () => boolean; }
 interface NavSection { title?: string; items: NavItem[]; }
@@ -17,7 +18,7 @@ interface NavMenu    { id: string; label: string; sections: NavSection[]; }
 @Component({
     selector: 'app-navbar',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, RouterLink, RouterLinkActive, IconComponent, LangSwitchComponent],
+    imports: [CommonModule, RouterLink, RouterLinkActive, IconComponent, LangSwitchComponent, NotificationBellComponent],
     template: `
     <nav class="navbar">
       <div class="brand">
@@ -57,6 +58,8 @@ interface NavMenu    { id: string; label: string; sections: NavSection[]; }
                 aria-label="Rechercher (Ctrl+K)" title="Rechercher (Ctrl+K)">
           <app-icon name="search"></app-icon><span class="qs-open-txt">Rechercher</span><kbd class="qs-kbd">Ctrl K</kbd>
         </button>
+        <!-- Notifications : invitations, réponses et rappels du calendrier -->
+        <app-notification-bell *ngIf="!auth.isSuperUser() && auth.employeeId() && auth.canOpen('/calendrier')"></app-notification-bell>
         <!-- Aide (guide utilisateur, accessible à tous) -->
         <a class="nav-link help-link" routerLink="/aide" routerLinkActive="active">
           <app-icon name="help"></app-icon><span class="help-txt">Aide</span>
@@ -158,6 +161,7 @@ export class NavbarComponent {
       { label: 'Accueil',          icon: 'home', link: '/accueil',  show: () => DASHBOARD_PERMS.some(p => this.has(p)) },
       { label: 'Feuille de temps', icon: 'clock', link: '/pointage', show: () => this.has('pointage.view') },
       { label: 'Équipe',           icon: 'users', link: '/team',     show: () => this.team.hasTeam() || this.has('employees.view') },
+      { label: 'Calendrier',       icon: 'calendar', link: '/calendrier', show: () => !!this.auth.employeeId() },
       { label: 'Notes',            icon: 'note', link: '/notes',    show: () => true },
     ] }] },
     { id: 'manage', label: 'Gestion', sections: [

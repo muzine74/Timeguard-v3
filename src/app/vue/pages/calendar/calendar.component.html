@@ -1,0 +1,295 @@
+<div class="page-wrap">
+
+  <header class="page-hdr">
+    <div>
+      <h1 class="page-title">Calendrier</h1>
+      <p class="page-sub">Vos événements, rendez-vous et rencontres, avec rappels et invitations</p>
+    </div>
+    <button type="button" class="btn btn-primary" *ngIf="hasEmployee()" (click)="create()">
+      <app-icon name="plus"></app-icon> Nouvel événement
+    </button>
+  </header>
+
+  <!-- ── Invitations sans réponse ──────────────────────────────────────── -->
+  <section class="pending" *ngIf="pending().length" aria-labelledby="cal-pending-title">
+    <h2 class="pending-title" id="cal-pending-title">
+      <app-icon name="mail"></app-icon>
+      {{ pending().length }} invitation{{ pending().length > 1 ? 's' : '' }} en attente de réponse
+    </h2>
+    <div class="pending-row" *ngFor="let e of pending(); trackBy: trackEvent">
+      <button type="button" class="pending-open" (click)="open(e)">
+        <b>{{ e.title }}</b>
+        <span>{{ whenLabel(e) }} · {{ e.organizerName }}</span>
+      </button>
+      <div class="respond">
+        <button type="button" class="btn btn-sm btn-ok" (click)="respond(e, 'accepted')">Accepter</button>
+        <button type="button" class="btn btn-sm btn-ghost" (click)="respond(e, 'tentative')">Peut-être</button>
+        <button type="button" class="btn btn-sm btn-no" (click)="respond(e, 'declined')">Refuser</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Barre d'outils ─────────────────────────────────────────────────── -->
+  <div class="toolbar">
+    <div class="nav-group">
+      <button type="button" class="btn btn-ghost btn-icon-only" (click)="move(-1)" aria-label="Période précédente">‹</button>
+      <button type="button" class="btn btn-ghost" (click)="today()">Aujourd'hui</button>
+      <button type="button" class="btn btn-ghost btn-icon-only" (click)="move(1)" aria-label="Période suivante">›</button>
+      <h2 class="period" aria-live="polite">{{ title() }}</h2>
+    </div>
+    <div class="nav-group">
+      <select class="inp inp-select scope" *ngIf="canManage()" aria-label="Calendrier affiché"
+              [ngModel]="scope()" (ngModelChange)="setScope($event)">
+        <option value="me" *ngIf="hasEmployee()">Mon calendrier</option>
+        <option value="all">Tous les employés</option>
+        <option *ngFor="let p of people()" [value]="p.employeeId">{{ p.name }}</option>
+      </select>
+      <div class="seg" role="group" aria-label="Affichage">
+        <button type="button" [class.on]="view() === 'month'" [attr.aria-pressed]="view() === 'month'" (click)="setView('month')">Mois</button>
+        <button type="button" [class.on]="view() === 'week'"  [attr.aria-pressed]="view() === 'week'"  (click)="setView('week')">Semaine</button>
+        <button type="button" [class.on]="view() === 'list'"  [attr.aria-pressed]="view() === 'list'"  (click)="setView('list')">Liste</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="ok-msg" *ngIf="message()" role="status">{{ message() }}
+    <button type="button" class="msg-close" (click)="message.set('')" aria-label="Fermer"><app-icon name="close"></app-icon></button>
+  </div>
+  <div class="err-msg" *ngIf="error()" role="alert">{{ error() }}</div>
+
+  <div class="legend" aria-hidden="true">
+    <span class="lg lg-event">Événement</span>
+    <span class="lg lg-appointment">Rendez-vous</span>
+    <span class="lg lg-meeting">Rencontre</span>
+    <span class="lg lg-pending">Invitation sans réponse</span>
+  </div>
+
+  <div class="cal-wrap" [class.is-loading]="loading()" [attr.aria-busy]="loading()">
+
+    <!-- ── Mois ─────────────────────────────────────────────────────────── -->
+    <div class="month" *ngIf="view() === 'month'">
+      <div class="wd" *ngFor="let w of weekdays()">{{ w }}</div>
+      <div class="cell" *ngFor="let d of days(); trackBy: trackDay" [class.out]="!d.inMonth" [class.today]="d.isToday"
+           (click)="create(d.date)">
+        <button type="button" class="day-num" (click)="$event.stopPropagation(); create(d.date)"
+                [attr.aria-label]="'Ajouter un événement le ' + dayLabel(d.date)" [disabled]="!hasEmployee()">
+          {{ d.date.getDate() }}
+        </button>
+        <button type="button" *ngFor="let e of d.events.slice(0, cellMax); trackBy: trackEvent"
+                class="chip" [attr.data-kind]="e.kind" [class.chip-pending]="e.myResponse === 'pending'"
+                [class.chip-declined]="e.myResponse === 'declined'" (click)="$event.stopPropagation(); open(e)"
+                [title]="e.title">
+          <span class="chip-time">{{ e.allDay ? '' : timeLabel(e) }}</span> {{ e.title }}
+        </button>
+        <button type="button" class="more" *ngIf="d.events.length > cellMax"
+                (click)="$event.stopPropagation(); cursor.set(d.date); setView('list')">
+          + {{ d.events.length - cellMax }} autre{{ d.events.length - cellMax > 1 ? 's' : '' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Semaine ──────────────────────────────────────────────────────── -->
+    <div class="week" *ngIf="view() === 'week'">
+      <div class="wcol" *ngFor="let d of days(); trackBy: trackDay" [class.today]="d.isToday">
+        <div class="wcol-head">
+          <span>{{ dayLabel(d.date) }}</span>
+          <button type="button" class="add-mini" *ngIf="hasEmployee()" (click)="create(d.date)"
+                  [attr.aria-label]="'Ajouter un événement le ' + dayLabel(d.date)"><app-icon name="plus"></app-icon></button>
+        </div>
+        <div class="wcol-empty" *ngIf="!d.events.length">—</div>
+        <button type="button" *ngFor="let e of d.events; trackBy: trackEvent" class="card" [attr.data-kind]="e.kind"
+                [class.chip-pending]="e.myResponse === 'pending'" [class.chip-declined]="e.myResponse === 'declined'"
+                (click)="open(e)">
+          <span class="card-time">{{ timeLabel(e) }}</span>
+          <span class="card-title">{{ e.title }}</span>
+          <span class="card-meta" *ngIf="e.location">{{ e.location }}</span>
+          <span class="card-meta" *ngIf="e.attendees.length">{{ e.attendees.length + 1 }} participants</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Liste ────────────────────────────────────────────────────────── -->
+    <div class="agenda" *ngIf="view() === 'list'">
+      <div class="empty-state" *ngIf="!agenda().length && !loading()">
+        <app-icon name="calendar"></app-icon>
+        <p>Aucun événement sur cette période ({{ title() }}).</p>
+        <button type="button" class="btn btn-primary" *ngIf="hasEmployee()" (click)="create()">Nouvel événement</button>
+      </div>
+      <section class="ag-day" *ngFor="let d of agenda(); trackBy: trackDay">
+        <h3 class="ag-date" [class.today]="d.isToday">{{ dayLabel(d.date) }}</h3>
+        <button type="button" *ngFor="let e of d.events; trackBy: trackEvent" class="ag-row" [attr.data-kind]="e.kind"
+                [class.chip-pending]="e.myResponse === 'pending'" [class.chip-declined]="e.myResponse === 'declined'"
+                (click)="open(e)">
+          <span class="ag-time">{{ timeLabel(e) }}</span>
+          <span class="ag-main">
+            <span class="ag-title">{{ e.title }}</span>
+            <span class="ag-meta">
+              {{ kindLabels[e.kind] }}<ng-container *ngIf="e.location"> · {{ e.location }}</ng-container>
+              <ng-container *ngIf="!e.isOrganizer"> · organisé par {{ e.organizerName }}</ng-container>
+              <ng-container *ngIf="e.attendees.length"> · {{ responseSummary(e) }}</ng-container>
+            </span>
+          </span>
+          <span class="badge" *ngIf="e.myResponse" [attr.data-response]="e.myResponse">{{ responseLabels[e.myResponse] }}</span>
+        </button>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- ── Fenêtre : détail / saisie ─────────────────────────────────────────── -->
+<div class="modal-backdrop" *ngIf="selected() || editing()" (click)="close()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="cal-modal-title" (click)="$event.stopPropagation()">
+
+    <!-- Détail -->
+    <ng-container *ngIf="!editing() && selected() as e">
+      <div class="modal-hdr" [attr.data-kind]="e.kind">
+        <div>
+          <span class="kind-badge" [attr.data-kind]="e.kind">{{ kindLabels[e.kind] }}</span>
+          <h2 class="modal-title" id="cal-modal-title">{{ e.title }}</h2>
+        </div>
+        <button type="button" class="icon-btn" (click)="close()" aria-label="Fermer"><app-icon name="close"></app-icon></button>
+      </div>
+      <div class="modal-body">
+        <dl class="facts">
+          <dt>Quand</dt><dd>{{ whenLabel(e) }}</dd>
+          <ng-container *ngIf="e.location"><dt>Lieu</dt><dd>{{ e.location }}</dd></ng-container>
+          <dt>Organisateur</dt><dd>{{ e.organizerName || '—' }}</dd>
+          <ng-container *ngIf="e.reminders.length">
+            <dt>Rappels</dt>
+            <dd><span class="rem" *ngFor="let r of e.reminders">{{ reminderLabel(r) }}</span></dd>
+          </ng-container>
+        </dl>
+        <p class="desc" *ngIf="e.description">{{ e.description }}</p>
+
+        <div class="att" *ngIf="e.attendees.length">
+          <h3 class="att-title">Participants <small>{{ responseSummary(e) }}</small></h3>
+          <ul>
+            <li *ngFor="let a of e.attendees">
+              <span>{{ a.name }}<small *ngIf="!a.hasEmail" class="muted"> · sans courriel</small></span>
+              <span class="badge" [attr.data-response]="a.response">{{ responseLabels[a.response] }}</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="my-answer" *ngIf="e.myResponse">
+          <span>Votre réponse : <b>{{ responseLabels[e.myResponse] }}</b></span>
+          <div class="respond">
+            <button type="button" class="btn btn-sm btn-ok" [disabled]="e.myResponse === 'accepted'" (click)="respond(e, 'accepted')">Accepter</button>
+            <button type="button" class="btn btn-sm btn-ghost" [disabled]="e.myResponse === 'tentative'" (click)="respond(e, 'tentative')">Peut-être</button>
+            <button type="button" class="btn btn-sm btn-no" [disabled]="e.myResponse === 'declined'" (click)="respond(e, 'declined')">Refuser</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-ftr">
+        <button type="button" class="btn btn-ghost" (click)="downloadIcs(e)" title="Fichier .ics pour Outlook, Google Agenda, Apple Calendrier…">
+          <app-icon name="download"></app-icon> Ajouter à mon calendrier
+        </button>
+        <span class="grow"></span>
+        <button type="button" class="btn btn-danger" *ngIf="e.canEdit" (click)="remove(e)"><app-icon name="trash"></app-icon> Supprimer</button>
+        <button type="button" class="btn btn-primary" *ngIf="e.canEdit" (click)="edit(e)"><app-icon name="edit"></app-icon> Modifier</button>
+      </div>
+    </ng-container>
+
+    <!-- Saisie -->
+    <form *ngIf="editing()" (ngSubmit)="save()" novalidate>
+      <div class="modal-hdr">
+        <h2 class="modal-title" id="cal-modal-title">{{ selected() ? 'Modifier l\'événement' : 'Nouvel événement' }}</h2>
+        <button type="button" class="icon-btn" (click)="close()" aria-label="Fermer"><app-icon name="close"></app-icon></button>
+      </div>
+      <div class="modal-body form">
+        <label class="fld">
+          <span>Titre <span class="req">*</span></span>
+          <input id="cal-title" class="inp" name="title" maxlength="200" [(ngModel)]="form.title" required autocomplete="off" />
+        </label>
+
+        <div class="row">
+          <label class="fld">
+            <span>Type</span>
+            <select class="inp inp-select" name="kind" [(ngModel)]="form.kind">
+              <option *ngFor="let k of kinds" [value]="k[0]">{{ k[1] }}</option>
+            </select>
+          </label>
+          <label class="check">
+            <input type="checkbox" name="allDay" [(ngModel)]="form.allDay" /> Journée entière
+          </label>
+        </div>
+
+        <div class="row">
+          <label class="fld">
+            <span>Début</span>
+            <input class="inp" type="date" name="startDate" [(ngModel)]="form.startDate" (ngModelChange)="onStartChange()" required />
+          </label>
+          <label class="fld fld-time" *ngIf="!form.allDay">
+            <span>Heure</span>
+            <input class="inp" type="time" name="startTime" [(ngModel)]="form.startTime" (ngModelChange)="onStartChange()" required />
+          </label>
+        </div>
+        <div class="row">
+          <label class="fld">
+            <span>Fin</span>
+            <input class="inp" type="date" name="endDate" [(ngModel)]="form.endDate" [min]="form.startDate" required />
+          </label>
+          <label class="fld fld-time" *ngIf="!form.allDay">
+            <span>Heure</span>
+            <input class="inp" type="time" name="endTime" [(ngModel)]="form.endTime" required />
+          </label>
+        </div>
+
+        <label class="fld">
+          <span>Lieu</span>
+          <input class="inp" name="location" maxlength="300" [(ngModel)]="form.location" placeholder="Adresse, salle, lien de visioconférence…" />
+        </label>
+        <label class="fld">
+          <span>Description</span>
+          <textarea class="inp inp-textarea" name="description" rows="3" maxlength="4000" [(ngModel)]="form.description"></textarea>
+        </label>
+
+        <div class="fld">
+          <span id="cal-att-lbl">Participants</span>
+          <app-multi-select [options]="peopleOptions()" [(selected)]="form.attendeeIds" [floating]="true"
+                            placeholder="Aucun participant (événement personnel)" plural="participants"
+                            aria-labelledby="cal-att-lbl"></app-multi-select>
+          <div class="chips" *ngIf="form.attendeeIds.length">
+            <span class="pchip" *ngFor="let id of form.attendeeIds">
+              {{ attendeeName(id) }}<small *ngIf="!attendeeHasEmail(id)"> · sans courriel</small>
+              <button type="button" (click)="removeAttendee(id)" [attr.aria-label]="'Retirer ' + attendeeName(id)"><app-icon name="close"></app-icon></button>
+            </span>
+          </div>
+          <small class="hint" *ngIf="!peopleOptions().length">Personne à inviter : vous pouvez inviter vos collègues (mêmes compagnies), votre équipe et vos responsables.</small>
+        </div>
+
+        <div class="fld">
+          <span>Rappels</span>
+          <div class="rem-row" *ngFor="let r of form.reminders; let i = index">
+            <select class="inp inp-select" [name]="'remMin' + i" [(ngModel)]="r.minutes" aria-label="Délai du rappel">
+              <option *ngFor="let o of reminderOptions" [ngValue]="o.minutes">{{ o.label }}</option>
+            </select>
+            <select class="inp inp-select" [name]="'remCh' + i" [(ngModel)]="r.channel" aria-label="Envoi du rappel">
+              <option *ngFor="let c of channels" [value]="c[0]">{{ c[1] }}</option>
+            </select>
+            <button type="button" class="icon-btn" (click)="removeReminder(i)" aria-label="Retirer ce rappel"><app-icon name="trash"></app-icon></button>
+          </div>
+          <button type="button" class="btn btn-ghost btn-sm add-rem" *ngIf="form.reminders.length < 5" (click)="addReminder()">
+            <app-icon name="plus"></app-icon> Ajouter un rappel
+          </button>
+          <small class="hint">Envoyé à vous et aux participants qui n'ont pas refusé.</small>
+        </div>
+
+        <label class="check" *ngIf="form.attendeeIds.length">
+          <input type="checkbox" name="notifyByEmail" [(ngModel)]="form.notifyByEmail" />
+          Envoyer les invitations par courriel (avec un fichier à ajouter à leur calendrier)
+        </label>
+
+        <div class="err-msg" *ngIf="formError()" role="alert">{{ formError() }}</div>
+      </div>
+      <div class="modal-ftr">
+        <span class="grow"></span>
+        <button type="button" class="btn btn-ghost" (click)="close()">Annuler</button>
+        <button type="submit" class="btn btn-primary" [disabled]="saving()">
+          <span *ngIf="!saving()">Enregistrer</span>
+          <span *ngIf="saving()" class="spinner"></span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

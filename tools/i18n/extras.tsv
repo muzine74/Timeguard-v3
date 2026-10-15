@@ -189,3 +189,69 @@ P	À : {0}	To: {0}	Para: {0}	A: {0}
 P	De : {0}	From: {0}	De: {0}	Da: {0}
 P	Interlocuteur : {0}	Contact person: {0}	Interlocutor: {0}	Interlocutore: {0}
 P	{0}. {1}	{0}. {1}	{0}. {1}	{0}. {1}
+E	Calendrier	Calendar	Calendario	Calendario
+E	Nouvel événement	New event	Nuevo evento	Nuovo evento
+E	Vos événements, rendez-vous et rencontres, avec rappels et invitations	Your events, appointments and meetings, with reminders and invitations	Sus eventos, citas y reuniones, con recordatorios e invitaciones	I tuoi eventi, appuntamenti e riunioni, con promemoria e inviti
+E	Semaine	Week	Semana	Settimana
+E	Liste	List	Lista	Elenco
+E	Événement	Event	Evento	Evento
+E	Rendez-vous	Appointment	Cita	Appuntamento
+E	Invitation sans réponse	Unanswered invitation	Invitación sin respuesta	Invito senza risposta
+E	Accepter	Accept	Aceptar	Accetta
+E	Peut-être	Maybe	Quizás	Forse
+E	Refuser	Decline	Rechazar	Rifiuta
+E	Sans réponse	No answer	Sin respuesta	Nessuna risposta
+E	Accepté	Accepted	Aceptado	Accettato
+E	Refusé	Declined	Rechazado	Rifiutato
+E	Notifications	Notifications	Notificaciones	Notifiche
+E	Tout marquer comme lu	Mark all as read	Marcar todo como leído	Segna tutto come letto
+E	Aucune notification.	No notifications.	Ninguna notificación.	Nessuna notifica.
+E	Ouvrir le calendrier	Open the calendar	Abrir el calendario	Apri il calendario
+E	Mon calendrier	My calendar	Mi calendario	Il mio calendario
+E	Participants	Participants	Participantes	Partecipanti
+E	Rappels	Reminders	Recordatorios	Promemoria
+E	Ajouter un rappel	Add a reminder	Añadir un recordatorio	Aggiungi un promemoria
+E	Journée entière	All day	Todo el día	Tutto il giorno
+E	Journée	All day	Todo el día	Tutto il giorno
+E	Début	Start	Inicio	Inizio
+E	Fin	End	Fin	Fine
+E	Lieu	Location	Lugar	Luogo
+E	Quand	When	Cuándo	Quando
+E	Organisateur	Organizer	Organizador	Organizzatore
+E	Ajouter à mon calendrier	Add to my calendar	Añadir a mi calendario	Aggiungi al mio calendario
+E	Modifier l'événement	Edit event	Modificar el evento	Modifica evento
+E	Notification	Notification	Notificación	Notifica
+E	Notification et courriel	Notification and email	Notificación y correo	Notifica ed e-mail
+E	Au début	At start time	Al inicio	All'inizio
+E	5 minutes avant	5 minutes before	5 minutos antes	5 minuti prima
+E	15 minutes avant	15 minutes before	15 minutos antes	15 minuti prima
+E	30 minutes avant	30 minutes before	30 minutos antes	30 minuti prima
+E	1 heure avant	1 hour before	1 hora antes	1 ora prima
+E	2 heures avant	2 hours before	2 horas antes	2 ore prima
+E	1 jour avant	1 day before	1 día antes	1 giorno prima
+E	2 jours avant	2 days before	2 días antes	2 giorni prima
+E	1 semaine avant	1 week before	1 semana antes	1 settimana prima
+E	Aucun participant (événement personnel)	No participants (personal event)	Sin participantes (evento personal)	Nessun partecipante (evento personale)
+E	Envoyé à vous et aux participants qui n'ont pas refusé.	Sent to you and to participants who have not declined.	Enviado a usted y a los participantes que no han rechazado.	Inviato a te e ai partecipanti che non hanno rifiutato.
+E	Envoyer les invitations par courriel (avec un fichier à ajouter à leur calendrier)	Send invitations by email (with a file to add to their calendar)	Enviar las invitaciones por correo (con un archivo para añadir a su calendario)	Invia gli inviti per e-mail (con un file da aggiungere al loro calendario)
+E	Adresse, salle, lien de visioconférence…	Address, room, video-conference link…	Dirección, sala, enlace de videoconferencia…	Indirizzo, sala, link della videoconferenza…
+E	Calendrier affiché	Calendar shown	Calendario mostrado	Calendario visualizzato
+E	Période précédente	Previous period	Período anterior	Periodo precedente
+E	Période suivante	Next period	Período siguiente	Periodo successivo
+E	Votre réponse :	Your answer:	Su respuesta:	La tua risposta:
+E	sans courriel	no email	sin correo	senza e-mail
+E	Délai du rappel	Reminder delay	Plazo del recordatorio	Anticipo del promemoria
+E	Envoi du rappel	Reminder delivery	Envío del recordatorio	Invio del promemoria
+E	Retirer ce rappel	Remove this reminder	Quitar este recordatorio	Rimuovi questo promemoria
+E	Événement supprimé.	Event deleted.	Evento eliminado.	Evento eliminato.
+E	Événement modifié.	Event updated.	Evento modificado.	Evento modificato.
+E	Événement créé.	Event created.	Evento creado.	Evento creato.
+E	Événement créé, invitations envoyées.	Event created, invitations sent.	Evento creado, invitaciones enviadas.	Evento creato, inviti inviati.
+E	Non lue	Unread	No leída	Non letta
+P	{0} invitation{1} en attente de réponse	{0} invitation{1||s} awaiting an answer	{0} invitaci{1|ón|ones} pendiente{1||s} de respuesta	{0} invit{1|o|i} in attesa di risposta
+P	+ {0} autre{1}	+ {0} more	+ {0} más	+ altri {0}
+P	Aucun événement sur cette période ({0}).	No events in this period ({0}).	Ningún evento en este período ({0}).	Nessun evento in questo periodo ({0}).
+P	Ajouter un événement le {0}	Add an event on {0}	Añadir un evento el {0}	Aggiungi un evento il {0}
+P	Retirer {0}	Remove {0}	Quitar {0}	Rimuovi {0}
+P	{0} participants	{0} participants	{0} participantes	{0} partecipanti
+P	Notifications — {0} non lue(s)	Notifications — {0} unread	Notificaciones — {0} sin leer	Notifiche — {0} non lette
