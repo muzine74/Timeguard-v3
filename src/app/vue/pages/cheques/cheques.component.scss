@@ -1,0 +1,87 @@
+.page-wrap { padding: 24px; max-width: 1400px; margin: 0 auto; }
+.page-hdr  { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
+
+.cols { display: grid; grid-template-columns: minmax(300px, 420px) 1fr; gap: 24px; align-items: start; }
+@media (max-width: 1000px) { .cols { grid-template-columns: 1fr; } }
+
+// ── Saisie ────────────────────────────────────────────────────────────────
+.form-col { display: flex; flex-direction: column; gap: 18px; }
+.card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.card-title { margin: 0; font-size: 1rem; font-weight: 600; color: var(--text); }
+.opt { font-size: .75rem; font-weight: 400; color: var(--muted); }
+
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.field label, .field-lbl { font-size: .78rem; color: var(--muted); font-weight: 500; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.inp {
+  width: 100%; box-sizing: border-box; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--bg); color: var(--text); font-size: .88rem; font-family: inherit; outline: none;
+
+  &:focus { border-color: var(--accent); }
+}
+
+.words {
+  padding: 8px 10px; border: 1px dashed var(--border); border-radius: 8px; font-size: .88rem; color: var(--text); line-height: 1.4;
+}
+.words-empty { color: var(--muted); font-style: italic; }
+
+.seg { display: inline-flex; flex-wrap: wrap; gap: 3px; background: var(--bg); border: 1px solid var(--border); border-radius: 22px; padding: 3px; align-self: flex-start; }
+.seg-opt {
+  border: none; background: transparent; padding: 7px 16px; font-size: .82rem; font-family: inherit; color: var(--muted);
+  cursor: pointer; border-radius: 19px; white-space: nowrap;
+
+  &:hover { color: var(--text); }
+  &:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  &.active { background: var(--accent); color: var(--on-accent); font-weight: 600; }
+}
+
+.check { display: flex; align-items: flex-start; gap: 8px; font-size: .85rem; color: var(--text); cursor: pointer;
+  input { accent-color: var(--accent); margin-top: 2px; }
+}
+.btn-sm { padding: 6px 12px; font-size: .78rem; align-self: flex-start; }
+.hint { margin: 0; font-size: .82rem; color: var(--accent); }
+.note { margin: 0; font-size: .78rem; color: var(--muted); line-height: 1.5; }
+
+// ── Aperçu ────────────────────────────────────────────────────────────────
+.preview-lbl { font-size: .78rem; color: var(--muted); font-weight: 500; margin-bottom: 8px; }
+
+// La feuille est dessinée en millimètres réels puis réduite à l'écran ; la boîte réserve la place de la feuille réduite.
+.sheet-box { --scale: .72; width: calc(215.9mm * var(--scale)); height: calc(279.4mm * var(--scale)); max-width: 100%; overflow: hidden; }
+@media (max-width: 700px) { .sheet-box { --scale: .42; } }
+
+.cheque-sheet {
+  position: relative; width: 215.9mm; height: 279.4mm; background: #fff; color: #000;
+  transform: scale(var(--scale)); transform-origin: top left;
+  box-shadow: 0 6px 24px rgba(0,0,0,.45); overflow: hidden;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+// Les trois parties de la feuille
+.part {
+  position: absolute; left: 0; width: 100%; box-sizing: border-box; border-bottom: 0.3mm dashed #9aa0a6;
+
+  &:last-of-type { border-bottom: none; }
+}
+.part-cheque { background: rgba(201, 162, 39, .07); }
+.part-lbl { position: absolute; right: 4mm; bottom: 2mm; font-size: 2.6mm; color: #9aa0a6; text-transform: uppercase; letter-spacing: .3mm; }
+
+// Texte du chèque, placé en millimètres depuis le coin haut gauche du chèque
+.cheque { position: absolute; width: 215.9mm; height: 88.9mm; }
+.f     { position: absolute; font-size: 3.9mm; white-space: nowrap; color: #000; }
+.guide { position: absolute; font-size: 2.5mm; color: #7a7f85; white-space: nowrap; }
+
+.f-date   { right: 14mm; top: 12mm; letter-spacing: .35mm; }
+.g-date   { right: 44mm; top: 12.8mm; }
+.f-payee  { left: 30mm; top: 31mm; max-width: 118mm; overflow: hidden; }
+.g-payee  { left: 8mm;  top: 28mm; width: 20mm; white-space: normal; line-height: 1.15; }
+.f-amount { right: 12mm; top: 31mm; font-weight: 700; }
+.f-words  { left: 12mm; top: 43mm; max-width: 190mm; overflow: hidden; }
+.f-memo   { left: 22mm; top: 69mm; max-width: 95mm; overflow: hidden; font-size: 3.4mm; }
+.g-memo   { left: 8mm;  top: 69.6mm; }
+
+// Talons : rappel du chèque
+.stub { position: absolute; width: 215.9mm; padding: 14mm 0 0 16mm; box-sizing: border-box; font-size: 3.6mm; line-height: 1.7; color: #000; }

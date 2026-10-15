@@ -130,3 +130,43 @@ export function priceResult(input: PriceInput): PriceResult | null {
 
   return { rows, purchase: [revenue, bought, net], visitsPerYear };
 }
+
+// ── Calculateur de taxes : avant taxes ↔ taxes ↔ avec taxes ──────────────────
+
+/** Champ saisi dans le calculateur de taxes. */
+export type TaxField = 'ht' | 'taxes' | 'ttc';
+
+export interface TaxSplit {
+  ht:    number;
+  tps:   number;
+  tvq:   number;
+  /** TPS + TVQ. */
+  taxes: number;
+  ttc:   number;
+}
+
+/**
+ * À partir d'UN montant (avant taxes, taxes, ou avec taxes), les deux autres. TPS et TVQ sont calculées chacune sur
+ * le montant avant taxes et arrondies au cent ; le montant saisi reste exact, l'arrondi passe sur les autres.
+ * Null si la valeur n'est pas un nombre positif, ou si les taux sont nuls (taxes sans montant de départ).
+ */
+export function taxSplit(field: TaxField, value: number, tpsRate: number, tvqRate: number): TaxSplit | null {
+  if (!Number.isFinite(value) || value < 0) return null;
+  const tps = Math.max(0, tpsRate) / 100, tvq = Math.max(0, tvqRate) / 100, rate = tps + tvq;
+  // Avant taxes exact, remis sur 8 décimales (459,90 / 1,14975 = 399,99999999999994 en virgule flottante)
+  const clean = (n: number) => Math.round(n * 1e8) / 1e8;
+
+  if (field === 'ht') {
+    const ht = round2(value), t = round2(value * tps), q = round2(value * tvq);
+    return { ht, tps: t, tvq: q, taxes: round2(t + q), ttc: round2(ht + t + q) };
+  }
+  if (field === 'ttc') {
+    const base = clean(value / (1 + rate)), t = round2(base * tps), q = round2(base * tvq), ttc = round2(value);
+    return { ht: round2(ttc - t - q), tps: t, tvq: q, taxes: round2(t + q), ttc };
+  }
+  // Taxes saisies : le montant avant taxes qui les produit ; la TVQ prend l'arrondi pour que TPS + TVQ = la saisie
+  if (rate <= 0) return null;
+  const taxes = round2(value), base = clean(value / rate), t = round2(base * tps);
+  const ht = round2(base);
+  return { ht, tps: t, tvq: round2(taxes - t), taxes, ttc: round2(ht + taxes) };
+}

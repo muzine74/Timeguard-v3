@@ -53,6 +53,41 @@
     <p class="card-note">{{ amountHelp() }}</p>
   </div>
 
+  <!-- ── Calculateur de taxes : indépendant du calcul de prix ci-dessus ── -->
+  <section class="filter-card tax-card" aria-labelledby="tax-title">
+    <div class="tax-hdr">
+      <h2 id="tax-title" class="sec-title">Calculateur de taxes
+        <span class="section-sub">(TPS {{ num(tpsRate()) }} % + TVQ {{ num(tvqRate()) }} %)</span>
+      </h2>
+      <button type="button" class="btn btn-outline btn-sm" (click)="clearTax()" [disabled]="taxHt() === null && taxTaxes() === null && taxTtc() === null">Effacer</button>
+    </div>
+    <div class="filter-fields tax-fields">
+      <div class="filter-field">
+        <label for="tax-ht">Montant avant taxes</label>
+        <input id="tax-ht" class="inp" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0,00"
+               [ngModel]="taxHt()" (ngModelChange)="onTaxInput('ht', $event)" />
+      </div>
+      <span class="tax-op" aria-hidden="true">+</span>
+      <div class="filter-field">
+        <label for="tax-taxes">Taxes</label>
+        <input id="tax-taxes" class="inp" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0,00"
+               [ngModel]="taxTaxes()" (ngModelChange)="onTaxInput('taxes', $event)" />
+      </div>
+      <span class="tax-op" aria-hidden="true">=</span>
+      <div class="filter-field">
+        <label for="tax-ttc">Montant avec taxes</label>
+        <input id="tax-ttc" class="inp" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0,00"
+               [ngModel]="taxTtc()" (ngModelChange)="onTaxInput('ttc', $event)" />
+      </div>
+    </div>
+    <p class="card-note" *ngIf="taxDetail() as d; else taxHelp">
+      Dont TPS {{ fmt(d.tps) }} et TVQ {{ fmt(d.tvq) }}.
+    </p>
+    <ng-template #taxHelp>
+      <p class="card-note">Saisissez un montant dans n'importe quel champ : les deux autres se calculent.</p>
+    </ng-template>
+  </section>
+
   <div class="empty-msg" *ngIf="hint()">{{ hint() }}</div>
 
   <ng-container *ngIf="result() as res">

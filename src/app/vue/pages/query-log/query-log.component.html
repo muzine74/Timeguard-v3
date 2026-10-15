@@ -1,0 +1,137 @@
+<div class="page-wrap">
+
+  <header class="page-hdr">
+    <div>
+      <h1 class="page-title">Historique des requêtes</h1>
+      <p class="page-sub" *ngIf="isSuper">Chaque ajout, modification ou suppression envoyé à la base, avec son contenu et le compte qui l'a fait</p>
+      <p class="page-sub" *ngIf="!isSuper">Chaque ajout, modification ou suppression fait dans votre entreprise, avec son contenu et le compte qui l'a fait</p>
+    </div>
+    <div class="page-actions" *ngIf="isSuper">
+      <a class="btn btn-outline" routerLink="/providers">← Providers</a>
+    </div>
+  </header>
+
+  <!-- ── Filtres ─────────────────────────────────────────────────────────── -->
+  <form class="filter-card" (ngSubmit)="apply()">
+    <div class="filters">
+      <div class="field">
+        <label for="ql-from">Du</label>
+        <input id="ql-from" class="inp" type="datetime-local" name="from" [(ngModel)]="from" />
+      </div>
+      <div class="field">
+        <label for="ql-to">Au <span class="opt">(vide = maintenant)</span></label>
+        <input id="ql-to" class="inp" type="datetime-local" name="to" [(ngModel)]="to" />
+      </div>
+      <div class="field">
+        <label for="ql-account">Compte</label>
+        <select id="ql-account" class="inp" name="account" [(ngModel)]="account">
+          <option value="">Tous les comptes</option>
+          <option *ngFor="let a of data()?.accounts ?? []" [value]="a">{{ a }}</option>
+          <option *ngIf="account && !(data()?.accounts ?? []).includes(account)" [value]="account">{{ account }}</option>
+        </select>
+      </div>
+      <div class="field" *ngIf="isSuper">
+        <label for="ql-tenant">Entreprise</label>
+        <select id="ql-tenant" class="inp" name="tenantId" [(ngModel)]="tenantId">
+          <option value="">Toutes les entreprises</option>
+          <option *ngFor="let t of tenants.list()" [value]="t.tenantId">{{ t.name }}</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="ql-kind">Nature</label>
+        <select id="ql-kind" class="inp" name="kind" [(ngModel)]="kind">
+          <option *ngFor="let k of kinds" [value]="k.id">{{ k.label }}</option>
+        </select>
+      </div>
+      <div class="field field-wide">
+        <label for="ql-search">Texte cherché <span class="opt">(dans la requête ou ses valeurs)</span></label>
+        <input id="ql-search" class="inp" type="search" name="search" [(ngModel)]="search" placeholder="Ex. Charges, Loyer, 1200.5" autocomplete="off" />
+      </div>
+      <label class="check">
+        <input type="checkbox" name="failedOnly" [(ngModel)]="failedOnly">
+        <span>Seulement les requêtes en échec</span>
+      </label>
+    </div>
+    <div class="filter-actions">
+      <button type="button" class="btn btn-outline" (click)="reset()">Réinitialiser</button>
+      <button type="submit" class="btn btn-primary" [disabled]="loading()">
+        <span *ngIf="!loading()">🔍 Rechercher</span>
+        <span *ngIf="loading()" class="spinner"></span>
+      </button>
+    </div>
+  </form>
+
+  <div class="err-msg" role="alert" *ngIf="error()">{{ error() }}</div>
+
+  <!-- ── Résultat ────────────────────────────────────────────────────────── -->
+  <ng-container *ngIf="data() as d">
+    <div class="result-bar">
+      <span class="result-count">{{ d.total === 0 ? 'Aucune modification pour ces filtres.' : num(d.total) + ' modification' + (d.total > 1 ? 's' : '') }}</span>
+      <span class="result-note" *ngIf="d.hasParameters">Mots de passe, NAS, jetons et secrets sont remplacés par ***.</span>
+      <span class="result-note result-warn" *ngIf="!d.hasParameters">Les valeurs ne sont pas encore enregistrées dans cette base : exécutez le script AddQueryLogParameters.</span>
+    </div>
+
+    <div class="table-wrap" *ngIf="d.items.length > 0">
+      <table class="log-table">
+        <caption class="sr-only">Modifications envoyées à la base, de la plus récente à la plus ancienne</caption>
+        <thead>
+          <tr>
+            <th scope="col">Date et heure</th>
+            <th scope="col">Compte</th>
+            <th scope="col" *ngIf="isSuper">Entreprise</th>
+            <th scope="col">Nature</th>
+            <th scope="col" class="num">Durée</th>
+            <th scope="col">Requête SQL</th>
+          </tr>
+        </thead>
+        <tbody *ngFor="let i of d.items; trackBy: trackItem" [class.row-failed]="i.failed">
+          <tr class="row" (click)="toggle(i.id)">
+            <td class="nowrap">{{ when(i.executedAt) }}</td>
+            <td class="nowrap"><span data-no-i18n>{{ i.account }}</span> <span class="tag tag-super" *ngIf="i.isSuperUser">Super-admin</span></td>
+            <td data-no-i18n *ngIf="isSuper">{{ i.tenantName || '—' }}</td>
+            <td class="nowrap">
+              <span class="tag" [class.tag-read]="i.kind === 'SELECT'" [class.tag-write]="isWrite(i)" [class.tag-delete]="i.kind === 'DELETE'">{{ kindLabel(i) }}</span>
+              <span class="tag tag-failed" *ngIf="i.failed">Échec</span>
+            </td>
+            <td class="num nowrap">{{ num(i.durationMs) }} ms</td>
+            <td class="sql-cell">
+              <button type="button" class="sql-toggle" [attr.aria-expanded]="expanded().has(i.id)" (click)="toggle(i.id); $event.stopPropagation()">
+                <span class="chev" aria-hidden="true">{{ expanded().has(i.id) ? '▾' : '▸' }}</span>
+                <span class="mono" data-no-i18n>{{ preview(i) }}</span>
+              </button>
+            </td>
+          </tr>
+          <tr class="row-sql" *ngIf="expanded().has(i.id)">
+            <td [attr.colspan]="isSuper ? 6 : 5">
+              <div class="sql-lbl">Requête exécutée, avec ses valeurs</div>
+              <pre class="sql" data-no-i18n>{{ filled(i) }}</pre>
+              <ng-container *ngIf="values(i) as vals">
+                <ng-container *ngIf="vals.length > 0">
+                  <div class="sql-lbl">Valeurs</div>
+                  <dl class="vals" data-no-i18n>
+                    <div *ngFor="let v of vals"><dt>{{ v[0] }}</dt><dd [class.masked]="v[1] === '***'">{{ v[0].startsWith('@') ? literal(v[1]) : v[1] }}</dd></div>
+                  </dl>
+                </ng-container>
+              </ng-container>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pager" *ngIf="d.total > 0">
+      <span class="pager-range">{{ rangeLabel() }}</span>
+      <div class="pager-btns">
+        <label class="pager-size">Par page
+          <select class="inp inp-sm" [(ngModel)]="pageSize" (ngModelChange)="load(1)">
+            <option *ngFor="let s of pageSizes" [ngValue]="s">{{ s }}</option>
+          </select>
+        </label>
+        <button type="button" class="btn btn-outline btn-sm" [disabled]="loading() || d.page <= 1" (click)="load(d.page - 1)">← Plus récentes</button>
+        <span class="pager-page">Page {{ num(d.page) }} / {{ num(pageCount()) }}</span>
+        <button type="button" class="btn btn-outline btn-sm" [disabled]="loading() || d.page >= pageCount()" (click)="load(d.page + 1)">Plus anciennes →</button>
+      </div>
+    </div>
+  </ng-container>
+
+</div>

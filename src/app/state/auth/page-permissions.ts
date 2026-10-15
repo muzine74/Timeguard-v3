@@ -36,11 +36,13 @@ const PAGE_RULES: [RegExp, string][] = [
   [/^\/invoices(\/|$)/,                  'page.invoices'],
   [/^\/prix(\/|$)/,                      'page.prix'],
   [/^\/charges(\/|$)/,                   'page.charges'],
+  [/^\/cheques(\/|$)/,                   'page.cheques'],
   [/^\/bank-statement(\/|$)/,            'page.bank'],
   [/^\/stats(\/|$)/,                     'page.stats'],                  // et ses pages de détail
   [/^\/groups(\/|$)/,                    'page.groups'],
   [/^\/config(\/|$)/,                    'page.config'],
   [/^\/purge(\/|$)/,                     'page.purge'],
+  [/^\/journal(\/|$)/,                   'page.journal'],
 ];
 
 /** Droit de page d'une adresse (« /charges », « /employees/…/edit?x=1 »), ou null si la page n'en a pas. */

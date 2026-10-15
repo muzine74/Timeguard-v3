@@ -192,6 +192,7 @@ export class NavbarComponent {
         { label: 'Feuillet T4A',       icon: 'note', link: '/employees/t4a',      show: () => this.has('employees.edit') },
         { label: 'Charges',            icon: 'bag', link: '/charges',            show: () => this.has('invoices.view') },
         { label: 'Relevé bancaire',    icon: 'bank', link: '/bank-statement',     show: () => this.has('payments.manage') },
+        { label: 'Chèques',            icon: 'edit', link: '/cheques',            show: () => this.has('payments.manage') },
       ] },
       { title: 'Analyse', items: [
         { label: 'Rapports',     icon: 'clipboard', link: '/invoices/report', show: () => this.has('invoices.view') },
@@ -202,6 +203,7 @@ export class NavbarComponent {
       { label: 'Groupes',       icon: 'lock', link: '/groups',                show: () => this.has('groups.manage') },
       { label: 'Identifiants',  icon: 'key', link: '/employees/credentials', show: () => this.has('credentials.manage') },
       { label: 'Configuration', icon: 'settings',  link: '/config',                show: () => this.has('config.manage') },
+      { label: 'Historique des requêtes', icon: 'list', link: '/journal',     show: () => this.has('journal.view') },
       { label: 'Suppression définitive', icon: 'trash', link: '/purge',        show: () => this.has('data.purge') },
     ] }] },
   ];

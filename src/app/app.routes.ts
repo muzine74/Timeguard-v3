@@ -32,6 +32,13 @@ export const routes: Routes = [
     loadComponent: () => import('./vue/pages/providers/providers.component').then(m => m.ProvidersComponent)
   },
   {
+    // Historique des requêtes envoyées à la base : chaque entreprise voit le sien (droit « journal.view ») ;
+    // le super utilisateur voit toutes les entreprises. L'API impose la limite, pas seulement cette garde.
+    path: 'journal',
+    canActivate: [permGuard(PERM.journalView)],
+    loadComponent: () => import('./vue/pages/query-log/query-log.component').then(m => m.QueryLogComponent)
+  },
+  {
     // Suppression définitive (facture / employé / compagnie + toutes leurs références) :
     // permission « data.purge » (sa propre entreprise) ou super utilisateur (toutes)
     path: 'purge',
@@ -189,6 +196,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./vue/pages/price-calculator/price-calculator.component')
         .then(m => m.PriceCalculatorComponent)
+  },
+  {
+    path: 'cheques',
+    canActivate: [permGuard(PERM.paymentsManage)],
+    loadComponent: () => import('./vue/pages/cheques/cheques.component').then(m => m.ChequesComponent)
   },
   {
     path: 'charges',

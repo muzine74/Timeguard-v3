@@ -1,0 +1,119 @@
+<div class="page-wrap">
+
+  <header class="page-hdr">
+    <div>
+      <h1 class="page-title">Chèques</h1>
+      <p class="page-sub">Remplir un chèque et l'imprimer sur une feuille de chèques</p>
+    </div>
+    <div class="page-actions">
+      <button type="button" class="btn btn-outline" (click)="clear()">Nouveau chèque</button>
+      <button type="button" class="btn btn-primary" [disabled]="!!hint()" (click)="print()">🖨 Imprimer</button>
+    </div>
+  </header>
+
+  <div class="cols">
+
+    <!-- ── Saisie ─────────────────────────────────────────────────────────── -->
+    <div class="form-col">
+      <div class="card">
+        <h2 class="card-title">Chèque</h2>
+        <div class="field">
+          <label for="chq-date">Date</label>
+          <input id="chq-date" class="inp" type="date" [ngModel]="date()" (ngModelChange)="date.set($event ?? '')" />
+        </div>
+        <div class="field">
+          <label for="chq-payee">Payez à l'ordre de</label>
+          <input id="chq-payee" class="inp" type="text" maxlength="60" autocomplete="off" placeholder="Nom du bénéficiaire"
+                 [ngModel]="payee()" (ngModelChange)="payee.set($event)" />
+        </div>
+        <div class="field">
+          <label for="chq-amount">Montant ($)</label>
+          <input id="chq-amount" class="inp" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0,00"
+                 [ngModel]="amount()" (ngModelChange)="setAmount($event)" />
+        </div>
+        <div class="field">
+          <span class="field-lbl">Montant en lettres</span>
+          <div class="words" [class.words-empty]="!words()">{{ words() || 'Écrit automatiquement à partir du montant' }}</div>
+        </div>
+        <div class="field">
+          <label for="chq-memo">Objet <span class="opt">(facultatif)</span></label>
+          <input id="chq-memo" class="inp" type="text" maxlength="60" autocomplete="off" placeholder="Ex. Paie semaine du 5 octobre"
+                 [ngModel]="memo()" (ngModelChange)="memo.set($event)" />
+        </div>
+        <p class="hint" *ngIf="hint()" role="status">{{ hint() }}</p>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">Mise en page <span class="opt">(gardée sur cet ordinateur)</span></h2>
+        <div class="field">
+          <span class="field-lbl" id="chq-pos-lbl">Emplacement du chèque sur la feuille</span>
+          <div class="seg" role="group" aria-labelledby="chq-pos-lbl">
+            <button type="button" class="seg-opt" *ngFor="let p of positions" [class.active]="layout().position === p.id"
+                    [attr.aria-pressed]="layout().position === p.id" (click)="setLayout({ position: p.id })">{{ p.label }}</button>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="chq-x">Décalage horizontal (mm)</label>
+            <input id="chq-x" class="inp" type="number" min="-30" max="30" step="0.5"
+                   [ngModel]="layout().offsetX" (ngModelChange)="setOffset('offsetX', $event)" />
+          </div>
+          <div class="field">
+            <label for="chq-y">Décalage vertical (mm)</label>
+            <input id="chq-y" class="inp" type="number" min="-30" max="30" step="0.5"
+                   [ngModel]="layout().offsetY" (ngModelChange)="setOffset('offsetY', $event)" />
+          </div>
+        </div>
+        <label class="check">
+          <input type="checkbox" [checked]="layout().stubs" (change)="setLayout({ stubs: !layout().stubs })">
+          <span>Imprimer le rappel sur les deux talons</span>
+        </label>
+        <label class="check">
+          <input type="checkbox" [checked]="layout().frame" (change)="setLayout({ frame: !layout().frame })">
+          <span>Imprimer aussi le cadre et les libellés (essai sur papier blanc)</span>
+        </label>
+        <button type="button" class="btn btn-outline btn-sm" (click)="resetLayout()">Remettre la mise en page d'origine</button>
+        <p class="note">
+          Seul le texte du chèque est imprimé, à l'endroit prévu sur une feuille Lettre à trois parties. Faites d'abord un essai
+          sur papier blanc, posez-le sur un chèque à la lumière, puis corrigez avec les décalages : positif = vers la droite et vers le bas.
+          Dans la fenêtre d'impression, choisissez l'échelle 100 % (pas « Ajuster à la page ») et aucune marge.
+        </p>
+      </div>
+    </div>
+
+    <!-- ── Aperçu : la feuille telle qu'elle sera imprimée ────────────────── -->
+    <div class="preview-col">
+      <div class="preview-lbl">Aperçu de la feuille</div>
+      <div class="sheet-box">
+        <!-- data-no-i18n : la feuille imprimée reste en français, quelle que soit la langue affichée -->
+        <div class="cheque-sheet" data-no-i18n>
+          <!-- Parties de la feuille (repères d'écran, ou imprimés si « cadre » est coché) -->
+          <div class="part" *ngFor="let t of [0, partHeight, 2 * partHeight]" [class.screen-only]="!layout().frame"
+               [class.part-cheque]="t === chequeTop()" [style.top.mm]="t" [style.height.mm]="partHeight">
+            <span class="part-lbl">{{ t === chequeTop() ? 'Chèque' : 'Talon' }}</span>
+          </div>
+
+          <!-- Chèque : texte variable seulement -->
+          <div class="cheque" [style.top.mm]="chequeTop() + layout().offsetY" [style.left.mm]="layout().offsetX">
+            <span class="guide g-date" [class.screen-only]="!layout().frame">Date</span>
+            <span class="f f-date">{{ date() }}</span>
+            <span class="guide g-payee" [class.screen-only]="!layout().frame">Payez à l'ordre de</span>
+            <span class="f f-payee">{{ payee() }}</span>
+            <span class="f f-amount">{{ amountText() }}</span>
+            <span class="f f-words" *ngIf="words()">{{ words() }} ***************</span>
+            <span class="guide g-memo" [class.screen-only]="!layout().frame">Objet</span>
+            <span class="f f-memo">{{ memo() }}</span>
+          </div>
+
+          <!-- Talons -->
+          <ng-container *ngIf="layout().stubs && !hint()">
+            <div class="stub" *ngFor="let t of stubTops()" [style.top.mm]="t + layout().offsetY" [style.left.mm]="layout().offsetX">
+              <div *ngFor="let line of stubLines()">{{ line }}</div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

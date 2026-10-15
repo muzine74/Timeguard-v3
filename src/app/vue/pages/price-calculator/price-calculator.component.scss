@@ -93,6 +93,13 @@
   &.active { background: var(--accent); color: var(--on-accent); font-weight: 600; }
 }
 
+// Calculateur de taxes : trois champs reliés (avant taxes + taxes = avec taxes)
+.tax-card { display: flex; flex-direction: column; gap: 14px; }
+.tax-hdr  { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.tax-fields { gap: 14px; }
+.tax-op { align-self: flex-end; padding-bottom: 9px; font-size: 1.1rem; font-weight: 700; color: var(--muted); }
+.btn-sm { padding: 6px 12px; font-size: .78rem; }
+
 .card-note { margin: 12px 0 0; font-size: .78rem; color: var(--muted); line-height: 1.5; }
 
 // ── Résultat ──────────────────────────────────────────────────────────────

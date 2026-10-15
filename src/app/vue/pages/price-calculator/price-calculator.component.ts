@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ConfigService } from '../../../state/config/config.service';
-import { FREQUENCY_LABEL, PriceFrequency, PriceResult, PriceRow, VISITS_PER_LABEL, VisitFrequency, priceResult } from './price-calc';
+import { FREQUENCY_LABEL, PriceFrequency, PriceResult, PriceRow, VISITS_PER_LABEL, VisitFrequency, priceResult, TaxField, TaxSplit, taxSplit } from './price-calc';
 
 /**
  * Calcul de prix d'un service de nettoyage : montant saisi (taxes incluses ou non) par visite ou par période,
@@ -44,9 +44,43 @@ export class PriceCalculatorComponent {
       next: data => {
         if (data.config?.tpsRate > 0) this.tpsRate.set(data.config.tpsRate);
         if (data.config?.tvqRate > 0) this.tvqRate.set(data.config.tvqRate);
+        this._recalcTax();   // les taux de l'entreprise remplacent ceux du Québec : le calculateur suit
       },
       error: () => { /* les taux par défaut restent affichés */ },
     });
+  }
+
+  // ── Calculateur de taxes : saisir l'un des trois montants calcule les deux autres ──
+  /** Valeurs affichées dans les trois champs ; celle du champ saisi reste telle que tapée. */
+  taxHt    = signal<number | null>(null);
+  taxTaxes = signal<number | null>(null);
+  taxTtc   = signal<number | null>(null);
+  /** Détail TPS / TVQ du dernier calcul (null si rien à calculer). */
+  taxDetail = signal<TaxSplit | null>(null);
+  private _taxField: TaxField | null = null;
+
+  /** Saisie dans l'un des trois champs : les deux autres sont recalculés, celui-ci n'est pas réécrit. */
+  onTaxInput(field: TaxField, v: number | null): void {
+    this._taxField = field;
+    ({ ht: this.taxHt, taxes: this.taxTaxes, ttc: this.taxTtc })[field].set(this._number(v));
+    this._recalcTax();
+  }
+
+  clearTax(): void {
+    this._taxField = null;
+    this.taxHt.set(null); this.taxTaxes.set(null); this.taxTtc.set(null); this.taxDetail.set(null);
+  }
+
+  private _recalcTax(): void {
+    const field = this._taxField;
+    if (!field) return;
+    const value = ({ ht: this.taxHt, taxes: this.taxTaxes, ttc: this.taxTtc })[field]();
+    const split = value === null ? null : taxSplit(field, value, this.tpsRate(), this.tvqRate());
+    this.taxDetail.set(split);
+    // Champ vide ou valeur impossible : les deux autres se vident (pas d'ancien résultat trompeur)
+    if (field !== 'ht')    this.taxHt.set(split?.ht ?? null);
+    if (field !== 'taxes') this.taxTaxes.set(split?.taxes ?? null);
+    if (field !== 'ttc')   this.taxTtc.set(split?.ttc ?? null);
   }
 
   // ── Résultat ──────────────────────────────────────────────────────────────

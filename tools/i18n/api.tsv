@@ -430,3 +430,87 @@ E	Choisissez au moins un droit pour cette entreprise.	Choose at least one right 
 E	Droits de l'entreprise enregistrés.	Rights of the business saved.	Derechos de la empresa guardados.	Diritti dell'impresa salvati.
 E	+ Nouvel employé	+ New employee	+ Nuevo empleado	+ Nuovo dipendente
 E	+ Nouvelle compagnie	+ New company	+ Nueva empresa	+ Nuova azienda
+E	Chèques	Cheques	Cheques	Assegni
+E	Remplir un chèque et l'imprimer sur une feuille de chèques	Fill in a cheque and print it on a cheque sheet	Rellenar un cheque e imprimirlo en una hoja de cheques	Compilare un assegno e stamparlo su un foglio di assegni
+E	Nouveau chèque	New cheque	Nuevo cheque	Nuovo assegno
+E	🖨 Imprimer	🖨 Print	🖨 Imprimir	🖨 Stampa
+E	Chèque	Cheque	Cheque	Assegno
+E	Payez à l'ordre de	Pay to the order of	Páguese a la orden de	Pagate all'ordine di
+E	Nom du bénéficiaire	Payee name	Nombre del beneficiario	Nome del beneficiario
+E	Montant ($)	Amount ($)	Importe ($)	Importo ($)
+E	Montant en lettres	Amount in words	Importe en letras	Importo in lettere
+E	Écrit automatiquement à partir du montant	Written automatically from the amount	Se escribe automáticamente a partir del importe	Scritto automaticamente dall'importo
+E	Objet	Memo	Concepto	Causale
+E	(facultatif)	(optional)	(opcional)	(facoltativo)
+E	Ex. Paie semaine du 5 octobre	E.g. Pay for the week of October 5	Ej.: Pago de la semana del 5 de octubre	Es. Paga della settimana del 5 ottobre
+E	Indiquez le bénéficiaire.	Enter the payee.	Indique el beneficiario.	Indica il beneficiario.
+E	Indiquez le montant.	Enter the amount.	Indique el importe.	Indica l'importo.
+E	Le montant est trop élevé.	The amount is too high.	El importe es demasiado alto.	L'importo è troppo alto.
+E	Indiquez la date.	Enter the date.	Indique la fecha.	Indica la data.
+E	Mise en page	Layout	Diseño	Impaginazione
+E	(gardée sur cet ordinateur)	(kept on this computer)	(guardado en este ordenador)	(conservata su questo computer)
+E	Emplacement du chèque sur la feuille	Position of the cheque on the sheet	Posición del cheque en la hoja	Posizione dell'assegno sul foglio
+E	En haut	Top	Arriba	In alto
+E	Au milieu	Middle	En el centro	Al centro
+E	En bas	Bottom	Abajo	In basso
+E	Décalage horizontal (mm)	Horizontal offset (mm)	Desplazamiento horizontal (mm)	Spostamento orizzontale (mm)
+E	Décalage vertical (mm)	Vertical offset (mm)	Desplazamiento vertical (mm)	Spostamento verticale (mm)
+E	Imprimer le rappel sur les deux talons	Print the summary on both stubs	Imprimir el resumen en los dos talones	Stampare il riepilogo sulle due matrici
+E	Imprimer aussi le cadre et les libellés (essai sur papier blanc)	Also print the frame and labels (test on plain paper)	Imprimir también el marco y las etiquetas (prueba en papel blanco)	Stampare anche la cornice e le etichette (prova su carta bianca)
+E	Remettre la mise en page d'origine	Restore the original layout	Restablecer el diseño original	Ripristina l'impaginazione originale
+E	Seul le texte du chèque est imprimé, à l'endroit prévu sur une feuille Lettre à trois parties. Faites d'abord un essai sur papier blanc, posez-le sur un chèque à la lumière, puis corrigez avec les décalages : positif = vers la droite et vers le bas. Dans la fenêtre d'impression, choisissez l'échelle 100 % (pas « Ajuster à la page ») et aucune marge.	Only the cheque text is printed, at its place on a three-part Letter sheet. First do a test on plain paper, hold it over a cheque against the light, then correct with the offsets: positive = to the right and downwards. In the print dialog, choose 100% scale (not “Fit to page”) and no margins.	Solo se imprime el texto del cheque, en su lugar sobre una hoja Carta de tres partes. Haga primero una prueba en papel blanco, colóquela sobre un cheque a contraluz y corrija con los desplazamientos: positivo = hacia la derecha y hacia abajo. En la ventana de impresión, elija la escala 100 % (no «Ajustar a la página») y sin márgenes.	Viene stampato solo il testo dell'assegno, al suo posto su un foglio Letter a tre parti. Fai prima una prova su carta bianca, appoggiala su un assegno controluce, poi correggi con gli spostamenti: positivo = verso destra e verso il basso. Nella finestra di stampa scegli la scala 100 % (non «Adatta alla pagina») e nessun margine.
+E	Aperçu de la feuille	Sheet preview	Vista previa de la hoja	Anteprima del foglio
+E	Historique des requêtes	Query history	Historial de consultas	Cronologia delle query
+E	🕘 Historique des requêtes	🕘 Query history	🕘 Historial de consultas	🕘 Cronologia delle query
+E	← Providers	← Providers	← Providers	← Providers
+E	(vide = maintenant)	(empty = now)	(vacío = ahora)	(vuoto = adesso)
+E	Compte	Account	Cuenta	Account
+E	Tous les comptes	All accounts	Todas las cuentas	Tutti gli account
+E	Entreprise	Business	Empresa	Impresa
+E	Toutes les entreprises	All businesses	Todas las empresas	Tutte le imprese
+E	Nature	Type	Tipo	Tipo
+E	Modifications	Changes	Modificaciones	Modifiche
+E	Ajouts	Inserts	Altas	Inserimenti
+E	Mises à jour	Updates	Actualizaciones	Aggiornamenti
+E	Suppressions	Deletions	Eliminaciones	Eliminazioni
+E	Texte cherché	Search text	Texto buscado	Testo cercato
+E	Seulement les requêtes en échec	Failed queries only	Solo las consultas fallidas	Solo le query non riuscite
+E	Réinitialiser	Reset	Restablecer	Reimposta
+E	🔍 Rechercher	🔍 Search	🔍 Buscar	🔍 Cerca
+E	Date et heure	Date and time	Fecha y hora	Data e ora
+E	Durée	Duration	Duración	Durata
+E	Requête	Query	Consulta	Query
+E	Super-admin	Super admin	Superadministrador	Super admin
+E	Lecture	Read	Lectura	Lettura
+E	Ajout	Insert	Alta	Inserimento
+E	Mise à jour	Update	Actualización	Aggiornamento
+E	Suppression	Deletion	Eliminación	Eliminazione
+E	Fusion	Merge	Fusión	Unione
+E	Procédure	Procedure	Procedimiento	Procedura
+E	Échec	Failed	Fallo	Errore
+P	{0#} à {1#} sur {2#}	{0} to {1} of {2}	{0} a {1} de {2}	{0} a {1} di {2}
+E	Par page	Per page	Por página	Per pagina
+E	← Plus récentes	← Newer	← Más recientes	← Più recenti
+E	Plus anciennes →	Older →	Más antiguas →	Più vecchie →
+P	Page {0#} / {1#}	Page {0} / {1}	Página {0} / {1}	Pagina {0} / {1}
+E	Le journal des requêtes n'existe pas encore dans cette base : exécutez le script AddQueryLogs.	The query journal does not exist in this database yet: run the AddQueryLogs script.	El registro de consultas aún no existe en esta base de datos: ejecute el script AddQueryLogs.	Il registro delle query non esiste ancora in questo database: esegui lo script AddQueryLogs.
+E	(dans la requête ou ses valeurs)	(in the query or its values)	(en la consulta o sus valores)	(nella query o nei suoi valori)
+E	Ex. Charges, Loyer, 1200.5	E.g. Charges, Loyer, 1200.5	Ej.: Charges, Loyer, 1200.5	Es. Charges, Loyer, 1200.5
+E	Mots de passe, NAS, jetons et secrets sont remplacés par ***.	Passwords, SINs, tokens and secrets are replaced with ***.	Las contraseñas, los NAS, los tokens y los secretos se sustituyen por ***.	Password, NAS, token e segreti sono sostituiti da ***.
+E	Les valeurs ne sont pas encore enregistrées dans cette base : exécutez le script AddQueryLogParameters.	Values are not recorded in this database yet: run the AddQueryLogParameters script.	Los valores aún no se registran en esta base de datos: ejecute el script AddQueryLogParameters.	I valori non sono ancora registrati in questo database: esegui lo script AddQueryLogParameters.
+E	Requête SQL	SQL query	Consulta SQL	Query SQL
+E	Requête exécutée, avec ses valeurs	Query executed, with its values	Consulta ejecutada, con sus valores	Query eseguita, con i suoi valori
+E	Valeurs	Values	Valores	Valori
+E	Chaque ajout, modification ou suppression envoyé à la base, avec son contenu et le compte qui l'a fait	Every insert, update or deletion sent to the database, with its content and the account that made it	Cada alta, modificación o eliminación enviada a la base de datos, con su contenido y la cuenta que la hizo	Ogni inserimento, modifica o eliminazione inviato al database, con il suo contenuto e l'account che l'ha fatto
+E	Chaque ajout, modification ou suppression fait dans votre entreprise, avec son contenu et le compte qui l'a fait	Every insert, update or deletion made in your business, with its content and the account that made it	Cada alta, modificación o eliminación hecha en su empresa, con su contenido y la cuenta que la hizo	Ogni inserimento, modifica o eliminazione fatto nella tua impresa, con il suo contenuto e l'account che l'ha fatto
+E	Aucune modification pour ces filtres.	No change for these filters.	Ninguna modificación para estos filtros.	Nessuna modifica per questi filtri.
+P	{0#} modification{1}	{0} change{1}	{0} modificaci{1|ón|ones}	{0} modific{1|a|he}
+E	Modifications envoyées à la base, de la plus récente à la plus ancienne	Changes sent to the database, newest first	Modificaciones enviadas a la base de datos, de la más reciente a la más antigua	Modifiche inviate al database, dalla più recente alla più vecchia
+E	Calculateur de taxes	Tax calculator	Calculadora de impuestos	Calcolatore di imposte
+P	(TPS {0#} % + TVQ {1#} %)	(GST {0}% + QST {1}%)	(TPS {0} % + TVQ {1} %)	(TPS {0} % + TVQ {1} %)
+E	Effacer	Clear	Borrar	Cancella
+E	Montant avant taxes	Amount before tax	Importe antes de impuestos	Importo prima delle imposte
+E	Taxes	Taxes	Impuestos	Imposte
+E	Montant avec taxes	Amount with tax	Importe con impuestos	Importo con imposte
+P	Dont TPS {0} et TVQ {1}.	Including GST {0} and QST {1}.	De los cuales TPS {0} y TVQ {1}.	Di cui TPS {0} e TVQ {1}.
+E	Saisissez un montant dans n'importe quel champ : les deux autres se calculent.	Enter an amount in any field: the other two are calculated.	Introduzca un importe en cualquier campo: los otros dos se calculan.	Inserisci un importo in qualsiasi campo: gli altri due vengono calcolati.
