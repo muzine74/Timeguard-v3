@@ -25,7 +25,7 @@ export class DashboardComponent implements OnInit {
   private readonly SHORTCUTS: Shortcut[] = [
     { label: 'Pointage',            icon: 'clock',      link: '/pointage',                  perm: 'pointage.view' },
     { label: 'Pointage employé',    icon: 'list',       link: '/employees',                 perm: 'employees.view' },
-    { label: 'Valider les semaines', icon: 'user-check', link: '/employees/validation',     perm: 'pointage.validate' },
+    { label: 'Valider les semaines', icon: 'user-check', link: '/employees',                perm: 'pointage.validate' },
     { label: 'Facturer par pointages', icon: 'file-plus', link: '/invoices/from-timesheets', perm: 'invoices.edit' },
     { label: 'Envoyer les factures', icon: 'mail',      link: '/invoices/send',             perm: 'invoices.send' },
     { label: 'Gérer les factures',  icon: 'file',       link: '/invoices',                  perm: 'invoices.view' },

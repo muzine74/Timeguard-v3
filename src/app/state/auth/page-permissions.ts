@@ -19,7 +19,6 @@ const PAGE_RULES: [RegExp, string][] = [
   [/^\/employees\/edit(\/|$)/,           'page.employees.edit'],
   [/^\/employees\/[^/]+\/edit(\/|$)/,    'page.employees.edit'],
   [/^\/employees\/pricing(\/|$)/,        'page.employees.pricing'],
-  [/^\/employees\/validation(\/|$)/,     'page.employees.validation'],
   [/^\/employees\/assign(\/|$)/,         'page.employees.assign'],
   [/^\/employees\/t4a(\/|$)/,            'page.t4a'],
   [/^\/employees\/payments(\/|$)/,       'page.payments'],

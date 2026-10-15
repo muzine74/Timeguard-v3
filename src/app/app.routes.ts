@@ -59,11 +59,8 @@ export const routes: Routes = [
     canActivate: [permGuard(PERM.employeesView)],
     loadComponent: () => import('./vue/pages/employee-details/employee-details.component').then(m => m.EmployeeDetailsComponent)
   },
-  {
-    path: 'employees/validation',
-    canActivate: [permGuard(PERM.pointageValidate)],
-    loadComponent: () => import('./vue/pages/employee-validation/employee-validation.component').then(m => m.EmployeeValidationComponent)
-  },
+  // Ancienne page « Profil employé » : fusionnée dans « Modifier employé »
+  { path: 'employees/validation', redirectTo: 'employees/edit', pathMatch: 'full' },
   // Ancienne page « Hiérarchie » : fusionnée dans « Équipe » (/team)
   { path: 'employees/hierarchy', redirectTo: 'team', pathMatch: 'full' },
   {

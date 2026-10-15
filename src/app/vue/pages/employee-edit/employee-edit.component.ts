@@ -46,16 +46,21 @@ export class EmployeeEditComponent implements OnInit {
   searchQuery  = '';
   activeFilter: 'all' | 'active' | 'inactive' = 'active';
 
+  /** Employés correspondant à la recherche, tous états confondus (base des compteurs). */
+  private get queryMatches(): Employee[] {
+    const q = this.searchQuery.trim().toLowerCase();
+    return this.empSvc.list().filter(e => !q || e.employeeName.toLowerCase().includes(q));
+  }
+
+  get activeCounts(): { all: number; active: number; inactive: number } {
+    const list = this.queryMatches;
+    const active = list.filter(e => e.isActive).length;
+    return { all: list.length, active, inactive: list.length - active };
+  }
+
   get filteredEmployees(): Employee[] {
-    const q    = this.searchQuery.toLowerCase();
-    const list = this.empSvc.list();
-    return list.filter(e => {
-      const matchSearch = !q || e.employeeName.toLowerCase().includes(q);
-      const matchStatus = this.activeFilter === 'all'
-        || (this.activeFilter === 'active'   &&  e.isActive)
-        || (this.activeFilter === 'inactive' && !e.isActive);
-      return matchSearch && matchStatus;
-    });
+    const a = this.activeFilter;
+    return this.queryMatches.filter(e => a === 'all' || (a === 'active') === !!e.isActive);
   }
 
   form: EmployeeForm = this._emptyForm();
@@ -236,11 +241,56 @@ export class EmployeeEditComponent implements OnInit {
 
   goToCredentials(): void { this.router.navigate(['/employees/credentials']); }
 
+  /** Photo prise avec l'appareil (mobile) : réduite en JPEG puis jointe immédiatement. */
+  async onPhotoTaken(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    const raw   = input.files?.[0];
+    if (!raw || !this.employeeId()) return;
+
+    this.fileError.set('');
+    this.fileUploading.set(true);
+    try {
+      this._upload(await this._toJpeg(raw), input);
+    } catch {
+      this.fileUploading.set(false);
+      input.value = '';
+      this.fileError.set('Impossible de lire la photo. Réessayez ou utilisez « + Ajouter ».');
+    }
+  }
+
+  /** Réduit l'image (côté le plus long ≤ 2000 px, JPEG 85 %) : reste sous la limite de 10 Mo
+   *  de l'API et convertit les formats non acceptés (HEIC…) en JPEG. Nom : Photo_AAAA-MM-JJ_HHMMSS.jpg */
+  private _toJpeg(file: File): Promise<File> {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        const scale  = Math.min(1, 2000 / Math.max(img.naturalWidth, img.naturalHeight));
+        const canvas = document.createElement('canvas');
+        canvas.width  = Math.round(img.naturalWidth * scale);
+        canvas.height = Math.round(img.naturalHeight * scale);
+        canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
+        URL.revokeObjectURL(url);
+        canvas.toBlob(blob => {
+          if (!blob) return reject(new Error('toBlob'));
+          const d = new Date(), p = (n: number) => String(n).padStart(2, '0');
+          const name = `Photo_${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}.jpg`;
+          resolve(new File([blob], name, { type: 'image/jpeg' }));
+        }, 'image/jpeg', 0.85);
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('decode')); };
+      img.src = url;
+    });
+  }
+
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file  = input.files?.[0];
     if (!file || !this.employeeId()) return;
+    this._upload(file, input);
+  }
 
+  private _upload(file: File, input: HTMLInputElement): void {
     this.fileError.set('');
     this.fileUploading.set(true);
     this.empSvc.uploadFile(this.employeeId(), file).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({

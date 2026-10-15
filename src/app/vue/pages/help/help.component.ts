@@ -54,7 +54,6 @@ export class HelpComponent {
     { id: 'combinaisons',   title: 'Employé et compagnie : les combinaisons',   perms: [PERM.companiesEdit, PERM.employeesEdit, PERM.pointageValidate] },
     { id: 'validation',     title: 'Valider le pointage',                       perms: [PERM.pointageValidate], links: [
       { label: 'Pointage employé', link: '/employees',            perms: [PERM.employeesView] },
-      { label: 'Profil employé',   link: '/employees/validation', perms: [PERM.pointageValidate] },
     ] },
     { id: 'facturation',    title: 'Facturer vos compagnies',                   perms: [PERM.invoicesView, PERM.invoicesEdit, PERM.invoicesSend], links: [
       { label: 'Facturer par pointages',      link: '/invoices/from-timesheets', perms: [PERM.invoicesEdit] },

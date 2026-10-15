@@ -170,7 +170,6 @@ export class NavbarComponent {
       ] },
       { title: 'Pointage', items: [
         { label: 'Pointage employé',   icon: 'list',  link: '/employees', exact: true, show: () => this.has('employees.view') },
-        { label: 'Profil employé',     icon: 'user-check', link: '/employees/validation', show: () => this.has('pointage.validate') },
       ] },
       { title: 'Affectations', items: [
         { label: 'Assigner compagnies', icon: 'swap', link: '/companies/assign',    show: () => this.has('companies.edit') },
