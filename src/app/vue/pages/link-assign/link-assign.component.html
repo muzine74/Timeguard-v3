@@ -1,0 +1,28 @@
+<div class="link-shell">
+
+  <header class="mode-bar">
+    <div class="mode-head">
+      <h1 class="mode-title">Lier employés et compagnies</h1>
+      <p class="mode-hint">
+        @if (mode === 'employee') { Choisissez un employé, puis cochez ses compagnies. }
+        @else { Choisissez une compagnie, puis cochez ses employés. }
+      </p>
+    </div>
+
+    @if (canSwitch()) {
+      <div class="seg-control" role="group" aria-label="Mode de liaison">
+        <button type="button" class="seg-opt" [class.active]="mode === 'employee'" [attr.aria-pressed]="mode === 'employee'"
+                (click)="setMode('employee')"><span aria-hidden="true">👤 </span>Par employé</button>
+        <button type="button" class="seg-opt" [class.active]="mode === 'company'" [attr.aria-pressed]="mode === 'company'"
+                (click)="setMode('company')"><span aria-hidden="true">🏢 </span>Par compagnie</button>
+        <div class="seg-thumb" [class.thumb-right]="mode === 'company'"></div>
+      </div>
+    }
+  </header>
+
+  @if (mode === 'employee') {
+    <app-company-assign></app-company-assign>
+  } @else {
+    <app-employee-assign></app-employee-assign>
+  }
+</div>

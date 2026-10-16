@@ -75,6 +75,8 @@ export class InvoiceGenerateComponent implements OnInit {
   }
   private _tpsRate = 0.05;
   private _tvqRate = 0.09975;
+  /** Modification d'une facture : taux figés sur la facture, la configuration actuelle ne s'applique pas. */
+  private _ratesFrozen = false;
 
   // Config fournisseur
   providerName    = '';
@@ -116,14 +118,11 @@ export class InvoiceGenerateComponent implements OnInit {
       .subscribe({
         next: data => {
           const c = data.config;
-          if (c.tpsRate != null) this._tpsRate = c.tpsRate / 100;
-          if (c.tvqRate != null) this._tvqRate = c.tvqRate / 100;
+          if (!this._ratesFrozen) this._setRates(c.tpsRate ?? 5, c.tvqRate ?? 9.975);
           this.providerName    = c.companyName    ?? '';
           this.providerAddress = c.companyAddress ?? '';
           this.providerPhone   = c.companyPhone   ?? '';
           this.providerEmail   = c.companyEmail   ?? '';
-          this.tpsLabel = c.tpsRate != null ? `TPS (${c.tpsRate} %)` : 'TPS (5 %)';
-          this.tvqLabel = c.tvqRate != null ? `TVQ (${c.tvqRate} %)` : 'TVQ (9,975 %)';
           this.cdr.markForCheck();
         },
       });
@@ -152,6 +151,7 @@ export class InvoiceGenerateComponent implements OnInit {
             next: d => {
               this.noteAlerts.check({ billIds: [d.billId] }, `Ouverture de la facture ${d.billNumber}`);
               this.editNumber.set(d.billNumber);
+              if (d.tpsRate > 0 || d.tvqRate > 0) { this._ratesFrozen = true; this._setRates(d.tpsRate, d.tvqRate); }
               this.period         = d.period;
               this.billedDate     = d.billedDate.split('T')[0];
               this.numberOfVisits = d.numberOfVisits;
@@ -174,6 +174,15 @@ export class InvoiceGenerateComponent implements OnInit {
       },
       error: () => this.coLoading.set(false),
     });
+  }
+
+  /** Taux en % (ex. 9.975) → montants calculés et libellés « TPS (5 %) ». */
+  private _setRates(tps: number, tvq: number): void {
+    this._tpsRate = tps / 100;
+    this._tvqRate = tvq / 100;
+    this.tpsLabel = `TPS (${String(tps).replace('.', ',')} %)`;
+    this.tvqLabel = `TVQ (${String(tvq).replace('.', ',')} %)`;
+    this.cdr.markForCheck();
   }
 
   selectCompany(co: CompanySummary): void {

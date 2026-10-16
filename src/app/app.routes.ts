@@ -81,9 +81,11 @@ export const routes: Routes = [
     loadComponent: () => import('./vue/pages/employee-edit/employee-edit.component').then(m => m.EmployeeEditComponent)
   },
   {
+    // Page « Lier employés et compagnies », mode « Par compagnie » (le mode « Par employé » est /companies/assign)
     path: 'employees/assign',
     canActivate: [permGuard(PERM.employeesEdit)],
-    loadComponent: () => import('./vue/pages/employee-assign/employee-assign.component').then(m => m.EmployeeAssignComponent)
+    data: { mode: 'company' },
+    loadComponent: () => import('./vue/pages/link-assign/link-assign.component').then(m => m.LinkAssignComponent)
   },
   {
     path: 'employees/t4a',
@@ -135,9 +137,11 @@ export const routes: Routes = [
     loadComponent: () => import('./vue/pages/Company-edit/Company-edit.component').then(m => m.CompanyEditComponent)
   },
   {
+    // Page « Lier employés et compagnies », mode « Par employé » (le mode « Par compagnie » est /employees/assign)
     path: 'companies/assign',
     canActivate: [permGuard(PERM.companiesEdit)],
-    loadComponent: () => import('./vue/pages/company-assign/company-assign.component').then(m => m.CompanyAssignComponent)
+    data: { mode: 'employee' },
+    loadComponent: () => import('./vue/pages/link-assign/link-assign.component').then(m => m.LinkAssignComponent)
   },
   {
     path: 'companies/:id/edit',
@@ -190,9 +194,19 @@ export const routes: Routes = [
       import('./vue/pages/invoice-download/invoice-download.component')
         .then(m => m.InvoiceDownloadComponent)
   },
+  // Deux sous-pages : Calcul de prix (/prix) et Calculateur de taxes (/prix/taxes)
   {
     path: 'prix',
     canActivate: [permGuard(PERM.invoicesView)],
+    data: { view: 'price' },
+    loadComponent: () =>
+      import('./vue/pages/price-calculator/price-calculator.component')
+        .then(m => m.PriceCalculatorComponent)
+  },
+  {
+    path: 'prix/taxes',
+    canActivate: [permGuard(PERM.invoicesView)],
+    data: { view: 'tax' },
     loadComponent: () =>
       import('./vue/pages/price-calculator/price-calculator.component')
         .then(m => m.PriceCalculatorComponent)

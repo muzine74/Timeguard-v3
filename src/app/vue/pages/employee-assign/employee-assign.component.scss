@@ -1,7 +1,7 @@
-// ── Layout plein écran ───────────────────────────────────
+// ── Panneau de la page « Lier employés et compagnies » : occupe la hauteur restante ──
+:host { display: flex; flex-direction: column; flex: 1; min-height: 0; }
 .page-layout {
-  display: flex;
-  height: calc(100vh - 60px);
+  display: flex; flex: 1; min-height: 0;
   overflow: hidden;
 }
 
@@ -160,7 +160,7 @@ input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent);
 .mob-select-wrap { display: none; }
 
 @media (max-width: 1023px) {
-  .page-layout  { flex-direction: column; height: auto; min-height: calc(100vh - 60px); overflow: visible; }
+  .page-layout  { flex-direction: column; height: auto; overflow: visible; }
   .sidebar      { display: none; }
   .main-area    { overflow: visible; }
 

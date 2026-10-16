@@ -43,13 +43,13 @@ export class HelpComponent {
       { label: 'Nouvel employé',      link: '/employees/new',         perms: [PERM.employeesCreate] },
       { label: 'Modifier employé',    link: '/employees/edit',        perms: [PERM.employeesEdit] },
       { label: 'Tarifs employés',     link: '/employees/pricing',     perms: [PERM.employeesEdit] },
-      { label: 'Assigner compagnies', link: '/companies/assign',      perms: [PERM.companiesEdit] },
+      { label: 'Lier par employé',    link: '/companies/assign',      perms: [PERM.companiesEdit] },
       { label: 'Identifiants',        link: '/employees/credentials', perms: [PERM.credentialsManage] },
     ] },
     { id: 'compagnies',     title: 'Gérer les compagnies',                      perms: [PERM.companiesEdit], links: [
       { label: 'Liste compagnies',   link: '/companies/edit',   perms: [PERM.companiesEdit] },
       { label: 'Nouvelle compagnie', link: '/companies/new',    perms: [PERM.companiesEdit] },
-      { label: 'Assigner employés',  link: '/employees/assign', perms: [PERM.employeesEdit] },
+      { label: 'Lier par compagnie', link: '/employees/assign', perms: [PERM.employeesEdit] },
     ] },
     { id: 'combinaisons',   title: 'Employé et compagnie : les combinaisons',   perms: [PERM.companiesEdit, PERM.employeesEdit, PERM.pointageValidate] },
     { id: 'validation',     title: 'Valider le pointage',                       perms: [PERM.pointageValidate], links: [
@@ -130,7 +130,7 @@ export class HelpComponent {
       steps: [
         { where: 'Gestion → Liste compagnies → la compagnie', what: 'carte Fréquences : Mode de facturation « Par visite (prix du planning) ». Dans le planning, cochez Lundi : prix compagnie 80, prix employé 40. Enregistrez.' },
         { where: 'Gestion → Modifier employé → l’employé', what: 'Mode de rémunération par défaut : « Par visite ». Sauvegardez.' },
-        { where: 'Gestion → Assigner compagnies', what: 'affectez la compagnie à l’employé (s’il ne l’est pas déjà).' },
+        { where: 'Gestion → Lier employés et compagnies → Par employé', what: 'affectez la compagnie à l’employé (s’il ne l’est pas déjà).' },
         { where: 'Mon travail → Feuille de temps (l’employé) ou Gestion → Profil employé (l’administrateur)', what: 'bloc « Compagnies par visite » : cochez le lundi. 40,00 $ s’affiche sous la case. Cliquez sur 💾 Sauvegarder.' },
         { where: 'Gestion → Profil employé → l’employé', what: 'cliquez sur ✅ Valider la semaine.' },
         { where: 'Finances → Facturer par pointages (mois du lundi)', what: 'la compagnie affiche 1× 80,00 $. Dans Finances → Paiements employés : 40,00 $.' },
@@ -143,7 +143,7 @@ export class HelpComponent {
       steps: [
         { where: 'Gestion → Liste compagnies → la compagnie', what: 'carte Fréquences : Mode de facturation « Par visite (prix du planning) » et Taux horaire employé par défaut : 25. Dans le planning, cochez Lundi : prix compagnie 80. Enregistrez.' },
         { where: 'Gestion → Modifier employé → l’employé', what: 'Mode de rémunération par défaut : « Par heure ». Sauvegardez. (Pour une seule compagnie : Gestion → Tarifs employés → l’employé → la compagnie → « Par heure ».)' },
-        { where: 'Gestion → Assigner compagnies', what: 'affectez la compagnie à l’employé (s’il ne l’est pas déjà).' },
+        { where: 'Gestion → Lier employés et compagnies → Par employé', what: 'affectez la compagnie à l’employé (s’il ne l’est pas déjà).' },
         { where: 'Mon travail → Feuille de temps ou Gestion → Profil employé', what: 'bloc « Compagnies à l’heure » : lundi, début 08:00, fin 11:30. « 3.5 h · 87.50 $ » s’affiche. Cliquez sur 💾 Sauvegarder.' },
         { where: 'Gestion → Profil employé → l’employé', what: 'cliquez sur ✅ Valider la semaine.' },
         { where: 'Finances → Facturer par pointages', what: 'la compagnie affiche 1× 80,00 $ (une visite). Dans Finances → Paiements employés : 87,50 $.' },
@@ -156,7 +156,7 @@ export class HelpComponent {
       steps: [
         { where: 'Gestion → Liste compagnies → la compagnie', what: 'carte Fréquences : Mode de facturation « Par heure » et Taux horaire client : 50. Dans le planning, cochez Lundi : prix employé 40 (paie à la visite). Enregistrez.' },
         { where: 'Gestion → Modifier employé → l’employé', what: 'Mode de rémunération par défaut : « Par visite ». Sauvegardez.' },
-        { where: 'Gestion → Assigner compagnies', what: 'affectez la compagnie à l’employé (s’il ne l’est pas déjà).' },
+        { where: 'Gestion → Lier employés et compagnies → Par employé', what: 'affectez la compagnie à l’employé (s’il ne l’est pas déjà).' },
         { where: 'Mon travail → Feuille de temps ou Gestion → Profil employé', what: 'bloc « Compagnies à l’heure » (la compagnie facture à l’heure) : lundi, début 08:00, fin 11:30. « 3.5 h » s’affiche. Cliquez sur 💾 Sauvegarder : la paie est fixée à 40,00 $ (une visite).' },
         { where: 'Gestion → Profil employé → l’employé', what: 'cliquez sur ✅ Valider la semaine.' },
         { where: 'Finances → Facturer par pointages', what: 'la compagnie affiche « 3.5 h × 50.00 $/h = 175.00 $ » et « Facturé à l’heure ». Dans Finances → Paiements employés : 40,00 $.' },
@@ -169,7 +169,7 @@ export class HelpComponent {
       steps: [
         { where: 'Gestion → Liste compagnies → la compagnie', what: 'carte Fréquences : Mode de facturation « Par heure », Taux horaire client : 50, Taux horaire employé par défaut : 25. Enregistrez.' },
         { where: 'Gestion → Modifier employé → l’employé', what: 'Mode de rémunération par défaut : « Par heure ». Sauvegardez.' },
-        { where: 'Gestion → Assigner compagnies', what: 'affectez la compagnie à l’employé (s’il ne l’est pas déjà).' },
+        { where: 'Gestion → Lier employés et compagnies → Par employé', what: 'affectez la compagnie à l’employé (s’il ne l’est pas déjà).' },
         { where: 'Mon travail → Feuille de temps ou Gestion → Profil employé', what: 'bloc « Compagnies à l’heure » : lundi, début 08:00, fin 11:30. « 3.5 h · 87.50 $ » s’affiche. Cliquez sur 💾 Sauvegarder.' },
         { where: 'Gestion → Profil employé → l’employé', what: 'cliquez sur ✅ Valider la semaine.' },
         { where: 'Finances → Facturer par pointages', what: 'la compagnie affiche « 3.5 h × 50.00 $/h = 175.00 $ ». Dans Finances → Paiements employés : 87,50 $.' },

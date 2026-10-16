@@ -1,11 +1,14 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, RouterLink, RouterLinkActive } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ConfigService } from '../../../state/config/config.service';
 import { FREQUENCY_LABEL, PriceFrequency, PriceResult, PriceRow, VISITS_PER_LABEL, VisitFrequency, priceResult, TaxField, TaxSplit, taxSplit } from './price-calc';
 
 /**
+ * Deux sous-pages (onglets) : « Calcul de prix » (/prix) et « Calculateur de taxes » (/prix/taxes), choisies par la route.
+ *
  * Calcul de prix d'un service de nettoyage : montant saisi (taxes incluses ou non) par visite ou par période,
  * nombre de visites et % d'achat → avant taxes, TPS, TVQ et total pour les périodes utiles, puis revenus annuels,
  * achat annuel et revenu net de la 1re année.
@@ -14,12 +17,14 @@ import { FREQUENCY_LABEL, PriceFrequency, PriceResult, PriceRow, VISITS_PER_LABE
 @Component({
     selector: 'app-price-calculator',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive],
     templateUrl: './price-calculator.component.html',
     styleUrls: ['./price-calculator.component.scss']
 })
 export class PriceCalculatorComponent {
   private destroyRef = inject(DestroyRef);
+  /** Sous-page affichée : calcul de prix ou calculateur de taxes. */
+  readonly view: 'price' | 'tax' = inject(ActivatedRoute).snapshot.data['view'] === 'tax' ? 'tax' : 'price';
 
   readonly frequencies: { id: PriceFrequency; label: string }[] =
     (['visit', 'weekly', 'biweekly', 'monthly', 'yearly'] as PriceFrequency[]).map(id => ({ id, label: FREQUENCY_LABEL[id] }));

@@ -167,11 +167,11 @@
 
       <h3>Affecter des compagnies</h3>
       <ol>
-        <li><b>Gestion → Assigner compagnies</b> (permission <code>companies.edit</code>).</li>
+        <li><b>Gestion → Lier employés et compagnies</b>, mode <b>Par employé</b> (permission <code>companies.edit</code>).</li>
         <li>Choisissez l'employé, puis cochez les compagnies où il travaille.</li>
         <li>Cliquez sur <b>✓ Sauvegarder</b>. Tant que ce n'est pas fait, l'écran indique <b>● Non sauvegardé</b>.</li>
       </ol>
-      <p>Un changement d'affectation ne touche que les semaines <b>non validées</b>. Les semaines déjà validées gardent les compagnies du moment de leur validation (voir « Valider le pointage »). Pour affecter plusieurs employés à une même compagnie, utilisez plutôt <b>Gestion → Assigner employés</b>.</p>
+      <p>Un changement d'affectation ne touche que les semaines <b>non validées</b>. Les semaines déjà validées gardent les compagnies du moment de leur validation (voir « Valider le pointage »). Pour affecter plusieurs employés à une même compagnie, choisissez plutôt le mode <b>Par compagnie</b> sur la même page.</p>
 
       <h3>Tarifs propres à un employé</h3>
       <p>Par défaut, un employé est payé selon le tarif du calendrier de la compagnie. Vous pouvez fixer un tarif différent, jour par jour.</p>
@@ -227,10 +227,10 @@
 
       <h3>Affecter des employés à une compagnie</h3>
       <ol>
-        <li><b>Gestion → Assigner employés</b>, puis choisissez la compagnie.</li>
+        <li><b>Gestion → Lier employés et compagnies</b>, mode <b>Par compagnie</b> (permission <code>employees.edit</code>), puis choisissez la compagnie.</li>
         <li>Cochez les employés qui y travaillent, puis cliquez sur <b>✓ Sauvegarder</b>.</li>
       </ol>
-      <p>C'est la même affectation que <b>Gestion → Assigner compagnies</b>, vue depuis la compagnie.</p>
+      <p>C'est la même affectation que le mode <b>Par employé</b>, vue depuis la compagnie. Le choix <b>Par employé / Par compagnie</b> en haut de la page passe d'un mode à l'autre (il n'apparaît que si vous avez les deux permissions).</p>
     </section>
 
     <!-- ── Combinaisons employé × compagnie ───────────────────────────────── -->
@@ -708,7 +708,7 @@
           <tr><td>Un menu n'apparaît pas</td><td>Il vous manque la permission : demandez à l'administrateur de vous ajouter au bon groupe, puis reconnectez-vous.</td></tr>
           <tr><td>Je ne peux plus modifier ma semaine</td><td>Elle est validée (🔒). Demandez à l'administrateur d'annuler la validation.</td></tr>
           <tr><td><b>Valider la semaine</b> reste grisé</td><td>Cliquez d'abord sur <b>💾 Sauvegarder</b>.</td></tr>
-          <tr><td>Une compagnie manque sur la feuille de temps</td><td>Elle n'est pas affectée à l'employé, ou elle est inactive. Vérifiez <b>Assigner compagnies</b> et le statut de la compagnie.</td></tr>
+          <tr><td>Une compagnie manque sur la feuille de temps</td><td>Elle n'est pas affectée à l'employé, ou elle est inactive. Vérifiez <b>Lier employés et compagnies</b> (mode <b>Par employé</b>) et le statut de la compagnie.</td></tr>
           <tr><td>J'ai changé une affectation, mais une ancienne semaine n'a pas changé</td><td>C'est voulu : une semaine validée garde les compagnies du moment de sa validation. Le changement s'applique aux semaines non validées.</td></tr>
           <tr><td>Une compagnie n'apparaît pas dans <b>Facturer par pointages</b></td><td>Au moins une semaine de la période n'est pas validée : voir <b>Semaines non validées</b> sur la même page.</td></tr>
           <tr><td>La facture n'est pas partie par courriel</td><td>Vérifiez le serveur <b>Courriel (SMTP)</b> dans la Configuration et qu'au moins un contact de la compagnie est <b>Actif (inclus dans les envois)</b>.</td></tr>

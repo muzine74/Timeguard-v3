@@ -25,6 +25,9 @@ export interface BillSummary {
   totalBeforeTax: number;
   tps:            number;
   tvq:            number;
+  /** Taux (%) figés à la création de la facture : un changement de configuration ne les modifie pas. */
+  tpsRate:        number;
+  tvqRate:        number;
   totalWithTax:   number;
   isSent:         boolean;
   sentDate:       string | null;

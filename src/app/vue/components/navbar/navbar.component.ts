@@ -11,7 +11,8 @@ import { QuickSearchService, QuickSearchPage } from '../../../state/ui/quick-sea
 import { LangSwitchComponent } from '../lang-switch/lang-switch.component';
 import { NotificationBellComponent } from '../notification-bell/notification-bell.component';
 
-interface NavItem    { label: string; icon: string; link: string; exact?: boolean; show: () => boolean; }
+/** `fallback` : autre adresse de la même page, prise si l'utilisateur ne peut pas ouvrir `link`. */
+interface NavItem    { label: string; icon: string; link: string; exact?: boolean; show: () => boolean; fallback?: { link: string; show: () => boolean }; }
 interface NavSection { title?: string; items: NavItem[]; }
 interface NavMenu    { id: string; label: string; sections: NavSection[]; }
 
@@ -176,8 +177,9 @@ export class NavbarComponent {
         { label: 'Pointage employé',   icon: 'list',  link: '/employees', exact: true, show: () => this.has('employees.view') },
       ] },
       { title: 'Affectations', items: [
-        { label: 'Assigner compagnies', icon: 'swap', link: '/companies/assign',    show: () => this.has('companies.edit') },
-        { label: 'Assigner employés',   icon: 'swap', link: '/employees/assign',    show: () => this.has('employees.edit') },
+        // Page unique : mode « Par employé » (/companies/assign), sinon « Par compagnie » (/employees/assign)
+        { label: 'Lier employés et compagnies', icon: 'swap', link: '/companies/assign', show: () => this.has('companies.edit'),
+          fallback: { link: '/employees/assign', show: () => this.has('employees.edit') } },
       ] },
       { title: 'Suivi', items: [
         { label: 'Communications',      icon: 'message', link: '/communications',      show: () => this.has('companies.edit') || this.has('employees.edit') },
@@ -189,7 +191,7 @@ export class NavbarComponent {
         { label: 'Facturer par pointages', icon: 'clock', link: '/invoices/from-timesheets', show: () => this.has('invoices.edit') },
         { label: 'Envoyer les factures',   icon: 'mail', link: '/invoices/send',          show: () => this.has('invoices.send') },
         { label: 'Téléchargement des factures', icon: 'download', link: '/invoices/download', show: () => this.has('invoices.view') },
-        { label: 'Calcul de prix',         icon: 'dollar', link: '/prix',                   show: () => this.has('invoices.view') },
+        { label: 'Calcul',                 icon: 'dollar', link: '/prix',                   show: () => this.has('invoices.view') },
       ] },
       { title: 'Paie', items: [
         { label: 'Paiements employés', icon: 'card', link: '/employees/payments', show: () => this.has('payments.manage') },
@@ -217,7 +219,10 @@ export class NavbarComponent {
     this.auth.user(); this.team.hasTeam();   // dépendances réactives
     return this.NAV_MENUS
       .map(m => ({ ...m, sections: m.sections
-        .map(sec => ({ ...sec, items: sec.items.filter(it => it.show() && this.auth.canOpen(it.link)) }))
+        .map(sec => ({ ...sec, items: sec.items
+          .map(it => it.show() && this.auth.canOpen(it.link) ? it
+            : it.fallback?.show() && this.auth.canOpen(it.fallback.link) ? { ...it, link: it.fallback.link } : null)
+          .filter((it): it is NavItem => !!it) }))
         .filter(sec => sec.items.length) }))
       .filter(m => m.sections.length);
   });

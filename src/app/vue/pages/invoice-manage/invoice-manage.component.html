@@ -200,8 +200,8 @@
         </table>
         <div class="detail-totals">
           <div class="detail-total-row"><span>Sous-total</span><strong>{{ detailBill()!.totalBeforeTax | number:'1.2-2' }} $</strong></div>
-          <div class="detail-total-row"><span>TPS (5 %)</span><strong>{{ detailBill()!.tps | number:'1.2-2' }} $</strong></div>
-          <div class="detail-total-row"><span>TVQ (9,975 %)</span><strong>{{ detailBill()!.tvq | number:'1.2-2' }} $</strong></div>
+          <div class="detail-total-row"><span>{{ aTpsLabel }}</span><strong>{{ detailBill()!.tps | number:'1.2-2' }} $</strong></div>
+          <div class="detail-total-row"><span>{{ aTvqLabel }}</span><strong>{{ detailBill()!.tvq | number:'1.2-2' }} $</strong></div>
           <div class="detail-total-row detail-ttc"><span>TOTAL TTC</span><strong>{{ detailBill()!.totalWithTax | number:'1.2-2' }} $</strong></div>
         </div>
 
@@ -381,8 +381,8 @@
         <!-- Totaux -->
         <div class="detail-totals" style="margin-top:14px">
           <div class="detail-total-row"><span>Sous-total</span><strong>{{ aSubtotal | number:'1.2-2' }} $</strong></div>
-          <div class="detail-total-row"><span>TPS (5 %)</span><strong>{{ aTps | number:'1.2-2' }} $</strong></div>
-          <div class="detail-total-row"><span>TVQ (9,975 %)</span><strong>{{ aTvq | number:'1.2-2' }} $</strong></div>
+          <div class="detail-total-row"><span>{{ aTpsLabel }}</span><strong>{{ aTps | number:'1.2-2' }} $</strong></div>
+          <div class="detail-total-row"><span>{{ aTvqLabel }}</span><strong>{{ aTvq | number:'1.2-2' }} $</strong></div>
           <div class="detail-total-row detail-ttc"><span>TOTAL AVOIR</span><strong>{{ aTtc | number:'1.2-2' }} $</strong></div>
         </div>
 

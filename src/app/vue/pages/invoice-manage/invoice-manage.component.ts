@@ -244,8 +244,18 @@ export class InvoiceManageComponent implements OnInit {
   private _tvqRate = 0.09975;
 
   get aSubtotal(): number { return +this.aLines.reduce((s, l) => s + l.subTotal, 0).toFixed(2); }
-  get aTps(): number      { return +(this.aSubtotal * this._tpsRate).toFixed(2); }
-  get aTvq(): number      { return +(this.aSubtotal * this._tvqRate).toFixed(2); }
+  // Un avoir reprend les taux figés sur la facture d'origine (configuration actuelle seulement à défaut)
+  private get _aTpsRate(): number { const r = this.detailBill()?.tpsRate; return r ? r / 100 : this._tpsRate; }
+  private get _aTvqRate(): number { const r = this.detailBill()?.tvqRate; return r ? r / 100 : this._tvqRate; }
+  get aTps(): number      { return +(this.aSubtotal * this._aTpsRate).toFixed(2); }
+  get aTvq(): number      { return +(this.aSubtotal * this._aTvqRate).toFixed(2); }
+
+  /** Libellé « TPS (5 %) » d'après un taux en fraction (0.05). */
+  rateLabel(name: 'TPS' | 'TVQ', rate: number): string {
+    return `${name} (${String(+(rate * 100).toFixed(4)).replace('.', ',')} %)`;
+  }
+  get aTpsLabel(): string { return this.rateLabel('TPS', this._aTpsRate); }
+  get aTvqLabel(): string { return this.rateLabel('TVQ', this._aTvqRate); }
   get aTtc(): number      { return +(this.aSubtotal + this.aTps + this.aTvq).toFixed(2); }
 
   constructor(

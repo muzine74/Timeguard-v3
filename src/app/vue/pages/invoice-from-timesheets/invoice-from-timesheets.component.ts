@@ -128,6 +128,9 @@ export class InvoiceFromTimesheetsComponent implements OnInit {
 
   private _tpsRate   = 0.05;
   private _tvqRate   = 0.09975;
+  // Libellés des colonnes : taux actuels de la configuration (ceux qui seront figés sur les nouvelles factures)
+  get tpsLabel(): string { return `TPS (${String(+(this._tpsRate * 100).toFixed(4)).replace('.', ',')} %)`; }
+  get tvqLabel(): string { return `TVQ (${String(+(this._tvqRate * 100).toFixed(4)).replace('.', ',')} %)`; }
   private destroyRef = inject(DestroyRef);
 
   constructor(
