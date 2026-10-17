@@ -10,6 +10,7 @@ import { IconComponent } from '../icon/icon.component';
 import { QuickSearchService, QuickSearchPage } from '../../../state/ui/quick-search.service';
 import { LangSwitchComponent } from '../lang-switch/lang-switch.component';
 import { NotificationBellComponent } from '../notification-bell/notification-bell.component';
+import { AccountsService, LinkedAccount } from '../../../state/accounts/accounts.service';
 
 /** `fallback` : autre adresse de la même page, prise si l'utilisateur ne peut pas ouvrir `link`. */
 interface NavItem    { label: string; icon: string; link: string; exact?: boolean; show: () => boolean; fallback?: { link: string; show: () => boolean }; }
@@ -73,6 +74,7 @@ interface NavMenu    { id: string; label: string; sections: NavSection[]; }
                   [attr.aria-label]="'Mon compte — ' + (auth.user()?.username ?? '')">
             <span class="avatar">{{ initials() }}<span class="online-dot" title="En ligne" aria-hidden="true"></span></span>
             <span class="nav-username">{{ auth.user()?.username }}</span>
+            <span class="badge badge-tenant" *ngIf="accounts.hasLinks()" title="Entreprise actuelle">{{ auth.tenantSlug() }}</span>
             <span class="badge badge-admin" *ngIf="auth.canManage()">ADMIN</span>
             <span class="dropdown-arrow" aria-hidden="true">▾</span>
           </button>
@@ -87,6 +89,18 @@ interface NavMenu    { id: string; label: string; sections: NavSection[]; }
                 </span>
               </div>
             </div>
+
+            <ng-container *ngIf="canSwitch()">
+              <div class="dropdown-section">Entreprise</div>
+              <div class="tenant-current" *ngIf="auth.tenantSlug() as slug"><app-icon name="check"></app-icon> {{ slug }}</div>
+              <button type="button" class="tenant-opt" *ngFor="let a of accounts.others(); trackBy: trackAccount"
+                      [disabled]="!a.available || switching() !== null" (click)="switchTo(a)"
+                      [title]="a.available ? 'Basculer vers ' + a.tenantSlug : a.relinkNeeded ? 'Mot de passe changé : reliez-le de nouveau' : 'Indisponible : entreprise ou employé désactivé'">
+                <app-icon name="swap"></app-icon> {{ switching() === a.credentialId ? 'Ouverture…' : a.tenantSlug }}
+                <small *ngIf="a.tenantName && a.tenantName !== a.tenantSlug">{{ a.tenantName }}</small>
+              </button>
+              <a class="tenant-manage" routerLink="/mes-entreprises" (click)="closeDrop()">Gérer mes entreprises…</a>
+            </ng-container>
 
             <div class="dropdown-section">Design de couleurs</div>
             <div class="theme-picker" role="radiogroup" aria-label="Design de couleurs">
@@ -126,6 +140,14 @@ interface NavMenu    { id: string; label: string; sections: NavSection[]; }
         </ng-container>
       </ng-container>
       <a class="mobile-link" routerLink="/aide" routerLinkActive="active" (click)="closeMenu()"><app-icon name="help"></app-icon> Aide</a>
+      <ng-container *ngIf="canSwitch()">
+        <div class="mobile-section-label">Entreprise : {{ auth.tenantSlug() }}</div>
+        <button type="button" class="mobile-link mobile-sub" *ngFor="let a of accounts.others(); trackBy: trackAccount"
+                [disabled]="!a.available || switching() !== null" (click)="switchTo(a)">
+          <app-icon name="swap"></app-icon> {{ switching() === a.credentialId ? 'Ouverture…' : 'Basculer vers ' + a.tenantSlug }}
+        </button>
+        <a class="mobile-link mobile-sub" routerLink="/mes-entreprises" routerLinkActive="active" (click)="closeMenu()"><app-icon name="settings"></app-icon> Gérer mes entreprises…</a>
+      </ng-container>
       <div class="mobile-section-label">Design de couleurs</div>
       <div class="mobile-themes" role="radiogroup" aria-label="Design de couleurs">
         <ng-container *ngFor="let g of theme.groups">
@@ -236,6 +258,19 @@ export class NavbarComponent {
   private readonly _syncSearch = effect(() => this.search.pages.set(this.searchPages()));
 
   private has(p: string): boolean { return this.auth.hasPerm(p); }
+
+  // ── Mes entreprises : bascule entre comptes reliés ─────────────────────
+  readonly accounts  = inject(AccountsService);
+  readonly switching = signal<number | null>(null);
+  /** Section « Entreprise » : compte ordinaire (pas super-admin ni aperçu). La gestion reste proposée même sans lien. */
+  canSwitch(): boolean { return this.auth.loggedIn() && !this.auth.isSuperUser() && !this.auth.isImpersonating(); }
+  trackAccount(_: number, a: LinkedAccount): number { return a.credentialId; }
+  switchTo(a: LinkedAccount): void {
+    if (!a.available || this.switching() !== null) return;
+    this.switching.set(a.credentialId);
+    // Réussite : la page est rechargée sur l'accueil de l'autre entreprise
+    this.accounts.switchTo(a.credentialId).subscribe({ error: () => { this.switching.set(null); this.router.navigate(['/mes-entreprises']); } });
+  }
   trackMenu(_: number, m: NavMenu): string { return m.id; }
 
   constructor(public auth: AuthService, public config: ConfigService, public team: TeamService, public theme: ThemeService, private router: Router) {
@@ -243,8 +278,8 @@ export class NavbarComponent {
     // et au changement de session (aperçu super-admin), effacée à la déconnexion.
     effect(() => {
       const u = this.auth.user();
-      if (u) { this.config.loadVersion(); this.team.load(); this.theme.syncFromAccount(); }   // design enregistré sur le compte
-      else   { this.config.clearVersion(); this.team.clear(); }
+      if (u) { this.config.loadVersion(); this.team.load(); this.theme.syncFromAccount(); this.accounts.load(); }   // design enregistré sur le compte
+      else   { this.config.clearVersion(); this.team.clear(); this.accounts.clear(); }
     });
   }
 

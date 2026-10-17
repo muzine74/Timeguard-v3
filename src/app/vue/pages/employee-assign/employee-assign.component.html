@@ -23,7 +23,11 @@
         <span class="sidebar-title">Compagnies</span>
         <span class="sidebar-count">{{ filteredCompanies.length }}</span>
       </div>
-      <input class="sidebar-search" placeholder="Rechercher…" [(ngModel)]="coSearch" />
+      <input class="sidebar-search" type="search" placeholder="Rechercher…" aria-label="Rechercher une compagnie" aria-describedby="ea-co-hint" [(ngModel)]="coSearch" />
+      <div class="search-meta">
+        <app-search-hint hintId="ea-co-hint" />
+        <app-export-buttons [build]="exportCompanies" [disabled]="!filteredCompanies.length" label="la liste des compagnies"></app-export-buttons>
+      </div>
     </div>
 
     <div class="sidebar-body">
@@ -75,7 +79,12 @@
           </p>
         </div>
         <div class="main-hdr-right">
-          <input class="hdr-search" [(ngModel)]="empSearch" placeholder="Rechercher un employé…" />
+          <div class="hdr-search-wrap">
+            <input class="hdr-search" type="search" [ngModel]="empSearch()" (ngModelChange)="empSearch.set($event)" placeholder="Rechercher un employé…"
+                   aria-label="Rechercher un employé" aria-describedby="ea-emp-hint" />
+            <app-search-hint hintId="ea-emp-hint" />
+          </div>
+          <app-export-buttons [build]="exportEmployees" [disabled]="loadingAssigned() || !sortedEmployees().length" label="les employés filtrés"></app-export-buttons>
           <button class="btn btn-primary"
                   [disabled]="!hasChanges() || saving() || loadingAssigned()"
                   (click)="save()">

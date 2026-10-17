@@ -7,11 +7,16 @@ import { forkJoin, pairwise, filter, take } from 'rxjs';
 import { EmployeesService } from '../../../state/employees/employees.service';
 import { CompanyService, CompanySummary } from '../../../state/compagny/Company.service';
 import { httpErrorMessage } from '../../shared/http-error';
+import { ExportButtonsComponent } from '../../components/export-buttons/export-buttons.component';
+import { ExportDoc } from '../../../state/export/table-export.service';
+import { SearchHintComponent } from '../../components/search-hint/search-hint.component';
+import { multiMatch, kw } from '../../shared/multi-search';
+import { employeeSearchFields, employeesExportDoc, companiesExportDoc } from '../../shared/entity-search';
 
 @Component({
     selector: 'app-employee-assign',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, ExportButtonsComponent, SearchHintComponent],
     templateUrl: './employee-assign.component.html',
     styleUrls: ['./employee-assign.component.scss']
 })
@@ -25,11 +30,11 @@ export class EmployeeAssignComponent implements OnInit {
   coSearch     = '';
 
   get filteredCompanies(): CompanySummary[] {
-    const q = this.coSearch.toLowerCase();
-    return this.companies().filter(c =>
-      c.isActive && (!q || c.companyName.toLowerCase().includes(q))
-    );
+    return this.companies().filter(c => c.isActive && multiMatch(this.coSearch, c.companyName));
   }
+
+  exportCompanies = (): ExportDoc => companiesExportDoc(this.filteredCompanies, {
+    name: 'Affectation_compagnies', title: 'Affectation des employés — compagnies', search: this.coSearch });
 
   // ── Employés (panneau droit) ─────────────────────────
   allEmployees    = this.empSvc.list;
@@ -37,14 +42,16 @@ export class EmployeeAssignComponent implements OnInit {
   assigned        = signal<Set<string>>(new Set());
   original        = signal<Set<string>>(new Set());
   loadingAssigned = signal(false);
-  empSearch       = '';
+  /** Signal : lu par sortedEmployees (computed). */
+  empSearch       = signal('');
 
   // Employés filtrés par recherche, assignés en tête, puis triés par nom
   sortedEmployees = computed(() => {
-    const q    = this.empSearch.toLowerCase();
+    // Critères « & » (ET) / « | » (OU) : nom, courriel, ville…, « assigné » / « non assigné »
+    const q    = this.empSearch();
     const asgn = this.assigned();
     const list = this.allEmployees().filter(e =>
-      e.isActive && (!q || e.employeeName.toLowerCase().includes(q))
+      e.isActive && multiMatch(q, employeeSearchFields(e), kw(asgn.has(e.employeeId) ? 'assigné' : 'non assigné'))
     );
 
     return [...list].sort((a, b) => {
@@ -53,6 +60,15 @@ export class EmployeeAssignComponent implements OnInit {
       return a.employeeName.localeCompare(b.employeeName, undefined, { sensitivity: 'base' });
     });
   });
+
+  exportEmployees = (): ExportDoc => {
+    const rows = this.sortedEmployees(), asgn = this.assigned(), co = this.selectedCo()?.companyName ?? '';
+    const doc = employeesExportDoc(rows, { name: 'Employes_' + co, title: 'Employés de ' + co, search: this.empSearch() });
+    const t = doc.tables[0];
+    t.columns.push({ header: 'Assigné', width: 10 });
+    t.rows.forEach((r, i) => r.cells.push(asgn.has(rows[i].employeeId) ? 'Oui' : 'Non'));
+    return doc;
+  };
 
   hasChanges = computed(() => {
     const curr = this.assigned(), orig = this.original();

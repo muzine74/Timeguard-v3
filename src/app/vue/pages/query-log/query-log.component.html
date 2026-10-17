@@ -45,7 +45,8 @@
       </div>
       <div class="field field-wide">
         <label for="ql-search">Texte cherché <span class="opt">(dans la requête ou ses valeurs)</span></label>
-        <input id="ql-search" class="inp" type="search" name="search" [(ngModel)]="search" placeholder="Ex. Charges, Loyer, 1200.5" autocomplete="off" />
+        <input id="ql-search" class="inp" type="search" name="search" [(ngModel)]="search" placeholder="Ex. Charges &amp; Loyer, ou Loyer | 1200.5" autocomplete="off" aria-describedby="ql-search-hint" />
+        <app-search-hint hintId="ql-search-hint" />
       </div>
       <label class="check">
         <input type="checkbox" name="failedOnly" [(ngModel)]="failedOnly">
@@ -69,6 +70,7 @@
       <span class="result-count">{{ d.total === 0 ? 'Aucune modification pour ces filtres.' : num(d.total) + ' modification' + (d.total > 1 ? 's' : '') }}</span>
       <span class="result-note" *ngIf="d.hasParameters">Mots de passe, NAS, jetons et secrets sont remplacés par ***.</span>
       <span class="result-note result-warn" *ngIf="!d.hasParameters">Les valeurs ne sont pas encore enregistrées dans cette base : exécutez le script AddQueryLogParameters.</span>
+      <app-export-buttons [build]="exportLog" [disabled]="loading() || d.total === 0" label="l'historique des requêtes"></app-export-buttons>
     </div>
 
     <div class="table-wrap" *ngIf="d.items.length > 0">

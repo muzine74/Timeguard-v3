@@ -23,8 +23,12 @@
         <span class="sidebar-title">Employés</span>
         <span class="sidebar-count">{{ employees().length }}</span>
       </div>
-      <input class="sidebar-search" type="search" placeholder="Rechercher…" aria-label="Rechercher un employé par son nom"
+      <input class="sidebar-search" type="search" placeholder="Rechercher…" aria-label="Rechercher un employé" aria-describedby="ca-emp-hint"
              [ngModel]="empSearch()" (ngModelChange)="empSearch.set($event)" />
+      <div class="search-meta">
+        <app-search-hint hintId="ca-emp-hint" />
+        <app-export-buttons [build]="exportEmployees" [disabled]="!filteredEmps().length" label="la liste des employés"></app-export-buttons>
+      </div>
     </div>
 
     <div class="sidebar-body">
@@ -95,9 +99,11 @@
       </div>
 
       <div class="co-tools" *ngIf="!loadingAssigned() && !companiesError() && sortedCompanies().length > 8">
-        <input class="sidebar-search co-search" type="search" placeholder="Rechercher une compagnie…" aria-label="Rechercher une compagnie par son nom"
+        <input class="sidebar-search co-search" type="search" placeholder="Rechercher une compagnie…" aria-label="Rechercher une compagnie" aria-describedby="ca-co-hint"
                [ngModel]="coSearch()" (ngModelChange)="coSearch.set($event)" />
+        <app-search-hint hintId="ca-co-hint" />
         <span class="co-count">{{ shownCompanies().length }} / {{ sortedCompanies().length }}</span>
+        <app-export-buttons [build]="exportCompanies" [disabled]="!shownCompanies().length" label="les compagnies filtrées"></app-export-buttons>
       </div>
 
       <!-- Grille compagnies -->

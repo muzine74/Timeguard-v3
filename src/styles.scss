@@ -676,3 +676,6 @@ input, select, textarea { font-family: inherit; }
 @keyframes sk-pulse { 50% { opacity: .4; } }
 @media (prefers-reduced-motion: reduce) { .sk-row i { animation: none; } }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+// Ligne sous un champ de recherche multicritères : indication « ; » + bouton d'export des résultats
+.search-meta { display: flex; align-items: center; justify-content: space-between; gap: 6px 8px; flex-wrap: wrap; margin-top: 6px; }

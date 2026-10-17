@@ -10,6 +10,11 @@ import { EmployeesService } from '../../../state/employees/employees.service';
 import { PricingService } from '../../../state/employees/pricing.service';
 import { DayPricingHistory, Employee, EmployeeCompagnie, EmployeeHourlyRate } from '../../../models';
 import { httpErrorMessage } from '../../shared/http-error';
+import { ExportButtonsComponent } from '../../components/export-buttons/export-buttons.component';
+import { ExportDoc } from '../../../state/export/table-export.service';
+import { SearchHintComponent } from '../../components/search-hint/search-hint.component';
+import { multiMatch } from '../../shared/multi-search';
+import { employeeSearchFields, employeesExportDoc } from '../../shared/entity-search';
 
 interface PricingRow {
   calendarId:    string;
@@ -23,7 +28,7 @@ interface PricingRow {
 @Component({
     selector: 'app-employee-pricing',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, ExportButtonsComponent, SearchHintComponent],
     templateUrl: './employee-pricing.component.html',
     styleUrls: ['./employee-pricing.component.scss']
 })
@@ -34,16 +39,19 @@ export class EmployeePricingComponent implements OnInit {
   // ── Sidebar employés ─────────────────────────────────────────────────────
   allEmployees     = this.empSvc.list;
   empLoading       = this.empSvc.loading;
-  empSearch        = '';
+  /** Signal : lu par filteredEmployees (computed). */
+  empSearch        = signal('');
   selectedEmployee = signal<Employee | null>(null);
   loadingEmployee  = signal(false);
 
   filteredEmployees = computed(() => {
-    const q = this.empSearch.toLowerCase();
-    return this.allEmployees().filter(e =>
-      e.isActive && (!q || e.employeeName.toLowerCase().includes(q))
-    );
+    // Critères « & » (ET) / « | » (OU) : nom, courriel, ville, type, mode de rémunération…
+    const q = this.empSearch();
+    return this.allEmployees().filter(e => e.isActive && multiMatch(q, employeeSearchFields(e)));
   });
+
+  exportEmployees = (): ExportDoc => employeesExportDoc(this.filteredEmployees(), {
+    name: 'Tarifs_employes', title: 'Tarifs — employés', search: this.empSearch() });
 
   // ── Sélecteur compagnie ──────────────────────────────────────────────────
   companies       = signal<EmployeeCompagnie[]>([]);

@@ -9,6 +9,11 @@ import { CompanyForm, FreqOption, SemainePlanning, JourMensuel } from '../../../
 import { ConfirmService } from '../../../state/ui/confirm.service';
 import { httpErrorMessage } from '../../shared/http-error';
 import { AuthService } from '../../../state/auth/auth.service';
+import { ExportButtonsComponent } from '../../components/export-buttons/export-buttons.component';
+import { ExportDoc } from '../../../state/export/table-export.service';
+import { SearchHintComponent } from '../../components/search-hint/search-hint.component';
+import { multiMatch, kw } from '../../shared/multi-search';
+import { companiesExportDoc } from '../../shared/entity-search';
 
 // Shape minimale pour la liste sidebar
 export interface CompanySummary {
@@ -20,7 +25,7 @@ export interface CompanySummary {
 @Component({
     selector: 'app-company-edit',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, ExportButtonsComponent, SearchHintComponent],
     templateUrl: './company-edit.component.html',
     styleUrls: ['./company-edit.component.scss']
 })
@@ -90,14 +95,13 @@ export class CompanyEditComponent implements OnInit {
     let list = this.companies;
     if (this.statusFilter === 'active')   list = list.filter(c =>  c.isActive);
     if (this.statusFilter === 'inactive') list = list.filter(c => !c.isActive);
-    const q = this._norm(this.searchQuery);
-    return q ? list.filter(c => this._norm(c.companyName).includes(q)) : list;
+    // Critères « & » (ET) / « | » (OU) : nom, « actif » / « inactif »
+    return list.filter(c => multiMatch(this.searchQuery, c.companyName, kw(c.isActive ? 'actif' : 'inactif')));
   }
 
-  /** Minuscules, sans accents ni espaces autour (« Hotel » trouve « Hôtel »). */
-  private _norm(s: string): string {
-    return (s ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
-  }
+  exportCompanies = (): ExportDoc => companiesExportDoc(this.filteredCompanies, {
+    name: 'Compagnies', title: 'Compagnies', search: this.searchQuery,
+    extra: this.statusFilter === 'active' ? 'Actives' : this.statusFilter === 'inactive' ? 'Inactives' : '' });
 
   trackCompany(_: number, c: CompanySummary): string { return c.companyId; }
 

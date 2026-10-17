@@ -4,7 +4,12 @@
   <aside class="sidebar">
     <div class="sidebar-hdr">
       <div class="sidebar-title">Employés</div>
-      <input class="sidebar-search" [(ngModel)]="empSearch" placeholder="Rechercher..." />
+      <input class="sidebar-search" type="search" [ngModel]="empSearch()" (ngModelChange)="empSearch.set($event)" placeholder="Rechercher..."
+             aria-label="Rechercher un employé" aria-describedby="ep-search-hint" />
+      <div class="search-meta">
+        <app-search-hint hintId="ep-search-hint" />
+        <app-export-buttons [build]="exportEmployees" [disabled]="empLoading() || !filteredEmployees().length" label="la liste des employés"></app-export-buttons>
+      </div>
 
     </div>
 

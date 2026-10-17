@@ -10,6 +10,10 @@ import { MultiSelectComponent, MultiSelectOption } from '../../components/multi-
 import { AttachmentsComponent } from '../../components/attachments/attachments.component';
 import { AttachmentsService, AttachmentItem } from '../../../state/attachments/attachments.service';
 import { httpErrorMessage } from '../../shared/http-error';
+import { ExportButtonsComponent } from '../../components/export-buttons/export-buttons.component';
+import { ExportDoc } from '../../../state/export/table-export.service';
+import { SearchHintComponent } from '../../components/search-hint/search-hint.component';
+import { searchTerms, matchesAll, kw, listExportDoc } from '../../shared/multi-search';
 import { locale } from '../../../state/i18n/i18n.service';
 
 /**
@@ -30,7 +34,7 @@ interface NoteFilters {
 @Component({
     selector: 'app-notes',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule, NoteLinksEditorComponent, MultiSelectComponent, AttachmentsComponent],
+    imports: [CommonModule, FormsModule, NoteLinksEditorComponent, MultiSelectComponent, AttachmentsComponent, ExportButtonsComponent, SearchHintComponent],
     templateUrl: './notes.component.html',
     styleUrls: ['./notes.component.scss']
 })
@@ -99,7 +103,7 @@ export class NotesComponent implements OnInit {
   /** Notes affichées : doivent respecter TOUS les critères sélectionnés. */
   get filteredNotes(): NoteItem[] {
     const f = this.filters;
-    const q = f.search.trim().toLowerCase();
+    const terms = searchTerms(f.search);   // « & » = ET, « | » = OU
     const lower = (v: string | null | undefined) => (v ?? '').toLowerCase();
     const employees = this.empSvc.list();
 
@@ -120,8 +124,8 @@ export class NotesComponent implements OnInit {
       n.links.some(l => l.entityType === type && ids.has(lower(l.entityId)));
 
     return this.notes().filter(n => {
-      const linkNames = n.links.map(l => l.entityName ?? '').join(' ');
-      if (q && !(`${n.title} ${n.description} ${linkNames} ${n.createdByEmployeeName}`.toLowerCase().includes(q))) return false;
+      if (!matchesAll(terms, n.title, n.description, n.links.map(l => l.entityName ?? ''), n.createdByEmployeeName,
+                      kw(n.isActive ? 'active' : 'inactive'))) return false;
       if (f.status === 'active'   && !n.isActive) return false;
       if (f.status === 'inactive' &&  n.isActive) return false;
       if (f.linkTypes.length) {
@@ -137,6 +141,17 @@ export class NotesComponent implements OnInit {
       return true;
     });
   }
+
+  /** Export des notes filtrées (tous les critères appliqués). */
+  exportNotes = (): ExportDoc => listExportDoc({
+    name: 'Notes', title: 'Notes', search: this.filters.search,
+    extra: this.activeFilterCount ? `${this.activeFilterCount} critère(s) actif(s)` : '',
+    columns: [{ header: 'Date', width: 12 }, { header: 'Titre', width: 30 }, { header: 'Description', width: 50 },
+              { header: 'Liens', width: 36 }, { header: 'Auteur', width: 22 }, { header: 'État', width: 10 }],
+    rows: this.filteredNotes.map(n => [this.localDay(n.createdAt), n.title, n.description,
+      n.links.map(l => l.entityName ?? '').filter(Boolean).join(', '), n.createdByEmployeeName, n.isActive ? 'Active' : 'Inactive']),
+    landscape: true,
+  });
 
   // ── Actives en haut, inactives repliées en bas ────────────────────────
   showInactive = false;

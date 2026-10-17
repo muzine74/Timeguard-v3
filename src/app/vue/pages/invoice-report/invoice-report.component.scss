@@ -280,6 +280,7 @@
   input { accent-color: var(--accent); cursor: pointer; width: 15px; height: 15px; }
 }
 
+.popup-hint { padding: 0 1rem .4rem; text-align: right; }
 .popup-search {
   flex: 1;
   max-width: 220px;

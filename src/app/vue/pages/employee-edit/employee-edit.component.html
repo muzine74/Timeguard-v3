@@ -7,7 +7,11 @@
         <div class="sidebar-title">Employés</div>
         <a class="btn btn-primary btn-new" routerLink="/employees/new" *ngIf="canCreate()">+ Nouvel employé</a>
       </div>
-      <input class="sidebar-search" [(ngModel)]="searchQuery" placeholder="Rechercher..." aria-label="Rechercher un employé" />
+      <input class="sidebar-search" type="search" [(ngModel)]="searchQuery" placeholder="Rechercher..." aria-label="Rechercher un employé" aria-describedby="ee-search-hint" />
+      <div class="search-meta">
+        <app-search-hint hintId="ee-search-hint" />
+        <app-export-buttons [build]="exportEmployees" [disabled]="empLoading() || !filteredEmployees.length" label="la liste des employés"></app-export-buttons>
+      </div>
       <div class="filter-tabs" role="group" aria-label="Filtrer par état de l'employé">
         <button type="button" class="ftab" [class.ftab-active]="activeFilter==='active'"   [attr.aria-pressed]="activeFilter==='active'"   (click)="activeFilter='active'">Actif <span class="ftab-count">{{ activeCounts.active }}</span></button>
         <button type="button" class="ftab" [class.ftab-active]="activeFilter==='inactive'" [attr.aria-pressed]="activeFilter==='inactive'" (click)="activeFilter='inactive'">Inactif <span class="ftab-count">{{ activeCounts.inactive }}</span></button>

@@ -26,7 +26,12 @@
       </div>
       <input class="sidebar-search" type="search" placeholder="Rechercher…"
              [attr.aria-label]="tab() === 'company' ? 'Rechercher une compagnie par son nom' : 'Rechercher un employé par son nom'"
-             [ngModel]="search()" (ngModelChange)="search.set($event)" />
+             aria-describedby="comm-search-hint" [ngModel]="search()" (ngModelChange)="search.set($event)" />
+      <div class="search-meta">
+        <app-search-hint hintId="comm-search-hint" />
+        <app-export-buttons [build]="exportTargets" [disabled]="!shownTargets().length"
+                            [label]="tab() === 'company' ? 'la liste des compagnies' : 'la liste des employés'"></app-export-buttons>
+      </div>
       <label class="inactive-toggle">
         <input type="checkbox" [checked]="showInactive()" (change)="showInactive.set($any($event.target).checked)" />
         Afficher les désactivés sans historique

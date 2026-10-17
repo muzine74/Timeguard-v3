@@ -3,14 +3,20 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Subscription } from 'rxjs';
-import { QueryLogItem, QueryLogPage, QueryLogService } from '../../../state/query-log/query-log.service';
+import { Subscription, firstValueFrom } from 'rxjs';
+import { QueryLogFilter, QueryLogItem, QueryLogPage, QueryLogService } from '../../../state/query-log/query-log.service';
 import { TenantService } from '../../../state/tenant/tenant.service';
 import { AuthService } from '../../../state/auth/auth.service';
 import { locale } from '../../../state/i18n/i18n.service';
 import { httpErrorMessage } from '../../shared/http-error';
+import { ExportButtonsComponent } from '../../components/export-buttons/export-buttons.component';
+import { ExportDoc } from '../../../state/export/table-export.service';
+import { SearchHintComponent } from '../../components/search-hint/search-hint.component';
+import { listExportDoc } from '../../shared/multi-search';
 
 type KindFilter = '' | 'INSERT' | 'UPDATE' | 'DELETE';
+/** Lignes exportées au plus (pages de 200 demandées à l'API). */
+const EXPORT_MAX = 5000;
 
 /**
  * Historique des requêtes : le contenu de chaque MODIFICATION envoyée à la base — ajout, mise à jour,
@@ -22,7 +28,7 @@ type KindFilter = '' | 'INSERT' | 'UPDATE' | 'DELETE';
 @Component({
     selector: 'app-query-log',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule, RouterLink],
+    imports: [CommonModule, FormsModule, RouterLink, ExportButtonsComponent, SearchHintComponent],
     templateUrl: './query-log.component.html',
     styleUrls: ['./query-log.component.scss']
 })
@@ -56,6 +62,8 @@ export class QueryLogComponent implements OnInit {
   data     = signal<QueryLogPage | null>(null);
   expanded = signal<ReadonlySet<number>>(new Set());
   private _request?: Subscription;
+  /** Filtres de la dernière recherche lancée : l'export reprend exactement ce résultat. */
+  private _applied?: QueryLogFilter;
 
   pageCount = computed(() => { const d = this.data(); return d ? Math.max(1, Math.ceil(d.total / d.pageSize)) : 1; });
   rangeLabel = computed(() => {
@@ -78,14 +86,38 @@ export class QueryLogComponent implements OnInit {
     if (fromIso && toIso && fromIso > toIso) { this.error.set('La date de début doit être avant la date de fin.'); return; }
     this._request?.unsubscribe();
     this.loading.set(true); this.error.set(''); this.expanded.set(new Set());
-    this._request = this.svc.search({
+    // « search » : « & » (ou « ; ») = ET, « | » = OU (découpé par l'API)
+    this._applied = {
       from: fromIso, to: toIso, account: this.account, tenantId: this.isSuper ? this.tenantId : '', kind: this.kind,
       failedOnly: this.failedOnly, search: this.search.trim(), page, pageSize: this.pageSize,
-    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    };
+    this._request = this.svc.search(this._applied).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: d => { this.data.set(d); this.loading.set(false); },
       error: err => { this.error.set(httpErrorMessage(err)); this.data.set(null); this.loading.set(false); },
     });
   }
+
+  /** Export de toutes les pages du résultat affiché (au plus EXPORT_MAX lignes). */
+  exportLog = async (): Promise<ExportDoc> => {
+    const f = this._applied!, items: QueryLogItem[] = [];
+    let total = 0;
+    for (let page = 1; items.length < EXPORT_MAX; page++) {
+      const d = await firstValueFrom(this.svc.search({ ...f, page, pageSize: 200 }));
+      total = d.total;
+      items.push(...d.items);
+      if (!d.items.length || items.length >= d.total) break;
+    }
+    const rows = items.slice(0, EXPORT_MAX);
+    return listExportDoc({
+      name: 'Historique_des_requetes', title: 'Historique des requêtes', search: f.search,
+      extra: total > rows.length ? `${rows.length} premières lignes sur ${total}` : '',
+      columns: [{ header: 'Date et heure', width: 22 }, { header: 'Compte', width: 20 }, ...(this.isSuper ? [{ header: 'Entreprise', width: 22 }] : []),
+                { header: 'Nature', width: 13 }, { header: 'Durée (ms)', type: 'int' as const }, { header: 'Échec', width: 7 }, { header: 'Requête SQL', width: 90 }],
+      rows: rows.map(i => [this.when(i.executedAt), i.account, ...(this.isSuper ? [i.tenantName ?? ''] : []),
+                           this.kindLabel(i), i.durationMs, i.failed ? 'Oui' : '', this.filled(i).slice(0, 30000)]),
+      landscape: true,
+    });
+  };
 
   reset(): void {
     this.from = this._localInput(new Date(Date.now() - 24 * 3600 * 1000)); this.to = '';

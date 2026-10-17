@@ -17,8 +17,9 @@
   <div class="charge-filters" *ngIf="!loading() && charges().length > 0">
     <label class="cf-field cf-search">
       <span>Mot-clé</span>
-      <input type="search" placeholder="Titre, description, compagnie, document…"
+      <input type="search" placeholder="Titre, description, compagnie, document…" aria-describedby="charges-search-hint"
              [ngModel]="fSearch()" (ngModelChange)="fSearch.set($event)" />
+      <app-search-hint hintId="charges-search-hint" />
     </label>
     <label class="cf-field">
       <span>Du</span>
@@ -40,6 +41,7 @@
     <span class="cf-count" role="status" aria-live="polite">
       {{ shownCharges().length }}{{ hasFilters() ? ' sur ' + charges().length : '' }} charge(s) · {{ shownTotal() | number:'1.2-2' }} $
     </span>
+    <app-export-buttons [build]="exportCharges" [disabled]="!shownCharges().length" label="les charges filtrées"></app-export-buttons>
   </div>
 
   <!-- ── Tableau ────────────────────────────────────────────────────────── -->

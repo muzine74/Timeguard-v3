@@ -12,6 +12,10 @@ import { InvoiceService, BillSummary, BillDetail } from '../../../state/invoice/
 import { ConfigService } from '../../../state/config/config.service';
 import { CompanyService, ContactItem } from '../../../state/compagny/Company.service';
 import { httpErrorMessage } from '../../shared/http-error';
+import { ExportButtonsComponent } from '../../components/export-buttons/export-buttons.component';
+import { ExportDoc } from '../../../state/export/table-export.service';
+import { SearchHintComponent } from '../../components/search-hint/search-hint.component';
+import { multiMatch, kw, listExportDoc } from '../../shared/multi-search';
 import { I18nService } from '../../../state/i18n/i18n.service';
 
 const L = (msg: string, ...args: unknown[]) => console.log(`[InvoiceSend] ${msg}`, ...args);
@@ -21,7 +25,7 @@ const E = (msg: string, ...args: unknown[]) => console.error(`[InvoiceSend] ✗ 
 @Component({
     selector: 'app-invoice-send',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule, NoteInlineComponent],
+    imports: [CommonModule, FormsModule, NoteInlineComponent, ExportButtonsComponent, SearchHintComponent],
     templateUrl: './invoice-send.component.html',
     styleUrls: ['./invoice-send.component.scss']
 })
@@ -40,12 +44,18 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
   selected    = signal<BillSummary | null>(null);
 
   get filteredBills(): BillSummary[] {
-    const q = this.search.toLowerCase();
-    return q
-      ? this.unsentBills().filter(b =>
-          b.companyName.toLowerCase().includes(q) || b.billNumber.toLowerCase().includes(q))
-      : this.unsentBills();
+    // Critères « & » (ET) / « | » (OU) : compagnie, numéro, période, montant TTC, « avoir » / « facture »
+    return this.unsentBills().filter(b => multiMatch(this.search, b.companyName, b.billNumber, b.period,
+      b.totalWithTax.toFixed(2), b.totalWithTax.toFixed(2).replace('.', ','), kw(b.parentBillIdentifier !== null ? 'avoir' : 'facture')));
   }
+
+  exportBills = (): ExportDoc => listExportDoc({
+    name: 'Factures_non_envoyees', title: 'Factures non envoyées', search: this.search,
+    columns: [{ header: 'N° facture', width: 18 }, { header: 'Compagnie', width: 34 }, { header: 'Période', width: 10 },
+              { header: 'Date', width: 12 }, { header: 'Type', width: 10 }, { header: 'Total TTC', type: 'money' }],
+    rows: this.filteredBills.map(b => [b.billNumber, b.companyName, b.period, (b.billedDate ?? '').slice(0, 10),
+                                       b.parentBillIdentifier !== null ? 'Avoir' : 'Facture', b.totalWithTax]),
+  });
 
   // ── Détail facture sélectionnée ──────────────────────────────────────────
   detail        = signal<BillDetail | null>(null);

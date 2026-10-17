@@ -7,7 +7,11 @@
         <div class="sidebar-title">Compagnies <span class="sidebar-count" *ngIf="!loadingList() && !listError()">{{ filteredCompanies.length }} / {{ companies.length }}</span></div>
         <button type="button" class="btn btn-primary btn-new" *ngIf="canCreate()" (click)="newCompany()">+ Nouvelle compagnie</button>
       </div>
-      <input class="sidebar-search" type="search" [(ngModel)]="searchQuery" placeholder="Rechercher..." aria-label="Rechercher une compagnie par son nom" />
+      <input class="sidebar-search" type="search" [(ngModel)]="searchQuery" placeholder="Rechercher..." aria-label="Rechercher une compagnie" aria-describedby="ce-search-hint" />
+      <div class="search-meta">
+        <app-search-hint hintId="ce-search-hint" />
+        <app-export-buttons [build]="exportCompanies" [disabled]="loadingList() || !filteredCompanies.length" label="la liste des compagnies"></app-export-buttons>
+      </div>
       <div class="status-filter" role="group" aria-label="Filtrer par statut">
         <button type="button" class="sf-btn" [class.sf-active]="statusFilter === 'all'"      [attr.aria-pressed]="statusFilter === 'all'"      (click)="statusFilter = 'all'">Tous</button>
         <button type="button" class="sf-btn" [class.sf-active]="statusFilter === 'active'"   [attr.aria-pressed]="statusFilter === 'active'"   (click)="statusFilter = 'active'">Actif</button>

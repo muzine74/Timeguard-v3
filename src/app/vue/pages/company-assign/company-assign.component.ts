@@ -8,11 +8,16 @@ import { CompanyService, CompanySummary } from '../../../state/compagny/Company.
 import { Employee } from '../../../models';
 import { ConfirmService } from '../../../state/ui/confirm.service';
 import { httpErrorMessage } from '../../shared/http-error';
+import { ExportButtonsComponent } from '../../components/export-buttons/export-buttons.component';
+import { ExportDoc } from '../../../state/export/table-export.service';
+import { SearchHintComponent } from '../../components/search-hint/search-hint.component';
+import { multiMatch, kw } from '../../shared/multi-search';
+import { employeeSearchFields, employeesExportDoc, companiesExportDoc } from '../../shared/entity-search';
 
 @Component({
     selector: 'app-company-assign',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, ExportButtonsComponent, SearchHintComponent],
     templateUrl: './company-assign.component.html',
     styleUrls: ['./company-assign.component.scss']
 })
@@ -39,16 +44,16 @@ export class CompanyAssignComponent implements OnInit {
 
   // ── Computed ──────────────────────────────────────────
   filteredEmps = computed(() => {
-    const q = this._norm(this.empSearch());
-    return this.employees().filter(e =>
-      e.isActive && (!q || this._norm(e.employeeName).includes(q))
-    );
+    const q = this.empSearch();
+    return this.employees().filter(e => e.isActive && multiMatch(q, employeeSearchFields(e)));
   });
 
-  /** Minuscules, sans accents ni espaces autour (« Hotel » trouve « Hôtel »). */
-  private _norm(s: string): string {
-    return (s ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
-  }
+  exportEmployees = (): ExportDoc => employeesExportDoc(this.filteredEmps(), {
+    name: 'Affectation_employes', title: 'Affectation des compagnies — employés', search: this.empSearch() });
+
+  exportCompanies = (): ExportDoc => companiesExportDoc(this.shownCompanies(), {
+    name: 'Compagnies_' + (this.selected()?.employeeName ?? ''), title: 'Compagnies de ' + (this.selected()?.employeeName ?? ''),
+    search: this.coSearch() }, { header: 'Assignée', value: c => this.isAssigned(c.companyId) ? 'Oui' : 'Non' });
 
   hasChanges = computed(() => {
     const curr = this.assigned(), orig = this.original();
@@ -80,8 +85,8 @@ export class CompanyAssignComponent implements OnInit {
 
   /** Compagnies affichées : filtrées par le champ de recherche. */
   shownCompanies = computed(() => {
-    const q = this._norm(this.coSearch());
-    return q ? this.sortedCompanies().filter(c => this._norm(c.companyName).includes(q)) : this.sortedCompanies();
+    const q = this.coSearch();
+    return this.sortedCompanies().filter(c => multiMatch(q, c.companyName, kw(this.isAssigned(c.companyId) ? 'assignée' : 'non assignée')));
   });
 
   trackCompany(_: number, c: CompanySummary): string { return c.companyId; }

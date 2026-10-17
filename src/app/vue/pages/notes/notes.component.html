@@ -47,7 +47,8 @@
   </button>
   <div class="filter-card" id="notes-search-panel" *ngIf="searchOpen()">
     <input class="inp" type="search" aria-label="Rechercher dans les notes" placeholder="Rechercher (titre, description, lien, auteur)…"
-           [(ngModel)]="filters.search" />
+           aria-describedby="notes-search-hint" [(ngModel)]="filters.search" />
+    <app-search-hint hintId="notes-search-hint" />
     <div class="filter-row">
       <app-multi-select [options]="optSvc.options('employee')" [(selected)]="filters.employeeIds"
                         placeholder="Tous les employés" plural="employés"
@@ -69,6 +70,7 @@
       <label class="filter-date">Au <input class="inp" type="date" [(ngModel)]="filters.dateTo" /></label>
       <span class="filter-count">{{ filteredNotes.length }} / {{ notes().length }}</span>
       <button class="btn btn-ghost" *ngIf="hasFilters" (click)="resetFilters()">Réinitialiser</button>
+      <app-export-buttons [build]="exportNotes" [disabled]="!filteredNotes.length" label="les notes filtrées"></app-export-buttons>
     </div>
   </div>
 

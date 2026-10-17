@@ -9,6 +9,10 @@ import { downloadBlob } from '../../shared/download';
 import { locale } from '../../../state/i18n/i18n.service';
 import { ConfirmService } from '../../../state/ui/confirm.service';
 import { httpErrorMessage } from '../../shared/http-error';
+import { ExportButtonsComponent } from '../../components/export-buttons/export-buttons.component';
+import { ExportDoc } from '../../../state/export/table-export.service';
+import { SearchHintComponent } from '../../components/search-hint/search-hint.component';
+import { searchTerms, matchesAll, matchQuery, listExportDoc } from '../../shared/multi-search';
 interface CompanyRow {
   companyId:   string;
   companyName: string;
@@ -18,7 +22,7 @@ interface CompanyRow {
 @Component({
     selector: 'app-charges',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, ExportButtonsComponent, SearchHintComponent],
     templateUrl: './charges.component.html',
     styleUrls: ['./charges.component.scss']
 })
@@ -43,18 +47,32 @@ export class ChargesComponent implements OnInit {
   hasFilters = computed(() => !!(this.fSearch().trim() || this.fFrom() || this.fTo() || this.fMin() != null || this.fMax() != null));
 
   shownCharges = computed(() => {
-    const q = this._norm(this.fSearch()), from = this.fFrom(), to = this.fTo(), min = this.fMin(), max = this.fMax();
-    // Un nombre tapé dans le mot-clé trouve aussi le montant (« 1200 » ou « 1200,50 »)
-    const qAmount = q.replace(/\s/g, '').replace(',', '.');
+    const terms = searchTerms(this.fSearch()), from = this.fFrom(), to = this.fTo(), min = this.fMin(), max = this.fMax();
     return this.charges().filter(c => {
       if (from && c.chargeDate < from) return false;
       if (to && c.chargeDate > to) return false;
       if (min != null && c.amount < min) return false;
       if (max != null && c.amount > max) return false;
-      if (!q) return true;
-      const text = this._norm([c.title, c.description ?? '', ...c.companies.map(co => co.companyName), ...c.documents.map(d => d.originalName)].join(' '));
-      return text.includes(q) || (qAmount !== '' && !isNaN(Number(qAmount)) && c.amount.toFixed(2).includes(qAmount));
+      // Critères « & » (ET) / « | » (OU) (tous requis) ; un nombre trouve aussi le montant (« 1200 » ou « 1200,50 »)
+      return matchQuery(terms, t => {
+        const amount = t.replace(/\s/g, '').replace(',', '.');
+        return matchesAll([[t]], c.title, c.description ?? '', c.companies.map(co => co.companyName), c.documents.map(d => d.originalName))
+          || (amount !== '' && !isNaN(Number(amount)) && c.amount.toFixed(2).includes(amount));
+      });
     });
+  });
+
+  /** Export des charges affichées (tous les critères appliqués). */
+  exportCharges = (): ExportDoc => listExportDoc({
+    name: 'Charges', title: 'Charges', search: this.fSearch(),
+    extra: [this.fFrom() && `Du ${this.fFrom()}`, this.fTo() && `au ${this.fTo()}`,
+            this.fMin() != null && `min. ${this.fMin()} $`, this.fMax() != null && `max. ${this.fMax()} $`].filter(Boolean).join(' '),
+    columns: [{ header: 'Date', width: 12 }, { header: 'Titre', width: 30 }, { header: 'Description', width: 36 },
+              { header: 'Compagnies', width: 40 }, { header: 'Montant', type: 'money' }, { header: 'Documents', type: 'int' }],
+    rows: this.shownCharges().map(c => [
+      (c.chargeDate ?? '').slice(0, 10), c.title, c.description ?? '',
+      c.companies.map(co => `${co.companyName} (${co.percentage} %)`).join(', '), c.amount, c.documents.length]),
+    landscape: true,
   });
 
   /** Total des charges affichées (montants tels que saisis). */
@@ -67,11 +85,6 @@ export class ChargesComponent implements OnInit {
 
   resetFilters(): void {
     this.fSearch.set(''); this.fFrom.set(''); this.fTo.set(''); this.fMin.set(null); this.fMax.set(null);
-  }
-
-  /** Minuscules, sans accents (« electricite » trouve « Électricité »). */
-  private _norm(s: string): string {
-    return (s ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
   }
 
   // ── Modal (création / édition) ───────────────────────────────────────────

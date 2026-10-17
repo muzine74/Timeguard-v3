@@ -9,11 +9,15 @@ import { CredentialsService, CredentialResponse } from '../../../state/auth/cred
 import { EmployeesService }       from '../../../state/employees/employees.service';
 import { GroupsService, GroupSummary } from '../../../state/groups/groups.service';
 import { httpErrorMessage } from '../../shared/http-error';
+import { ExportButtonsComponent } from '../../components/export-buttons/export-buttons.component';
+import { ExportDoc } from '../../../state/export/table-export.service';
+import { SearchHintComponent } from '../../components/search-hint/search-hint.component';
+import { multiMatch, listExportDoc } from '../../shared/multi-search';
 
 @Component({
     selector: 'app-employee-credentials',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, ExportButtonsComponent, SearchHintComponent],
     templateUrl: './employee-credentials.component.html',
     styleUrls: ['./employee-credentials.component.scss']
 })
@@ -52,12 +56,16 @@ export class EmployeeCredentialsComponent implements OnInit {
   search      = signal('');
 
   filtered = computed(() => {
-    const q = this.search().toLowerCase();
-    return q
-      ? this.credentials().filter(c =>
-          c.username.toLowerCase().includes(q) ||
-          c.employeeName.toLowerCase().includes(q))
-      : this.credentials();
+    // Critères « & » (ET) / « | » (OU) : nom, identifiant, groupe
+    const q = this.search();
+    return this.credentials().filter(c => multiMatch(q, c.username, c.employeeName, c.groups));
+  });
+
+  /** Export des identifiants affichés (aucun mot de passe). */
+  exportCredentials = (): ExportDoc => listExportDoc({
+    name: 'Identifiants_employes', title: 'Identifiants employés', search: this.search(),
+    columns: [{ header: 'Employé', width: 30 }, { header: 'Identifiant', width: 24 }, { header: 'Groupes', width: 40 }],
+    rows: this.filtered().map(c => [c.employeeName || '', c.username, c.groups.join(', ')]),
   });
 
   constructor(

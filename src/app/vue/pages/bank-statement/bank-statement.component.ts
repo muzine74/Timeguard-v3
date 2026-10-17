@@ -8,6 +8,10 @@ import { TableSort, SortValue } from '../../shared/table-sort';
 import { MultiSelectComponent, MultiSelectOption } from '../../components/multi-select/multi-select.component';
 import { httpErrorMessage } from '../../shared/http-error';
 import { locale } from '../../../state/i18n/i18n.service';
+import { ExportButtonsComponent } from '../../components/export-buttons/export-buttons.component';
+import { SearchHintComponent } from '../../components/search-hint/search-hint.component';
+import { ExportDoc } from '../../../state/export/table-export.service';
+import { searchTerms, matchesAll, listExportDoc, kw } from '../../shared/multi-search';
 
 type Column = 'date' | 'description' | 'withdrawal' | 'deposit' | 'linkName' | 'validated';
 const COLUMNS: Column[] = ['date', 'description', 'withdrawal', 'deposit', 'linkName', 'validated'];
@@ -23,7 +27,7 @@ const MAX_SIZE = 5 * 1024 * 1024;
 @Component({
     selector: 'app-bank-statement',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule, MultiSelectComponent, BankLexiconComponent],
+    imports: [CommonModule, FormsModule, MultiSelectComponent, BankLexiconComponent, ExportButtonsComponent, SearchHintComponent],
     templateUrl: './bank-statement.component.html',
     styleUrls: ['./bank-statement.component.scss']
 })
@@ -94,19 +98,28 @@ export class BankStatementComponent implements OnInit {
              linkName: build('linkName').map(o => o.id === EMPTY ? { ...o, label: '(aucun lien)' } : o), validated: VALIDATED_OPTIONS };
   });
 
-  /** Mot-clé dans n'importe quelle colonne (ET entre les mots) + valeurs cochées (OU dans une colonne, ET entre colonnes). */
+  /** Critères « & » (ET) / « | » (OU) dans n'importe quelle colonne (ET) + valeurs cochées (OU dans une colonne, ET entre colonnes). */
   filtered = computed(() => {
-    const words = this._norm(this.search()).split(' ').filter(Boolean);
+    const terms = searchTerms(this.search());
     const picked = this.picked();
     return this._rows().filter(r => {
       for (const c of COLUMNS) if (picked[c].length && !picked[c].includes(this._id(r, c))) return false;
-      if (!words.length) return true;
+      if (!terms.length) return true;
       // Montants : tels qu'affichés (« 1 943,08 $ »), sans espace (« 1943,08 ») et bruts (« 1943.08 »)
       const amounts = [r.withdrawal, r.deposit].flatMap(a => a == null ? [] : [this.fmt(a), this.fmt(a).replace(/\s/g, ''), String(a)]);
-      const text = this._norm([r.date, r.description, ...amounts, r.validated ? 'validée' : 'non validée',
-                               r.linkName ?? '', r.linkType ? LINK_LABEL[r.linkType] : ''].join(' '));
-      return words.every(w => text.includes(w));
+      return matchesAll(terms, r.date, r.description, amounts, kw(r.validated ? 'validée' : 'non validée'),
+                        r.linkName ?? '', r.linkType ? LINK_LABEL[r.linkType] : '');
     });
+  });
+
+  /** Export des lignes filtrées, dans l'ordre de tri affiché (toutes les pages). */
+  exportRows = (): ExportDoc => listExportDoc({
+    name: 'Releve_bancaire', title: 'Relevé bancaire', search: this.search(),
+    extra: [this.dateFrom && `Du ${this.dateFrom}`, this.dateTo && `au ${this.dateTo}`].filter(Boolean).join(' '),
+    columns: [{ header: 'Date', width: 12 }, { header: 'Description', width: 44 }, { header: 'Retrait', type: 'money' },
+              { header: 'Dépôt', type: 'money' }, { header: 'Lié à', width: 28 }, { header: 'Validée', width: 10 }],
+    rows: this.sorted().map(r => [r.date, r.description, r.withdrawal, r.deposit, r.linkName ?? '', r.validated ? 'Oui' : 'Non']),
+    landscape: true,
   });
 
   sorted = computed(() => this.sort.apply(this.filtered(), (r, k): SortValue => r[k]));
@@ -167,11 +180,6 @@ export class BankStatementComponent implements OnInit {
 
   private _sum(c: 'withdrawal' | 'deposit'): number {
     return Math.round(this.filtered().reduce((s, r) => s + (r[c] ?? 0), 0) * 100) / 100;
-  }
-
-  /** Minuscules, sans accents, espaces insécables et multiples réduits (« 1 943,08 » se trouve avec « 1943,08 » ou « 1 943 »). */
-  private _norm(s: string): string {
-    return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[\u00a0\u202f]/g, ' ').replace(/\s+/g, ' ').trim();
   }
 
   setSearch(v: string): void { this.search.set(v); this.page.set(1); }

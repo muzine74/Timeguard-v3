@@ -10,6 +10,10 @@ import { ConfirmService } from '../../../state/ui/confirm.service';
 import { TelephonyService, CallNumber } from '../../../state/telephony/telephony.service';
 import { httpErrorMessage } from '../../shared/http-error';
 import { AuthService } from '../../../state/auth/auth.service';
+import { ExportButtonsComponent } from '../../components/export-buttons/export-buttons.component';
+import { ExportDoc } from '../../../state/export/table-export.service';
+import { SearchHintComponent } from '../../components/search-hint/search-hint.component';
+import { multiMatch, listExportDoc, kw } from '../../shared/multi-search';
 
 interface CommForm {
   id:        string | null;      // null = nouvelle entrée
@@ -27,7 +31,7 @@ interface CommForm {
 @Component({
     selector: 'app-communications',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule, AttachmentsComponent],
+    imports: [CommonModule, FormsModule, AttachmentsComponent, ExportButtonsComponent, SearchHintComponent],
     templateUrl: './communications.component.html',
     styleUrls: ['./communications.component.scss']
 })
@@ -101,11 +105,23 @@ export class CommunicationsComponent implements OnInit, OnDestroy {
 
   list = computed(() => this.tab() === 'company' ? this.companies() : this.employees());
 
-  /** Éléments affichés : recherche par nom ; les désactivés sans historique sont masqués par défaut. */
+  /** Éléments affichés : critères « & » (ET) / « | » (OU) (nom, « actif » / « désactivé ») ; les désactivés sans historique sont masqués par défaut. */
   shownTargets = computed(() => {
-    const q = this._norm(this.search()), all = this.showInactive();
-    return this.list().filter(t => (all || t.isActive || t.count > 0) && (!q || this._norm(t.name).includes(q)));
+    const q = this.search(), all = this.showInactive();
+    return this.list().filter(t => (all || t.isActive || t.count > 0) && multiMatch(q, t.name, t.isActive ? kw('actif') : [kw('inactif'), kw('désactivé')]));
   });
+
+  exportTargets = (): ExportDoc => {
+    const company = this.tab() === 'company';
+    return listExportDoc({
+      name: company ? 'Communications_compagnies' : 'Communications_employes',
+      title: company ? 'Communications — compagnies' : 'Communications — employés', search: this.search(),
+      columns: [{ header: company ? 'Compagnie' : 'Employé', width: 36 }, { header: 'État', width: 12 },
+                { header: 'Entrées', type: 'int' }, { header: 'Dernière entrée', width: 18 }],
+      rows: this.shownTargets().map(t => [t.name, t.isActive ? 'Actif' : 'Désactivé', t.count,
+                                          t.lastAt ? new Date(t.lastAt).toLocaleString('fr-CA', { dateStyle: 'short', timeStyle: 'short' }) : '']),
+    });
+  };
 
   hasFilters = computed(() => !!(this.fChannel() || this.fSource() || this.fFrom() || this.fTo()));
 
@@ -533,11 +549,6 @@ export class CommunicationsComponent implements OnInit, OnDestroy {
   }
   trackTarget(_: number, t: CommTarget): string { return t.id; }
   trackItem(_: number, i: Communication): string { return i.id; }
-
-  /** Minuscules, sans accents ni espaces autour (« Hotel » trouve « Hôtel »). */
-  private _norm(s: string): string {
-    return (s ?? '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
-  }
 
   /** Jour local (yyyy-MM-dd) d'une date ISO UTC, pour le filtre de période. */
   private _localDay(iso: string): string {

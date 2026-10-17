@@ -6,8 +6,12 @@
   <div class="search-box">
     <span class="search-icon" aria-hidden="true">🔍</span>
     <input type="search" class="search-inp" placeholder="Rechercher un employé…"
-           aria-label="Rechercher un employé"
+           aria-label="Rechercher un employé" aria-describedby="elp-search-hint"
            [value]="searchQuery()" (input)="onSearch($event)" />
+  </div>
+  <div class="search-meta elp-meta">
+    <app-search-hint hintId="elp-search-hint" />
+    <app-export-buttons [build]="exportEmployees" [disabled]="loading || !filteredEmployees.length" label="la liste des employés"></app-export-buttons>
   </div>
 
   <!-- Filtre par état de l'employé (combiné avec la recherche et la validation) -->

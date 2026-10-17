@@ -12,6 +12,8 @@ import { ExportCell, ExportDoc, ExportRow, TableExportService } from '../../../s
 
 import { downloadBlob } from '../../shared/download';
 import { httpErrorMessage } from '../../shared/http-error';
+import { SearchHintComponent } from '../../components/search-hint/search-hint.component';
+import { searchTerms, matchesAll, kw, searchLabel, SearchQuery } from '../../shared/multi-search';
 type BillSortKey = 'num' | 'company' | 'period' | 'date' | 'ttc' | 'sent' | 'paid';
 const SORT_LABELS: Record<BillSortKey, string> = {
   num: 'N° facture', company: 'Compagnie', period: 'Période', date: 'Date', ttc: 'Total TTC', sent: 'Statut envoi', paid: 'Paiement',
@@ -32,7 +34,7 @@ interface FlatRow {
 @Component({
     selector: 'app-invoice-manage',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule, ExportButtonsComponent],
+    imports: [CommonModule, FormsModule, ExportButtonsComponent, SearchHintComponent],
     templateUrl: './invoice-manage.component.html',
     styleUrls: ['./invoice-manage.component.scss']
 })
@@ -61,9 +63,32 @@ export class InvoiceManageComponent implements OnInit {
     return map;
   });
 
-  private _unsortedRoots = computed(() =>
-    [...this._nodeMap().values()].filter(n => !n.data.parentBillIdentifier)
-  );
+  /**
+   * Recherche multicritères (« & » = ET, « | » = OU), faite ici sur la liste chargée : une facture est
+   * gardée si elle ou l'un de ses avoirs correspond ; ses avoirs restent affichés sous elle.
+   */
+  private _unsortedRoots = computed(() => {
+    const terms = searchTerms(this.search());
+    const roots = [...this._nodeMap().values()].filter(n => !n.data.parentBillIdentifier);
+    if (!terms.length) return roots;
+    const hit = (n: BillTreeNode): boolean => this._matches(terms, n.data) || n.children.some(hit);
+    return roots.filter(hit);
+  });
+
+  private _matches(terms: SearchQuery, b: BillSummary): boolean {
+    const money = (v: number) => [v.toFixed(2), v.toFixed(2).replace('.', ',')];
+    return matchesAll(terms, b.billNumber, b.companyName, b.companyCode, b.period, (b.billedDate ?? '').slice(0, 10), b.note,
+      money(b.totalBeforeTax), money(b.totalWithTax),
+      kw(b.isSent ? 'envoyée' : 'non envoyée'), b.parentBillIdentifier !== null ? kw('avoir') : kw(b.isPaid ? 'payée' : 'impayée'));
+  }
+
+  /** Factures et avoirs affichés (après recherche), pour les compteurs et les totaux de l'export. */
+  shownBills = computed(() => {
+    const out: BillSummary[] = [];
+    const walk = (n: BillTreeNode) => { out.push(n.data); n.children.forEach(walk); };
+    this._unsortedRoots().forEach(walk);
+    return out;
+  });
 
   /** Tri au clic sur l'en-tête, appliqué à toute la liste avant la pagination.
    *  Les avoirs restent sous leur facture d'origine. */
@@ -100,7 +125,7 @@ export class InvoiceManageComponent implements OnInit {
       }
     };
     walk(this.rootNodes(), 0);
-    const all = this.bills();
+    const all = this.shownBills();
     const sum = (k: 'totalBeforeTax' | 'tps' | 'tvq' | 'totalWithTax') => Math.round(all.reduce((t, b) => t + b[k], 0) * 100) / 100;
     const nf = this.rootNodes().length, na = all.length - nf;
     rows.push({ kind: 'total', cells: [`Total : ${nf} facture(s), ${na} avoir(s)`, '', '', '', sum('totalBeforeTax'), sum('tps'), sum('tvq'), sum('totalWithTax'), '', ''] });
@@ -123,7 +148,7 @@ export class InvoiceManageComponent implements OnInit {
 
   private _filterLabel(): string {
     const parts: string[] = [];
-    if (this.search?.trim()) parts.push(`Recherche « ${this.search.trim()} »`);
+    if (searchLabel(this.search())) parts.push(searchLabel(this.search()));
     const st = [this.onlyNotSent && 'non envoyées', this.onlySent && 'envoyées', this.onlyPaid && 'payées', this.onlyUnpaid && 'impayées'].filter(Boolean);
     if (st.length) parts.push(`Statut : ${st.join(', ')}`);
     if (this.dateFrom || this.dateTo) parts.push(`Du ${this.dateFrom || '…'} au ${this.dateTo || '…'}`);
@@ -216,7 +241,8 @@ export class InvoiceManageComponent implements OnInit {
   }
 
   // ── Filtres ───────────────────────────────────────────
-  search      = '';
+  /** Recherche locale (signal : lue par les computed de l'arborescence). */
+  search      = signal('');
   onlyNotSent = true;
   onlySent    = true;
   onlyPaid    = true;
@@ -280,7 +306,6 @@ export class InvoiceManageComponent implements OnInit {
     this.currentPage.set(1);
 
     const filter: BillFilter = {
-      search:      this.search      || undefined,
       onlyNotSent: this.onlyNotSent || undefined,
       onlySent:    this.onlySent    || undefined,
       onlyPaid:    this.onlyPaid    || undefined,

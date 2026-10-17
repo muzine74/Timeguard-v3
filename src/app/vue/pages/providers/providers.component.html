@@ -22,8 +22,12 @@
 
     <!-- Recherche -->
     <div class="sidebar-search-wrap">
-      <input class="sidebar-search" type="text" placeholder="Rechercher…"
+      <input class="sidebar-search" type="search" placeholder="Rechercher…" aria-label="Rechercher un provider" aria-describedby="prov-search-hint"
              [(ngModel)]="search" />
+      <div class="search-meta">
+        <app-search-hint hintId="prov-search-hint" />
+        <app-export-buttons [build]="exportTenants" [disabled]="tenantSvc.loading() || !filteredTenants.length" label="la liste des providers"></app-export-buttons>
+      </div>
     </div>
 
     <!-- Filtres Tous / Actifs / Inactifs -->

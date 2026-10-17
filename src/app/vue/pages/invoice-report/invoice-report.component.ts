@@ -9,13 +9,15 @@ import { ExportDoc, TableExportService } from '../../../state/export/table-expor
 
 import { downloadBlob } from '../../shared/download';
 import { httpErrorMessage } from '../../shared/http-error';
+import { SearchHintComponent } from '../../components/search-hint/search-hint.component';
+import { multiMatch, kw } from '../../shared/multi-search';
 type FilterMode = 'date' | 'period';
 type ExportType = 'summary' | 'merged' | 'zip' | 'excel' | 'csv';
 
 @Component({
     selector: 'app-invoice-report',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, SearchHintComponent],
     templateUrl: './invoice-report.component.html',
     styleUrls: ['./invoice-report.component.scss']
 })
@@ -188,10 +190,9 @@ export class InvoiceReportComponent {
   closeCompanyPopup(): void { this.companyPopupOpen.set(false); }
 
   get filteredCompanies(): string[] {
-    const q = this.companySearch.toLowerCase();
-    return q
-      ? this.availableCompanies().filter(n => n.toLowerCase().includes(q))
-      : this.availableCompanies();
+    // Critères « & » (ET) / « | » (OU) : nom, « sélectionnée » / « non sélectionnée »
+    return this.availableCompanies().filter(n =>
+      multiMatch(this.companySearch, n, kw(this.isCompanySelected(n) ? 'sélectionnée' : 'non sélectionnée')));
   }
 
   // ── Actions tableau ───────────────────────────────────────────────────

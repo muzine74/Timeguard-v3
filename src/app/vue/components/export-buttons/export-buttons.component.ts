@@ -69,7 +69,8 @@ const FORMATS: { id: ExportFormat; label: string; hint: string; icon: string }[]
   `]
 })
 export class ExportButtonsComponent {
-  @Input({ required: true }) build!: () => ExportDoc;
+  /** Peut être asynchrone (ex. charger toutes les pages d'une recherche faite par l'API). */
+  @Input({ required: true }) build!: () => ExportDoc | Promise<ExportDoc>;
   @Input() disabled = false;
   /** Complément des libellés lus par les lecteurs d'écran (« Exporter <label> »). */
   @Input() label = 'le tableau';
@@ -125,7 +126,7 @@ export class ExportButtonsComponent {
     this.error.set('');
     this.busy.set(kind);
     try {
-      const doc = this.build();
+      const doc = await this.build();
       if (kind === 'excel')    await this.exporter.toExcel(doc);
       else if (kind === 'pdf') await this.exporter.toPdf(doc);
       else                     this.exporter.toCsv(doc);

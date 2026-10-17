@@ -10,11 +10,16 @@ import { TeamAssignmentComponent } from '../../components/team-assignment/team-a
 import { CredentialsService } from '../../../state/auth/credentials.service';
 import { Employee, EmployeeFile, EmployeeForm } from '../../../models';
 import { httpErrorMessage } from '../../shared/http-error';
+import { ExportButtonsComponent } from '../../components/export-buttons/export-buttons.component';
+import { ExportDoc } from '../../../state/export/table-export.service';
+import { SearchHintComponent } from '../../components/search-hint/search-hint.component';
+import { multiMatch } from '../../shared/multi-search';
+import { employeeSearchFields, employeesExportDoc } from '../../shared/entity-search';
 
 @Component({
     selector: 'app-employee-edit',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule, RouterLink, TeamAssignmentComponent],
+    imports: [CommonModule, FormsModule, RouterLink, TeamAssignmentComponent, ExportButtonsComponent, SearchHintComponent],
     templateUrl: './employee-edit.component.html',
     styleUrls: ['./employee-edit.component.scss']
 })
@@ -48,8 +53,8 @@ export class EmployeeEditComponent implements OnInit {
 
   /** Employés correspondant à la recherche, tous états confondus (base des compteurs). */
   private get queryMatches(): Employee[] {
-    const q = this.searchQuery.trim().toLowerCase();
-    return this.empSvc.list().filter(e => !q || e.employeeName.toLowerCase().includes(q));
+    // Critères « & » (ET) / « | » (OU) : nom, courriel, téléphone, ville, chef…
+    return this.empSvc.list().filter(e => multiMatch(this.searchQuery, employeeSearchFields(e)));
   }
 
   get activeCounts(): { all: number; active: number; inactive: number } {
@@ -62,6 +67,10 @@ export class EmployeeEditComponent implements OnInit {
     const a = this.activeFilter;
     return this.queryMatches.filter(e => a === 'all' || (a === 'active') === !!e.isActive);
   }
+
+  exportEmployees = (): ExportDoc => employeesExportDoc(this.filteredEmployees, {
+    name: 'Employes', title: 'Employés', search: this.searchQuery,
+    extra: this.activeFilter === 'active' ? 'Actifs' : this.activeFilter === 'inactive' ? 'Inactifs' : '' });
 
   form: EmployeeForm = this._emptyForm();
 

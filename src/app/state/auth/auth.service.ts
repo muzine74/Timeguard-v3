@@ -71,24 +71,25 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   login(req: LoginRequest) {
-    return this.http.post<LoginResponse>('/api/auth/login', req).pipe(
-      tap(res => {
-        localStorage.setItem(TOKEN_KEY, res.token);
+    return this.http.post<LoginResponse>('/api/auth/login', req).pipe(tap(res => this.applySession(res)));
+  }
 
-        const empId = res.employeeId ?? this._decodeEmployeeId(res.token);
+  /** Enregistre une session reçue de l'API : connexion, ou bascule vers un compte relié (« Mes entreprises »). */
+  applySession(res: LoginResponse): void {
+    localStorage.setItem(TOKEN_KEY, res.token);
 
-        const u: User = {
-          username:    res.username,
-          permissions: res.permissions ?? [],
-          employeeId:  empId,
-          tenantId:    res.tenantId    ?? '',
-          tenantSlug:  res.tenantSlug  ?? '',
-          isSuperUser: res.isSuperUser ?? false,
-        };
-        localStorage.setItem(USER_KEY, JSON.stringify(u));
-        this._user.set(u);
-      })
-    );
+    const empId = res.employeeId ?? this._decodeEmployeeId(res.token);
+
+    const u: User = {
+      username:    res.username,
+      permissions: res.permissions ?? [],
+      employeeId:  empId,
+      tenantId:    res.tenantId    ?? '',
+      tenantSlug:  res.tenantSlug  ?? '',
+      isSuperUser: res.isSuperUser ?? false,
+    };
+    localStorage.setItem(USER_KEY, JSON.stringify(u));
+    this._user.set(u);
   }
 
   logout(): void {

@@ -86,10 +86,11 @@
                    (change)="toggleAllCompanies()" />
             <span>Tout sélectionner</span>
           </label>
-          <input class="popup-search" type="text"
-                 [(ngModel)]="companySearch"
+          <input class="popup-search" type="search"
+                 [(ngModel)]="companySearch" aria-label="Rechercher une compagnie" aria-describedby="ir-search-hint"
                  placeholder="Rechercher…" />
         </div>
+        <div class="popup-hint"><app-search-hint hintId="ir-search-hint" /></div>
 
         <div class="popup-list">
           <label class="popup-item" *ngFor="let name of filteredCompanies">

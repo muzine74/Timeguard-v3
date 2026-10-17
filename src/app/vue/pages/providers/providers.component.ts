@@ -6,6 +6,10 @@ import { TenantService, TenantSummary, TenantDetail, TenantEmployeeItem } from '
 import { AuthService } from '../../../state/auth/auth.service';
 import { ConfirmService } from '../../../state/ui/confirm.service';
 import { httpErrorMessage } from '../../shared/http-error';
+import { ExportButtonsComponent } from '../../components/export-buttons/export-buttons.component';
+import { ExportDoc } from '../../../state/export/table-export.service';
+import { SearchHintComponent } from '../../components/search-hint/search-hint.component';
+import { multiMatch, kw, listExportDoc } from '../../shared/multi-search';
 import { TenantPermissionsComponent } from './tenant-permissions/tenant-permissions.component';
 
 type StatusFilter = 'all' | 'active' | 'inactive';
@@ -13,7 +17,7 @@ type StatusFilter = 'all' | 'active' | 'inactive';
 @Component({
     selector: 'app-providers',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule, RouterLink, TenantPermissionsComponent],
+    imports: [CommonModule, FormsModule, RouterLink, TenantPermissionsComponent, ExportButtonsComponent, SearchHintComponent],
     templateUrl: './providers.component.html',
     styleUrls: ['./providers.component.scss']
 })
@@ -27,14 +31,21 @@ export class ProvidersComponent implements OnInit {
   loadingDetail = signal(false);
 
   get filteredTenants(): TenantSummary[] {
-    const q   = this.search.toLowerCase();
     const sf  = this.statusFilter();
     return this.tenantSvc.list().filter(t => {
       const matchStatus = sf === 'all' || (sf === 'active' ? t.isActive : !t.isActive);
-      const matchSearch = !q || t.name.toLowerCase().includes(q) || t.slug.toLowerCase().includes(q);
-      return matchStatus && matchSearch;
+      // Critères « & » (ET) / « | » (OU) : nom, identifiant, forfait, « actif » / « inactif »
+      return matchStatus && multiMatch(this.search, t.name, t.slug, t.plan, this.planLabel(t.plan), kw(t.isActive ? 'actif' : 'inactif'));
     });
   }
+
+  exportTenants = (): ExportDoc => listExportDoc({
+    name: 'Providers', title: 'Providers', search: this.search,
+    columns: [{ header: 'Nom', width: 30 }, { header: 'Identifiant', width: 20 }, { header: 'Forfait', width: 14 },
+              { header: 'Employés', type: 'int' }, { header: 'Créé le', width: 12 }, { header: 'État', width: 10 }],
+    rows: this.filteredTenants.map(t => [t.name, t.slug, this.planLabel(t.plan), t.employeeCount,
+                                          (t.createdAt ?? '').slice(0, 10), t.isActive ? 'Actif' : 'Inactif']),
+  });
 
   // ── Formulaire nouveau provider ───────────────────────────────────────────
   showNewForm   = signal(false);

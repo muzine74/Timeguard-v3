@@ -80,8 +80,9 @@
       <div class="tools" *ngIf="l.rows.length" role="search" aria-label="Recherche et filtres des lignes du relevé">
         <div class="field search-field">
           <label for="bank-search">Recherche</label>
-          <input id="bank-search" class="inp" type="search" placeholder="Mot-clé dans toutes les colonnes…"
+          <input id="bank-search" class="inp" type="search" placeholder="Mot-clé dans toutes les colonnes…" aria-describedby="bank-search-hint"
                  [ngModel]="search()" (ngModelChange)="setSearch($event)" />
+          <app-search-hint hintId="bank-search-hint" />
         </div>
         <div class="field">
           <span class="lbl" id="bank-f-date">Date</span>
@@ -114,6 +115,7 @@
                             (selectedChange)="setPicked('validated', $event)" placeholder="Toutes" plural="états"></app-multi-select>
         </div>
         <button type="button" class="btn btn-outline" *ngIf="hasFilters()" (click)="resetFilters()">Réinitialiser</button>
+        <app-export-buttons [build]="exportRows" [disabled]="!filtered().length" label="les lignes du relevé filtrées"></app-export-buttons>
       </div>
 
       <div class="msg msg-err" role="alert" *ngIf="validateError()">⚠ {{ validateError() }}</div>

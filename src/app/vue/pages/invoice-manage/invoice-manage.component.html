@@ -8,7 +8,7 @@
   <header class="page-hdr">
     <div>
       <h1 class="page-title">Gestion des factures</h1>
-      <p class="page-sub">{{ rootNodes().length }} facture(s) — {{ bills().length - rootNodes().length }} avoir(s) — page {{ currentPage() }}/{{ totalPages() }}</p>
+      <p class="page-sub">{{ rootNodes().length }} facture(s) — {{ shownBills().length - rootNodes().length }} avoir(s) — page {{ currentPage() }}/{{ totalPages() }}</p>
     </div>
     <div class="page-actions">
       <app-export-buttons [build]="exportBills" [disabled]="loading() || rootNodes().length === 0" label="la liste des factures"></app-export-buttons>
@@ -18,7 +18,11 @@
 
   <!-- Filtres -->
   <div class="filters-bar">
-    <input class="inp inp-search" [(ngModel)]="search" placeholder="Rechercher par compagnie, numéro, montant..." (keyup.enter)="loadBills()" />
+    <div class="search-wrap">
+      <input class="inp inp-search" type="search" [ngModel]="search()" (ngModelChange)="search.set($event); currentPage.set(1)"
+             placeholder="Rechercher par compagnie, numéro, montant..." aria-label="Rechercher des factures" aria-describedby="im-search-hint" />
+      <app-search-hint hintId="im-search-hint" />
+    </div>
 
     <label class="filter-chk"><input type="checkbox" [(ngModel)]="onlyNotSent" (change)="loadBills()" /> Non envoyées</label>
     <label class="filter-chk"><input type="checkbox" [(ngModel)]="onlySent"    (change)="loadBills()" /> Envoyées</label>

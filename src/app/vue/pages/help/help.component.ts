@@ -4,15 +4,16 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../state/auth/auth.service';
 import { DASHBOARD_PERMS } from '../../../state/auth/auth.guard';
 import { PERM, PermKey } from '../../../state/auth/permissions';
+import { ExportButtonsComponent } from '../../components/export-buttons/export-buttons.component';
+import { ExportDoc } from '../../../state/export/table-export.service';
+import { SearchHintComponent } from '../../components/search-hint/search-hint.component';
+import { searchTerms, matchesAll, listExportDoc } from '../../shared/multi-search';
 
 /** Raccourci vers une page décrite par une section (mêmes libellés et mêmes permissions que la barre de menus). */
 interface HelpLink { label: string; link: string; perms: readonly PermKey[]; }
 
 /** Section du guide. `perms` : affichée si l'utilisateur a AU MOINS UNE de ces permissions (vide = tout le monde). */
 interface HelpSection { id: string; title: string; perms: readonly PermKey[]; links?: readonly HelpLink[]; }
-
-/** Texte comparable pour la recherche : minuscules, sans accents. */
-const norm = (s: string): string => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
 /**
  * Guide utilisateur. La page est ouverte à tous les utilisateurs connectés, mais chaque section ne s'affiche
@@ -23,7 +24,7 @@ const norm = (s: string): string => s.toLowerCase().normalize('NFD').replace(/[�
 @Component({
     selector: 'app-help',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, RouterLink],
+    imports: [CommonModule, RouterLink, ExportButtonsComponent, SearchHintComponent],
     templateUrl: './help.component.html',
     styleUrls: ['./help.component.scss']
 })
@@ -209,22 +210,30 @@ export class HelpComponent {
 
   // ── Recherche dans le guide ──────────────────────────────────────────────
   readonly query = signal('');
-  /** Sections dont le texte contient tous les mots cherchés (null = pas de recherche). */
+  /** Sections dont le texte contient les critères (« & » = ET, « | » = OU) ; null = pas de recherche. */
   private readonly _hits = signal<Set<string> | null>(null);
 
   onSearch(value: string): void {
     this.query.set(value);
-    const words = norm(value).split(/\s+/).filter(Boolean);
-    if (!words.length) { this._hits.set(null); return; }
+    const terms = searchTerms(value);
+    if (!terms.length) { this._hits.set(null); return; }
     const hits = new Set<string>();
     for (const s of this.sections()) {
       // Le texte est lu dans la page : une section masquée par la recherche précédente reste lisible.
-      const text = norm(document.getElementById(s.id)?.textContent ?? '');
-      if (words.every(w => text.includes(w))) hits.add(s.id);
+      if (matchesAll(terms, document.getElementById(s.id)?.textContent ?? '')) hits.add(s.id);
     }
     this._hits.set(hits);
   }
   clearSearch(): void { this.onSearch(''); }
+
+  /** Export des sections trouvées (toutes sans recherche) : titre + texte de la section. */
+  exportSections = (): ExportDoc => listExportDoc({
+    name: 'Guide', title: "Guide d'utilisation", search: this.query(),
+    columns: [{ header: 'Section', width: 30 }, { header: 'Contenu', width: 100 }],
+    rows: this.tocSections().map(s => [s.title,
+      (document.getElementById(s.id)?.textContent ?? '').replace(/\s+/g, ' ').trim().slice(0, 30000)]),
+    landscape: true,
+  });
 
   readonly searching = computed(() => this._hits() !== null);
   hit(id: string): boolean { return this._hits()?.has(id) ?? true; }

@@ -104,8 +104,12 @@
             Employés assignés
             <span class="section-count">{{ formEmpIds().length }}</span>
           </div>
-          <input class="inp inp-search" placeholder="Rechercher un employé…"
+          <input class="inp inp-search" type="search" placeholder="Rechercher un employé…" aria-label="Rechercher un employé" aria-describedby="gm-emp-hint"
             [value]="empSearch()" (input)="empSearch.set($any($event.target).value)" />
+          <div class="search-meta">
+            <app-search-hint hintId="gm-emp-hint" />
+            <app-export-buttons [build]="exportEmployees" [disabled]="!filteredEmployees().length" label="les employés filtrés"></app-export-buttons>
+          </div>
           <div class="emp-list">
             <label class="emp-row" *ngFor="let e of filteredEmployees()">
               <input type="checkbox" [checked]="hasEmp(e.employeeId)" (change)="toggleEmp(e.employeeId)" />

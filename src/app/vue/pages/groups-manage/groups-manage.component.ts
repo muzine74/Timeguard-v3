@@ -11,11 +11,16 @@ import {
 import { EmployeesService } from '../../../state/employees/employees.service';
 import { AuthService } from '../../../state/auth/auth.service';
 import { httpErrorMessage } from '../../shared/http-error';
+import { ExportButtonsComponent } from '../../components/export-buttons/export-buttons.component';
+import { ExportDoc } from '../../../state/export/table-export.service';
+import { SearchHintComponent } from '../../components/search-hint/search-hint.component';
+import { multiMatch, kw } from '../../shared/multi-search';
+import { employeeSearchFields, employeesExportDoc } from '../../shared/entity-search';
 
 @Component({
     selector: 'app-groups-manage',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, ExportButtonsComponent, SearchHintComponent],
     templateUrl: './groups-manage.component.html',
     styleUrls: ['./groups-manage.component.scss']
 })
@@ -65,10 +70,19 @@ export class GroupsManageComponent implements OnInit {
   empSet  = computed(() => new Set(this.formEmpIds()));
 
   filteredEmployees = computed(() => {
-    const q = this.empSearch().toLowerCase();
-    const all = this.employeesSvc.list();
-    return q ? all.filter(e => e.employeeName.toLowerCase().includes(q)) : all;
+    // Critères « & » (ET) / « | » (OU) : nom, courriel…, « assigné » / « non assigné » (au groupe)
+    const q = this.empSearch(), ids = new Set(this.formEmpIds());
+    return this.employeesSvc.list().filter(e => multiMatch(q, employeeSearchFields(e), kw(ids.has(e.employeeId) ? 'assigné' : 'non assigné')));
   });
+
+  exportEmployees = (): ExportDoc => {
+    const rows = this.filteredEmployees(), ids = new Set(this.formEmpIds()), name = this.formName() || 'Nouveau groupe';
+    const doc = employeesExportDoc(rows, { name: 'Groupe_' + name, title: 'Groupe ' + name + ' — employés', search: this.empSearch() });
+    const t = doc.tables[0];
+    t.columns.push({ header: 'Dans le groupe', width: 14 });
+    t.rows.forEach((r, i) => r.cells.push(ids.has(rows[i].employeeId) ? 'Oui' : 'Non'));
+    return doc;
+  };
 
   showPanel  = computed(() => this.isNew() || this.selectedId() !== null);
   panelTitle = computed(() => this.isNew() ? 'Nouveau groupe' : this.formName());

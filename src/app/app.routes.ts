@@ -264,6 +264,12 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./vue/pages/team/team.component').then(m => m.TeamComponent)
   },
+  // Mes entreprises : comptes reliés dans plusieurs entreprises et bascule (chacun gère ses propres comptes)
+  {
+    path: 'mes-entreprises',
+    canActivate: [authGuard],
+    loadComponent: () => import('./vue/pages/my-companies/my-companies.component').then(m => m.MyCompaniesComponent)
+  },
   {
     path: 'aide',
     canActivate: [authGuard],

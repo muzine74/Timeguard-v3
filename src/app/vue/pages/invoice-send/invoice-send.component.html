@@ -4,7 +4,11 @@
   <aside class="sidebar">
     <div class="sidebar-hdr">
       <div class="sidebar-title">Factures non envoyées</div>
-      <input class="sidebar-search" [(ngModel)]="search" placeholder="Rechercher..." />
+      <input class="sidebar-search" type="search" [(ngModel)]="search" placeholder="Rechercher..." aria-label="Rechercher une facture" aria-describedby="is-search-hint" />
+      <div class="search-meta">
+        <app-search-hint hintId="is-search-hint" />
+        <app-export-buttons [build]="exportBills" [disabled]="loading() || !filteredBills.length" label="les factures non envoyées"></app-export-buttons>
+      </div>
     </div>
 
     <div class="sidebar-loading" *ngIf="loading()">

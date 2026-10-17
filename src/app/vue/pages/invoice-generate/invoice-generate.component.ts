@@ -11,6 +11,11 @@ import { InvoiceService, BillLine, BillCreatePayload } from '../../../state/invo
 import { ConfigService } from '../../../state/config/config.service';
 import { CompanyForm, SemainePlanning } from '../../../models';
 import { httpErrorMessage } from '../../shared/http-error';
+import { ExportButtonsComponent } from '../../components/export-buttons/export-buttons.component';
+import { ExportDoc } from '../../../state/export/table-export.service';
+import { SearchHintComponent } from '../../components/search-hint/search-hint.component';
+import { multiMatch } from '../../shared/multi-search';
+import { companiesExportDoc } from '../../shared/entity-search';
 import { I18nService } from '../../../state/i18n/i18n.service';
 
 interface PriceGroup {
@@ -28,7 +33,7 @@ interface CompanyPricing {
 @Component({
     selector: 'app-invoice-generate',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule, RouterLink],
+    imports: [CommonModule, FormsModule, RouterLink, ExportButtonsComponent, SearchHintComponent],
     templateUrl: './invoice-generate.component.html',
     styleUrls: ['./invoice-generate.component.scss']
 })
@@ -55,11 +60,12 @@ export class InvoiceGenerateComponent implements OnInit {
   trackByCompanyId(_: number, c: CompanySummary): string { return c.companyId; }
 
   get filteredCompanies(): CompanySummary[] {
-    const q = this.coSearch.toLowerCase();
-    return q
-      ? this.companies().filter(c => c.companyName.toLowerCase().includes(q))
-      : this.companies();
+    // Critères « & » (ET) / « | » (OU)
+    return this.companies().filter(c => multiMatch(this.coSearch, c.companyName));
   }
+
+  exportCompanies = (): ExportDoc => companiesExportDoc(this.filteredCompanies, {
+    name: 'Compagnies_actives', title: 'Compagnies actives', search: this.coSearch });
 
   // ── Formulaire facture ────────────────────────────────
   period        = this._currentPeriod();

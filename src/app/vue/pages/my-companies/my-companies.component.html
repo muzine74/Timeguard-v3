@@ -1,0 +1,64 @@
+<div class="page-wrap">
+
+  <header class="page-hdr">
+    <div>
+      <h1 class="page-title">Mes entreprises</h1>
+      <p class="page-sub">Reliez vos comptes de plusieurs entreprises pour passer de l'une à l'autre sans vous reconnecter</p>
+    </div>
+  </header>
+
+  <div class="msg msg-error" role="alert" *ngIf="error()">{{ error() }}</div>
+  <div class="msg msg-ok" role="status" *ngIf="success()">{{ success() }}</div>
+
+  <!-- ── Comptes reliés ─────────────────────────────────────────────────── -->
+  <section class="card" aria-labelledby="mc-list">
+    <h2 id="mc-list" class="sec-title">Comptes reliés</h2>
+    <p class="card-note" *ngIf="!accounts.hasLinks()">
+      Aucun autre compte n'est relié. Ajoutez-en un ci-dessous : il apparaîtra aussi dans votre menu, en haut à droite.
+    </p>
+    <ul class="acc-list">
+      <li class="acc" *ngFor="let a of accounts.accounts(); trackBy: trackAccount" [class.acc-current]="a.isCurrent">
+        <div class="acc-main">
+          <span class="acc-slug">{{ a.tenantSlug }}</span>
+          <span class="acc-name" *ngIf="a.tenantName && a.tenantName !== a.tenantSlug">{{ a.tenantName }}</span>
+          <span class="acc-user">Utilisateur : {{ a.username }}</span>
+        </div>
+        <div class="acc-actions">
+          <span class="tag tag-current" *ngIf="a.isCurrent">Entreprise actuelle</span>
+          <span class="tag tag-off" *ngIf="a.relinkNeeded">Mot de passe changé : reliez-le de nouveau</span>
+          <span class="tag tag-off" *ngIf="!a.available && !a.relinkNeeded">Indisponible (entreprise ou employé désactivé)</span>
+          <button type="button" class="btn btn-outline btn-sm" *ngIf="a.relinkNeeded" (click)="prefill(a)">Relier de nouveau</button>
+          <button type="button" class="btn btn-primary btn-sm" *ngIf="!a.isCurrent" [disabled]="!a.available || busyId() !== null"
+                  (click)="switchTo(a)">{{ busyId() === a.credentialId ? 'Ouverture…' : 'Basculer' }}</button>
+          <button type="button" class="btn btn-danger" *ngIf="accounts.hasLinks()" [disabled]="busyId() !== null"
+                  (click)="unlink(a)">Retirer le lien</button>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ── Relier un autre compte ─────────────────────────────────────────── -->
+  <section class="card" aria-labelledby="mc-add">
+    <h2 id="mc-add" class="sec-title">Relier un compte d'une autre entreprise</h2>
+    <p class="card-note">
+      Saisissez les informations de connexion de votre compte dans l'autre entreprise. Une fois relié, vos droits
+      dans cette entreprise restent ceux de ce compte, et vous n'y voyez que ses données.
+    </p>
+    <form class="fields" (ngSubmit)="link()" autocomplete="off">
+      <div class="field">
+        <label for="mc-slug">Identifiant entreprise</label>
+        <input id="mc-slug" class="inp" name="tenantSlug" [(ngModel)]="tenantSlug" placeholder="ex. ramssis" autocomplete="off" />
+      </div>
+      <div class="field">
+        <label for="mc-user">Nom d'utilisateur</label>
+        <input id="mc-user" class="inp" name="username" [(ngModel)]="username" autocomplete="off" />
+      </div>
+      <div class="field">
+        <label for="mc-pwd">Mot de passe</label>
+        <input id="mc-pwd" class="inp" type="password" name="password" [(ngModel)]="password" autocomplete="new-password" />
+      </div>
+      <button type="submit" class="btn btn-primary" [disabled]="linking()">{{ linking() ? 'Vérification…' : 'Relier ce compte' }}</button>
+    </form>
+  </section>
+
+</div>

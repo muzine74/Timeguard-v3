@@ -2,6 +2,11 @@ import { Component, ChangeDetectionStrategy, EventEmitter, Input, Output, signal
 import { CommonModule } from '@angular/common';
 import { Employee } from '../../../../models';
 import { InitialsPipe } from '../../../shared/initials.pipe';
+import { ExportButtonsComponent } from '../../../components/export-buttons/export-buttons.component';
+import { SearchHintComponent } from '../../../components/search-hint/search-hint.component';
+import { ExportDoc } from '../../../../state/export/table-export.service';
+import { multiMatch, kw } from '../../../shared/multi-search';
+import { employeeSearchFields, employeesExportDoc } from '../../../shared/entity-search';
 
 export type EmployeeStatusFilter = 'all' | 'pending' | 'validated';
 /** État de l'employé : actifs (par défaut, comportement d'origine), désactivés, ou tous. */
@@ -15,7 +20,7 @@ export type EmployeeActiveFilter = 'all' | 'active' | 'inactive';
 @Component({
     selector: 'app-employee-list-panel',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, InitialsPipe],
+    imports: [CommonModule, InitialsPipe, ExportButtonsComponent, SearchHintComponent],
     templateUrl: './employee-list-panel.component.html',
     styleUrls: ['./employee-list-panel.component.scss']
 })
@@ -33,8 +38,9 @@ export class EmployeeListPanelComponent {
 
   /** Employés correspondant à la recherche, tous états confondus (base des compteurs Tous / Actifs / Désactivés). */
   private get queryMatches(): Employee[] {
-    const q = this.searchQuery().trim().toLowerCase();
-    return this.employees.filter(e => !q || e.employeeName.toLowerCase().includes(q));
+    // Critères « & » (ET) / « | » (OU) : nom, courriel, ville…, « actif » / « inactif », « validé » / « à valider »
+    const q = this.searchQuery();
+    return this.employees.filter(e => multiMatch(q, employeeSearchFields(e), kw(this.isValidated(e.employeeId) ? 'validé' : 'à valider')));
   }
 
   get activeCounts(): { all: number; active: number; inactive: number } {
@@ -72,6 +78,16 @@ export class EmployeeListPanelComponent {
         return a.employeeName.localeCompare(b.employeeName);
       });
   }
+
+  /** Export de la liste affichée (recherche + filtres d'état et de validation). */
+  exportEmployees = (): ExportDoc => {
+    const rows = this.filteredEmployees;
+    const doc = employeesExportDoc(rows, { name: 'Employes', title: 'Employés', search: this.searchQuery() });
+    const t = doc.tables[0];
+    t.columns.push({ header: 'Semaines', width: 12 });
+    t.rows.forEach((r, i) => r.cells.push(this.isValidated(rows[i].employeeId) ? 'Validées' : 'À valider'));
+    return doc;
+  };
 
   onSearch(event: Event): void {
     this.searchQuery.set((event.target as HTMLInputElement).value);

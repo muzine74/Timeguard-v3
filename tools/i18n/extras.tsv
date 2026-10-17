@@ -269,3 +269,89 @@ E	Lier par compagnie	Link by company	Vincular por empresa	Collega per azienda
 E	Les liaisons non sauvegardées seront perdues.	Unsaved links will be lost.	Los vínculos no guardados se perderán.	I collegamenti non salvati andranno persi.
 P	Envoyé par {0}	Sent by {0}	Enviado por {0}	Inviato da {0}
 P	Non envoyé par {0}	Not sent by {0}	No enviado por {0}	Non inviato da {0}
+E	Mes entreprises	My companies	Mis empresas	Le mie aziende
+E	Reliez vos comptes de plusieurs entreprises pour passer de l'une à l'autre sans vous reconnecter	Link your accounts in several companies to switch between them without signing in again	Vincule sus cuentas de varias empresas para pasar de una a otra sin volver a iniciar sesión	Collega i tuoi account di più aziende per passare dall'una all'altra senza accedere di nuovo
+E	Comptes reliés	Linked accounts	Cuentas vinculadas	Account collegati
+E	Aucun autre compte n'est relié. Ajoutez-en un ci-dessous : il apparaîtra aussi dans votre menu, en haut à droite.	No other account is linked. Add one below: it will also appear in your menu, at the top right.	No hay otra cuenta vinculada. Añada una abajo: también aparecerá en su menú, arriba a la derecha.	Nessun altro account collegato. Aggiungine uno qui sotto: comparirà anche nel tuo menu, in alto a destra.
+E	Entreprise actuelle	Current company	Empresa actual	Azienda attuale
+E	Indisponible (entreprise ou employé désactivé)	Unavailable (company or employee disabled)	No disponible (empresa o empleado desactivado)	Non disponibile (azienda o dipendente disattivato)
+E	Indisponible : entreprise ou employé désactivé	Unavailable: company or employee disabled	No disponible: empresa o empleado desactivado	Non disponibile: azienda o dipendente disattivato
+E	Ouverture…	Opening…	Abriendo…	Apertura…
+E	Basculer	Switch	Cambiar	Passa
+E	Retirer le lien	Remove link	Quitar el vínculo	Rimuovi il collegamento
+E	Relier un compte d'une autre entreprise	Link an account from another company	Vincular una cuenta de otra empresa	Collega un account di un'altra azienda
+E	Saisissez les informations de connexion de votre compte dans l'autre entreprise. Une fois relié, vos droits dans cette entreprise restent ceux de ce compte, et vous n'y voyez que ses données.	Enter the sign-in details of your account in the other company. Once linked, your rights in that company remain those of that account, and you only see its data.	Introduzca los datos de inicio de sesión de su cuenta en la otra empresa. Una vez vinculada, sus derechos en esa empresa siguen siendo los de esa cuenta y solo ve sus datos.	Inserisci i dati di accesso del tuo account nell'altra azienda. Una volta collegato, i tuoi diritti in quell'azienda restano quelli di quell'account e vedi solo i suoi dati.
+E	Vérification…	Checking…	Verificando…	Verifica…
+E	Relier ce compte	Link this account	Vincular esta cuenta	Collega questo account
+E	Gérer mes entreprises…	Manage my companies…	Gestionar mis empresas…	Gestisci le mie aziende…
+E	Remplissez les trois champs.	Fill in all three fields.	Complete los tres campos.	Compila i tre campi.
+E	Retirer ce compte des comptes reliés ?	Remove this account from the linked accounts?	¿Quitar esta cuenta de las cuentas vinculadas?	Rimuovere questo account dagli account collegati?
+E	Vous ne pourrez plus basculer vers vos autres entreprises depuis ce compte. Les comptes eux-mêmes ne sont pas supprimés.	You will no longer be able to switch to your other companies from this account. The accounts themselves are not deleted.	Ya no podrá cambiar a sus otras empresas desde esta cuenta. Las cuentas en sí no se eliminan.	Non potrai più passare alle altre aziende da questo account. Gli account stessi non vengono eliminati.
+E	Vous ne pourrez plus y basculer depuis ce compte. Le compte lui-même n'est pas supprimé.	You will no longer be able to switch to it from this account. The account itself is not deleted.	Ya no podrá cambiar a ella desde esta cuenta. La cuenta en sí no se elimina.	Non potrai più passarci da questo account. L'account stesso non viene eliminato.
+P	Utilisateur : {0}	User: {0}	Usuario: {0}	Utente: {0}
+P	Entreprise : {0}	Company: {0}	Empresa: {0}	Azienda: {0}
+P	Basculer vers {0}	Switch to {0}	Cambiar a {0}	Passa a {0}
+P	Ne plus relier le compte de « {0} » ?	Stop linking the account of "{0}"?	¿Dejar de vincular la cuenta de «{0}»?	Non collegare più l'account di «{0}»?
+P	Le compte « {0} » de l'entreprise « {1} » est relié.	The account "{0}" of the company "{1}" is linked.	La cuenta «{0}» de la empresa «{1}» está vinculada.	L'account «{0}» dell'azienda «{1}» è collegato.
+E	Mot de passe changé : reliez-le de nouveau	Password changed: link it again	Contraseña cambiada: vincúlela de nuevo	Password cambiata: collegalo di nuovo
+E	Relier de nouveau	Link again	Vincular de nuevo	Collega di nuovo
+E	Plusieurs critères : séparez-les par « ; »	Several criteria: separate them with “;”	Varios criterios: sepárelos con «;»	Più criteri: separali con «;»
+E	Ex. : dupont; montréal — affiche les lignes contenant les deux	E.g.: dupont; montreal — shows the rows containing both	Ej.: dupont; montreal — muestra las filas que contienen ambos	Es.: dupont; montreal — mostra le righe che contengono entrambi
+E	Date	Date	Fecha	Data
+E	Description	Description	Descripción	Descrizione
+E	Documents	Documents	Documentos	Documenti
+E	Communications — compagnies	Communications — companies	Comunicaciones — empresas	Comunicazioni — aziende
+E	Communications — employés	Communications — employees	Comunicaciones — empleados	Comunicazioni — dipendenti
+E	Entrées	Entries	Entradas	Voci
+E	Dernière entrée	Last entry	Última entrada	Ultima voce
+E	Affectation des compagnies — employés	Company assignment — employees	Asignación de empresas — empleados	Assegnazione delle aziende — dipendenti
+E	Affectation des employés — compagnies	Employee assignment — companies	Asignación de empleados — empresas	Assegnazione dei dipendenti — aziende
+E	Assignée	Assigned	Asignada	Assegnata
+E	Assigné	Assigned	Asignado	Assegnato
+E	Type	Type	Tipo	Tipo
+E	Chef / responsable	Lead / manager	Jefe / responsable	Capo / responsabile
+E	Active	Active	Activa	Attiva
+E	Inactive	Inactive	Inactiva	Inattiva
+E	Semaines	Weeks	Semanas	Settimane
+E	Dans le groupe	In the group	En el grupo	Nel gruppo
+E	Tarifs — employés	Rates — employees	Tarifas — empleados	Tariffe — dipendenti
+E	Providers	Providers	Proveedores	Provider
+E	Forfait	Plan	Plan	Piano
+E	Durée (ms)	Duration (ms)	Duración (ms)	Durata (ms)
+E	Guide d'utilisation	User guide	Guía de uso	Guida all'uso
+E	Section	Section	Sección	Sezione
+E	Contenu	Content	Contenido	Contenuto
+E	Notes	Notes	Notas	Note
+E	Liens	Links	Vínculos	Collegamenti
+E	Auteur	Author	Autor	Autore
+E	Rechercher une compagnie	Search for a company	Buscar una empresa	Cerca un'azienda
+E	Rechercher un identifiant	Search for a credential	Buscar una credencial	Cerca una credenziale
+E	Rechercher une facture	Search for an invoice	Buscar una factura	Cerca una fattura
+E	Rechercher un provider	Search for a provider	Buscar un proveedor	Cerca un provider
+E	Rechercher des factures	Search invoices	Buscar facturas	Cerca fatture
+E	Rechercher par nom, identifiant ou groupe…	Search by name, username or group…	Buscar por nombre, usuario o grupo…	Cerca per nome, nome utente o gruppo…
+E	Rechercher dans le guide (ex. avoir; T4A; mot de passe)…	Search the guide (e.g. credit note; T4A; password)…	Buscar en la guía (ej. abono; T4A; contraseña)…	Cerca nella guida (es. nota di credito; T4A; password)…
+E	Ex. Charges; Loyer; 1200.5	E.g. Charges; Rent; 1200.5	Ej. Charges; Alquiler; 1200.5	Es. Charges; Affitto; 1200.5
+E	Exporter la liste des compagnies	Export the list of companies	Exportar la lista de empresas	Esporta l'elenco delle aziende
+E	Exporter la liste des employés	Export the list of employees	Exportar la lista de empleados	Esporta l'elenco dei dipendenti
+E	Exporter les employés filtrés	Export the filtered employees	Exportar los empleados filtrados	Esporta i dipendenti filtrati
+E	Exporter les compagnies filtrées	Export the filtered companies	Exportar las empresas filtradas	Esporta le aziende filtrate
+E	Exporter les lignes du relevé filtrées	Export the filtered statement lines	Exportar las líneas filtradas del extracto	Esporta le righe filtrate dell'estratto
+E	Exporter les charges filtrées	Export the filtered expenses	Exportar los gastos filtrados	Esporta le spese filtrate
+E	Exporter les identifiants filtrés	Export the filtered credentials	Exportar las credenciales filtradas	Esporta le credenziali filtrate
+E	Exporter les sections du guide	Export the guide sections	Exportar las secciones de la guía	Esporta le sezioni della guida
+E	Exporter les factures non envoyées	Export the unsent invoices	Exportar las facturas no enviadas	Esporta le fatture non inviate
+E	Exporter la liste des providers	Export the list of providers	Exportar la lista de proveedores	Esporta l'elenco dei provider
+E	Exporter les notes filtrées	Export the filtered notes	Exportar las notas filtradas	Esporta le note filtrate
+E	Exporter l'historique des requêtes	Export the query history	Exportar el historial de consultas	Esporta la cronologia delle query
+P	{0} résultat(s)	{0} result(s)	{0} resultado(s)	{0} risultati
+P	Recherche : {0} · {1} résultat(s)	Search: {0} · {1} result(s)	Búsqueda: {0} · {1} resultado(s)	Ricerca: {0} · {1} risultati
+P	{0} · Recherche : {1} · {2} résultat(s)	{0} · Search: {1} · {2} result(s)	{0} · Búsqueda: {1} · {2} resultado(s)	{0} · Ricerca: {1} · {2} risultati
+P	{0} · {1} résultat(s)	{0} · {1} result(s)	{0} · {1} resultado(s)	{0} · {1} risultati
+P	Compagnies de {0}	Companies of {0}	Empresas de {0}	Aziende di {0}
+P	Employés de {0}	Employees of {0}	Empleados de {0}	Dipendenti di {0}
+P	Groupe {0} — employés	Group {0} — employees	Grupo {0} — empleados	Gruppo {0} — dipendenti
+E	« & » : les deux mots · « | » : l'un ou l'autre	“&”: both words · “|”: either one	«&»: ambas palabras · «|»: una u otra	«&»: entrambe le parole · «|»: l'una o l'altra
+E	Ex. : dupont & montréal — les lignes contenant les deux mots ; dupont | tremblay — celles contenant l'un ou l'autre	E.g.: dupont & montreal — rows containing both words; dupont | tremblay — rows containing either one	Ej.: dupont & montreal — filas que contienen ambas palabras; dupont | tremblay — las que contienen una u otra	Es.: dupont & montreal — righe che contengono entrambe le parole; dupont | tremblay — quelle che contengono l'una o l'altra
+E	Rechercher dans le guide (ex. mot de passe & courriel, ou avoir | T4A)…	Search the guide (e.g. password & email, or credit note | T4A)…	Buscar en la guía (ej. contraseña & correo, o abono | T4A)…	Cerca nella guida (es. password & e-mail, o nota di credito | T4A)…
+E	Ex. Charges & Loyer, ou Loyer | 1200.5	E.g. Charges & Rent, or Rent | 1200.5	Ej. Charges & Alquiler, o Alquiler | 1200.5	Es. Charges & Affitto, o Affitto | 1200.5

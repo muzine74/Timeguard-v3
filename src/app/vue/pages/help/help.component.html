@@ -26,11 +26,13 @@
 
     <!-- ── Recherche ──────────────────────────────────────────────────────── -->
     <div class="help-search">
-      <input #q type="search" aria-label="Rechercher dans le guide" placeholder="Rechercher dans le guide (ex. avoir, T4A, mot de passe)…"
-             [value]="query()" (input)="onSearch(q.value)" />
+      <input #q type="search" aria-label="Rechercher dans le guide" placeholder="Rechercher dans le guide (ex. mot de passe &amp; courriel, ou avoir | T4A)…"
+             aria-describedby="help-search-hint" [value]="query()" (input)="onSearch(q.value)" />
+      <app-search-hint hintId="help-search-hint" />
       <span class="help-search-count" role="status" aria-live="polite">
         {{ searching() ? tocSections().length + ' section(s) sur ' + sections().length : '' }}
       </span>
+      <app-export-buttons [build]="exportSections" [disabled]="tocSections().length === 0" label="les sections du guide"></app-export-buttons>
     </div>
     <div class="empty-state" *ngIf="searching() && tocSections().length === 0">
       <span class="empty-icon" aria-hidden="true">🔍</span>
@@ -66,6 +68,15 @@
         <li>Il choisit son <b>Nouveau mot de passe</b>, le confirme, puis clique sur <b>Mettre à jour le mot de passe</b>.</li>
       </ol>
       <p>Si l'employé n'a pas encore de compte de connexion, l'écran le signale et propose d'aller dans <b>Administration → Identifiants</b> pour le créer.</p>
+
+      <h3>Plusieurs entreprises avec un seul accès</h3>
+      <p>Si vous avez un compte dans plusieurs entreprises (par exemple comme administrateur de chacune), reliez-les pour passer de l'une à l'autre sans vous reconnecter.</p>
+      <ol>
+        <li>Cliquez sur votre nom en haut à droite, puis sur <b>Gérer mes entreprises…</b>.</li>
+        <li>Sous <b>Relier un compte d'une autre entreprise</b>, saisissez l'<b>Identifiant entreprise</b>, le <b>Nom d'utilisateur</b> et le <b>Mot de passe</b> de votre compte dans l'autre entreprise, puis cliquez sur <b>Relier ce compte</b>.</li>
+        <li>Ensuite, votre menu (en haut à droite) affiche l'entreprise actuelle et la liste de vos autres entreprises : un clic suffit pour basculer.</li>
+      </ol>
+      <p>Dans chaque entreprise, vous avez les droits de votre compte de cette entreprise et vous ne voyez que ses données. Un lien se retire à tout moment depuis <b>Gérer mes entreprises</b> ; les comptes eux-mêmes ne sont pas supprimés.</p>
 
       <h3>Les menus</h3>
       <p>La barre du haut est organisée en quatre menus, selon le rôle de chacun :</p>
