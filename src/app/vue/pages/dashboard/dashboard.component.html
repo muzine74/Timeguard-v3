@@ -3,6 +3,8 @@
   <header class="dash-hdr">
     <div>
       <h1 class="dash-title">{{ greeting }}{{ userName ? ', ' + userName : '' }}</h1>
+      <!-- Identifiant de l'entreprise (celui de la connexion) : utile quand on bascule entre plusieurs entreprises -->
+      <p class="dash-tenant" *ngIf="auth.tenantSlug() as slug">Entreprise : {{ slug }}</p>
       <p class="dash-sub" *ngIf="data() as d">
         <span class="dash-date">{{ day(d.today, true) }}</span>
         <ng-container *ngIf="hasSections()">

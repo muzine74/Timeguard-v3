@@ -24,13 +24,13 @@ interface NavMenu    { id: string; label: string; sections: NavSection[]; }
     template: `
     <nav class="navbar">
       <div class="brand">
-        <a routerLink="/" class="brand-home" title="Accueil">
+        <a routerLink="/" class="brand-home" [title]="'Accueil — ' + brandName()">
           <svg class="brand-logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
             <path d="M16 2.5 27.5 6.6v8.6c0 7-4.6 12-11.5 14.6C9.100 27.2 4.500 22.200 4.500 15.200V6.600Z" fill="currentColor" opacity=".16"/>
             <path d="M16 2.5 27.5 6.6v8.6c0 7-4.6 12-11.5 14.6C9.100 27.2 4.500 22.200 4.500 15.200V6.600Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
             <path d="M16 9.500v7l4.500 2.700" fill="none" stroke="currentColor" stroke-width="2.200" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <span>TimeGuard</span>
+          <span class="brand-name">{{ brandName() }}</span>
         </a>
         <span class="brand-ver" *ngIf="config.appVersion() as ver" title="Version de l'application">v{{ ver }}</span>
       </div>
@@ -258,6 +258,12 @@ export class NavbarComponent {
   private readonly _syncSearch = effect(() => this.search.pages.set(this.searchPages()));
 
   private has(p: string): boolean { return this.auth.hasPerm(p); }
+
+  /** Nom affiché à gauche de la barre : celui de l'entreprise (Configuration), sinon son identifiant ;
+   *  « TimeGuard » seulement pour le super-administrateur (aucune entreprise) ou avant le chargement. */
+  readonly brandName = computed(() => this.auth.isSuperUser() && !this.auth.isImpersonating()
+    ? 'TimeGuard'
+    : this.config.companyName() || this.auth.tenantSlug() || 'TimeGuard');
 
   // ── Mes entreprises : bascule entre comptes reliés ─────────────────────
   readonly accounts  = inject(AccountsService);

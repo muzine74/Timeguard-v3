@@ -54,6 +54,9 @@ export class ConfigService {
   /** Version affichée dans la navbar = Configuration → Application → Version (null = non renseignée). */
   private _appVersion = signal<string | null>(null);
   readonly appVersion = this._appVersion.asReadonly();
+  /** Nom de l'entreprise (Configuration → Entreprise) affiché à gauche de la barre, à la place de « TimeGuard ». */
+  private _companyName = signal<string | null>(null);
+  readonly companyName = this._companyName.asReadonly();
 
   constructor(private http: HttpClient) {}
 
@@ -63,17 +66,17 @@ export class ConfigService {
 
   /** Lecture de la seule version (tout utilisateur connecté — /api/config est réservé à config.manage). */
   loadVersion(): void {
-    this.http.get<{ appVersion: string | null }>('/api/config/version').subscribe({
-      next:  r => this._appVersion.set(ConfigService.normalizeVersion(r?.appVersion)),
-      error: () => this._appVersion.set(null),
+    this.http.get<{ appVersion: string | null; companyName?: string | null }>('/api/config/version').subscribe({
+      next:  r => { this._appVersion.set(ConfigService.normalizeVersion(r?.appVersion)); this._companyName.set(r?.companyName?.trim() || null); },
+      error: () => { this._appVersion.set(null); this._companyName.set(null); },
     });
   }
 
-  clearVersion(): void { this._appVersion.set(null); }
+  clearVersion(): void { this._appVersion.set(null); this._companyName.set(null); }
 
   save(config: AppConfigDto) {
     return this.http.put<{ message: string }>('/api/config', { config }).pipe(
-      tap(() => this._appVersion.set(ConfigService.normalizeVersion(config.appVersion))),
+      tap(() => { this._appVersion.set(ConfigService.normalizeVersion(config.appVersion)); this._companyName.set(config.companyName?.trim() || null); }),
     );
   }
 
