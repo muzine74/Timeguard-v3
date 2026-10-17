@@ -141,7 +141,7 @@ E	▸ Voir le texte	▸ Show the text	▸ Ver el texto	▸ Mostra il testo
 E	▾ Masquer le texte	▾ Hide the text	▾ Ocultar el texto	▾ Nascondi il testo
 E	Nouvelle communication	New communication	Nueva comunicación	Nuova comunicazione
 E	Modifier la communication	Edit the communication	Modificar la comunicación	Modifica la comunicazione
-E	Aucune communication enregistrée. Les courriels envoyés par TimeGuard apparaîtront ici automatiquement.	No communication recorded. Emails sent by TimeGuard will appear here automatically.	Ninguna comunicación registrada. Los correos enviados por TimeGuard aparecerán aquí automáticamente.	Nessuna comunicazione registrata. Le email inviate da TimeGuard appariranno qui automaticamente.
+P	Aucune communication enregistrée. Les courriels envoyés par {0} apparaîtront ici automatiquement.	No communication recorded. Emails sent by {0} will appear here automatically.	Ninguna comunicación registrada. Los correos enviados por {0} aparecerán aquí automáticamente.	Nessuna comunicazione registrata. Le email inviate da {0} appariranno qui automaticamente.
 E	Aucune entrée ne correspond aux filtres.	No entry matches the filters.	Ninguna entrada coincide con los filtros.	Nessuna voce corrisponde ai filtri.
 E	Nouvelle charge	New expense	Nuevo gasto	Nuova spesa
 E	Modifier la charge	Edit the expense	Modificar el gasto	Modifica la spesa
@@ -255,3 +255,17 @@ P	Ajouter un événement le {0}	Add an event on {0}	Añadir un evento el {0}	Agg
 P	Retirer {0}	Remove {0}	Quitar {0}	Rimuovi {0}
 P	{0} participants	{0} participants	{0} participantes	{0} partecipanti
 P	Notifications — {0} non lue(s)	Notifications — {0} unread	Notificaciones — {0} sin leer	Notifiche — {0} non lette
+E	Taux appliqués	Rates applied	Tasas aplicadas	Aliquote applicate
+E	Montant avant taxes, taxes et montant avec taxes	Amount before taxes, taxes and amount with taxes	Importe antes de impuestos, impuestos e importe con impuestos	Importo al netto delle imposte, imposte e importo con imposte
+E	Calcul de prix et taxes	Price and tax calculation	Cálculo de precio e impuestos	Calcolo del prezzo e delle imposte
+E	Calcul	Calculation	Cálculo	Calcolo
+E	Lier employés et compagnies	Link employees and companies	Vincular empleados y empresas	Collega dipendenti e aziende
+E	Choisissez un employé, puis cochez ses compagnies.	Choose an employee, then check their companies.	Elija un empleado y marque sus empresas.	Scegli un dipendente, poi seleziona le sue aziende.
+E	Choisissez une compagnie, puis cochez ses employés.	Choose a company, then check its employees.	Elija una empresa y marque sus empleados.	Scegli un'azienda, poi seleziona i suoi dipendenti.
+E	Mode de liaison	Linking mode	Modo de vinculación	Modalità di collegamento
+E	Par employé	By employee	Por empleado	Per dipendente
+E	Lier par employé	Link by employee	Vincular por empleado	Collega per dipendente
+E	Lier par compagnie	Link by company	Vincular por empresa	Collega per azienda
+E	Les liaisons non sauvegardées seront perdues.	Unsaved links will be lost.	Los vínculos no guardados se perderán.	I collegamenti non salvati andranno persi.
+P	Envoyé par {0}	Sent by {0}	Enviado por {0}	Inviato da {0}
+P	Non envoyé par {0}	Not sent by {0}	No enviado por {0}	Non inviato da {0}

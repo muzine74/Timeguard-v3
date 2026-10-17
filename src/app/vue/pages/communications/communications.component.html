@@ -101,7 +101,7 @@
           <span>Origine</span>
           <select [ngModel]="fSource()" (ngModelChange)="fSource.set($event)">
             <option value="">Toutes</option>
-            <option value="auto">Envoyé par TimeGuard</option>
+            <option value="auto">Envoyé par {{ companyId() }}</option>
             <option value="manual">Saisie manuelle</option>
           </select>
         </label>
@@ -218,7 +218,7 @@
 
         <div class="empty" *ngIf="!loading() && !error() && shownItems().length === 0">
           {{ items().length === 0
-              ? 'Aucune communication enregistrée. Les courriels envoyés par TimeGuard apparaîtront ici automatiquement.'
+              ? 'Aucune communication enregistrée. Les courriels envoyés par ' + companyId() + ' apparaîtront ici automatiquement.'
               : 'Aucune entrée ne correspond aux filtres.' }}
         </div>
 
@@ -231,8 +231,8 @@
                 <span class="entry-date">{{ i.occurredAt | date:'yyyy-MM-dd HH:mm' }}</span>
                 <span class="tag">{{ channelLabel(i.channel) }}</span>
                 <span class="tag" [class.tag-in]="i.direction === 'in'">{{ i.direction === 'in' ? 'Reçu' : 'Envoyé' }}</span>
-                <span class="tag tag-auto" *ngIf="i.isAutomatic">TimeGuard</span>
-                <span class="tag" *ngIf="sendable(i) && !i.error">Non envoyé par TimeGuard</span>
+                <span class="tag tag-auto" *ngIf="i.isAutomatic">{{ companyId() }}</span>
+                <span class="tag" *ngIf="sendable(i) && !i.error">Non envoyé par {{ companyId() }}</span>
                 <span class="tag tag-fail" *ngIf="i.error">Échec de l'envoi</span>
               </div>
               <div class="entry-subject">{{ i.subject }}</div>

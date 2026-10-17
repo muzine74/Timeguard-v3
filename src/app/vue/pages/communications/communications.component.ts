@@ -9,6 +9,7 @@ import { AttachmentsService, AttachmentItem } from '../../../state/attachments/a
 import { ConfirmService } from '../../../state/ui/confirm.service';
 import { TelephonyService, CallNumber } from '../../../state/telephony/telephony.service';
 import { httpErrorMessage } from '../../shared/http-error';
+import { AuthService } from '../../../state/auth/auth.service';
 
 interface CommForm {
   id:        string | null;      // null = nouvelle entrée
@@ -21,7 +22,7 @@ interface CommForm {
   sendEmail: boolean;            // nouveau courriel « Envoyé » : l'expédier à l'enregistrement
 }
 
-/** Historique de communication par compagnie et par employé : courriels envoyés par TimeGuard
+/** Historique de communication par compagnie et par employé : courriels envoyés par l'application
  *  (enregistrés automatiquement, en lecture seule) et entrées saisies à la main. */
 @Component({
     selector: 'app-communications',
@@ -33,6 +34,9 @@ interface CommForm {
 export class CommunicationsComponent implements OnInit, OnDestroy {
   private readonly confirmDlg = inject(ConfirmService);
   readonly tel = inject(TelephonyService);
+  /** Identifiant de l'entreprise (celui de la connexion), affiché à la place de « TimeGuard » pour les envois automatiques. */
+  private readonly auth = inject(AuthService);
+  readonly companyId = computed(() => this.auth.tenantSlug() || "l'entreprise");
 
   readonly CALL_STATUS: Record<string, string> = {
     'pending': 'Non abouti', 'in-progress': 'En cours', 'completed': 'Terminé', 'no-answer': 'Sans réponse',
