@@ -12,7 +12,7 @@ import { TableExportService } from '../../state/export/table-export.service';
  *   rows.filter(r => matchesAll(query, r.name, r.city));
  */
 
-export const MULTI_SEARCH_HINT = '« & » : les deux mots · « | » : l\'un ou l\'autre';
+export const MULTI_SEARCH_HINT = 'Astuce : a & b = les deux mots · a | b = l\'un ou l\'autre';
 
 /** Requête analysée : alternatives (OU), chacune une liste de critères tous requis (ET). Vide = pas de recherche. */
 export type SearchQuery = string[][];

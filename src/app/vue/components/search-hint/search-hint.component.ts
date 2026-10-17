@@ -10,7 +10,7 @@ import { MULTI_SEARCH_HINT } from '../../shared/multi-search';
 @Component({
     selector: 'app-search-hint',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    template: `<small class="sh" [id]="hintId" title="Ex. : dupont &amp; montréal — les lignes contenant les deux mots ; dupont | tremblay — celles contenant l'un ou l'autre">
+    template: `<small class="sh" [id]="hintId" title="Exemples : « dupont &amp; montréal » trouve les lignes qui contiennent les deux mots ; « dupont | tremblay » trouve celles qui contiennent l'un ou l'autre.">
       <span aria-hidden="true">ⓘ</span> {{ text }}</small>`,
     styles: [`
     :host { display: inline-flex; min-width: 0; }
