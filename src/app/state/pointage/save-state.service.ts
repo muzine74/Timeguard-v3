@@ -28,6 +28,12 @@ export class SaveStateService {
   // L'exclusion de la semaine courante est faite dynamiquement dans le computed.
   private _nonValidatedMap = signal<Record<string, number>>({});
   private _unlockedWeeks   = signal<{ weekStart: string; totalGain: number }[]>([]);
+  /**
+   * Numéro de la dernière demande de chaque chargement : seule la réponse de la DERNIÈRE demande est appliquée.
+   * Sans cela, en enchaînant les employés (ou valider juste après avoir changé d'employé), une réponse plus
+   * ancienne et plus lente pouvait arriver après la nouvelle et remettre « À valider » / d'anciens montants.
+   */
+  private _seq = { status: 0, earnings: 0, cumulative: 0 };
 
   readonly isSaving      = this._saving.asReadonly();
   readonly progress      = this._progress.asReadonly();
@@ -54,15 +60,15 @@ export class SaveStateService {
 
   /**
    * Gains non validés = toutes semaines non validées (API) sauf la courante
-   *                    + semaine courante (live local, réactif aux coches).
-   * _week.weekKey() est réactif → recalcule automatiquement à chaque navigation.
+   *                    + semaine courante (live local, réactif aux coches) SI elle n'est pas validée.
+   * _week.weekKey() et isLocked sont réactifs → recalcule à chaque navigation et à chaque validation.
    */
   readonly cumulativeGain = computed(() => {
     const currentWeek = this._week.weekKey();
     const pastTotal = Object.entries(this._nonValidatedMap())
       .filter(([w]) => w !== currentWeek)
       .reduce((s, [, g]) => s + g, 0);
-    return pastTotal + this._ptEmp.weekTotal();
+    return pastTotal + (this._locked() ? 0 : this._ptEmp.weekTotal());
   });
 
   constructor(
@@ -90,10 +96,11 @@ export class SaveStateService {
 
   loadEarnings(employeeId: string, weekKey: string): void {
     if (!employeeId) return;
+    const n = ++this._seq.earnings;
     this._earnings.set(null);
     this.http.get<WeekEarnings>(`/api/pointage/${employeeId}/${weekKey}/earnings`).subscribe({
-      next:  e  => this._earnings.set(e),
-      error: () => this._earnings.set(null),
+      next:  e  => { if (n === this._seq.earnings) this._earnings.set(e); },
+      error: () => { if (n === this._seq.earnings) this._earnings.set(null); },
     });
   }
 
@@ -109,6 +116,7 @@ export class SaveStateService {
    */
   loadCumulativeEarnings(employeeId: string): void {
     if (!employeeId) return;
+    const n = ++this._seq.cumulative;
     this.getEmployeeWeekHistory(employeeId).pipe(
       switchMap(history => {
         const unlocked = history.filter(w => !w.isLocked);
@@ -121,6 +129,7 @@ export class SaveStateService {
       })
     ).subscribe({
       next: ({ unlocked, earnings }) => {
+        if (n !== this._seq.cumulative) return;   // réponse d'une demande remplacée depuis
         const mapRecord: Record<string, number> = {};
         const listItems: { weekStart: string; totalGain: number }[] = [];
         unlocked.forEach((w, i) => {
@@ -136,18 +145,20 @@ export class SaveStateService {
         );
         this.log(`✓ ${listItems.length} semaine(s) non validée(s) avec pointage`);
       },
-      error: () => { this._nonValidatedMap.set({}); this._unlockedWeeks.set([]); },
+      error: () => { if (n === this._seq.cumulative) { this._nonValidatedMap.set({}); this._unlockedWeeks.set([]); } },
     });
   }
 
   loadStatus(employeeId: string, weekKey: string): void {
     if (!employeeId) return;
+    const n = ++this._seq.status;
     this.http.get<PointageStatus>(`/api/pointage/${employeeId}/${weekKey}/status`).subscribe({
       next: s => {
+        if (n !== this._seq.status) return;   // réponse d'une demande remplacée depuis
         this._locked.set(s.isLocked);
         this._lockedAt.set(s.validatedAt ?? null);
       },
-      error: () => this._locked.set(false),
+      error: () => { if (n === this._seq.status) this._locked.set(false); },
     });
   }
 

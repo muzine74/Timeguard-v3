@@ -68,6 +68,9 @@ export class EmployeeDetailsComponent implements OnInit {
 
   private _lastWeek  = '';
   private _lastEmpId = '';
+  /** Dernière demande d'historique / de pastilles : une réponse plus ancienne (plus lente) est ignorée. */
+  private _historySeq  = 0;
+  private _statusesSeq = 0;
   private destroyRef = inject(DestroyRef);
   private readonly noteAlerts = inject(NoteAlertService);
 
@@ -117,6 +120,7 @@ export class EmployeeDetailsComponent implements OnInit {
 
     this.empSvc.getOne(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: emp => {
+        if (this.selectedId() !== id) return;   // un autre employé a été choisi entre-temps
         this.selected.set(emp);
         this.loadingDetail.set(false);
         this._loadWeekHistory(id);
@@ -124,6 +128,7 @@ export class EmployeeDetailsComponent implements OnInit {
         this.ptEmpSvc.loadPricing(id, (emp.employeeCompagnies ?? []).filter(c => c.isActive !== false).map(c => c.compagnieId));
       },
       error: err => {
+        if (this.selectedId() !== id) return;
         this.warn(`✕ getOne(${id}) — status: ${err.status}`);
         const found = this.employees().find(e => e.employeeId === id);
         if (found) this.selected.set(found);
@@ -165,8 +170,12 @@ export class EmployeeDetailsComponent implements OnInit {
   async save(): Promise<void> {
     const empId = this.selectedId();
     if (empId) this.ptEmpSvc.setEmployeeId(empId);
+    const week = this.weekSvc.weekKey();
     const ok = await this.saveSvc.save();
     this.showToast(ok ? '✓ Sauvegardé avec succès' : '✕ ' + (this.saveSvc.errorMessage() ?? 'Erreur lors de la sauvegarde'), !ok);
+    // Une semaine nouvellement pointée doit apparaître tout de suite dans l'historique (« À valider »), et la
+    // pastille de l'employé dans la liste repasser à « À valider » — sans rafraîchir la page.
+    if (ok && empId) this._refreshAfterValidationChange(empId, week);
   }
 
   validateWeek(): void {
@@ -221,17 +230,22 @@ export class EmployeeDetailsComponent implements OnInit {
     this.saveSvc.loadCumulativeEarnings(empId);
   }
 
-  /** Après validation / annulation : statut de la semaine, pastilles de la liste, historique. */
+  /** Après sauvegarde, validation ou annulation : statut de la semaine, gains non validés, pastilles de la liste, historique. */
   private _refreshAfterValidationChange(empId: string, week: string): void {
+    // Un autre employé (ou une autre semaine) est affiché depuis : seules les pastilles de la liste changent
+    if (this.selectedId() !== empId || this.weekSvc.weekKey() !== week) { this._loadWeekStatuses(); return; }
     this.saveSvc.loadStatus(empId, week);
     this.saveSvc.loadEarnings(empId, week);
+    this.saveSvc.loadCumulativeEarnings(empId);
     this._loadWeekStatuses();
     this._loadWeekHistory(empId);
   }
 
   private _loadWeekStatuses(): void {
+    const n = ++this._statusesSeq;
     this.saveSvc.getAllValidatedStatuses().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: items => {
+        if (n !== this._statusesSeq) return;   // réponse d'une demande remplacée depuis
         const map = new Map<string, boolean>();
         items.forEach(i => map.set(i.employeeId.toLowerCase(), i.allValidated));
         this.allValidated.set(map);
@@ -241,9 +255,13 @@ export class EmployeeDetailsComponent implements OnInit {
   }
 
   private _loadWeekHistory(empId: string): void {
+    const n = ++this._historySeq;
+    // Seule la dernière demande, et pour l'employé affiché, met à jour l'historique : une réponse antérieure
+    // à la validation qui arriverait après (serveur lent) ne doit pas effacer la semaine qui vient d'être validée.
+    const current = () => n === this._historySeq && this.selectedId() === empId;
     this.saveSvc.getEmployeeWeekHistory(empId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: list => this.weekHistory.set(list),
-      error: ()  => this.weekHistory.set([]),
+      next: list => { if (current()) this.weekHistory.set(list); },
+      error: ()  => { if (current()) this.weekHistory.set([]); },
     });
   }
 
