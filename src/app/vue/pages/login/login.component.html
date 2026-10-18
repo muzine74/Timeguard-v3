@@ -62,7 +62,9 @@
       </div>
 
       <div class="info-banner" role="status" *ngIf="sessionExpired && !error() && !needOtp()">
-        Votre session a expiré. Reconnectez-vous pour revenir à la page où vous étiez.
+        {{ idleExpired
+            ? 'Votre session a expiré après une période d'inactivité. Reconnectez-vous pour revenir à la page où vous étiez.'
+            : 'Votre session a expiré. Reconnectez-vous pour revenir à la page où vous étiez.' }}
       </div>
       <div class="error-banner" role="alert" *ngIf="error()">
         ⚠ {{ error() }}

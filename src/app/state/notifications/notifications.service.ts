@@ -18,6 +18,8 @@ export interface AppNotification {
 
 /** Délai entre deux vérifications du nombre de notifications non lues. */
 const POLL_MS = 60_000;
+/** En-tête des requêtes automatiques : elles ne comptent pas comme activité pour le délai d'inactivité. */
+const BACKGROUND = { 'X-Background': '1' };
 
 /**
  * Notifications de la cloche (barre de navigation). Le nombre de non lues est relu toutes les minutes tant que
@@ -62,19 +64,22 @@ export class NotificationsService implements OnDestroy {
 
   /** Relit le nombre de non lues ; s'il augmente, recharge la liste pour signaler les nouvelles. */
   poll(): void {
-    this.http.get<{ unread: number }>('/api/notifications/unread-count').subscribe({
+    // Requête « de fond » : vérifiée par l'API mais ne prolonge pas la session (délai d'inactivité)
+    this.http.get<{ unread: number }>('/api/notifications/unread-count', { headers: BACKGROUND }).subscribe({
       next: r => {
         const before = this.unread();
         this.unread.set(r.unread);
-        if (!this.primed || r.unread > before) this.load();
+        if (!this.primed || r.unread > before) this.load(true);
       },
       error: () => { /* silencieux : la cloche ne doit jamais gêner le travail */ },
     });
   }
 
-  load(): void {
+  /** background = rechargement automatique (pas une action de l'utilisateur). */
+  load(background = false): void {
     this.loading.set(true);
-    this.http.get<{ items: AppNotification[]; unread: number }>('/api/notifications', { params: { take: 30 } }).subscribe({
+    this.http.get<{ items: AppNotification[]; unread: number }>('/api/notifications',
+      { params: { take: 30 }, headers: background ? BACKGROUND : undefined }).subscribe({
       next: r => {
         this.items.set(r.items);
         this.unread.set(r.unread);

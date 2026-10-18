@@ -23,9 +23,10 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((e: HttpErrorResponse) => {
       if (e.status === 401) {
         auth.logout();
-        // Session expirée : revenir sur la page en cours après reconnexion
+        // Session expirée : revenir sur la page en cours après reconnexion ; « idle » = délai d'inactivité dépassé
+        const expired = e.error?.code === 'IDLE_TIMEOUT' ? 'idle' : 1;
         const here = router.url;
-        router.navigate(['/login'], here && !here.startsWith('/login') ? { queryParams: { returnUrl: here, expired: 1 } } : {});
+        router.navigate(['/login'], here && !here.startsWith('/login') ? { queryParams: { returnUrl: here, expired } } : {});
       }
       return throwError(() => e);
     })

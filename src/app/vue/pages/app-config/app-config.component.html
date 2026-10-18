@@ -163,6 +163,22 @@
       </div>
     </section>
 
+    <!-- Sécurité : délai d'inactivité avant expiration de la session -->
+    <section class="cfg-card" aria-labelledby="app-config-sec-title">
+      <div class="cfg-card-hdr" id="app-config-sec-title">Sécurité</div>
+      <div class="cfg-card-body">
+        <div class="field">
+          <label for="app-config-idle">Délai d'inactivité (minutes)</label>
+          <input id="app-config-idle" class="inp" type="number" min="0" max="1440" step="1" inputmode="numeric"
+                 [(ngModel)]="form.idleTimeoutMinutes" placeholder="0" />
+        </div>
+        <p class="field field-full tel-help">
+          Sans activité pendant ce délai, la session se ferme et il faut se reconnecter (chaque onglet séparément).
+          0 = désactivé (la session dure 8 heures). Entre 5 minutes et 24 heures ; une valeur plus petite est ramenée à 5.
+        </p>
+      </div>
+    </section>
+
     <!-- Téléphonie (Twilio) : enregistrée séparément, avec son propre bouton -->
     <section class="cfg-card cfg-card-full" aria-labelledby="app-config-tel-title">
       <div class="cfg-card-hdr" id="app-config-tel-title">Téléphonie (Twilio)</div>

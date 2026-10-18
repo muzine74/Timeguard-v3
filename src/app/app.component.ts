@@ -9,6 +9,7 @@ import { CallBarComponent } from './vue/components/call-bar/call-bar.component';
 import { AuthService } from './state/auth/auth.service';
 import { ThemeService } from './state/theme/theme.service';
 import { I18nService } from './state/i18n/i18n.service';
+import { IdleService } from './state/auth/idle.service';
 
 @Component({
     selector: 'app-root',
@@ -57,7 +58,8 @@ export class AppComponent {
   readonly isStaging = location.hostname.toLowerCase().startsWith('staging.');
 
   // ThemeService instancié dès le démarrage : le design de l'utilisateur s'applique aussi à la page de connexion
-  constructor(public auth: AuthService, private theme: ThemeService, i18n: I18nService) {
+  // IdleService : délai d'inactivité de l'entreprise (fermeture de la session de l'onglet), actif dès la connexion
+  constructor(public auth: AuthService, private theme: ThemeService, i18n: I18nService, private idle: IdleService) {
     // Langue d'affichage mémorisée : appliquée dès le démarrage, page de connexion comprise
     i18n.start();
   }

@@ -29,6 +29,8 @@ export interface AppConfigDto {
   contactPhone:    string | null;
   contactEmail:    string | null;
   appVersion:      string | null;
+  /** Délai d'inactivité (minutes) avant expiration de la session ; 0 = désactivé. */
+  idleTimeoutMinutes?: number;
 }
 
 export interface AppConfigResponse {
@@ -46,6 +48,7 @@ export function emptyConfig(): AppConfigDto {
     bankCoordinates: null,
     contactName: null, contactPhone: null, contactEmail: null,
     appVersion: null,
+    idleTimeoutMinutes: 0,
   };
 }
 
@@ -57,6 +60,9 @@ export class ConfigService {
   /** Nom de l'entreprise (Configuration → Entreprise) affiché à gauche de la barre, à la place de « TimeGuard ». */
   private _companyName = signal<string | null>(null);
   readonly companyName = this._companyName.asReadonly();
+  /** Délai d'inactivité (minutes) de l'entreprise avant expiration de la session ; 0 = désactivé. */
+  private _idleTimeout = signal(0);
+  readonly idleTimeoutMinutes = this._idleTimeout.asReadonly();
 
   constructor(private http: HttpClient) {}
 
@@ -66,17 +72,25 @@ export class ConfigService {
 
   /** Lecture de la seule version (tout utilisateur connecté — /api/config est réservé à config.manage). */
   loadVersion(): void {
-    this.http.get<{ appVersion: string | null; companyName?: string | null }>('/api/config/version').subscribe({
-      next:  r => { this._appVersion.set(ConfigService.normalizeVersion(r?.appVersion)); this._companyName.set(r?.companyName?.trim() || null); },
+    this.http.get<{ appVersion: string | null; companyName?: string | null; idleTimeoutMinutes?: number }>('/api/config/version').subscribe({
+      next:  r => {
+        this._appVersion.set(ConfigService.normalizeVersion(r?.appVersion));
+        this._companyName.set(r?.companyName?.trim() || null);
+        this._idleTimeout.set(Math.max(0, r?.idleTimeoutMinutes ?? 0));
+      },
       error: () => { this._appVersion.set(null); this._companyName.set(null); },
     });
   }
 
-  clearVersion(): void { this._appVersion.set(null); this._companyName.set(null); }
+  clearVersion(): void { this._appVersion.set(null); this._companyName.set(null); this._idleTimeout.set(0); }
 
   save(config: AppConfigDto) {
     return this.http.put<{ message: string }>('/api/config', { config }).pipe(
-      tap(() => { this._appVersion.set(ConfigService.normalizeVersion(config.appVersion)); this._companyName.set(config.companyName?.trim() || null); }),
+      tap(() => {
+        this._appVersion.set(ConfigService.normalizeVersion(config.appVersion));
+        this._companyName.set(config.companyName?.trim() || null);
+        this._idleTimeout.set(Math.max(0, config.idleTimeoutMinutes ?? 0));
+      }),
     );
   }
 

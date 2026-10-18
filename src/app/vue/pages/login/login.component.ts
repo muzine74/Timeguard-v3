@@ -35,7 +35,10 @@ export class LoginComponent {
   constructor(private auth: AuthService, private router: Router, private route: ActivatedRoute) {}
 
   /** Arrivée après une session expirée (401) : message explicatif. */
-  readonly sessionExpired = inject(ActivatedRoute).snapshot.queryParamMap.get('expired') === '1';
+  private readonly _expired = inject(ActivatedRoute).snapshot.queryParamMap.get('expired');
+  readonly sessionExpired = this._expired === '1' || this._expired === 'idle';
+  /** Expirée pour inactivité (Configuration → Sécurité → Délai d'inactivité). */
+  readonly idleExpired = this._expired === 'idle';
 
   private static _lastTenant(): string {
     try { return localStorage.getItem('tg_last_tenant') ?? ''; } catch { return ''; }
@@ -75,7 +78,7 @@ export class LoginComponent {
         this.log('  user:       ', this.auth.user());
         this.log('  employeeId: ', this.auth.employeeId());
         this.log('  permissions:', this.auth.user()?.permissions);
-        this.log('  token JWT:  ', localStorage.getItem('tg_token'));
+        this.log('  token JWT:  ', this.auth.token());
 
         // Super user : panneau providers dédié
         if (this.auth.isSuperUser()) {
