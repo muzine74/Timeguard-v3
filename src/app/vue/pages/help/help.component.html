@@ -86,9 +86,9 @@
         <li><b>Mon travail</b> — l'Accueil, votre Feuille de temps, votre Équipe (si vous supervisez quelqu'un) et les Notes.</li>
         <li><b>Gestion</b> — le personnel (création, modification, tarifs), les clients (compagnies), le pointage des employés (consultation, validation), les affectations employés ⇄ compagnies et le suivi des communications.</li>
         <li><b>Finances</b> — la facturation, la paie (paiements, feuillets T4A, charges, relevé bancaire) et l'analyse (rapports, statistiques).</li>
-        <li><b>Administration</b> — groupes de permissions, identifiants de connexion, configuration et suppression définitive.</li>
+        <li><b>Administration</b> — groupes de permissions, identifiants de connexion, configuration, historique des requêtes et suppression définitive.</li>
       </ul>
-      <p>À droite : <b>❓ Aide</b>, puis votre nom. Cliquez sur votre nom pour choisir votre <b>design de couleurs</b> (enregistré sur votre compte) ou vous déconnecter. Le nom <b>TimeGuard</b>, à gauche, ramène à votre page d'accueil.</p>
+      <p>À droite : <b>❓ Aide</b>, puis votre nom. Cliquez sur votre nom pour choisir votre <b>design de couleurs</b> (enregistré sur votre compte), passer à une autre de vos entreprises (section <b>Entreprise</b>, si vous en avez relié plusieurs) ou vous déconnecter. À gauche, le <b>nom de votre entreprise</b> (celui de la Configuration, sinon son identifiant) ramène à votre page d'accueil.</p>
 
       <h3>Qui voit quoi</h3>
       <p>Chaque menu n'apparaît que si vous avez la permission correspondante, et ce guide n'affiche que les sections qui correspondent à vos menus. Les permissions sont regroupées dans des <b>groupes</b>, et un employé cumule les permissions de tous ses groupes.</p>
@@ -127,6 +127,7 @@
         </tbody>
       </table>
       <p>Une carte à jour affiche <b>✓</b>. <b>↻ Actualiser</b> recharge les chiffres, et <b>Accès rapide</b>, en bas, regroupe les pages les plus utilisées.</p>
+      <p>Sous le titre, la ligne <b>Entreprise : …</b> rappelle l'identifiant de l'entreprise ouverte — utile si vous travaillez pour plusieurs entreprises.</p>
     </section>
 
     <!-- ── Pointage employé ───────────────────────────────────────────────── -->
@@ -433,6 +434,7 @@
       <h2>Facturer vos compagnies</h2>
       <ng-container *ngTemplateOutlet="pageLinks; context: { $implicit: 'facturation' }"></ng-container>
       <p>Le plus rapide est de facturer directement à partir des pointages validés. On peut aussi créer une facture à la main. Les taux de TPS et de TVQ viennent de <b>Administration → Configuration</b>.</p>
+      <p><b>Chaque facture garde les taux de sa création.</b> Changer les taux dans la Configuration ne vaut que pour les nouvelles factures : une facture existante, sa modification, son PDF et ses avoirs gardent leurs taux d'origine (indiqués dans les libellés « TPS (5 %) », « TVQ (9,975 %) »).</p>
 
       <h3>Facturer par pointages</h3>
       <ol>
@@ -483,6 +485,15 @@
       </ul>
 
       <ng-container *ngIf="can(P.invoicesView)">
+      <h3>Calcul : prix et taxes</h3>
+      <p><b>Finances → Calcul</b> regroupe deux outils, sur deux onglets. Rien n'y est enregistré ; les taux sont ceux de la Configuration.</p>
+      <ul>
+        <li><b>Calcul de prix</b> : saisissez un <b>Montant</b> (avec ou sans <b>Taxes incluses</b>), sa <b>fréquence</b> (par visite, hebdomadaire, aux deux semaines, mensuelle ou annuelle), le <b>Nombre de visites</b> et, au besoin, un <b>% d'achat</b>. Le tableau donne le montant avant taxes, la TPS, la TVQ et le total pour chaque période utile, puis les revenus annuels, l'achat annuel et le revenu net de la première année.</li>
+        <li><b>Calculateur de taxes</b> : trois champs reliés — <b>Montant avant taxes</b>, <b>Taxes</b> et <b>Montant avec taxes</b>. Saisissez l'un, les deux autres se calculent, avec le détail TPS / TVQ.</li>
+      </ul>
+      </ng-container>
+
+      <ng-container *ngIf="can(P.invoicesView)">
       <h3>Charges</h3>
       <p><b>Finances → Charges</b> enregistre vos dépenses (assurance, loyer, comptabilité…), avec leur date, leur répartition entre compagnies et leurs justificatifs.</p>
       <ol>
@@ -525,19 +536,28 @@
         <li><b>👁 Visualiser PDF</b> pour relire, puis <b>💾 Enregistrer</b>, <b>📄 Générer le PDF</b> ou <b>📧 Enregistrer et envoyer</b> au courriel de l'employé.</li>
       </ol>
       <p>Le <b>Numéro de compte de programme du payeur</b> (case 061) se règle une fois dans <b>Administration → Configuration</b>.</p>
+
+      <ng-container *ngIf="can(P.paymentsManage)">
+      <h3>Imprimer un chèque</h3>
+      <ol>
+        <li><b>Finances → Chèques</b> : saisissez la <b>Date</b>, le <b>Bénéficiaire</b>, le <b>Montant</b> et l'<b>Objet</b>. Le montant en lettres s'écrit tout seul.</li>
+        <li>Vérifiez l'aperçu, puis imprimez sur votre papier à chèques préimprimé : seul le texte variable est imprimé.</li>
+        <li>Au premier essai, réglez la mise en page (emplacement du chèque sur la feuille, décalages en millimètres) avec l'option <b>cadre</b> sur une feuille blanche ; le réglage est gardé dans votre navigateur.</li>
+      </ol>
+      </ng-container>
     </section>
 
     <!-- ── Communications ─────────────────────────────────────────────────── -->
     <section id="communications" *ngIf="show('communications')" [class.is-hidden]="!hit('communications')">
       <h2>Suivre les communications</h2>
       <ng-container *ngTemplateOutlet="pageLinks; context: { $implicit: 'communications' }"></ng-container>
-      <p><b>Gestion → Communications</b> garde l'historique des échanges avec chaque compagnie et chaque employé. Les courriels envoyés par TimeGuard s'y ajoutent tout seuls ; vous y notez le reste (appels, rencontres, courriels reçus).</p>
+      <p><b>Gestion → Communications</b> garde l'historique des échanges avec chaque compagnie et chaque employé. Les courriels envoyés par l'application (factures, T4A, liens de mot de passe) s'y ajoutent tout seuls ; vous y notez le reste (appels, rencontres, courriels reçus). Chaque entreprise ne voit que ses propres communications.</p>
 
       <h3>Consulter un historique</h3>
       <ol>
         <li>Choisissez l'onglet <b>Compagnies</b> ou <b>Employés</b>, puis l'élément dans la liste de gauche. La recherche aide à le trouver, et chaque ligne indique le nombre d'entrées et la date de la dernière.</li>
-        <li>L'historique s'affiche du plus récent au plus ancien. L'étiquette <b>TimeGuard</b> marque un envoi automatique ; <b>Échec de l'envoi</b> signale un courriel qui n'est pas parti, avec la raison.</li>
-        <li>Filtrez par <b>Type</b>, <b>Origine</b> (envoyé par TimeGuard ou saisie manuelle) et période <b>Du / Au</b>. <b>▸ Voir le texte</b> affiche le contenu d'une entrée.</li>
+        <li>L'historique s'affiche du plus récent au plus ancien. L'étiquette portant l'<b>identifiant de votre entreprise</b> (par exemple <b>ramssis</b>) marque un envoi automatique ; <b>Échec de l'envoi</b> signale un courriel qui n'est pas parti, avec la raison.</li>
+        <li>Filtrez par <b>Type</b>, <b>Origine</b> (envoyé par votre entreprise ou saisie manuelle) et période <b>Du / Au</b>. <b>▸ Voir le texte</b> affiche le contenu d'une entrée.</li>
       </ol>
 
       <h3>Noter une communication</h3>
@@ -546,7 +566,7 @@
         <li>Renseignez la <b>Date et heure</b>, le <b>Type</b>, le <b>Sens</b> (envoyé ou reçu), la personne contactée, le <b>Sujet</b> et un <b>Résumé</b>. Vous pouvez joindre des fichiers.</li>
         <li>Cliquez sur <b>✓ Enregistrer</b>.</li>
       </ol>
-      <p>Une entrée saisie à la main se modifie ou se supprime ; un envoi automatique de TimeGuard ne se modifie pas.</p>
+      <p>Une entrée saisie à la main se modifie ou se supprime ; un envoi automatique ne se modifie pas.</p>
 
       <h3>Envoyer un courriel depuis Communications</h3>
       <ol>
@@ -643,6 +663,11 @@
       <ng-container *ngTemplateOutlet="pageLinks; context: { $implicit: 'administration' }"></ng-container>
       <p *ngIf="can(P.configManage)">Avant la première facture, réglez la <b>Configuration</b> : vos taxes, vos coordonnées et votre serveur de courriel apparaissent sur chaque facture et chaque envoi.</p>
 
+      <ng-container *ngIf="can(P.journalView)">
+      <h3>Historique des requêtes</h3>
+      <p><b>Administration → Historique des requêtes</b> liste les modifications enregistrées dans la base pour votre entreprise : qui, quand, sur quelle donnée, avec les valeurs envoyées. Les valeurs sensibles (mots de passe, jetons, NAS…) sont masquées. La recherche accepte plusieurs termes.</p>
+      </ng-container>
+
       <ng-container *ngIf="can(P.configManage)">
       <h3>Configuration de l'entreprise</h3>
       <p><b>Administration → ⚙ Configuration</b> (permission <code>config.manage</code>) :</p>
@@ -654,8 +679,11 @@
           <tr><td>Coordonnées de paiement</td><td>Coordonnées bancaires imprimées sur les factures (banque, transit, folio)</td></tr>
           <tr><td>Courriel (SMTP)</td><td><b>Serveur</b>, <b>Port</b>, <b>Utilisateur</b>, <b>Mot de passe</b> du compte qui envoie les factures</td></tr>
           <tr><td>T4A</td><td><b>Numéro de compte de programme du payeur</b></td></tr>
+          <tr><td>Application</td><td><b>Version</b> affichée à côté du nom de l'entreprise, en haut à gauche</td></tr>
+          <tr><td>Sécurité</td><td><b>Délai d'inactivité (minutes)</b> : sans activité pendant ce délai, la session se ferme et il faut se reconnecter (chaque onglet séparément). 0 = désactivé ; sinon entre 5 minutes et 24 heures</td></tr>
         </tbody>
       </table>
+      <p>Le <b>Nom</b> de la compagnie s'affiche aussi en haut à gauche de la barre, pour tous les utilisateurs de l'entreprise.</p>
       <p>À l'enregistrement, un récapitulatif montre l'<b>Ancienne valeur</b> et la <b>Nouvelle valeur</b> de chaque champ modifié ; cliquez sur <b>Confirmer les modifications</b>.</p>
 
       <h3>Courriels reçus (Microsoft 365)</h3>

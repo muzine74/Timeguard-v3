@@ -63,12 +63,14 @@ export class HelpComponent {
       { label: 'Envoyer les factures',        link: '/invoices/send',            perms: [PERM.invoicesSend] },
       { label: 'Téléchargement des factures', link: '/invoices/download',        perms: [PERM.invoicesView] },
       { label: 'Rapports',                    link: '/invoices/report',          perms: [PERM.invoicesView] },
+      { label: 'Calcul',                      link: '/prix',                     perms: [PERM.invoicesView] },
       { label: 'Charges',                     link: '/charges',                  perms: [PERM.invoicesView] },
       { label: 'Relevé bancaire',             link: '/bank-statement',           perms: [PERM.paymentsManage] },
     ] },
     { id: 'paiements',      title: 'Payer vos employés',                        perms: [PERM.paymentsManage, PERM.employeesEdit], links: [
       { label: 'Paiements employés', link: '/employees/payments', perms: [PERM.paymentsManage] },
       { label: 'Feuillet T4A',       link: '/employees/t4a',      perms: [PERM.employeesEdit] },
+      { label: 'Chèques',            link: '/cheques',            perms: [PERM.paymentsManage] },
     ] },
     { id: 'communications', title: 'Suivre les communications',                 perms: [PERM.companiesEdit, PERM.employeesEdit], links: [
       { label: 'Communications', link: '/communications', perms: [] },
@@ -79,11 +81,12 @@ export class HelpComponent {
     { id: 'notes',          title: 'Notes et alertes',                          perms: [], links: [
       { label: 'Notes', link: '/notes', perms: [] },
     ] },
-    { id: 'administration', title: 'Statistiques et administration',            perms: [PERM.statsView, PERM.groupsManage, PERM.configManage, PERM.credentialsManage, PERM.dataPurge], links: [
+    { id: 'administration', title: 'Statistiques et administration',            perms: [PERM.statsView, PERM.groupsManage, PERM.configManage, PERM.credentialsManage, PERM.dataPurge, PERM.journalView], links: [
       { label: 'Statistiques',           link: '/stats',                 perms: [PERM.statsView] },
       { label: 'Groupes',                link: '/groups',                perms: [PERM.groupsManage] },
       { label: 'Identifiants',           link: '/employees/credentials', perms: [PERM.credentialsManage] },
       { label: 'Configuration',          link: '/config',                perms: [PERM.configManage] },
+      { label: 'Historique des requêtes', link: '/journal',              perms: [PERM.journalView] },
       { label: 'Suppression définitive', link: '/purge',                 perms: [PERM.dataPurge] },
     ] },
     { id: 'faq',            title: 'Questions fréquentes',                      perms: [] },
