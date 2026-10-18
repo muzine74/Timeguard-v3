@@ -25,11 +25,17 @@
     <div class="sk-row" *ngFor="let _ of [1, 2, 3, 4, 5, 6]"><i></i><i></i><i></i></div>
   </div>
 
+  <!-- Sections repliables : toutes repliées à l'ouverture ; les champs restent chargés (l'enregistrement les prend tous) -->
+  <div class="cfg-toolbar" *ngIf="!loading()">
+    <button type="button" class="btn btn-ghost" (click)="expandAll()">Tout déplier</button>
+    <button type="button" class="btn btn-ghost" (click)="collapseAll()">Tout replier</button>
+  </div>
+
   <div class="cfg-grid" *ngIf="!loading()">
 
     <!-- Compagnie -->
-    <section class="cfg-card">
-      <div class="cfg-card-hdr">Compagnie</div>
+    <section class="cfg-card" [class.collapsed]="!isOpen('compagnie')">
+      <button type="button" class="cfg-card-hdr" (click)="toggle('compagnie')" [attr.aria-expanded]="isOpen('compagnie')"><span class="cfg-chev" aria-hidden="true">▸</span>Compagnie</button>
       <div class="cfg-card-body">
         <div class="field">
           <label for="app-config-logo-chemin-ou-url">Logo (chemin ou URL)</label>
@@ -75,8 +81,8 @@
     </section>
 
     <!-- Courriel (SMTP) -->
-    <section class="cfg-card">
-      <div class="cfg-card-hdr">Courriel (SMTP)</div>
+    <section class="cfg-card" [class.collapsed]="!isOpen('smtp')">
+      <button type="button" class="cfg-card-hdr" (click)="toggle('smtp')" [attr.aria-expanded]="isOpen('smtp')"><span class="cfg-chev" aria-hidden="true">▸</span>Courriel (SMTP)</button>
       <div class="cfg-card-body">
         <div class="field">
           <label for="app-config-serveur">Serveur</label>
@@ -99,8 +105,8 @@
     </section>
 
     <!-- Taxes -->
-    <section class="cfg-card">
-      <div class="cfg-card-hdr">Taxes</div>
+    <section class="cfg-card" [class.collapsed]="!isOpen('taxes')">
+      <button type="button" class="cfg-card-hdr" (click)="toggle('taxes')" [attr.aria-expanded]="isOpen('taxes')"><span class="cfg-chev" aria-hidden="true">▸</span>Taxes</button>
       <div class="cfg-card-body">
         <div class="field">
           <label for="app-config-n-tps">N° TPS</label>
@@ -122,8 +128,8 @@
     </section>
 
     <!-- Coordonnées bancaires -->
-    <section class="cfg-card">
-      <div class="cfg-card-hdr">Coordonnées bancaires</div>
+    <section class="cfg-card" [class.collapsed]="!isOpen('banque')">
+      <button type="button" class="cfg-card-hdr" (click)="toggle('banque')" [attr.aria-expanded]="isOpen('banque')"><span class="cfg-chev" aria-hidden="true">▸</span>Coordonnées bancaires</button>
       <div class="cfg-card-body">
         <div class="field field-full">
           <label for="app-config-coordonnees-de-paiement">Coordonnées de paiement</label>
@@ -134,8 +140,8 @@
     </section>
 
     <!-- Contact -->
-    <section class="cfg-card">
-      <div class="cfg-card-hdr">Contact</div>
+    <section class="cfg-card" [class.collapsed]="!isOpen('contact')">
+      <button type="button" class="cfg-card-hdr" (click)="toggle('contact')" [attr.aria-expanded]="isOpen('contact')"><span class="cfg-chev" aria-hidden="true">▸</span>Contact</button>
       <div class="cfg-card-body">
         <div class="field">
           <label for="app-config-nom-2">Nom</label>
@@ -153,8 +159,8 @@
     </section>
 
     <!-- Application -->
-    <section class="cfg-card">
-      <div class="cfg-card-hdr">Application</div>
+    <section class="cfg-card" [class.collapsed]="!isOpen('application')">
+      <button type="button" class="cfg-card-hdr" (click)="toggle('application')" [attr.aria-expanded]="isOpen('application')"><span class="cfg-chev" aria-hidden="true">▸</span>Application</button>
       <div class="cfg-card-body">
         <div class="field">
           <label for="app-config-version">Version</label>
@@ -164,8 +170,8 @@
     </section>
 
     <!-- Sécurité : délai d'inactivité avant expiration de la session -->
-    <section class="cfg-card" aria-labelledby="app-config-sec-title">
-      <div class="cfg-card-hdr" id="app-config-sec-title">Sécurité</div>
+    <section class="cfg-card" aria-labelledby="app-config-sec-title" [class.collapsed]="!isOpen('securite')">
+      <button type="button" class="cfg-card-hdr" id="app-config-sec-title" (click)="toggle('securite')" [attr.aria-expanded]="isOpen('securite')"><span class="cfg-chev" aria-hidden="true">▸</span>Sécurité</button>
       <div class="cfg-card-body">
         <div class="field">
           <label for="app-config-idle">Délai d'inactivité (minutes)</label>
@@ -180,8 +186,8 @@
     </section>
 
     <!-- Téléphonie (Twilio) : enregistrée séparément, avec son propre bouton -->
-    <section class="cfg-card cfg-card-full" aria-labelledby="app-config-tel-title">
-      <div class="cfg-card-hdr" id="app-config-tel-title">Téléphonie (Twilio)</div>
+    <section class="cfg-card cfg-card-full" aria-labelledby="app-config-tel-title" [class.collapsed]="!isOpen('telephonie')">
+      <button type="button" class="cfg-card-hdr" id="app-config-tel-title" (click)="toggle('telephonie')" [attr.aria-expanded]="isOpen('telephonie')"><span class="cfg-chev" aria-hidden="true">▸</span>Téléphonie (Twilio)</button>
       <div class="cfg-card-body" *ngIf="telLoaded()">
         <p class="field field-full tel-help">
           Permet d'appeler les compagnies et les employés depuis la page Communications, avec le numéro de votre entreprise.
@@ -262,8 +268,8 @@
     </section>
 
     <!-- Courriels reçus (Microsoft 365) : enregistrés séparément, avec leur propre bouton -->
-    <section class="cfg-card cfg-card-full" aria-labelledby="app-config-mbx-title">
-      <div class="cfg-card-hdr" id="app-config-mbx-title">Courriels reçus (Microsoft 365)</div>
+    <section class="cfg-card cfg-card-full" aria-labelledby="app-config-mbx-title" [class.collapsed]="!isOpen('courriels')">
+      <button type="button" class="cfg-card-hdr" id="app-config-mbx-title" (click)="toggle('courriels')" [attr.aria-expanded]="isOpen('courriels')"><span class="cfg-chev" aria-hidden="true">▸</span>Courriels reçus (Microsoft 365)</button>
       <div class="cfg-card-body" *ngIf="mbxLoaded()">
         <p class="field field-full tel-help">
           TimeGuard lit la boîte de courriel de l'entreprise toutes les cinq minutes. Quand un courriel reçu vient d'une adresse

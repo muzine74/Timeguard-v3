@@ -37,6 +37,18 @@ export class AppConfigComponent implements OnInit {
   error    = signal('');
   showDiff = signal(false);
 
+  // ── Sections repliables (toutes repliées à l'ouverture de la page) ──────
+  private static readonly SECTIONS = ['compagnie', 'smtp', 'taxes', 'banque', 'contact', 'application', 'securite', 'telephonie', 'courriels'];
+  readonly openSections = signal<ReadonlySet<string>>(new Set());
+  isOpen(key: string): boolean { return this.openSections().has(key); }
+  toggle(key: string): void {
+    const next = new Set(this.openSections());
+    if (next.has(key)) next.delete(key); else next.add(key);
+    this.openSections.set(next);
+  }
+  expandAll(): void   { this.openSections.set(new Set(AppConfigComponent.SECTIONS)); }
+  collapseAll(): void { this.openSections.set(new Set()); }
+
   private _saved: AppConfigResponse = { config: emptyConfig() };
 
   form: AppConfigDto = emptyConfig();
