@@ -53,6 +53,8 @@ export interface BankTransactionList {
 export interface BankImportResult {
   imported:   number;           // lignes ajoutées
   duplicates: number;           // déjà en base : non ajoutées
+  conflicts?: number;           // même date + n° de ligne qu'une ligne enregistrée, contenu différent : non ajoutées
+  conflictDetails?: string[];
   skipped:    number;           // lignes illisibles
   dateMin:    string | null;
   dateMax:    string | null;

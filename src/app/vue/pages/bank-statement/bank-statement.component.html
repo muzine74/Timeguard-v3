@@ -36,7 +36,7 @@
         <span *ngIf="importing()">Chargement…</span>
       </button>
     </div>
-    <p class="hint" id="bank-file-hint">Colonnes lues : 4 = date, 6 = description, 8 = retrait, 9 = dépôt. Un fichier déjà chargé peut être rechargé sans créer de doublons.</p>
+    <p class="hint" id="bank-file-hint">Colonnes lues : 4 = date, 6 = description, 8 = retrait, 9 = dépôt. Un fichier déjà chargé peut être rechargé sans créer de doublons : deux lignes ne peuvent jamais avoir la même date et le même n° de ligne (colonne 5).</p>
 
     <div class="msg msg-err" role="alert" *ngIf="importError()">
       ⚠ {{ importError() }}
@@ -48,6 +48,10 @@
       <span *ngIf="r.dateMin"> — du {{ r.dateMin }} au {{ r.dateMax }}</span>
       <span *ngIf="r.imported"> : {{ fmt(r.totalWithdrawals) }} de retraits, {{ fmt(r.totalDeposits) }} de dépôts.</span>
       <div *ngIf="r.duplicates">{{ plural(r.duplicates, 'ligne déjà enregistrée', 'lignes déjà enregistrées') }} : non ajoutée{{ r.duplicates > 1 ? 's' : '' }}.</div>
+      <div class="warn" *ngIf="r.conflicts">
+        ⚠ {{ plural(r.conflicts, 'ligne ignorée', 'lignes ignorées') }} : même date et même n° de ligne qu'une ligne déjà enregistrée, mais avec une description ou un montant différent. Vérifiez votre relevé.
+        <ul><li *ngFor="let e of r.conflictDetails">{{ e }}</li></ul>
+      </div>
       <div class="warn" *ngIf="r.skipped">
         ⚠ {{ plural(r.skipped, 'ligne illisible ignorée', 'lignes illisibles ignorées') }} :
         <ul><li *ngFor="let e of r.errors">{{ e }}</li></ul>
