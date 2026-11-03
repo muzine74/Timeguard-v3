@@ -4,7 +4,7 @@ import { Observable, from, of } from 'rxjs';
 import { catchError, concatMap, map, toArray } from 'rxjs/operators';
 import { httpErrorMessage } from '../../vue/shared/http-error';
 
-export type AttachmentOwner = 'note' | 'communication';
+export type AttachmentOwner = 'note' | 'communication' | 'bank';
 
 /** Pièce jointe d'une note ou d'une entrée de l'historique de communication. */
 export interface AttachmentItem {
@@ -63,4 +63,6 @@ export class AttachmentsService {
 
   download(id: string) { return this.http.get(`/api/attachments/${id}/download`, { responseType: 'blob' as const }); }
   delete(id: string)   { return this.http.delete<void>(`/api/attachments/${id}`); }
+  /** Nouveau nom affiché ; le serveur garde l'extension d'origine. */
+  rename(id: string, name: string) { return this.http.put<AttachmentItem>(`/api/attachments/${id}/name`, { name }); }
 }

@@ -123,6 +123,9 @@
       </div>
 
       <div class="msg msg-err" role="alert" *ngIf="validateError()">⚠ {{ validateError() }}</div>
+      <div class="msg msg-err" role="alert" *ngIf="attachError()">⚠ {{ attachError() }}</div>
+      <input #attachInput type="file" hidden accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx" (change)="onAttachmentFile($event)" />
+      <input #photoInput type="file" hidden accept="image/jpeg,image/png" capture="environment" (change)="onAttachmentFile($event)" />
 
       <dl class="totals" *ngIf="l.rows.length">
         <div><dt>Lignes</dt><dd aria-live="polite">{{ hasFilters() ? filtered().length + ' / ' + l.rows.length : l.rows.length }}</dd></div>
@@ -149,7 +152,34 @@
           <tbody>
             <tr *ngFor="let r of paged(); trackBy: trackRow" [class.row-validated]="r.validated">
               <td class="nowrap">{{ r.date }}</td>
-              <td>{{ r.description }}</td>
+              <td *ngIf="!isMobile(r)">{{ r.description }}</td>
+              <td *ngIf="isMobile(r)" class="mobile-cell" tabindex="0" role="button" aria-haspopup="menu"
+                  [attr.aria-expanded]="menuFor() === r.bankTransactionId"
+                  (click)="toggleMenu(r, $event)" (keydown.enter)="toggleMenu(r, $event)" (keydown.space)="$event.preventDefault(); toggleMenu(r, $event)"
+                  [title]="r.attachment ? 'Cliquez pour remplacer ou supprimer le document' : 'Cliquez pour joindre un document'"
+                  [attr.aria-label]="r.description + ' : ' + (r.attachment ? 'remplacer ou supprimer le document' : 'joindre un document')">
+                {{ r.description }}
+                <span class="att-busy" *ngIf="attaching().has(r.bankTransactionId)">Envoi…</span>
+                <form class="att-rename" *ngIf="renaming() === r.bankTransactionId && r.attachment as a"
+                      (click)="$event.stopPropagation()" (keydown.enter)="$event.stopPropagation()" (keydown.space)="$event.stopPropagation()"
+                      (keydown.escape)="$event.stopPropagation(); cancelRename()" (ngSubmit)="saveRename(r)">
+                  <input #renameInput class="inp" type="text" maxlength="250" [ngModel]="renameDraft()" (ngModelChange)="renameDraft.set($event)"
+                         name="attName" [disabled]="attaching().has(r.bankTransactionId)" [attr.aria-label]="'Nouveau nom de ' + a.name" />
+                  <span class="att-ext" data-no-i18n>{{ extOf(a.name) }}</span>
+                  <button type="submit" class="btn btn-primary btn-sm" [disabled]="attaching().has(r.bankTransactionId)">Renommer</button>
+                  <button type="button" class="btn btn-outline btn-sm" [disabled]="attaching().has(r.bankTransactionId)" (click)="cancelRename()">Annuler</button>
+                </form>
+                <a class="att-link" *ngIf="r.attachment as a" [hidden]="renaming() === r.bankTransactionId" [href]="r.attachmentUrl" target="_blank" rel="noopener"
+                   (click)="openAttachment(r, $event)" (keydown.enter)="$event.stopPropagation()" (keydown.space)="$event.stopPropagation()"
+                   [attr.aria-label]="'Ouvrir ' + a.name"><span aria-hidden="true">📎</span> <span data-no-i18n>{{ a.name }}</span></a>
+                <div class="att-menu" role="menu" *ngIf="menuFor() === r.bankTransactionId"
+                     (click)="$event.stopPropagation()" (keydown.enter)="$event.stopPropagation()" (keydown.space)="$event.stopPropagation()">
+                  <button type="button" role="menuitem" *ngIf="canTakePhoto" (click)="pickAttachment(r, photoInput)">📷 Prendre une photo</button>
+                  <button type="button" role="menuitem" (click)="pickAttachment(r, attachInput)">📁 Choisir un fichier</button>
+                  <button type="button" role="menuitem" *ngIf="r.attachment" (click)="startRename(r)">✏ Renommer</button>
+                  <button type="button" role="menuitem" class="danger" *ngIf="r.attachment" (click)="removeAttachment(r)">🗑 Supprimer la pièce jointe</button>
+                </div>
+              </td>
               <td class="num neg">{{ fmt(r.withdrawal) }}</td>
               <td class="num pos">{{ fmt(r.deposit) }}</td>
               <td>

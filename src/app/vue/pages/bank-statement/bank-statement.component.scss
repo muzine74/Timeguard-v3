@@ -115,3 +115,16 @@ th[aria-sort="ascending"] .th-sort, th[aria-sort="descending"] .th-sort { color:
 .chip-company  { background: rgba(66,133,244,.12); border-color: rgba(66,133,244,.35); }
 .chip-employee { background: rgba(52,168,83,.12);  border-color: rgba(52,168,83,.35); }
 .chip-charge   { background: rgba(155,89,182,.14); border-color: rgba(155,89,182,.4); }
+
+// « Dépôt Mobile » : double-clic pour joindre un document, lien vers la pièce jointe
+.mobile-cell { cursor: pointer; }
+.mobile-cell:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.att-link { display: block; margin-top: 2px; font-size: .85em; cursor: pointer; word-break: break-all; }
+.att-busy { display: block; font-size: .85em; opacity: .7; }
+.att-menu { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.att-menu button { font: inherit; font-size: .85em; padding: 6px 10px; min-height: 36px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface2); color: inherit; cursor: pointer; }
+.att-menu button:hover, .att-menu button:focus-visible { border-color: var(--accent); outline: none; }
+.att-menu button.danger { color: var(--danger-text); }
+.att-rename { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; }
+.att-rename .inp { flex: 1 1 140px; min-width: 120px; padding: 6px 8px; }
+.att-ext { font-size: .85em; opacity: .75; }

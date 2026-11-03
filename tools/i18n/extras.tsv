@@ -360,3 +360,21 @@ E	Sécurité	Security	Seguridad	Sicurezza
 E	Délai d'inactivité (minutes)	Idle timeout (minutes)	Tiempo de inactividad (minutos)	Timeout di inattività (minuti)
 E	Sans activité pendant ce délai, la session se ferme et il faut se reconnecter (chaque onglet séparément). 0 = désactivé (la session dure 8 heures). Entre 5 minutes et 24 heures ; une valeur plus petite est ramenée à 5.	With no activity for this long, the session closes and you must sign in again (each tab separately). 0 = disabled (the session lasts 8 hours). Between 5 minutes and 24 hours; a smaller value is raised to 5.	Sin actividad durante este tiempo, la sesión se cierra y hay que volver a iniciar sesión (cada pestaña por separado). 0 = desactivado (la sesión dura 8 horas). Entre 5 minutos y 24 horas; un valor menor se sube a 5.	Senza attività per questo tempo, la sessione si chiude e occorre accedere di nuovo (ogni scheda separatamente). 0 = disattivato (la sessione dura 8 ore). Tra 5 minuti e 24 ore; un valore inferiore viene portato a 5.
 E	Votre session a expiré après une période d'inactivité. Reconnectez-vous pour revenir à la page où vous étiez.	Your session expired after a period of inactivity. Sign in again to return to the page you were on.	Su sesión expiró tras un período de inactividad. Vuelva a iniciar sesión para regresar a la página donde estaba.	La sessione è scaduta dopo un periodo di inattività. Accedi di nuovo per tornare alla pagina in cui eri.
+E	Envoi…	Uploading…	Enviando…	Invio…
+E	La pièce jointe n'a pas été enregistrée	The attachment was not saved	El archivo adjunto no se guardó	L'allegato non è stato salvato
+E	Impossible d'ouvrir la pièce jointe	Unable to open the attachment	No se puede abrir el archivo adjunto	Impossibile aprire l'allegato
+P	Ouvrir {0}	Open {0}	Abrir {0}	Apri {0}
+E	📷 Prendre une photo	📷 Take a photo	📷 Tomar una foto	📷 Scatta una foto
+E	📁 Choisir un fichier	📁 Choose a file	📁 Elegir un archivo	📁 Scegli un file
+E	🗑 Supprimer la pièce jointe	🗑 Delete the attachment	🗑 Eliminar el archivo adjunto	🗑 Elimina l'allegato
+E	Supprimer la pièce jointe ?	Delete the attachment?	¿Eliminar el archivo adjunto?	Eliminare l'allegato?
+E	La pièce jointe n'a pas été supprimée	The attachment was not deleted	El archivo adjunto no se eliminó	L'allegato non è stato eliminato
+E	Cliquez pour joindre un document	Click to attach a document	Haga clic para adjuntar un documento	Fai clic per allegare un documento
+E	Cliquez pour remplacer ou supprimer le document	Click to replace or delete the document	Haga clic para reemplazar o eliminar el documento	Fai clic per sostituire o eliminare il documento
+P	{0} : joindre un document	{0}: attach a document	{0}: adjuntar un documento	{0}: allega un documento
+P	{0} : remplacer ou supprimer le document	{0}: replace or delete the document	{0}: reemplazar o eliminar el documento	{0}: sostituisci o elimina il documento
+E	✏ Renommer	✏ Rename	✏ Renombrar	✏ Rinomina
+E	Renommer	Rename	Renombrar	Rinomina
+E	Indiquez un nom.	Enter a name.	Indique un nombre.	Inserisci un nome.
+E	La pièce jointe n'a pas été renommée	The attachment was not renamed	El archivo adjunto no se renombró	L'allegato non è stato rinominato
+P	Nouveau nom de {0}	New name for {0}	Nuevo nombre de {0}	Nuovo nome di {0}

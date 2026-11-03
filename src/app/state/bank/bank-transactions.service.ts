@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { AttachmentItem } from '../attachments/attachments.service';
 
 export interface BankTransactionRow {
   bankTransactionId: string;
@@ -15,6 +16,15 @@ export interface BankTransactionRow {
   linkId:      string | null;
   linkName:    string | null;
   linkKeyword: string | null;
+  // Pièce jointe d'un « Dépôt Mobile » (null = aucune) et son adresse de téléchargement
+  attachment?:    AttachmentItem | null;
+  attachmentUrl?: string | null;
+}
+
+/** Vrai si la description contient « Dépôt Mobile » (majuscules et accents ignorés), comme côté serveur. */
+export function isMobileDeposit(description: string | null | undefined): boolean {
+  const plain = (description ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  return /\bdepot\s+mobile\b/i.test(plain);
 }
 
 export type BankLinkType = 'company' | 'employee' | 'charge';
@@ -84,6 +94,9 @@ export class BankTransactionsService {
   setValidated(id: string, validated: boolean) {
     return this.http.put<BankTransactionRow>(`/api/bank-transactions/${id}/validated`, { validated });
   }
+
+  /** Fichier de la pièce jointe d'une ligne, à partir de son adresse (attachmentUrl). */
+  openAttachment(url: string) { return this.http.get(url, { responseType: 'blob' as const }); }
 
   /** Colonnes lues (à partir de 1) : 4 = date, 6 = description, 8 = retrait, 9 = dépôt. */
   importCsv(file: File) {
