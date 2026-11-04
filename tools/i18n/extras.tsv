@@ -378,3 +378,16 @@ E	Renommer	Rename	Renombrar	Rinomina
 E	Indiquez un nom.	Enter a name.	Indique un nombre.	Inserisci un nome.
 E	La pièce jointe n'a pas été renommée	The attachment was not renamed	El archivo adjunto no se renombró	L'allegato non è stato rinominato
 P	Nouveau nom de {0}	New name for {0}	Nuevo nombre de {0}	Nuovo nome di {0}
+E	Calendrier des compagnies	Company calendar	Calendario de compañías	Calendario delle aziende
+E	Les compagnies actives à travailler chaque jour du mois, d'après leur planning	Active companies to be worked each day of the month, based on their schedule	Las compañías activas que se deben trabajar cada día del mes, según su planificación	Le aziende attive da servire ogni giorno del mese, secondo la loro pianificazione
+E	Mois précédent	Previous month	Mes anterior	Mese precedente
+E	Mois suivant	Next month	Mes siguiente	Mese successivo
+P	Visites prévues dans le mois : {0#}	Visits planned this month: {0#}	Visitas previstas en el mes: {0#}	Visite previste nel mese: {0#}
+E	Impossible de charger le calendrier	Unable to load the calendar	No se puede cargar el calendario	Impossibile caricare il calendario
+E	Bi-hebdomadaire sans date de début de la semaine 1 : impossible de savoir quels jours travailler. Complétez le planning :	Bi-weekly without a week 1 start date: the days to work cannot be determined. Complete the schedule:	Quincenal sin fecha de inicio de la semana 1: no se puede saber qué días trabajar. Complete la planificación:	Bisettimanale senza data di inizio della settimana 1: impossibile sapere quali giorni lavorare. Completa la pianificazione:
+P	Autres : {0#}	Others: {0#}	Otras: {0#}	Altre: {0#}
+E	Aucune compagnie ne correspond à la recherche ce jour-là.	No company matches the search on that day.	Ninguna compañía coincide con la búsqueda ese día.	Nessuna azienda corrisponde alla ricerca quel giorno.
+E	Aucune compagnie à travailler ce jour-là.	No company to work on that day.	Ninguna compañía que trabajar ese día.	Nessuna azienda da servire quel giorno.
+E	Compagnies du mois	Companies this month	Compañías del mes	Aziende del mese
+E	Employés :	Employees:	Empleados:	Dipendenti:
+E	Aucun employé associé	No linked employee	Ningún empleado asociado	Nessun dipendente associato

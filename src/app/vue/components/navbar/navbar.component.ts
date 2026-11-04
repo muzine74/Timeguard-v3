@@ -194,6 +194,7 @@ export class NavbarComponent {
       ] },
       { title: 'Clients', items: [
         { label: 'Liste compagnies',   icon: 'building',  link: '/companies/edit',       show: () => this.has('companies.edit') },
+        { label: 'Calendrier des compagnies', icon: 'calendar', link: '/companies/calendrier', show: () => this.has('companies.edit') },
       ] },
       { title: 'Pointage', items: [
         { label: 'Pointage employé',   icon: 'list',  link: '/employees', exact: true, show: () => this.has('employees.view') },

@@ -1,0 +1,102 @@
+<div class="page-wrap">
+
+  <header class="page-hdr">
+    <div>
+      <h1 class="page-title">Calendrier des compagnies</h1>
+      <p class="page-sub">Les compagnies actives à travailler chaque jour du mois, d'après leur planning</p>
+    </div>
+  </header>
+
+  <!-- ── Barre d'outils ─────────────────────────────────────────────────── -->
+  <div class="toolbar">
+    <div class="nav-group">
+      <button type="button" class="btn btn-ghost btn-icon-only" (click)="move(-1)" aria-label="Mois précédent">‹</button>
+      <button type="button" class="btn btn-ghost" (click)="today()">Aujourd'hui</button>
+      <button type="button" class="btn btn-ghost btn-icon-only" (click)="move(1)" aria-label="Mois suivant">›</button>
+      <h2 class="period" aria-live="polite">{{ title() }}</h2>
+    </div>
+    <div class="nav-group">
+      <label for="cc-search" class="sr-only">Rechercher une compagnie</label>
+      <input id="cc-search" class="inp search" type="search" placeholder="Rechercher une compagnie…"
+             [ngModel]="search()" (ngModelChange)="search.set($event)" />
+      <span class="total" *ngIf="data()"><span>Visites prévues dans le mois : {{ monthTotal() }}</span></span>
+    </div>
+  </div>
+
+  <div class="err-msg" *ngIf="error()" role="alert">⚠ {{ error() }}
+    <button type="button" class="btn btn-ghost btn-sm" (click)="load()">Réessayer</button>
+  </div>
+
+  <div class="warn-msg" *ngIf="data()?.incomplete?.length" role="note">
+    ⚠ <span>Bi-hebdomadaire sans date de début de la semaine 1 : impossible de savoir quels jours travailler. Complétez le planning :</span>
+    <ng-container *ngFor="let c of data()!.incomplete; let last = last; trackBy: trackCompany">
+      <a [routerLink]="['/companies', c.companyId, 'edit']" data-no-i18n>{{ c.name }}</a><span *ngIf="!last">, </span>
+    </ng-container>
+  </div>
+
+  <div class="cal-wrap" [class.is-loading]="loading()" [attr.aria-busy]="loading()">
+    <div class="month">
+      <div class="wd" *ngFor="let w of weekdays()">{{ w }}</div>
+      <div class="cell" *ngFor="let c of cells(); trackBy: trackCell"
+           [class.out]="!c.inMonth" [class.today]="c.isToday" [class.sel]="c.inMonth && c.date === selected()"
+           (click)="select(c)">
+        <ng-container *ngIf="c.inMonth">
+          <div class="cell-head">
+            <span class="count" *ngIf="c.companies.length" [attr.aria-hidden]="true">{{ c.companies.length }}</span>
+            <button type="button" class="day-num" (click)="$event.stopPropagation(); select(c)"
+                    [attr.aria-pressed]="c.date === selected()"
+                    [attr.aria-label]="dayLabel(c.date) + ' : ' + c.companies.length">{{ c.day }}</button>
+          </div>
+          <!-- Toutes les compagnies du jour : colonnes de 4 lignes -->
+          <div class="chips" *ngIf="c.companies.length">
+            <a class="chip" *ngFor="let co of c.companies; trackBy: trackCompany"
+               [routerLink]="['/companies', co.companyId, 'edit']" (click)="$event.stopPropagation()"
+               [style.--k]="colorOf(co).k" [style.--k-rgb]="colorOf(co).rgb"
+               (mouseenter)="showTip(co, $event)" (mouseleave)="hideTip()" (focus)="showTip(co, $event)" (blur)="hideTip()"
+               [attr.aria-label]="co.name + ' — ' + employeesLabel(co)"
+               data-no-i18n>{{ co.name }}</a>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Jour choisi : toutes les compagnies ──────────────────────────────── -->
+  <section class="day-detail" *ngIf="selectedCell() as c" aria-labelledby="cc-day-title">
+    <h2 class="day-title" id="cc-day-title">{{ dayLabel(c.date) }}</h2>
+    <p class="muted" *ngIf="!c.companies.length">{{ search() || only() ? 'Aucune compagnie ne correspond à la recherche ce jour-là.' : 'Aucune compagnie à travailler ce jour-là.' }}</p>
+    <ul class="day-list" *ngIf="c.companies.length">
+      <li *ngFor="let co of c.companies; trackBy: trackCompany" [style.--k]="colorOf(co).k" [style.--k-rgb]="colorOf(co).rgb">
+        <a [routerLink]="['/companies', co.companyId, 'edit']" data-no-i18n>{{ co.name }}</a>
+        <span class="code" *ngIf="co.code" data-no-i18n>{{ co.code }}</span>
+        <span class="freq">{{ freqLabel[co.frequency] }}</span>
+        <span class="emps">
+          <ng-container *ngIf="employeesOf(co).length; else noEmp"><span>Employés :</span> <span data-no-i18n>{{ employeesOf(co).join(', ') }}</span></ng-container>
+          <ng-template #noEmp><span>Aucun employé associé</span></ng-template>
+        </span>
+      </li>
+    </ul>
+  </section>
+
+  <!-- Bulle du survol : employés associés à la compagnie -->
+  <div class="tip" *ngIf="tip() as t" role="tooltip" [style.left.px]="t.x" [style.top.px]="t.y" [style.--k]="colorOf(t.co).k">
+    <div class="tip-name" data-no-i18n>{{ t.co.name }}</div>
+    <div class="tip-meta"><span *ngIf="t.co.code" data-no-i18n>{{ t.co.code }} · </span><span>{{ freqLabel[t.co.frequency] }}</span></div>
+    <ng-container *ngIf="employeesOf(t.co).length; else tipNoEmp">
+      <div class="tip-sub">Employés associés</div>
+      <ul><li *ngFor="let e of employeesOf(t.co)" data-no-i18n>{{ e }}</li></ul>
+    </ng-container>
+    <ng-template #tipNoEmp><div class="tip-sub">Aucun employé associé</div></ng-template>
+  </div>
+
+  <!-- ── Légende : une couleur par compagnie ; clic = n'afficher qu'elle ──── -->
+  <section class="legend" *ngIf="monthCompanies().length" aria-labelledby="cc-legend-title">
+    <h2 class="legend-title" id="cc-legend-title">Compagnies du mois</h2>
+    <div class="legend-list">
+      <button type="button" class="lg" *ngFor="let co of monthCompanies(); trackBy: trackCompany"
+              [style.--k]="colorOf(co).k" [style.--k-rgb]="colorOf(co).rgb"
+              [class.on]="only() === co.companyId" [attr.aria-pressed]="only() === co.companyId"
+              (click)="toggleOnly(co)" data-no-i18n>{{ co.name }}</button>
+    </div>
+  </section>
+</div>

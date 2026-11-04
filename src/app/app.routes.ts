@@ -137,6 +137,12 @@ export const routes: Routes = [
     loadComponent: () => import('./vue/pages/Company-edit/Company-edit.component').then(m => m.CompanyEditComponent)
   },
   {
+    // Calendrier du mois : compagnies à travailler chaque jour, d'après leur planning
+    path: 'companies/calendrier',
+    canActivate: [permGuard(PERM.companiesEdit)],
+    loadComponent: () => import('./vue/pages/company-calendar/company-calendar.component').then(m => m.CompanyCalendarComponent)
+  },
+  {
     // Page « Lier employés et compagnies », mode « Par employé » (le mode « Par compagnie » est /employees/assign)
     path: 'companies/assign',
     canActivate: [permGuard(PERM.companiesEdit)],

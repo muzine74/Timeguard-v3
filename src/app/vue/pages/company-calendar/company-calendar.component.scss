@@ -1,0 +1,97 @@
+// Couleur d'une compagnie (--k, --k-rgb) : posée sur chaque élément par le composant, une par compagnie
+
+.toolbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.nav-group { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.period { margin: 0 0 0 8px; font-size: 1.05rem; font-weight: 700; text-transform: capitalize; }
+.search { min-width: 220px; }
+.total { font-size: .8rem; color: var(--muted); }
+
+.err-msg { color: var(--danger-text); font-size: .85rem; margin: 8px 0; display: flex; align-items: center; gap: 8px; }
+.warn-msg {
+  margin: 8px 0; padding: 10px 12px; border-radius: 10px; font-size: .82rem;
+  background: rgba(240, 180, 60, .1); border: 1px solid rgba(240, 180, 60, .35);
+  a { color: inherit; font-weight: 600; }
+}
+
+.cal-wrap.is-loading { opacity: .6; transition: opacity .15s; }
+
+// ── Mois ───────────────────────────────────────────────────────────────────
+.month { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border: 2px solid #000; border-radius: 12px; overflow: hidden; background: var(--surface); }
+.wd { padding: 8px; font-size: .72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; text-align: center; border-bottom: 2px solid #000; }
+.cell {
+  min-height: 112px; padding: 4px; display: flex; flex-direction: column; gap: 3px; cursor: pointer; min-width: 0;
+  border-right: 2px solid #000; border-bottom: 2px solid #000;
+  &:nth-child(7n) { border-right: none; }
+  &:nth-last-child(-n+7) { border-bottom: none; }
+  &:hover { background: rgba(var(--overlay-rgb), .03); }
+  &.out { background: rgba(var(--overlay-rgb), .02); cursor: default; }
+  &.today .day-num { background: var(--accent); color: var(--on-accent); }
+  &.sel { box-shadow: inset 0 0 0 2px var(--accent); }
+}
+.cell-head { display: flex; align-items: center; justify-content: space-between; gap: 4px; }
+.count { font-size: .68rem; font-weight: 700; color: var(--muted); padding: 0 4px; }
+.day-num {
+  margin-left: auto; min-width: 26px; height: 26px; padding: 0 6px; border-radius: 13px; border: none;
+  background: transparent; color: var(--text); font: inherit; font-size: .8rem; font-weight: 600; cursor: pointer;
+  &:hover { background: rgba(var(--accent-rgb), .2); }
+  &:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+}
+.chip {
+  display: block; padding: 2px 5px; border-radius: 5px; font-size: .72rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  border: 1px solid rgba(var(--k-rgb), .45); border-left: 3px solid var(--k); background: rgba(var(--k-rgb), .1);
+  color: var(--text); text-decoration: none;
+  &:hover { background: rgba(var(--k-rgb), .2); }
+  &:focus-visible { outline: 2px solid var(--k); outline-offset: 1px; }
+}
+.chips {
+  display: grid; grid-auto-flow: column; grid-template-rows: repeat(4, auto); grid-auto-columns: minmax(0, 1fr);
+  gap: 3px; min-width: 0;
+}
+
+// Bulle du survol
+.tip {
+  position: fixed; z-index: 1000; width: 260px; padding: 10px 12px; border-radius: 10px; pointer-events: none;
+  background: var(--surface); color: var(--text); border: 1px solid var(--border); border-top: 3px solid var(--k);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .25); font-size: .8rem;
+  ul { margin: 4px 0 0; padding-left: 18px; max-height: 110px; overflow: hidden; }
+  li { line-height: 1.35; }
+}
+.tip-name { font-weight: 700; }
+.tip-meta { color: var(--muted); font-size: .72rem; margin-top: 2px; }
+.tip-sub { margin-top: 6px; font-size: .72rem; font-weight: 700; color: var(--muted); }
+
+// ── Jour choisi ────────────────────────────────────────────────────────────
+.day-detail { margin-top: 14px; padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+.day-title { margin: 0 0 10px; font-size: .95rem; font-weight: 700; text-transform: capitalize; }
+.muted { color: var(--muted); font-size: .85rem; margin: 0; }
+.day-list {
+  list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 6px;
+  li { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; padding: 6px 10px; border-radius: 8px; border-left: 3px solid var(--k); background: rgba(var(--k-rgb), .08); }
+  a { color: var(--text); font-weight: 600; text-decoration: none; &:hover { text-decoration: underline; } }
+  .code, .freq { font-size: .75rem; color: var(--muted); }
+  .emps { flex-basis: 100%; font-size: .75rem; color: var(--muted); }
+  .freq { margin-left: auto; }
+}
+
+.legend { margin-top: 14px; }
+.legend-title { margin: 0 0 8px; font-size: .8rem; font-weight: 700; color: var(--muted); }
+.legend-list { display: flex; gap: 6px; flex-wrap: wrap; }
+.lg {
+  display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; cursor: pointer;
+  font: inherit; font-size: .75rem; color: var(--text); background: rgba(var(--k-rgb), .08); border: 1px solid rgba(var(--k-rgb), .4);
+  &::before { content: ''; width: 10px; height: 10px; border-radius: 3px; background: var(--k); flex: none; }
+  &:hover { background: rgba(var(--k-rgb), .18); }
+  &.on { background: rgba(var(--k-rgb), .25); border-color: var(--k); font-weight: 700; }
+  &:focus-visible { outline: 2px solid var(--k); outline-offset: 2px; }
+}
+
+@media (max-width: 640px) {
+  .page-wrap { padding: 16px 12px; }
+  .period { flex-basis: 100%; margin: 4px 0 0; }
+  .search { min-width: 0; flex: 1 1 100%; }
+  .cell { min-height: 58px; }
+  // Petites cases : un trait par compagnie, la liste complète est sous la grille
+  .chip { font-size: 0; padding: 0; height: 5px; border-width: 0; border-radius: 3px; background: var(--k); pointer-events: none; }
+  .count { font-size: .62rem; }
+  .chips { gap: 2px; }
+}
