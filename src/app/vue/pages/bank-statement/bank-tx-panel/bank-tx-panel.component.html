@@ -1,0 +1,173 @@
+<div class="backdrop" (click)="close()">
+  <section #dlg class="panel" role="dialog" aria-modal="true" aria-labelledby="txp-title" tabindex="-1" (click)="$event.stopPropagation()">
+    <header class="panel-hdr">
+      <div class="hdr-text">
+        <h2 id="txp-title" class="panel-title">
+          <span>Transaction</span> <span data-no-i18n>{{ txRef(r()) }}</span> — <span data-no-i18n>{{ r().date }}</span>
+        </h2>
+        <p class="panel-sub">
+          <span data-no-i18n>{{ r().description }}</span> ·
+          <strong [class.neg]="r().withdrawal != null" [class.pos]="r().deposit != null">
+            <span *ngIf="r().withdrawal != null">Retrait</span><span *ngIf="r().deposit != null">Dépôt</span>
+            <span data-no-i18n> {{ fmt(amount(r())) }}</span>
+          </strong>
+        </p>
+      </div>
+      <button type="button" class="btn btn-outline btn-sm close-btn" (click)="close()" aria-label="Fermer">✕</button>
+    </header>
+
+    <div class="msg msg-err" role="alert" *ngIf="error()">⚠ {{ error() }}</div>
+
+    <div class="panel-body">
+
+      <!-- ── Annulation ─────────────────────────────────────────────────── -->
+      <section class="blk blk-cancel" *ngIf="r().cancelledBy || r().cancels" aria-labelledby="txp-cancel">
+        <h3 id="txp-cancel" class="blk-title">↩ Annulation</h3>
+        <p *ngIf="r().cancelledBy as c">
+          <span>Annulée le {{ c.date }} par la transaction</span>
+          <button type="button" class="link-btn" (click)="open(c)" [title]="'Annulée le ' + c.date">
+            <span data-no-i18n>{{ txRef(c) }}</span>
+          </button>
+        </p>
+        <p *ngIf="r().cancels as c">
+          <span>Annule la transaction du {{ c.date }} :</span>
+          <button type="button" class="link-btn" (click)="open(c)" [title]="c.date + ' — ' + c.description">
+            <span data-no-i18n>{{ txRef(c) }}</span>
+          </button>
+          <span data-no-i18n>{{ c.description }} ({{ fmt(amount(c)) }})</span>
+        </p>
+      </section>
+
+      <!-- ── Rapprochement ──────────────────────────────────────────────── -->
+      <section class="blk" aria-labelledby="txp-match">
+        <h3 id="txp-match" class="blk-title">
+          <span *ngIf="r().matchKind === 'bills'">🧾 Factures associées</span>
+          <span *ngIf="r().matchKind === 'charge'">💼 Charge associée</span>
+          <span *ngIf="!r().matchKind">🔗 Rapprochement</span>
+        </h3>
+
+        <p class="hint" *ngIf="!r().matchKind">
+          <ng-container *ngIf="r().cancels">Une transaction d'annulation ne se rapproche pas.</ng-container>
+          <ng-container *ngIf="!r().cancels">Seuls les dépôts directs et les dépôts mobiles (factures) et les retraits (charge) se rapprochent.</ng-container>
+        </p>
+
+        <ng-container *ngIf="r().matchKind">
+          <ul class="items" *ngIf="matched().length">
+            <li *ngFor="let m of matched()" class="item">
+              <span class="item-ico" aria-hidden="true">{{ targetIcon(m.targetType) }}</span>
+              <span class="item-main">
+                <strong *ngIf="m.label" data-no-i18n>{{ m.label }}</strong>
+                <em *ngIf="!m.label">{{ m.targetType === 'bill' ? 'Facture supprimée' : 'Charge supprimée' }}</em>
+                <span class="item-sub" *ngIf="m.companyName || m.date">
+                  <span data-no-i18n *ngIf="m.companyName">{{ m.companyName }} · </span><span data-no-i18n>{{ m.date }}</span>
+                </span>
+              </span>
+              <span class="item-amt" data-no-i18n>{{ fmt(m.amount) }}</span>
+              <span class="tag" *ngIf="m.targetType === 'bill'" [class.tag-ok]="m.isPaid" [class.tag-warn]="!m.isPaid">{{ m.isPaid ? 'Payée' : 'Non payée' }}</span>
+              <button type="button" class="btn btn-outline btn-sm danger" [disabled]="busy() || (m.targetType === 'bill' && !canEditInvoices)"
+                      (click)="unlink(m)" [attr.aria-label]="'Retirer ' + (m.label ?? '')">Retirer</button>
+            </li>
+          </ul>
+          <dl class="sums" *ngIf="matched().length">
+            <div><dt>Transaction</dt><dd data-no-i18n>{{ fmt(amount(r())) }}</dd></div>
+            <div><dt>Associé</dt><dd data-no-i18n>{{ fmt(matchedTotal()) }}</dd></div>
+            <div><dt>Écart</dt><dd [class.neg]="gap() !== 0" data-no-i18n>{{ fmt(gap()) }}</dd></div>
+          </dl>
+
+          <p class="hint warn" *ngIf="r().matchKind === 'bills' && !canEditInvoices">
+            Associer une facture la marque payée : il faut le droit de modifier les factures.
+          </p>
+
+          <div class="cand" *ngIf="canAdd()">
+            <label class="lbl" for="txp-search">
+              {{ r().matchKind === 'bills' ? 'Ajouter une facture' : (matched().length ? 'Remplacer la charge' : 'Choisir une charge') }}
+            </label>
+            <input id="txp-search" class="inp" type="search" autocomplete="off"
+                   [placeholder]="r().matchKind === 'bills' ? 'N° de facture, compagnie ou montant…' : 'Titre de la charge ou montant…'"
+                   [ngModel]="search()" (ngModelChange)="setSearch($event)" />
+            <p class="hint" *ngIf="r().matchKind === 'bills'">Une facture associée est marquée payée à la date du dépôt.</p>
+            <div class="msg msg-err" role="alert" *ngIf="candError()">⚠ {{ candError() }}</div>
+            <p class="hint" role="status" *ngIf="candLoading()">Recherche…</p>
+            <ul class="items cand-list" *ngIf="!candLoading() && cands() as c">
+              <li *ngFor="let it of c.items" class="item">
+                <span class="item-ico" aria-hidden="true">{{ targetIcon(it.targetType) }}</span>
+                <span class="item-main">
+                  <strong data-no-i18n>{{ it.label }}</strong>
+                  <span class="item-sub"><span data-no-i18n *ngIf="it.companyName">{{ it.companyName }} · </span><span data-no-i18n>{{ it.date }}</span></span>
+                </span>
+                <span class="item-amt" [class.exact]="it.amount === c.remaining" data-no-i18n>{{ fmt(it.amount) }}</span>
+                <span class="tag tag-ok" *ngIf="it.isPaid">Payée</span>
+                <button type="button" class="btn btn-primary btn-sm" [disabled]="busy()" (click)="associate(it)"
+                        [attr.aria-label]="'Associer ' + it.label">Associer</button>
+              </li>
+              <li class="empty" *ngIf="!c.items.length">Aucun élément à proposer.</li>
+            </ul>
+          </div>
+        </ng-container>
+      </section>
+
+      <!-- ── Note ───────────────────────────────────────────────────────── -->
+      <section class="blk" aria-labelledby="txp-note">
+        <h3 id="txp-note" class="blk-title">📝 Note</h3>
+        <textarea class="inp note" rows="3" [attr.maxlength]="maxNote" aria-labelledby="txp-note" aria-describedby="txp-note-meta"
+                  placeholder="Ajouter une note…" [ngModel]="noteDraft()" (ngModelChange)="noteDraft.set($event)" [disabled]="busy()"></textarea>
+        <div class="note-bar">
+          <span id="txp-note-meta" class="hint">
+            <ng-container *ngIf="r().note && r().noteUpdatedAt">
+              <span *ngIf="r().noteUpdatedBy">Modifiée le {{ when(r().noteUpdatedAt) }} par {{ r().noteUpdatedBy }}</span>
+              <span *ngIf="!r().noteUpdatedBy">Modifiée le {{ when(r().noteUpdatedAt) }}</span>
+              ·
+            </ng-container>
+            <span data-no-i18n>{{ noteDraft().length }} / {{ maxNote }}</span>
+          </span>
+          <span class="note-actions">
+            <button type="button" class="btn btn-outline btn-sm" *ngIf="noteDirty()" [disabled]="busy()" (click)="resetNote()">Annuler</button>
+            <button type="button" class="btn btn-primary btn-sm" [disabled]="busy() || !noteDirty()" (click)="saveNote()">Enregistrer la note</button>
+          </span>
+        </div>
+      </section>
+
+      <!-- ── Pièces jointes ─────────────────────────────────────────────── -->
+      <section class="blk" aria-labelledby="txp-att">
+        <h3 id="txp-att" class="blk-title">📎 Pièces jointes <span class="count" data-no-i18n>{{ atts().length }} / {{ maxFiles }}</span></h3>
+        <input #fileInput type="file" hidden multiple [accept]="accept" (change)="onFiles($event)" />
+        <input #photoInput type="file" hidden accept="image/jpeg,image/png" capture="environment" (change)="onFiles($event)" />
+
+        <ul class="items" *ngIf="atts().length">
+          <li *ngFor="let a of atts()" class="item">
+            <ng-container *ngIf="renaming() !== a.id">
+              <button type="button" class="link-btn item-main att-name" (click)="openFile(a)" [attr.aria-label]="'Ouvrir ' + a.name">
+                <span aria-hidden="true">📄</span> <span data-no-i18n>{{ a.name }}</span>
+              </button>
+              <span class="item-sub" data-no-i18n>{{ size(a.size) }}</span>
+              <span class="att-actions">
+                <button type="button" class="btn btn-outline btn-sm" (click)="openFile(a)" [attr.aria-label]="'Ouvrir ' + a.name">Ouvrir</button>
+                <button type="button" class="btn btn-outline btn-sm" (click)="downloadFile(a)" [attr.aria-label]="'Télécharger ' + a.name">⬇ Télécharger</button>
+                <button type="button" class="btn btn-outline btn-sm" [disabled]="attBusy()" (click)="startRename(a)" [attr.aria-label]="'Renommer ' + a.name">✏ Renommer</button>
+                <button type="button" class="btn btn-outline btn-sm danger" [disabled]="attBusy()" (click)="removeFile(a)" [attr.aria-label]="'Supprimer ' + a.name">🗑</button>
+              </span>
+            </ng-container>
+            <form class="att-rename" *ngIf="renaming() === a.id" (ngSubmit)="saveRename(a)"
+                  (keydown.escape)="$event.stopPropagation(); cancelRename()">
+              <input #renameInput class="inp" type="text" maxlength="250" name="attName" [ngModel]="renameDraft()" (ngModelChange)="renameDraft.set($event)"
+                     [disabled]="attBusy()" [attr.aria-label]="'Nouveau nom de ' + a.name" />
+              <span class="att-ext" data-no-i18n>{{ extOf(a.name) }}</span>
+              <button type="submit" class="btn btn-primary btn-sm" [disabled]="attBusy()">Renommer</button>
+              <button type="button" class="btn btn-outline btn-sm" [disabled]="attBusy()" (click)="cancelRename()">Annuler</button>
+            </form>
+          </li>
+        </ul>
+        <p class="hint" *ngIf="!atts().length">Aucune pièce jointe.</p>
+
+        <div class="att-add" *ngIf="atts().length < maxFiles">
+          <button type="button" class="btn btn-outline btn-sm" *ngIf="canTakePhoto" [disabled]="attBusy()" (click)="pick(photoInput)">📷 Prendre une photo</button>
+          <button type="button" class="btn btn-outline btn-sm" [disabled]="attBusy()" (click)="pick(fileInput)">📁 Choisir des fichiers</button>
+          <span class="hint" role="status" *ngIf="attBusy()">Envoi…</span>
+        </div>
+        <div class="msg msg-err" role="alert" *ngIf="attErrors().length">
+          <div *ngFor="let e of attErrors()">⚠ {{ e }}</div>
+        </div>
+      </section>
+    </div>
+  </section>
+</div>

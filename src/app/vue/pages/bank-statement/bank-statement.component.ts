@@ -1,11 +1,12 @@
-import { Component, OnInit, signal, computed, ChangeDetectionStrategy, DestroyRef, inject, HostListener, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, signal, computed, ChangeDetectionStrategy, DestroyRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { BankTransactionsService, BankTransactionList, BankTransactionRow, BankImportResult, isMobileDeposit } from '../../../state/bank/bank-transactions.service';
-import { AttachmentsService } from '../../../state/attachments/attachments.service';
+import { BankTransactionsService, BankTransactionList, BankTransactionRow, BankTransactionRef, BankImportResult, isMobileDeposit, txRef } from '../../../state/bank/bank-transactions.service';
+import { AttachmentsService, AttachmentItem } from '../../../state/attachments/attachments.service';
+import { AuthService } from '../../../state/auth/auth.service';
+import { BankTxPanelComponent } from './bank-tx-panel/bank-tx-panel.component';
 import { downloadBlob } from '../../shared/download';
-import { ConfirmService } from '../../../state/ui/confirm.service';
 import { BankLexiconComponent, LINK_ICON, LINK_LABEL } from './bank-lexicon/bank-lexicon.component';
 import { TableSort, SortValue } from '../../shared/table-sort';
 import { MultiSelectComponent, MultiSelectOption } from '../../components/multi-select/multi-select.component';
@@ -30,14 +31,14 @@ const MAX_SIZE = 5 * 1024 * 1024;
 @Component({
     selector: 'app-bank-statement',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule, MultiSelectComponent, BankLexiconComponent, ExportButtonsComponent, SearchHintComponent],
+    imports: [CommonModule, FormsModule, MultiSelectComponent, BankLexiconComponent, ExportButtonsComponent, SearchHintComponent, BankTxPanelComponent],
     templateUrl: './bank-statement.component.html',
     styleUrls: ['./bank-statement.component.scss']
 })
 export class BankStatementComponent implements OnInit {
   private svc        = inject(BankTransactionsService);
   private files      = inject(AttachmentsService);
-  private confirm    = inject(ConfirmService);
+  private auth       = inject(AuthService);
   private destroyRef = inject(DestroyRef);
 
   // ── Onglets : Relevé bancaire / Lexique ───────────────────────────────────
@@ -113,7 +114,8 @@ export class BankStatementComponent implements OnInit {
       // Montants : tels qu'affichés (« 1 943,08 $ »), sans espace (« 1943,08 ») et bruts (« 1943.08 »)
       const amounts = [r.withdrawal, r.deposit].flatMap(a => a == null ? [] : [this.fmt(a), this.fmt(a).replace(/\s/g, ''), String(a)]);
       return matchesAll(terms, r.date, r.description, amounts, kw(r.validated ? 'validée' : 'non validée'),
-                        r.linkName ?? '', r.linkType ? LINK_LABEL[r.linkType] : '');
+                        r.linkName ?? '', r.linkType ? LINK_LABEL[r.linkType] : '', txRef(r), r.note ?? '', this.matchLabels(r),
+                        (r.matches ?? []).map(m => m.companyName ?? ''), r.cancelledBy || r.cancels ? kw('annulée') : '');
     });
   });
 
@@ -122,8 +124,12 @@ export class BankStatementComponent implements OnInit {
     name: 'Releve_bancaire', title: 'Relevé bancaire', search: this.search(),
     extra: [this.dateFrom && `Du ${this.dateFrom}`, this.dateTo && `au ${this.dateTo}`].filter(Boolean).join(' '),
     columns: [{ header: 'Date', width: 12 }, { header: 'Description', width: 44 }, { header: 'Retrait', type: 'money' },
-              { header: 'Dépôt', type: 'money' }, { header: 'Lié à', width: 28 }, { header: 'Validée', width: 10 }],
-    rows: this.sorted().map(r => [r.date, r.description, r.withdrawal, r.deposit, r.linkName ?? '', r.validated ? 'Oui' : 'Non']),
+              { header: 'Dépôt', type: 'money' }, { header: 'Lié à', width: 28 }, { header: 'Validée', width: 10 },
+              { header: 'N°', width: 8 }, { header: 'Annulation', width: 14 }, { header: 'Rapprochement', width: 30 },
+              { header: 'Note', width: 40 }, { header: 'Pièces jointes', width: 10 }],
+    rows: this.sorted().map(r => [r.date, r.description, r.withdrawal, r.deposit, r.linkName ?? '', r.validated ? 'Oui' : 'Non',
+                                  txRef(r), r.cancelledBy ? `Annulée par ${txRef(r.cancelledBy)}` : r.cancels ? `Annule ${txRef(r.cancels)}` : '',
+                                  this.matchLabels(r), r.note ?? '', this.attCount(r) || '']),
     landscape: true,
   });
 
@@ -156,10 +162,9 @@ export class BankStatementComponent implements OnInit {
     this._replace({ ...row, validated });
     this._saving(row.bankTransactionId, true);
     this.svc.setValidated(row.bankTransactionId, validated).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      // La réponse ne contient pas la pièce jointe : garder celle de la ligne
+      // La réponse contient la ligne complète (pièces jointes, note, rapprochement)
       next: saved => {
-        const cur = this._rows().find(r => r.bankTransactionId === row.bankTransactionId);
-        this._replace({ ...saved, attachment: cur?.attachment ?? null, attachmentUrl: cur?.attachmentUrl ?? null });
+        this._replace(saved);
         this._saving(row.bankTransactionId, false);
       },
       error: err => {
@@ -180,144 +185,78 @@ export class BankStatementComponent implements OnInit {
     this.saving.set(next);
   }
 
-  // ── Pièce jointe des « Dépôt Mobile » (clic sur la description → menu) ────
+  // ── Suivi d'une transaction (annulation, rapprochement, note, pièces jointes) ──
   readonly isMobile = (r: BankTransactionRow) => isMobileDeposit(r.description);
-  /** Appareil tactile (téléphone, tablette) : propose « Prendre une photo ». */
-  readonly canTakePhoto = typeof window !== 'undefined'
-    && (window.matchMedia?.('(pointer: coarse)').matches || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent));
-  attaching   = signal<ReadonlySet<string>>(new Set());
+  readonly txRef = txRef;
+  readonly canEditInvoices = this.auth.hasPerm('invoices.edit');   // même règle que l'API
   attachError = signal('');
-  menuFor     = signal<string | null>(null);   // ligne dont le menu est ouvert
-  private _attachRow: BankTransactionRow | null = null;
+  panelFor    = signal<string | null>(null);   // ligne dont le panneau de suivi est ouvert
+  readonly panelRow = computed(() => this._rows().find(r => r.bankTransactionId === this.panelFor()) ?? null);
+  highlight   = signal<string | null>(null);   // ligne atteinte par un lien d'annulation
+  private _focusAfterLoad: string | null = null;
+  private _highlightTimer?: ReturnType<typeof setTimeout>;
 
-  /** Clic sur la description d'un « Dépôt Mobile » : ouvre / ferme le menu de la pièce jointe. */
-  toggleMenu(r: BankTransactionRow, ev: Event): void {
-    ev.stopPropagation();
-    if (!this.isMobile(r) || this.attaching().has(r.bankTransactionId) || this.renaming() === r.bankTransactionId) return;
-    this.menuFor.set(this.menuFor() === r.bankTransactionId ? null : r.bankTransactionId);
+  openPanel(r: BankTransactionRow, ev?: Event): void {
+    ev?.stopPropagation();
+    this.panelFor.set(r.bankTransactionId);
   }
 
-  @HostListener('document:click')
-  @HostListener('document:keydown.escape')
-  closeMenu(): void { if (this.menuFor()) this.menuFor.set(null); }
-
-  /** Choisir un fichier existant ou prendre une photo (selon le champ fichier passé) ; remplace la pièce actuelle. */
-  pickAttachment(r: BankTransactionRow, input: HTMLInputElement): void {
-    this.menuFor.set(null);
-    if (!this.isMobile(r) || this.attaching().has(r.bankTransactionId)) return;
-    this._attachRow = r;
-    input.value = '';
-    input.click();
+  /** Panneau fermé : le focus revient au bouton « Suivi » de la ligne. */
+  closePanel(): void {
+    const id = this.panelFor();
+    this.panelFor.set(null);
+    if (id) setTimeout(() => document.getElementById(`tx-open-${id}`)?.focus());
   }
 
-  // Renommage dans la cellule : nom sans extension (l'extension d'origine est gardée)
-  renaming    = signal<string | null>(null);   // ligne en cours de renommage
-  renameDraft = signal('');
+  /** Ligne enregistrée par le panneau : remplace celle du relevé. */
+  onPanelChanged(row: BankTransactionRow): void { this._replace(row); }
 
-  /** Champ de renommage : reçoit le focus, texte sélectionné, dès qu'il apparaît. */
-  @ViewChild('renameInput') set _renameInput(el: ElementRef<HTMLInputElement> | undefined) {
-    if (el) setTimeout(() => { el.nativeElement.focus(); el.nativeElement.select(); });
+  /** Lien d'annulation : affiche l'autre transaction (dates élargies, filtres retirés si besoin), la met en évidence. */
+  goToTransaction(ref: BankTransactionRef, ev?: Event): void {
+    ev?.preventDefault();
+    ev?.stopPropagation();
+    this.panelFor.set(null);
+    const id = ref.bankTransactionId;
+    if (!this._rows().some(r => r.bankTransactionId === id)) {
+      if (this.dateFrom && ref.date < this.dateFrom) this.dateFrom = ref.date;
+      if (this.dateTo && ref.date > this.dateTo)     this.dateTo = ref.date;
+      this._focusAfterLoad = id;
+      this.load();
+      return;
+    }
+    this._reveal(id);
   }
 
-  /** Extension du document (« .pdf »), affichée après le champ de saisie. */
-  extOf(name: string): string { const i = name.lastIndexOf('.'); return i > 0 ? name.slice(i) : ''; }
-
-  startRename(r: BankTransactionRow): void {
-    this.menuFor.set(null);
-    const a = r.attachment;
-    if (!a) return;
-    const ext = this.extOf(a.name);
-    this.renameDraft.set(ext ? a.name.slice(0, -ext.length) : a.name);
-    this.renaming.set(r.bankTransactionId);
-  }
-
-  cancelRename(): void { this.renaming.set(null); }
-
-  saveRename(r: BankTransactionRow): void {
-    const a = r.attachment;
-    const name = this.renameDraft().trim();
-    if (!a || this.attaching().has(r.bankTransactionId)) return;
-    if (!name) { this.attachError.set('Indiquez un nom.'); return; }
-    const full = name + this.extOf(a.name);
-    if (full === a.name) { this.renaming.set(null); return; }
-    const id = r.bankTransactionId;
-    this.attachError.set('');
-    this._attaching(id, true);
-    this.files.rename(a.id, full).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: item => {
-        const cur = this._rows().find(x => x.bankTransactionId === id) ?? r;
-        this._replace({ ...cur, attachment: item });
-        this._attaching(id, false);
-        this.renaming.set(null);
-      },
-      error: err => {
-        this._attaching(id, false);
-        this.attachError.set(httpErrorMessage(err, `La pièce jointe n'a pas été renommée`));
-      },
+  private _reveal(id: string): void {
+    if (!this.filtered().some(r => r.bankTransactionId === id)) this.resetFilters();
+    const i = this.sorted().findIndex(r => r.bankTransactionId === id);
+    if (i < 0) return;
+    this.page.set(Math.floor(i / PAGE_SIZE) + 1);
+    this.highlight.set(id);
+    clearTimeout(this._highlightTimer);
+    this._highlightTimer = setTimeout(() => this.highlight.set(null), 4000);
+    setTimeout(() => {
+      const row = document.getElementById(`tx-${id}`);
+      row?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      document.getElementById(`tx-open-${id}`)?.focus({ preventScroll: true });
     });
   }
 
-  /** Retire la pièce jointe de la ligne, après confirmation. */
-  async removeAttachment(r: BankTransactionRow): Promise<void> {
-    this.menuFor.set(null);
-    const a = r.attachment;
-    if (!a || this.attaching().has(r.bankTransactionId)) return;
-    if (!await this.confirm.danger('Supprimer la pièce jointe ?', a.name)) return;
-    const id = r.bankTransactionId;
-    this.attachError.set('');
-    this._attaching(id, true);
-    this.files.delete(a.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        const cur = this._rows().find(x => x.bankTransactionId === id) ?? r;
-        this._replace({ ...cur, attachment: null, attachmentUrl: null });
-        this._attaching(id, false);
-      },
-      error: err => {
-        this._attaching(id, false);
-        this.attachError.set(httpErrorMessage(err, `La pièce jointe n'a pas été supprimée`));
-      },
-    });
-  }
+  cancelledTitle(r: BankTransactionRow): string { return r.cancelledBy ? `Annulée le ${r.cancelledBy.date}` : ''; }
+  cancelsTitle(r: BankTransactionRow): string { return r.cancels ? `${r.cancels.date} — ${r.cancels.description}` : ''; }
 
-  onAttachmentFile(ev: Event): void {
-    const input = ev.target as HTMLInputElement;
-    const f = input.files?.[0];
-    const row = this._attachRow;
-    this._attachRow = null;
-    input.value = '';
-    if (!f || !row) return;
-    this.attachError.set('');
-    const why = this.files.check(f);
-    if (why) { this.attachError.set(`${f.name} : ${why}`); return; }
+  /** Libellés des factures / de la charge associées (recherche, export). */
+  matchLabels(r: BankTransactionRow): string { return (r.matches ?? []).map(m => m.label ?? '?').join(', '); }
+  attCount(r: BankTransactionRow): number { return r.attachments?.length ?? (r.attachment ? 1 : 0); }
 
-    const id = row.bankTransactionId;
-    this._attaching(id, true);
-    this.files.upload('bank', id, f).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: item => {
-        const cur = this._rows().find(r => r.bankTransactionId === id) ?? row;
-        const old = cur.attachment;
-        this._replace({ ...cur, attachment: item, attachmentUrl: `/api/attachments/${item.id}/download` });
-        this._attaching(id, false);
-        // Une seule pièce par ligne : l'ancienne est retirée
-        if (old && old.id !== item.id) this.files.delete(old.id).subscribe({ error: () => {} });
-      },
-      error: err => {
-        this._attaching(id, false);
-        this.attachError.set(httpErrorMessage(err, `La pièce jointe n'a pas été enregistrée`));
-      },
-    });
-  }
-
-  /** Clic sur le nom du document : l'ouvre dans un nouvel onglet (fichier récupéré avec la session). */
-  openAttachment(r: BankTransactionRow, ev: Event): void {
+  /** Clic sur le nom d'un document dans la cellule : l'ouvre dans un nouvel onglet (fichier récupéré avec la session). */
+  openAttachment(a: AttachmentItem, ev: Event): void {
     ev.preventDefault();
     ev.stopPropagation();
-    const a = r.attachment;
-    if (!a || !r.attachmentUrl) return;
     this.attachError.set('');
     // Onglet ouvert tout de suite (sinon bloqué comme fenêtre surgissante), rempli à la réception
     const win = window.open('', '_blank');
-    this.svc.openAttachment(r.attachmentUrl).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    this.files.download(a.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: blob => {
         if (!win) { downloadBlob(blob, a.name); return; }
         const url = URL.createObjectURL(blob);
@@ -329,12 +268,6 @@ export class BankStatementComponent implements OnInit {
         this.attachError.set(httpErrorMessage(err, `Impossible d'ouvrir la pièce jointe`));
       },
     });
-  }
-
-  private _attaching(id: string, on: boolean): void {
-    const next = new Set(this.attaching());
-    on ? next.add(id) : next.delete(id);
-    this.attaching.set(next);
   }
 
   trackRow(_: number, r: BankTransactionRow): string { return r.bankTransactionId; }
@@ -415,6 +348,10 @@ export class BankStatementComponent implements OnInit {
           validated:   p.validated,
         }));
         this.page.set(1);
+        // Lien d'annulation vers une ligne hors des dates : la montrer une fois chargée
+        const focus = this._focusAfterLoad;
+        this._focusAfterLoad = null;
+        if (focus) this._reveal(focus);
       },
       error: err => { this.error.set(httpErrorMessage(err, `Impossible de charger le relevé`)); this.loading.set(false); },
     });

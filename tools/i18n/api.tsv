@@ -514,3 +514,16 @@ E	Taxes	Taxes	Impuestos	Imposte
 E	Montant avec taxes	Amount with tax	Importe con impuestos	Importo con imposte
 P	Dont TPS {0} et TVQ {1}.	Including GST {0} and QST {1}.	De los cuales TPS {0} y TVQ {1}.	Di cui TPS {0} e TVQ {1}.
 E	Saisissez un montant dans n'importe quel champ : les deux autres se calculent.	Enter an amount in any field: the other two are calculated.	Introduzca un importe en cualquier campo: los otros dos se calculan.	Inserisci un importo in qualsiasi campo: gli altri due vengono calcolati.
+P	La note dépasse {0#} caractères.	The note exceeds {0#} characters.	La nota supera los {0#} caracteres.	La nota supera i {0#} caratteri.
+E	Seuls les dépôts directs et les dépôts mobiles peuvent être associés à des factures.	Only direct deposits and mobile deposits can be linked to invoices.	Solo los depósitos directos y móviles pueden asociarse a facturas.	Solo i depositi diretti e mobili possono essere associati a fatture.
+E	Associer une facture la marque payée : il faut le droit de modifier les factures.	Linking an invoice marks it paid: you need the right to edit invoices.	Asociar una factura la marca como pagada: se necesita el permiso para modificar facturas.	Associare una fattura la segna come pagata: serve il permesso di modificare le fatture.
+E	Choisissez une facture.	Choose an invoice.	Elija una factura.	Scegli una fattura.
+E	Un avoir ne s'associe pas : choisissez la facture d'origine.	A credit note cannot be linked: choose the original invoice.	Una nota de crédito no se asocia: elija la factura original.	Una nota di credito non si associa: scegli la fattura originale.
+P	La facture {0} est déjà associée à la transaction du {1}.	Invoice {0} is already linked to the transaction of {1}.	La factura {0} ya está asociada a la transacción del {1}.	La fattura {0} è già associata alla transazione del {1}.
+E	Seuls les retraits peuvent être associés à une charge.	Only withdrawals can be linked to an expense.	Solo los retiros pueden asociarse a un gasto.	Solo i prelievi possono essere associati a una spesa.
+E	Choisissez une charge.	Choose an expense.	Elija un gasto.	Scegli una spesa.
+P	La charge « {0} » est déjà associée à la transaction du {1}.	Expense "{0}" is already linked to the transaction of {1}.	El gasto «{0}» ya está asociado a la transacción del {1}.	La spesa «{0}» è già associata alla transazione del {1}.
+E	Type d'association invalide.	Invalid link type.	Tipo de asociación no válido.	Tipo di associazione non valido.
+E	Cet élément vient d'être associé à une autre transaction. Rechargez la page.	This item has just been linked to another transaction. Reload the page.	Este elemento acaba de asociarse a otra transacción. Recargue la página.	Questo elemento è appena stato associato a un'altra transazione. Ricarica la pagina.
+E	Retirer une facture peut la remettre non payée : il faut le droit de modifier les factures.	Removing an invoice can make it unpaid again: you need the right to edit invoices.	Quitar una factura puede dejarla sin pagar: se necesita el permiso para modificar facturas.	Rimuovere una fattura può renderla di nuovo non pagata: serve il permesso di modificare le fatture.
+E	Association introuvable.	Link not found.	Asociación no encontrada.	Associazione non trovata.

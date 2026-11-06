@@ -355,24 +355,16 @@ E	Astuce : a & b = les deux mots · a | b = l'un ou l'autre	Tip: a & b = both wo
 E	Exemples : « dupont & montréal » trouve les lignes qui contiennent les deux mots ; « dupont | tremblay » trouve celles qui contiennent l'un ou l'autre.	Examples: “dupont & montreal” finds the rows that contain both words; “dupont | tremblay” finds those that contain either one.	Ejemplos: «dupont & montreal» encuentra las filas que contienen ambas palabras; «dupont | tremblay», las que contienen una u otra.	Esempi: «dupont & montreal» trova le righe che contengono entrambe le parole; «dupont | tremblay» quelle che contengono l'una o l'altra.
 E	Rechercher dans le guide (ex. mot de passe & courriel, ou avoir | T4A)…	Search the guide (e.g. password & email, or credit note | T4A)…	Buscar en la guía (ej. contraseña & correo, o abono | T4A)…	Cerca nella guida (es. password & e-mail, o nota di credito | T4A)…
 E	Ex. Charges & Loyer, ou Loyer | 1200.5	E.g. Charges & Rent, or Rent | 1200.5	Ej. Charges & Alquiler, o Alquiler | 1200.5	Es. Charges & Affitto, o Affitto | 1200.5
-
 E	Sécurité	Security	Seguridad	Sicurezza
 E	Délai d'inactivité (minutes)	Idle timeout (minutes)	Tiempo de inactividad (minutos)	Timeout di inattività (minuti)
 E	Sans activité pendant ce délai, la session se ferme et il faut se reconnecter (chaque onglet séparément). 0 = désactivé (la session dure 8 heures). Entre 5 minutes et 24 heures ; une valeur plus petite est ramenée à 5.	With no activity for this long, the session closes and you must sign in again (each tab separately). 0 = disabled (the session lasts 8 hours). Between 5 minutes and 24 hours; a smaller value is raised to 5.	Sin actividad durante este tiempo, la sesión se cierra y hay que volver a iniciar sesión (cada pestaña por separado). 0 = desactivado (la sesión dura 8 horas). Entre 5 minutos y 24 horas; un valor menor se sube a 5.	Senza attività per questo tempo, la sessione si chiude e occorre accedere di nuovo (ogni scheda separatamente). 0 = disattivato (la sessione dura 8 ore). Tra 5 minuti e 24 ore; un valore inferiore viene portato a 5.
 E	Votre session a expiré après une période d'inactivité. Reconnectez-vous pour revenir à la page où vous étiez.	Your session expired after a period of inactivity. Sign in again to return to the page you were on.	Su sesión expiró tras un período de inactividad. Vuelva a iniciar sesión para regresar a la página donde estaba.	La sessione è scaduta dopo un periodo di inattività. Accedi di nuovo per tornare alla pagina in cui eri.
 E	Envoi…	Uploading…	Enviando…	Invio…
-E	La pièce jointe n'a pas été enregistrée	The attachment was not saved	El archivo adjunto no se guardó	L'allegato non è stato salvato
 E	Impossible d'ouvrir la pièce jointe	Unable to open the attachment	No se puede abrir el archivo adjunto	Impossibile aprire l'allegato
 P	Ouvrir {0}	Open {0}	Abrir {0}	Apri {0}
 E	📷 Prendre une photo	📷 Take a photo	📷 Tomar una foto	📷 Scatta una foto
-E	📁 Choisir un fichier	📁 Choose a file	📁 Elegir un archivo	📁 Scegli un file
-E	🗑 Supprimer la pièce jointe	🗑 Delete the attachment	🗑 Eliminar el archivo adjunto	🗑 Elimina l'allegato
 E	Supprimer la pièce jointe ?	Delete the attachment?	¿Eliminar el archivo adjunto?	Eliminare l'allegato?
 E	La pièce jointe n'a pas été supprimée	The attachment was not deleted	El archivo adjunto no se eliminó	L'allegato non è stato eliminato
-E	Cliquez pour joindre un document	Click to attach a document	Haga clic para adjuntar un documento	Fai clic per allegare un documento
-E	Cliquez pour remplacer ou supprimer le document	Click to replace or delete the document	Haga clic para reemplazar o eliminar el documento	Fai clic per sostituire o eliminare il documento
-P	{0} : joindre un document	{0}: attach a document	{0}: adjuntar un documento	{0}: allega un documento
-P	{0} : remplacer ou supprimer le document	{0}: replace or delete the document	{0}: reemplazar o eliminar el documento	{0}: sostituisci o elimina il documento
 E	✏ Renommer	✏ Rename	✏ Renombrar	✏ Rinomina
 E	Renommer	Rename	Renombrar	Rinomina
 E	Indiquez un nom.	Enter a name.	Indique un nombre.	Inserisci un nome.
@@ -391,3 +383,61 @@ E	Aucune compagnie à travailler ce jour-là.	No company to work on that day.	Ni
 E	Compagnies du mois	Companies this month	Compañías del mes	Aziende del mese
 E	Employés :	Employees:	Empleados:	Dipendenti:
 E	Aucun employé associé	No linked employee	Ningún empleado asociado	Nessun dipendente associato
+E	Transaction	Transaction	Transacción	Transazione
+E	↩ Annulation	↩ Reversal	↩ Anulación	↩ Annullamento
+P	Annulée le {0} par la transaction	Reversed on {0} by transaction	Anulada el {0} por la transacción	Annullata il {0} dalla transazione
+P	Annule la transaction du {0} :	Reverses the transaction of {0}:	Anula la transacción del {0}:	Annulla la transazione del {0}:
+P	Annulée le {0}	Reversed on {0}	Anulada el {0}	Annullata il {0}
+E	🧾 Factures associées	🧾 Linked invoices	🧾 Facturas asociadas	🧾 Fatture associate
+E	💼 Charge associée	💼 Linked expense	💼 Gasto asociado	💼 Spesa associata
+E	🔗 Rapprochement	🔗 Reconciliation	🔗 Conciliación	🔗 Riconciliazione
+E	Une transaction d'annulation ne se rapproche pas.	A reversal transaction is not reconciled.	Una transacción de anulación no se concilia.	Una transazione di annullamento non si riconcilia.
+E	Seuls les dépôts directs et les dépôts mobiles (factures) et les retraits (charge) se rapprochent.	Only direct deposits and mobile deposits (invoices) and withdrawals (expense) can be reconciled.	Solo se concilian los depósitos directos y móviles (facturas) y los retiros (gasto).	Si riconciliano solo i depositi diretti e mobili (fatture) e i prelievi (spesa).
+E	Charge supprimée	Expense deleted	Gasto eliminado	Spesa eliminata
+E	Associé	Linked	Asociado	Associato
+E	Associer une facture la marque payée : il faut le droit de modifier les factures.	Linking an invoice marks it paid: you need the right to edit invoices.	Asociar una factura la marca como pagada: se necesita el permiso para modificar facturas.	Associare una fattura la segna come pagata: serve il permesso di modificare le fatture.
+E	Ajouter une facture	Add an invoice	Agregar una factura	Aggiungi una fattura
+E	Remplacer la charge	Replace the expense	Reemplazar el gasto	Sostituisci la spesa
+E	Choisir une charge	Choose an expense	Elegir un gasto	Scegli una spesa
+E	N° de facture, compagnie ou montant…	Invoice no., company or amount…	N.º de factura, compañía o importe…	N. fattura, azienda o importo…
+E	Titre de la charge ou montant…	Expense title or amount…	Título del gasto o importe…	Titolo della spesa o importo…
+E	Une facture associée est marquée payée à la date du dépôt.	A linked invoice is marked paid on the deposit date.	Una factura asociada se marca como pagada en la fecha del depósito.	Una fattura associata viene segnata come pagata alla data del deposito.
+E	Impossible de charger les propositions	Unable to load the suggestions	No se pueden cargar las propuestas	Impossibile caricare le proposte
+E	Recherche…	Searching…	Buscando…	Ricerca…
+E	Aucun élément à proposer.	Nothing to suggest.	Nada que proponer.	Nessun elemento da proporre.
+E	Associer	Link	Asociar	Associa
+P	Associer {0}	Link {0}	Asociar {0}	Associa {0}
+E	📝 Note	📝 Note	📝 Nota	📝 Nota
+E	Note	Note	Nota	Nota
+E	Ajouter une note…	Add a note…	Agregar una nota…	Aggiungi una nota…
+P	Modifiée le {0} par {1}	Edited on {0} by {1}	Modificada el {0} por {1}	Modificata il {0} da {1}
+P	Modifiée le {0}	Edited on {0}	Modificada el {0}	Modificata il {0}
+E	Enregistrer la note	Save the note	Guardar la nota	Salva la nota
+E	📎 Pièces jointes	📎 Attachments	📎 Archivos adjuntos	📎 Allegati
+E	Pièces jointes	Attachments	Archivos adjuntos	Allegati
+E	Ouvrir	Open	Abrir	Apri
+P	Renommer {0}	Rename {0}	Renombrar {0}	Rinomina {0}
+P	Supprimer {0}	Delete {0}	Eliminar {0}	Elimina {0}
+E	Aucune pièce jointe.	No attachment.	Ningún archivo adjunto.	Nessun allegato.
+E	📁 Choisir des fichiers	📁 Choose files	📁 Elegir archivos	📁 Scegli file
+E	Remplacer la charge associée ?	Replace the linked expense?	¿Reemplazar el gasto asociado?	Sostituire la spesa associata?
+E	Remplacer	Replace	Reemplazar	Sostituisci
+E	Retirer la facture ?	Remove the invoice?	¿Quitar la factura?	Rimuovere la fattura?
+E	Retirer la charge ?	Remove the expense?	¿Quitar el gasto?	Rimuovere la spesa?
+E	La facture redeviendra non payée.	The invoice will become unpaid again.	La factura volverá a estar sin pagar.	La fattura tornerà non pagata.
+E	La note n'est pas enregistrée.	The note is not saved.	La nota no está guardada.	La nota non è salvata.
+E	L'association n'a pas été enregistrée	The link was not saved	La asociación no se guardó	L'associazione non è stata salvata
+E	L'association n'a pas été retirée	The link was not removed	La asociación no se quitó	L'associazione non è stata rimossa
+E	La note n'a pas été enregistrée	The note was not saved	La nota no se guardó	La nota non è stata salvata
+P	{0} : maximum de {1#} pièces jointes atteint	{0}: maximum of {1#} attachments reached	{0}: se alcanzó el máximo de {1#} archivos adjuntos	{0}: raggiunto il massimo di {1#} allegati
+E	Cliquez pour joindre ou gérer les documents	Click to attach or manage documents	Haga clic para adjuntar o gestionar los documentos	Fai clic per allegare o gestire i documenti
+E	Annulée par	Reversed by	Anulada por	Annullata da
+E	Annule	Reverses	Anula	Annulla
+P	Annulée par la transaction {0} du {1}	Reversed by transaction {0} of {1}	Anulada por la transacción {0} del {1}	Annullata dalla transazione {0} del {1}
+P	Annule la transaction {0} du {1} : {2}	Reverses transaction {0} of {1}: {2}	Anula la transacción {0} del {1}: {2}	Annulla la transazione {0} del {1}: {2}
+P	Suivi de la transaction {0} du {1}	Follow-up of transaction {0} of {1}	Seguimiento de la transacción {0} del {1}	Monitoraggio della transazione {0} del {1}
+E	N°	No.	N.º	N.
+E	Annulation	Reversal	Anulación	Annullamento
+E	Rapprochement	Reconciliation	Conciliación	Riconciliazione
+P	Annulée par {0}	Reversed by {0}	Anulada por {0}	Annullata da {0}
+P	Annule {0}	Reverses {0}	Anula {0}	Annulla {0}

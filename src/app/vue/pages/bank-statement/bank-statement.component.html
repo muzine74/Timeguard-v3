@@ -124,8 +124,6 @@
 
       <div class="msg msg-err" role="alert" *ngIf="validateError()">⚠ {{ validateError() }}</div>
       <div class="msg msg-err" role="alert" *ngIf="attachError()">⚠ {{ attachError() }}</div>
-      <input #attachInput type="file" hidden accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx" (change)="onAttachmentFile($event)" />
-      <input #photoInput type="file" hidden accept="image/jpeg,image/png" capture="environment" (change)="onAttachmentFile($event)" />
 
       <dl class="totals" *ngIf="l.rows.length">
         <div><dt>Lignes</dt><dd aria-live="polite">{{ hasFilters() ? filtered().length + ' / ' + l.rows.length : l.rows.length }}</dd></div>
@@ -147,38 +145,28 @@
               <th scope="col" class="num" [attr.aria-sort]="sort.aria('deposit')"><button type="button" class="th-sort" (click)="toggleSort('deposit')">Dépôt <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('deposit') }}</span></button></th>
               <th scope="col" [attr.aria-sort]="sort.aria('linkName')"><button type="button" class="th-sort" (click)="toggleSort('linkName')">Lié à <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('linkName') }}</span></button></th>
               <th scope="col" class="ctr" [attr.aria-sort]="sort.aria('validated')"><button type="button" class="th-sort" (click)="toggleSort('validated')">Validée <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('validated') }}</span></button></th>
+              <th scope="col">Suivi</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let r of paged(); trackBy: trackRow" [class.row-validated]="r.validated">
+            <tr *ngFor="let r of paged(); trackBy: trackRow" [attr.id]="'tx-' + r.bankTransactionId"
+                [class.row-validated]="r.validated" [class.row-hl]="highlight() === r.bankTransactionId" [class.row-cancel]="r.cancelledBy || r.cancels">
               <td class="nowrap">{{ r.date }}</td>
-              <td *ngIf="!isMobile(r)">{{ r.description }}</td>
-              <td *ngIf="isMobile(r)" class="mobile-cell" tabindex="0" role="button" aria-haspopup="menu"
-                  [attr.aria-expanded]="menuFor() === r.bankTransactionId"
-                  (click)="toggleMenu(r, $event)" (keydown.enter)="toggleMenu(r, $event)" (keydown.space)="$event.preventDefault(); toggleMenu(r, $event)"
-                  [title]="r.attachment ? 'Cliquez pour remplacer ou supprimer le document' : 'Cliquez pour joindre un document'"
-                  [attr.aria-label]="r.description + ' : ' + (r.attachment ? 'remplacer ou supprimer le document' : 'joindre un document')">
-                {{ r.description }}
-                <span class="att-busy" *ngIf="attaching().has(r.bankTransactionId)">Envoi…</span>
-                <form class="att-rename" *ngIf="renaming() === r.bankTransactionId && r.attachment as a"
-                      (click)="$event.stopPropagation()" (keydown.enter)="$event.stopPropagation()" (keydown.space)="$event.stopPropagation()"
-                      (keydown.escape)="$event.stopPropagation(); cancelRename()" (ngSubmit)="saveRename(r)">
-                  <input #renameInput class="inp" type="text" maxlength="250" [ngModel]="renameDraft()" (ngModelChange)="renameDraft.set($event)"
-                         name="attName" [disabled]="attaching().has(r.bankTransactionId)" [attr.aria-label]="'Nouveau nom de ' + a.name" />
-                  <span class="att-ext" data-no-i18n>{{ extOf(a.name) }}</span>
-                  <button type="submit" class="btn btn-primary btn-sm" [disabled]="attaching().has(r.bankTransactionId)">Renommer</button>
-                  <button type="button" class="btn btn-outline btn-sm" [disabled]="attaching().has(r.bankTransactionId)" (click)="cancelRename()">Annuler</button>
-                </form>
-                <a class="att-link" *ngIf="r.attachment as a" [hidden]="renaming() === r.bankTransactionId" [href]="r.attachmentUrl" target="_blank" rel="noopener"
-                   (click)="openAttachment(r, $event)" (keydown.enter)="$event.stopPropagation()" (keydown.space)="$event.stopPropagation()"
-                   [attr.aria-label]="'Ouvrir ' + a.name"><span aria-hidden="true">📎</span> <span data-no-i18n>{{ a.name }}</span></a>
-                <div class="att-menu" role="menu" *ngIf="menuFor() === r.bankTransactionId"
-                     (click)="$event.stopPropagation()" (keydown.enter)="$event.stopPropagation()" (keydown.space)="$event.stopPropagation()">
-                  <button type="button" role="menuitem" *ngIf="canTakePhoto" (click)="pickAttachment(r, photoInput)">📷 Prendre une photo</button>
-                  <button type="button" role="menuitem" (click)="pickAttachment(r, attachInput)">📁 Choisir un fichier</button>
-                  <button type="button" role="menuitem" *ngIf="r.attachment" (click)="startRename(r)">✏ Renommer</button>
-                  <button type="button" role="menuitem" class="danger" *ngIf="r.attachment" (click)="removeAttachment(r)">🗑 Supprimer la pièce jointe</button>
-                </div>
+              <td class="desc-cell" [class.mobile-cell]="isMobile(r)" (click)="isMobile(r) && openPanel(r, $event)"
+                  [title]="isMobile(r) ? 'Cliquez pour joindre ou gérer les documents' : ''">
+                <span data-no-i18n>{{ r.description }}</span>
+                <button type="button" class="tx-cancel" *ngIf="r.cancelledBy as c" (click)="goToTransaction(c, $event)"
+                        [title]="cancelledTitle(r)" [attr.aria-label]="'Annulée par la transaction ' + txRef(c) + ' du ' + c.date">
+                  <span aria-hidden="true">↩</span> <span>Annulée par</span> <span data-no-i18n>{{ txRef(c) }}</span>
+                </button>
+                <button type="button" class="tx-cancel tx-cancels" *ngIf="r.cancels as c" (click)="goToTransaction(c, $event)"
+                        [title]="cancelsTitle(r)" [attr.aria-label]="'Annule la transaction ' + txRef(c) + ' du ' + c.date + ' : ' + c.description">
+                  <span aria-hidden="true">↪</span> <span>Annule</span> <span data-no-i18n>{{ txRef(c) }}</span>
+                </button>
+                <span class="att-links" *ngIf="r.attachments?.length">
+                  <a class="att-link" *ngFor="let a of r.attachments" [href]="'/api/attachments/' + a.id + '/download'" target="_blank" rel="noopener"
+                     (click)="openAttachment(a, $event)" [attr.aria-label]="'Ouvrir ' + a.name"><span aria-hidden="true">📎</span> <span data-no-i18n>{{ a.name }}</span></a>
+                </span>
               </td>
               <td class="num neg">{{ fmt(r.withdrawal) }}</td>
               <td class="num pos">{{ fmt(r.deposit) }}</td>
@@ -192,6 +180,17 @@
                        (change)="setValidated(r, $any($event.target).checked)" [title]="validatedTitle(r)"
                        [attr.aria-label]="'Validée : ' + r.date + ' ' + r.description + ' ' + (fmt(r.withdrawal) || fmt(r.deposit))" />
               </td>
+              <td class="follow">
+                <button type="button" class="follow-btn" [attr.id]="'tx-open-' + r.bankTransactionId" (click)="openPanel(r, $event)" aria-haspopup="dialog"
+                        [attr.aria-label]="'Suivi de la transaction ' + txRef(r) + ' du ' + r.date">
+                  <span class="badge" *ngIf="r.matches?.length" [title]="matchLabels(r)">
+                    <span aria-hidden="true">{{ r.matchKind === 'charge' ? '💼' : '🧾' }}</span> <span data-no-i18n>{{ r.matchKind === 'charge' ? r.matches![0].label : r.matches!.length }}</span>
+                  </span>
+                  <span class="badge" *ngIf="r.note" [title]="r.note"><span aria-hidden="true">📝</span><span class="sr-only">Note</span></span>
+                  <span class="badge" *ngIf="attCount(r)"><span aria-hidden="true">📎</span> <span data-no-i18n>{{ attCount(r) }}</span></span>
+                  <span class="follow-more" aria-hidden="true">⋯</span>
+                </button>
+              </td>
             </tr>
           </tbody>
           <tfoot>
@@ -201,6 +200,7 @@
               <td class="num pos">{{ fmt(totalDeposits()) }}</td>
               <td>{{ linkedCount() }} / {{ filtered().length }}</td>
               <td class="ctr">{{ validatedCount() }} / {{ filtered().length }}</td>
+              <td></td>
             </tr>
           </tfoot>
         </table>
@@ -222,5 +222,8 @@
     </ng-container>
   </section>
   </div>
+
+  <app-bank-tx-panel *ngIf="panelRow() as pr" [row]="pr" [canEditInvoices]="canEditInvoices"
+                     (changed)="onPanelChanged($event)" (goTo)="goToTransaction($event)" (closed)="closePanel()"></app-bank-tx-panel>
 
 </div>
