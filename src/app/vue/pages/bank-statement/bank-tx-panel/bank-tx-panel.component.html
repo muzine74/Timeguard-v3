@@ -89,15 +89,23 @@
             <div class="msg msg-err" role="alert" *ngIf="candError()">⚠ {{ candError() }}</div>
             <p class="hint" role="status" *ngIf="candLoading()">Recherche…</p>
             <ul class="items cand-list" *ngIf="!candLoading() && cands() as c">
-              <li *ngFor="let it of c.items" class="item">
+              <li *ngFor="let it of c.items" class="item" [class.item-taken]="it.linkedTo" [attr.aria-disabled]="it.linkedTo ? 'true' : null">
                 <span class="item-ico" aria-hidden="true">{{ targetIcon(it.targetType) }}</span>
                 <span class="item-main">
                   <strong data-no-i18n>{{ it.label }}</strong>
                   <span class="item-sub"><span data-no-i18n *ngIf="it.companyName">{{ it.companyName }} · </span><span data-no-i18n>{{ it.date }}</span></span>
+                  <span class="taken-by" *ngIf="it.linkedTo as l">
+                    <span>Associée à la transaction du {{ l.date }} :</span>
+                    <button type="button" class="link-btn" (click)="open(l)" [title]="l.date + ' — ' + l.description">
+                      <span data-no-i18n>{{ txRef(l) }}</span>
+                    </button>
+                    <span data-no-i18n>{{ l.description }}</span>
+                  </span>
                 </span>
-                <span class="item-amt" [class.exact]="it.amount === c.remaining" data-no-i18n>{{ fmt(it.amount) }}</span>
-                <span class="tag tag-ok" *ngIf="it.isPaid">Payée</span>
-                <button type="button" class="btn btn-primary btn-sm" [disabled]="busy()" (click)="associate(it)"
+                <span class="item-amt" [class.exact]="!it.linkedTo && it.amount === c.remaining" data-no-i18n>{{ fmt(it.amount) }}</span>
+                <span class="tag tag-ok" *ngIf="it.isPaid && !it.linkedTo">Payée</span>
+                <span class="tag tag-taken" *ngIf="it.linkedTo">Déjà associée</span>
+                <button type="button" class="btn btn-primary btn-sm" *ngIf="!it.linkedTo" [disabled]="busy()" (click)="associate(it)"
                         [attr.aria-label]="'Associer ' + it.label">Associer</button>
               </li>
               <li class="empty" *ngIf="!c.items.length">Aucun élément à proposer.</li>

@@ -441,3 +441,5 @@ E	Annulation	Reversal	Anulación	Annullamento
 E	Rapprochement	Reconciliation	Conciliación	Riconciliazione
 P	Annulée par {0}	Reversed by {0}	Anulada por {0}	Annullata da {0}
 P	Annule {0}	Reverses {0}	Anula {0}	Annulla {0}
+E	Déjà associée	Already linked	Ya asociada	Già associata
+P	Associée à la transaction du {0} :	Linked to the transaction of {0}:	Asociada a la transacción del {0}:	Associata alla transazione del {0}:

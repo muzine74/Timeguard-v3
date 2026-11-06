@@ -72,6 +72,8 @@ export interface BankMatchCandidate {
   date:           string | null;
   amount:         number;
   isPaid:         boolean;
+  /** Facture déjà associée à une autre transaction : affichée grisée, non sélectionnable. */
+  linkedTo?:      BankTransactionRef | null;
 }
 
 export interface BankMatchCandidates {

@@ -118,7 +118,7 @@ export class BankTxPanelComponent implements OnInit, AfterViewInit {
   setSearch(q: string): void { this.search.set(q); this._search$.next(q.trim()); }
 
   async associate(c: BankMatchCandidate): Promise<void> {
-    if (this.busy() || !this.canAdd()) return;
+    if (this.busy() || !this.canAdd() || c.linkedTo) return;
     const prev = this.matched()[0];
     if (c.targetType === 'charge' && prev
         && !await this.confirm.ask({ title: 'Remplacer la charge associée ?', message: `${prev.label ?? ''} → ${c.label}`, confirmLabel: 'Remplacer' })) return;
