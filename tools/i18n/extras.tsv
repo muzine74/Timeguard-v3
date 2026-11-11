@@ -488,3 +488,12 @@ E	Cochez les factures à joindre au courriel : un PDF par facture, avec ses avoi
 P	+ {0} avoir(s)	+ {0} credit note(s)	+ {0} nota(s) de crédito	+ {0} nota/e di credito
 E	au	to	al	al
 E	Période des dépôts	Deposit period	Período de los depósitos	Periodo dei depositi
+E	Demander un accusé de lecture	Request a read receipt	Solicitar confirmación de lectura	Richiedi conferma di lettura
+E	L'historique indiquera « Lu » quand un destinataire renverra l'accusé.	The history will show “Read” when a recipient sends back the receipt.	El historial indicará «Leído» cuando un destinatario devuelva la confirmación.	La cronologia indicherà «Letto» quando un destinatario restituirà la conferma.
+E	L'accusé arrivera dans la boîte d'expédition ; activez la lecture des courriels reçus (Configuration) pour qu'il soit indiqué ici.	The receipt will arrive in the sending mailbox; turn on reading of received emails (Configuration) to have it shown here.	La confirmación llegará al buzón de envío; active la lectura de los correos recibidos (Configuración) para que se indique aquí.	La conferma arriverà nella casella di invio; attiva la lettura delle email ricevute (Configurazione) per vederla qui.
+E	Le destinataire peut refuser de l'envoyer, et plusieurs logiciels (Gmail, téléphones) ne l'envoient jamais.	The recipient may decline to send it, and many email apps (Gmail, phones) never send it.	El destinatario puede negarse a enviarla, y varios programas (Gmail, teléfonos) nunca la envían.	Il destinatario può rifiutarsi di inviarla, e diversi programmi (Gmail, telefoni) non la inviano mai.
+E	Lu	Read	Leído	Letto
+E	Supprimé sans être lu	Deleted without being read	Eliminado sin leer	Eliminato senza essere letto
+E	Accusé de lecture demandé	Read receipt requested	Confirmación de lectura solicitada	Conferma di lettura richiesta
+P	Accusé reçu le {0} — {1}	Receipt received on {0} — {1}	Confirmación recibida el {0} — {1}	Conferma ricevuta il {0} — {1}
+P	Accusé reçu le {0}	Receipt received on {0}	Confirmación recibida el {0}	Conferma ricevuta il {0}

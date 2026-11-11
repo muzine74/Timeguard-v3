@@ -17,6 +17,7 @@ export interface MailboxConfig {
 export interface MailImportResult {
   examined: number;                   // courriels reçus examinés
   added:    number;                   // entrées ajoutées à l'historique
+  receipts: number;                   // accusés de lecture reportés sur des courriels envoyés
   error:    string;                   // vide = lecture réussie
 }
 

@@ -117,7 +117,8 @@ export class AppConfigComponent implements OnInit {
       next: r => {
         this.mbxChecking.set(false);
         if (r.error) this.mbxError.set(r.error);
-        else this.mbxResult.set(`Lecture réussie : ${r.examined} courriel(s) examiné(s), ${r.added} ajouté(s) à l'historique de communication.`);
+        else this.mbxResult.set(`Lecture réussie : ${r.examined} courriel(s) examiné(s), ${r.added} ajouté(s) à l'historique de communication.`
+          + (r.receipts ? ` ${r.receipts} accusé(s) de lecture reporté(s) sur des courriels envoyés.` : ''));
         this.mbx = { ...this.mbx, lastCheckedAt: new Date().toISOString(), lastError: r.error || null };
         this.cdr.markForCheck();
       },

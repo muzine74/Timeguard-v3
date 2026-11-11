@@ -200,6 +200,14 @@
               <span>Envoyer ce courriel aux destinataires à l'enregistrement
                 <small>Non coché : l'entrée est seulement notée dans l'historique, rien n'est envoyé.</small></span>
             </label>
+            <label class="f-check f-wide" *ngIf="canAskReceipt(f)">
+              <input type="checkbox" name="readReceipt" [ngModel]="f.readReceipt" (ngModelChange)="patch({ readReceipt: $event })" />
+              <span>Demander un accusé de lecture
+                <small><span>{{ readReceiptTracked()
+                    ? 'L\'historique indiquera « Lu » quand un destinataire renverra l\'accusé.'
+                    : 'L\'accusé arrivera dans la boîte d\'expédition ; activez la lecture des courriels reçus (Configuration) pour qu\'il soit indiqué ici.' }}</span>
+                  <span>Le destinataire peut refuser de l'envoyer, et plusieurs logiciels (Gmail, téléphones) ne l'envoient jamais.</span></small></span>
+            </label>
           </div>
           <!-- Nouvelle entrée : fichiers joints à l'enregistrement. Entrée existante : on joint depuis l'historique. -->
           <app-attachments *ngIf="!f.id" ownerType="communication" [canEdit]="true" [disabled]="saving()"
@@ -239,10 +247,15 @@
                 <span class="tag tag-auto" *ngIf="i.isAutomatic">{{ companyId() }}</span>
                 <span class="tag" *ngIf="sendable(i) && !i.error">Non envoyé par {{ companyId() }}</span>
                 <span class="tag tag-fail" *ngIf="i.error">Échec de l'envoi</span>
+                <span class="tag" *ngIf="receiptLabel(i) as receipt"
+                      [class.tag-read]="i.readReceipt === 'read'" [class.tag-fail]="i.readReceipt === 'deleted'">{{ receipt }}</span>
               </div>
               <div class="entry-subject">{{ i.subject }}</div>
               <div class="entry-meta" *ngIf="i.contact">{{ contactLabel(i) }} : {{ i.contact }}</div>
               <div class="entry-meta" *ngIf="i.attachment">📎 {{ i.attachment }}</div>
+              <div class="entry-meta" *ngIf="receiptLabel(i) && i.readReceiptAt">
+                Accusé reçu le {{ i.readReceiptAt | date:'yyyy-MM-dd HH:mm' }}{{ i.readReceiptBy ? ' — ' + i.readReceiptBy : '' }}
+              </div>
               <div class="entry-error" *ngIf="i.error">{{ i.error }}</div>
 
               <!-- Appel passé depuis TimeGuard : issue, durée, enregistrement -->

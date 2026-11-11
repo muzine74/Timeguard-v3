@@ -24,6 +24,7 @@ interface CommForm {
   subject:   string;
   body:      string;
   sendEmail: boolean;            // nouveau courriel « Envoyé » : l'expédier à l'enregistrement
+  readReceipt: boolean;          // courriel « Envoyé » : demander un accusé de lecture à l'envoi
 }
 
 /** Historique de communication par compagnie et par employé : courriels envoyés par l'application
@@ -60,6 +61,8 @@ export class CommunicationsComponent implements OnInit, OnDestroy {
   employees     = signal<CommTarget[]>([]);
   canCompanies  = signal(false);
   canEmployees  = signal(false);
+  /** Lecture des courriels reçus activée : les accusés de lecture sont reportés ici tout seuls. */
+  readReceiptTracked = signal(false);
   targetsLoading = signal(true);
   targetsError  = signal('');
   tab           = signal<CommTargetType>('company');
@@ -168,6 +171,7 @@ export class CommunicationsComponent implements OnInit, OnDestroy {
         this.employees.set(t.employees);
         this.canCompanies.set(t.canCompanies);
         this.canEmployees.set(t.canEmployees);
+        this.readReceiptTracked.set(t.readReceiptTracked);
         if (!t.canCompanies && t.canEmployees && !this.selected()) this.tab.set('employee');
         this.targetsLoading.set(false);
       },
@@ -245,19 +249,22 @@ export class CommunicationsComponent implements OnInit, OnDestroy {
   // ── Formulaire ────────────────────────────────────────
   async openNew(): Promise<void> {
     if (!await this._canLeaveForm()) return;
-    this._openForm({ id: null, when: this._toLocalInput(new Date()), channel: 'call', direction: 'out', contact: '', subject: '', body: '', sendEmail: false });
+    this._openForm({ id: null, when: this._toLocalInput(new Date()), channel: 'call', direction: 'out', contact: '', subject: '', body: '', sendEmail: false, readReceipt: false });
   }
 
   async edit(i: Communication): Promise<void> {
     if (i.isAutomatic || !await this._canLeaveForm()) return;
     this._openForm({
       id: i.id, when: this._toLocalInput(new Date(i.occurredAt)), channel: i.channel, direction: i.direction,
-      contact: i.contact ?? '', subject: i.subject, body: i.body ?? '', sendEmail: false,
+      contact: i.contact ?? '', subject: i.subject, body: i.body ?? '', sendEmail: false, readReceipt: !!i.readReceipt,
     });
   }
 
   /** Nouveau courriel de sens « Envoyé » : il peut être expédié à l'enregistrement. */
   canSend(f: CommForm): boolean { return !f.id && f.channel === 'email' && f.direction === 'out'; }
+
+  /** Courriel « Envoyé » : un accusé de lecture peut être demandé (appliqué à l'envoi, à l'enregistrement ou plus tard). */
+  canAskReceipt(f: CommForm): boolean { return f.channel === 'email' && f.direction === 'out'; }
 
   /** Type ou sens changé : un nouveau courriel reçoit d'office les adresses des contacts actifs. */
   setKind(change: { channel?: CommChannel; direction?: CommDirection }): void {
@@ -333,6 +340,7 @@ export class CommunicationsComponent implements OnInit, OnDestroy {
     const req: CommSave = {
       targetType: this.tab(), targetId: t.id, occurredAt: when.toISOString(),
       channel: f.channel, direction: f.direction, contact: f.contact.trim(), subject: f.subject.trim(), body: f.body.trim(),
+      readReceipt: f.readReceipt && this.canAskReceipt(f),
     };
     this.saving.set(true);
     this.formError.set('');
@@ -486,6 +494,14 @@ export class CommunicationsComponent implements OnInit, OnDestroy {
     const d = i.durationSeconds ?? 0;
     const duration = d > 0 ? `${Math.floor(d / 60)} min ${String(d % 60).padStart(2, '0')} s` : '';
     return [status, duration].filter(Boolean).join(' · ');
+  }
+
+  /** Accusé de lecture d'un courriel envoyé : libellé de l'étiquette ; vide si non demandé ou pas encore envoyé. */
+  receiptLabel(i: Communication): string {
+    if (!i.isAutomatic || !i.readReceipt) return '';
+    if (i.readReceipt === 'read')    return 'Lu';
+    if (i.readReceipt === 'deleted') return 'Supprimé sans être lu';
+    return 'Accusé de lecture demandé';
   }
 
   listen(i: Communication): void {

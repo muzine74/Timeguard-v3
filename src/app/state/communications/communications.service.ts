@@ -20,7 +20,12 @@ export interface CommTargets {
   employees:    CommTarget[];
   canCompanies: boolean;        // permission « companies.edit »
   canEmployees: boolean;        // permission « employees.edit »
+  /** Lecture des courriels reçus (Microsoft 365) activée : les accusés de lecture mettent l'historique à jour tout seuls. */
+  readReceiptTracked: boolean;
 }
+
+/** Accusé de lecture d'un courriel envoyé : demandé (en attente), lu, ou supprimé sans être lu. */
+export type CommReadReceipt = 'requested' | 'read' | 'deleted';
 
 export interface Communication {
   id:          string;
@@ -42,6 +47,10 @@ export interface Communication {
   callStatus:      'pending' | 'in-progress' | 'completed' | 'no-answer' | 'busy' | 'failed' | 'canceled' | null;
   durationSeconds: number | null;
   hasRecording:    boolean;
+  // Accusé de lecture d'un courriel envoyé (null = pas demandé)
+  readReceipt:   CommReadReceipt | null;
+  readReceiptAt: string | null; // ISO UTC, premier accusé reçu
+  readReceiptBy: string | null; // adresses qui ont renvoyé un accusé, séparées par « ; »
 }
 
 export interface CommEmail { label: string; email: string; }
@@ -56,6 +65,7 @@ export interface CommSave {
   contact:    string;
   subject:    string;
   body:       string;
+  readReceipt: boolean;         // courriel « Envoyé » : demander un accusé de lecture à l'envoi
 }
 
 @Injectable({ providedIn: 'root' })

@@ -200,6 +200,7 @@
   &.tag-in   { background: rgba(30,200,100,.12); color: var(--success-text); }
   &.tag-auto { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
   &.tag-fail { background: rgba(224,82,82,.14); color: var(--danger); }
+  &.tag-read { background: rgba(30,200,100,.12); color: var(--success-text); }
 }
 .entry-subject { font-size: 14px; font-weight: 600; margin-top: 6px; overflow-wrap: anywhere; }
 .entry-meta    { font-size: 12px; color: var(--muted); margin-top: 3px; overflow-wrap: anywhere; }
