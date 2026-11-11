@@ -77,6 +77,21 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
 
   // ── Pièces jointes additionnelles ─────────────────────────────────────────
   extraAttachments = signal<File[]>([]);
+
+  // ── Autres factures du client en pièce jointe ─────────────────────────────
+  attachOthers  = signal(false);              // case « Joindre d'autres factures du client »
+  othersOpen    = signal(false);              // fenêtre de choix ouverte
+  othersLoading = signal(false);
+  othersError   = signal('');
+  clientBills   = signal<BillSummary[]>([]);  // factures d'origine du client, hors facture envoyée
+  avoirCounts   = signal<ReadonlyMap<number, number>>(new Map());   // facture → nombre d'avoirs (joints avec elle)
+  attachedIds   = signal<ReadonlySet<number>>(new Set());   // factures jointes
+  draftIds      = signal<ReadonlySet<number>>(new Set());   // cochées dans la fenêtre
+  /** Non payées d'abord, puis payées ; les plus récentes en premier. */
+  readonly othersUnpaid = computed(() => this.clientBills().filter(b => !b.isPaid));
+  readonly othersPaid   = computed(() => this.clientBills().filter(b => b.isPaid));
+  readonly attachedBills = computed(() => this.clientBills().filter(b => this.attachedIds().has(b.billIdentifier)));
+  static readonly MAX_OTHERS = 20;
   private static readonly ALLOWED_EXT = ['.pdf', '.jpg', '.jpeg', '.png', '.doc', '.docx', '.xls', '.xlsx'];
 
   private _providerName = '';
@@ -175,6 +190,7 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
     this.recipients = [];
     this.emailInput = '';
     this.extraAttachments.set([]);
+    this._resetOthers();
     this.error.set('');
     this.success.set('');
     this.detailLoading.set(true);
@@ -399,6 +415,87 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
 
+  // ── Autres factures du client ─────────────────────────────────────────────
+  private _resetOthers(): void {
+    this.attachOthers.set(false);
+    this.othersOpen.set(false);
+    this.othersError.set('');
+    this.clientBills.set([]);
+    this.avoirCounts.set(new Map());
+    this.attachedIds.set(new Set());
+    this.draftIds.set(new Set());
+  }
+
+  /** Case cochée : ouvre la fenêtre de choix ; décochée : plus aucune autre facture jointe. */
+  onAttachOthers(checked: boolean): void {
+    if (!checked) { this.attachOthers.set(false); this.attachedIds.set(new Set()); this.othersOpen.set(false); return; }
+    this.attachOthers.set(true);
+    this.openOthers();
+  }
+
+  openOthers(): void {
+    const d = this.detail();
+    if (!d) return;
+    this.draftIds.set(new Set(this.attachedIds()));
+    this.othersError.set('');
+    this.othersOpen.set(true);
+    if (this.clientBills().length) return;
+    this.othersLoading.set(true);
+    this.invoiceSvc.listForCompany(d.companyCode).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: list => {
+        const byDate = (a: BillSummary, b: BillSummary) => (b.billedDate ?? '').localeCompare(a.billedDate ?? '');
+        this.clientBills.set(list.filter(b => b.billIdentifier !== d.billIdentifier && b.parentBillIdentifier === null).sort(byDate));
+        const counts = new Map<number, number>();
+        for (const a of list) if (a.parentBillIdentifier !== null) counts.set(a.parentBillIdentifier, (counts.get(a.parentBillIdentifier) ?? 0) + 1);
+        this.avoirCounts.set(counts);
+        this.othersLoading.set(false);
+        this.cdr.markForCheck();
+      },
+      error: err => {
+        this.othersError.set(httpErrorMessage(err, `Impossible de charger les factures du client`));
+        this.othersLoading.set(false);
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  avoirs(id: number): number { return this.avoirCounts().get(id) ?? 0; }
+  isDraft(id: number): boolean { return this.draftIds().has(id); }
+  toggleDraft(id: number): void {
+    const next = new Set(this.draftIds());
+    if (next.has(id)) next.delete(id);
+    else if (next.size >= InvoiceSendComponent.MAX_OTHERS) { this.othersError.set(`Vous pouvez joindre ${InvoiceSendComponent.MAX_OTHERS} autres factures au plus.`); return; }
+    else next.add(id);
+    this.othersError.set('');
+    this.draftIds.set(next);
+  }
+  /** Coche / décoche toutes les factures d'un groupe (non payées ou payées). */
+  toggleGroup(list: BillSummary[], on: boolean): void {
+    const next = new Set(this.draftIds());
+    for (const b of list) {
+      if (!on) next.delete(b.billIdentifier);
+      else if (next.size < InvoiceSendComponent.MAX_OTHERS) next.add(b.billIdentifier);
+    }
+    this.draftIds.set(next);
+  }
+  groupChecked(list: BillSummary[]): boolean { return list.length > 0 && list.every(b => this.draftIds().has(b.billIdentifier)); }
+
+  confirmOthers(): void {
+    this.attachedIds.set(new Set(this.draftIds()));
+    this.attachOthers.set(this.attachedIds().size > 0);
+    this.othersOpen.set(false);
+  }
+  cancelOthers(): void {
+    this.othersOpen.set(false);
+    if (!this.attachedIds().size) this.attachOthers.set(false);
+  }
+  removeAttachedBill(id: number): void {
+    const next = new Set(this.attachedIds());
+    next.delete(id);
+    this.attachedIds.set(next);
+    if (!next.size) this.attachOthers.set(false);
+  }
+
   // ── Gestion des destinataires (multi) ─────────────────────────────────────
   onEmailKeydown(event: KeyboardEvent): void {
     if (event.key === 'Enter' || event.key === ',') {
@@ -472,6 +569,7 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
       recipients: this.recipients,
       subject:    this.subject,
       body:       this.body,
+      attachBillIds: [...this.attachedIds()],
     }, this.extraAttachments()).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: res => {
         L('send() — ✓ succès: %s', res.message);
@@ -480,6 +578,7 @@ export class InvoiceSendComponent implements OnInit, OnDestroy {
         this.success.set(res.message || 'Facture envoyée avec succès.');
         this.unsentBills.update(list => list.filter(b => b.billIdentifier !== d.billIdentifier));
         this.extraAttachments.set([]);
+        this._resetOthers();
         this.selected.set(null);
         this.detail.set(null);
         this.cdr.markForCheck();

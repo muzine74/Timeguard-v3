@@ -6,6 +6,8 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { InvoiceService, BillSummary, BillDetail, BillLine, BillFilter, BillCreatePayload } from '../../../state/invoice/invoice.service';
 import { ConfigService } from '../../../state/config/config.service';
+import { AuthService } from '../../../state/auth/auth.service';
+import { BankTransactionsService, BillBankLinks, BillBankCandidate, BankTransactionRef, txRef } from '../../../state/bank/bank-transactions.service';
 import { TableSort, SortValue } from '../../shared/table-sort';
 import { ExportButtonsComponent } from '../../components/export-buttons/export-buttons.component';
 import { ExportCell, ExportDoc, ExportRow, TableExportService } from '../../../state/export/table-export.service';
@@ -19,7 +21,7 @@ const SORT_LABELS: Record<BillSortKey, string> = {
   num: 'N° facture', company: 'Compagnie', period: 'Période', date: 'Date', ttc: 'Total TTC', sent: 'Statut envoi', paid: 'Paiement',
 };
 
-type ModalMode = 'delete' | 'avoir' | 'detail' | 'send' | null;
+type ModalMode = 'delete' | 'avoir' | 'detail' | 'send' | 'pay' | null;
 
 interface BillTreeNode {
   data:     BillSummary;
@@ -555,18 +557,132 @@ export class InvoiceManageComponent implements OnInit {
   }
 
   // ── Marquer payée ─────────────────────────────────────
-  togglePaid(bill: BillSummary, e: Event): void {
+  // ── Paiement : payée / non payée, date, transaction bancaire ─────────────
+  private readonly auth    = inject(AuthService);
+  private readonly bankSvc = inject(BankTransactionsService);
+  /** Lier au relevé : droit « paiements » (relevé bancaire). */
+  readonly canBank = this.auth.hasPerm('payments.manage');
+  readonly txRef = txRef;
+  readonly todayIso = todayIso;
+  payDate     = signal(todayIso());
+  payError    = signal('');
+  bankLinks   = signal<BillBankLinks | null>(null);
+  bankLoading = signal(false);
+  bankSearch  = signal('');
+  bankFrom    = signal('');   // période des dépôts proposés (par défaut : le mois précédent)
+  bankTo      = signal('');
+  private _bankTimer?: ReturnType<typeof setTimeout>;
+
+  /** Facture affichée dans la fenêtre « Paiement » (toujours la version à jour de la liste). */
+  readonly payBill = computed(() => {
+    const s = this.selectedBill();
+    return s ? this.bills().find(b => b.billIdentifier === s.billIdentifier) ?? s : null;
+  });
+
+  openPay(bill: BillSummary, e: Event): void {
     e.stopPropagation();
     this.alertNotes(bill, 'Paiement de la facture');
-    this.invoiceSvc.markPaid(bill.billIdentifier, !bill.isPaid).subscribe({
-      next: () => {
-        bill.isPaid = !bill.isPaid;
-        this.success.set(`Facture ${bill.billNumber} marquée ${bill.isPaid ? 'payée' : 'impayée'}.`);
-        setTimeout(() => this.success.set(''), 3000);
-      },
-      error: err => this.error.set(httpErrorMessage(err)),
+    this.selectedBill.set(bill);
+    this.payDate.set(bill.paidDate ? bill.paidDate.slice(0, 10) : todayIso());
+    this.payError.set('');
+    this.bankLinks.set(null);
+    this.bankSearch.set('');
+    const [from, to] = this._previousMonth();
+    this.bankFrom.set(from);
+    this.bankTo.set(to);
+    this.modalMode.set('pay');
+    this._loadBank();
+  }
+
+  private _loadBank(): void {
+    const b = this.selectedBill();
+    if (!b || !this.canBank || b.parentBillIdentifier !== null) return;
+    if (this.bankFrom() && this.bankTo() && this.bankFrom() > this.bankTo()) { this.payError.set('La date de début doit être avant la date de fin.'); return; }
+    this.payError.set('');
+    this.bankLoading.set(true);
+    this.bankSvc.forBill(b.billIdentifier, this.bankSearch().trim(), this.bankFrom(), this.bankTo()).subscribe({
+      next:  l   => { this.bankLinks.set(l); this.bankLoading.set(false); },
+      error: err => { this.payError.set(httpErrorMessage(err, `Impossible de charger les transactions bancaires`)); this.bankLoading.set(false); },
     });
   }
+
+  /** Premier et dernier jour du mois précédent (yyyy-MM-dd). */
+  private _previousMonth(): [string, string] {
+    const [y, m] = todayIso().split('-').map(Number);
+    const py = m === 1 ? y - 1 : y, pm = m === 1 ? 12 : m - 1;
+    const last = new Date(Date.UTC(py, pm, 0)).getUTCDate();
+    const mm = String(pm).padStart(2, '0');
+    return [`${py}-${mm}-01`, `${py}-${mm}-${String(last).padStart(2, '0')}`];
+  }
+
+  setBankPeriod(which: 'from' | 'to', v: string): void {
+    (which === 'from' ? this.bankFrom : this.bankTo).set(v ?? '');
+    this._loadBank();
+  }
+  clearBankPeriod(): void { this.bankFrom.set(''); this.bankTo.set(''); this._loadBank(); }
+
+  setBankSearch(q: string): void {
+    this.bankSearch.set(q);
+    clearTimeout(this._bankTimer);
+    this._bankTimer = setTimeout(() => this._loadBank(), 300);
+  }
+
+  /** Marque payée (à la date saisie) ou non payée. */
+  setPaid(isPaid: boolean): void {
+    const b = this.payBill();
+    if (!b || this.acting()) return;
+    if (isPaid && !this.payDate()) { this.payError.set('Indiquez la date du paiement.'); return; }
+    if (isPaid && this.payDate() > todayIso()) { this.payError.set('La date de paiement ne peut pas être dans le futur.'); return; }
+    this.acting.set(true);
+    this.payError.set('');
+    this.invoiceSvc.markPaid(b.billIdentifier, isPaid, isPaid ? this.payDate() : undefined).subscribe({
+      next: () => {
+        this.acting.set(false);
+        this.success.set(`Facture ${b.billNumber} marquée ${isPaid ? 'payée' : 'impayée'}.`);
+        setTimeout(() => this.success.set(''), 3000);
+      },
+      error: err => { this.acting.set(false); this.payError.set(httpErrorMessage(err, `Le paiement n'a pas été enregistré`)); },
+    });
+  }
+
+  /** Associe la facture à un dépôt du relevé : payée, à la date du dépôt (même si elle était déjà payée). */
+  linkTx(c: BillBankCandidate): void {
+    const b = this.payBill();
+    if (!b || this.acting()) return;
+    this.acting.set(true);
+    this.payError.set('');
+    this.bankSvc.addMatch(c.bankTransactionId, { targetType: 'bill', billIdentifier: b.billIdentifier, targetId: null }).subscribe({
+      next: () => {
+        this.invoiceSvc.patchLocal(b.billIdentifier, { isPaid: true, paidDate: c.date });
+        this.acting.set(false);
+        this._loadBank();
+      },
+      error: err => { this.acting.set(false); this.payError.set(httpErrorMessage(err, `L'association n'a pas été enregistrée`)); },
+    });
+  }
+
+  /** Retire le lien : la facture redevient non payée si c'est ce lien qui l'avait marquée payée. */
+  unlinkTx(): void {
+    const b = this.payBill();
+    const l = this.bankLinks();
+    if (!b || !l?.linked || !l.matchId || this.acting()) return;
+    this.acting.set(true);
+    this.payError.set('');
+    this.bankSvc.removeMatch(l.linked.bankTransactionId, l.matchId).subscribe({
+      next: () => {
+        // Statut à jour depuis le serveur (le lien n'avait peut-être pas marqué la facture payée)
+        this.invoiceSvc.getById(b.billIdentifier).subscribe({
+          next: d => this.invoiceSvc.patchLocal(b.billIdentifier, { isPaid: d.isPaid, paidDate: d.paidDate }),
+        });
+        this.acting.set(false);
+        this._loadBank();
+      },
+      error: err => { this.acting.set(false); this.payError.set(httpErrorMessage(err, `Le lien n'a pas été retiré`)); },
+    });
+  }
+
+  txLabel(t: BankTransactionRef): string { return `${t.date} · ${txRef(t)} · ${t.description}`; }
+  fmtDay(iso: string | null | undefined): string { return iso ? this._fmtDate(iso) : ''; }
 
   // ── Upload fichier joint ──────────────────────────────
   onFileSelected(event: Event): void {
@@ -594,6 +710,9 @@ export class InvoiceManageComponent implements OnInit {
   }
 
   closeModal(): void {
+    clearTimeout(this._bankTimer);
+    this.payError.set('');
+    this.bankLinks.set(null);
     this.modalMode.set(null);
     this.selectedBill.set(null);
     this.detailBill.set(null);

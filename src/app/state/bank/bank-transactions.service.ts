@@ -27,7 +27,7 @@ export interface BankTransactionRow {
   note?:          string | null;
   noteUpdatedAt?: string | null;   // ISO UTC
   noteUpdatedBy?: string | null;
-  /** « bills » : dépôt direct / mobile → factures ; « charge » : retrait → une charge ; null : rien. */
+  /** « bills » : dépôt direct / mobile / paiement internet → factures ; « charge » : retrait → une charge ou un paiement employé ; null : rien. */
   matchKind?:     BankMatchKind | null;
   matches?:       BankMatch[];
   /** Transaction initiale : la transaction qui l'annule. */
@@ -37,7 +37,7 @@ export interface BankTransactionRow {
 }
 
 export type BankMatchKind = 'bills' | 'charge';
-export type BankMatchTarget = 'bill' | 'charge';
+export type BankMatchTarget = 'bill' | 'charge' | 'employeePayment';
 
 /** Autre transaction du relevé (annulation ↔ transaction initiale). */
 export interface BankTransactionRef {
@@ -49,7 +49,7 @@ export interface BankTransactionRef {
   deposit:     number | null;
 }
 
-/** Facture ou charge associée à une transaction. */
+/** Facture, charge ou paiement employé associé à une transaction. */
 export interface BankMatch {
   id:             string;
   targetType:     BankMatchTarget;
@@ -59,8 +59,14 @@ export interface BankMatch {
   companyName:    string | null;
   date:           string | null;
   amount:         number;
+  /** Facture : payée ; paiement employé : transféré. */
   isPaid:         boolean;
   setBillPaid:    boolean;
+  /** Paiement employé marqué « transféré » par ce lien (remis « à transférer » si on le retire). */
+  setTransferred?: boolean;
+  /** Paiement employé : semaine payée. */
+  periodStart?:   string | null;
+  periodEnd?:     string | null;
 }
 
 export interface BankMatchCandidate {
@@ -72,8 +78,24 @@ export interface BankMatchCandidate {
   date:           string | null;
   amount:         number;
   isPaid:         boolean;
-  /** Facture déjà associée à une autre transaction : affichée grisée, non sélectionnable. */
+  periodStart?:   string | null;
+  periodEnd?:     string | null;
+  /** Élément déjà associé à une autre transaction : affiché grisé, non sélectionnable. */
   linkedTo?:      BankTransactionRef | null;
+}
+
+/** Facture ↔ relevé : transaction qui la paie, sinon dépôts proposés. */
+export interface BillBankLinks {
+  billIdentifier: number;
+  amount:         number;
+  linked:         BankTransactionRef | null;
+  matchId:        string | null;
+  candidates:     BillBankCandidate[];
+}
+export interface BillBankCandidate extends BankTransactionRef {
+  /** Montant du dépôt non encore couvert par des factures. */
+  remaining: number;
+  billCount: number;
 }
 
 export interface BankMatchCandidates {
@@ -169,6 +191,13 @@ export class BankTransactionsService {
   addMatch(id: string, c: Pick<BankMatchCandidate, 'targetType' | 'billIdentifier' | 'targetId'>) {
     return this.http.post<BankTransactionRow>(`/api/bank-transactions/${id}/matches`,
       { targetType: c.targetType, billIdentifier: c.billIdentifier, targetId: c.targetId });
+  }
+  /** `from` / `to` (yyyy-MM-dd) : période des dépôts proposés. */
+  forBill(billId: number, q = '', from = '', to = '') {
+    let params = new HttpParams().set('q', q);
+    if (from) params = params.set('from', from);
+    if (to)   params = params.set('to', to);
+    return this.http.get<BillBankLinks>(`/api/bank-transactions/for-bill/${billId}`, { params });
   }
   removeMatch(id: string, matchId: string) {
     return this.http.delete<BankTransactionRow>(`/api/bank-transactions/${id}/matches/${matchId}`);

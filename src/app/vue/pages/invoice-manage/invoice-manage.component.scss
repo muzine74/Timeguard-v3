@@ -397,3 +397,30 @@
   &[data-tooltip='']::after,
   &[data-tooltip='']::before { display: none; }
 }
+
+// ── Fenêtre « Paiement » ─────────────────────────────────────────────────
+.pay-modal { max-width: 560px; }
+.pay-sub { margin: 0 0 12px; color: var(--muted); font-size: 13px; }
+.pay-toggle { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
+.pay-opt {
+  padding: 6px 14px; border: 0; background: transparent; color: var(--text); font: inherit; font-size: 13px; cursor: pointer;
+  & + & { border-left: 1px solid var(--border); }
+  &.on  { background: var(--success); color: #fff; font-weight: 600; }
+  &.on.off { background: var(--warning); }
+  &:disabled { cursor: not-allowed; opacity: .75; }
+  &:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+}
+.pay-state { margin: 0 0 8px; font-size: 14px; }
+.pay-date { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; label { font-size: 13px; } }
+.pay-hint { font-size: 12px; color: var(--muted); margin: 4px 0; list-style: none; }
+.pay-bank { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); }
+.pay-bank-title { font-size: 14px; margin: 0 0 8px; }
+.pay-lbl { display: block; font-size: 13px; margin-bottom: 4px; }
+.pay-bank .inp { width: 100%; box-sizing: border-box; }
+.pay-linked, .pay-cand { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
+.pay-cands { list-style: none; margin: 6px 0 0; padding: 0; max-height: 260px; overflow-y: auto; }
+.pay-cand + .pay-cand { border-top: 1px solid var(--border); }
+.pay-tx { flex: 1; min-width: 0; font-size: 13px; overflow-wrap: anywhere; small { display: block; color: var(--muted); font-size: 11px; } }
+.pay-amt { white-space: nowrap; font-size: 13px; &.exact { color: var(--success-text); } }
+.pay-err { margin: 8px 0; padding: 8px 10px; border-radius: 6px; font-size: 13px; color: var(--danger-text); border: 1px solid var(--danger); }
+.pay-period { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; font-size: 13px; .inp.inp-date { width: auto; } }

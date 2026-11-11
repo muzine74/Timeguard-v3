@@ -42,13 +42,13 @@
       <section class="blk" aria-labelledby="txp-match">
         <h3 id="txp-match" class="blk-title">
           <span *ngIf="r().matchKind === 'bills'">🧾 Factures associées</span>
-          <span *ngIf="r().matchKind === 'charge'">💼 Charge associée</span>
+          <span *ngIf="r().matchKind === 'charge'">💼 Charges et paiements employé associés</span>
           <span *ngIf="!r().matchKind">🔗 Rapprochement</span>
         </h3>
 
         <p class="hint" *ngIf="!r().matchKind">
           <ng-container *ngIf="r().cancels">Une transaction d'annulation ne se rapproche pas.</ng-container>
-          <ng-container *ngIf="!r().cancels">Seuls les dépôts directs et les dépôts mobiles (factures) et les retraits (charge) se rapprochent.</ng-container>
+          <ng-container *ngIf="!r().cancels">Seuls les dépôts directs, les dépôts mobiles et les paiements internet (factures) et les retraits (charge ou paiement employé) se rapprochent.</ng-container>
         </p>
 
         <ng-container *ngIf="r().matchKind">
@@ -57,13 +57,15 @@
               <span class="item-ico" aria-hidden="true">{{ targetIcon(m.targetType) }}</span>
               <span class="item-main">
                 <strong *ngIf="m.label" data-no-i18n>{{ m.label }}</strong>
-                <em *ngIf="!m.label">{{ m.targetType === 'bill' ? 'Facture supprimée' : 'Charge supprimée' }}</em>
+                <em *ngIf="!m.label">{{ deletedLabel(m.targetType) }}</em>
+                <span class="item-sub" *ngIf="m.periodStart && m.periodEnd">Semaine du {{ m.periodStart }} au {{ m.periodEnd }}</span>
                 <span class="item-sub" *ngIf="m.companyName || m.date">
                   <span data-no-i18n *ngIf="m.companyName">{{ m.companyName }} · </span><span data-no-i18n>{{ m.date }}</span>
                 </span>
               </span>
               <span class="item-amt" data-no-i18n>{{ fmt(m.amount) }}</span>
               <span class="tag" *ngIf="m.targetType === 'bill'" [class.tag-ok]="m.isPaid" [class.tag-warn]="!m.isPaid">{{ m.isPaid ? 'Payée' : 'Non payée' }}</span>
+              <span class="tag" *ngIf="m.targetType === 'employeePayment' && m.label" [class.tag-ok]="m.isPaid" [class.tag-warn]="!m.isPaid">{{ m.isPaid ? 'Transféré' : 'À transférer' }}</span>
               <button type="button" class="btn btn-outline btn-sm danger" [disabled]="busy() || (m.targetType === 'bill' && !canEditInvoices)"
                       (click)="unlink(m)" [attr.aria-label]="'Retirer ' + (m.label ?? '')">Retirer</button>
             </li>
@@ -80,12 +82,13 @@
 
           <div class="cand" *ngIf="canAdd()">
             <label class="lbl" for="txp-search">
-              {{ r().matchKind === 'bills' ? 'Ajouter une facture' : (matched().length ? 'Remplacer la charge' : 'Choisir une charge') }}
+              {{ r().matchKind === 'bills' ? 'Ajouter une facture' : 'Ajouter une charge ou un paiement employé' }}
             </label>
             <input id="txp-search" class="inp" type="search" autocomplete="off"
-                   [placeholder]="r().matchKind === 'bills' ? 'N° de facture, compagnie ou montant…' : 'Titre de la charge ou montant…'"
+                   [placeholder]="r().matchKind === 'bills' ? 'N° de facture, compagnie ou montant…' : 'Charge, employé ou montant…'"
                    [ngModel]="search()" (ngModelChange)="setSearch($event)" />
             <p class="hint" *ngIf="r().matchKind === 'bills'">Une facture associée est marquée payée à la date du dépôt.</p>
+            <p class="hint" *ngIf="r().matchKind === 'charge'">Un paiement employé associé est marqué « Paiement transféré » (à la date du retrait s'il n'en a pas).</p>
             <div class="msg msg-err" role="alert" *ngIf="candError()">⚠ {{ candError() }}</div>
             <p class="hint" role="status" *ngIf="candLoading()">Recherche…</p>
             <ul class="items cand-list" *ngIf="!candLoading() && cands() as c">
@@ -93,9 +96,11 @@
                 <span class="item-ico" aria-hidden="true">{{ targetIcon(it.targetType) }}</span>
                 <span class="item-main">
                   <strong data-no-i18n>{{ it.label }}</strong>
+                  <span class="item-sub" *ngIf="it.periodStart && it.periodEnd">Semaine du {{ it.periodStart }} au {{ it.periodEnd }}</span>
                   <span class="item-sub"><span data-no-i18n *ngIf="it.companyName">{{ it.companyName }} · </span><span data-no-i18n>{{ it.date }}</span></span>
                   <span class="taken-by" *ngIf="it.linkedTo as l">
-                    <span>Associée à la transaction du {{ l.date }} :</span>
+                    <span *ngIf="it.targetType !== 'employeePayment'">Associée à la transaction du {{ l.date }} :</span>
+                    <span *ngIf="it.targetType === 'employeePayment'">Associé à la transaction du {{ l.date }} :</span>
                     <button type="button" class="link-btn" (click)="open(l)" [title]="l.date + ' — ' + l.description">
                       <span data-no-i18n>{{ txRef(l) }}</span>
                     </button>
@@ -103,8 +108,8 @@
                   </span>
                 </span>
                 <span class="item-amt" [class.exact]="!it.linkedTo && it.amount === c.remaining" data-no-i18n>{{ fmt(it.amount) }}</span>
-                <span class="tag tag-ok" *ngIf="it.isPaid && !it.linkedTo">Payée</span>
-                <span class="tag tag-taken" *ngIf="it.linkedTo">Déjà associée</span>
+                <span class="tag tag-ok" *ngIf="it.isPaid && !it.linkedTo">{{ it.targetType === 'employeePayment' ? 'Transféré' : 'Payée' }}</span>
+                <span class="tag tag-taken" *ngIf="it.linkedTo">{{ it.targetType === 'employeePayment' ? 'Déjà associé' : 'Déjà associée' }}</span>
                 <button type="button" class="btn btn-primary btn-sm" *ngIf="!it.linkedTo" [disabled]="busy()" (click)="associate(it)"
                         [attr.aria-label]="'Associer ' + it.label">Associer</button>
               </li>

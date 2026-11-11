@@ -87,6 +87,8 @@ export interface SendEmailRequest {
   recipients: string[];
   subject:    string;
   body:       string;
+  /** Autres factures du même client à joindre (PDF générés par l'API). */
+  attachBillIds?: number[];
 }
 
 export interface BillablePriceGroup {
@@ -229,14 +231,20 @@ export class InvoiceService {
   }
 
   // ── Payée ─────────────────────────────────────────────────────────────────
-  markPaid(id: number, isPaid: boolean) {
-    this.log(`markPaid(${id}, ${isPaid})`);
-    return this.http.post<{ message: string }>(`/api/bills/${id}/paid`, { isPaid }).pipe(
+  /** Payée à `paidDate` (yyyy-MM-dd, vide = aujourd'hui) ou non payée ; la liste est mise à jour. */
+  markPaid(id: number, isPaid: boolean, paidDate?: string) {
+    this.log(`markPaid(${id}, ${isPaid}, ${paidDate ?? ''})`);
+    return this.http.post<{ message: string; isPaid: boolean; paidDate: string | null }>(`/api/bills/${id}/paid`, { isPaid, paidDate: paidDate || null }).pipe(
       tap({
-        next:  res => this.log('✓ statut paiement:', res),
+        next:  res => { this.log('✓ statut paiement:', res); this.patchLocal(id, { isPaid: res.isPaid, paidDate: res.paidDate }); },
         error: err => this.warn(`✕ POST /api/bills/${id}/paid`, err),
       }),
     );
+  }
+
+  /** Met à jour une facture de la liste chargée (sans nouvel appel). */
+  patchLocal(id: number, changes: Partial<BillSummary>): void {
+    this._list.update(l => l.map(b => b.billIdentifier === id ? { ...b, ...changes } : b));
   }
 
   // ── Supprimer ─────────────────────────────────────────────────────────────
@@ -309,6 +317,11 @@ export class InvoiceService {
     return this.http.delete<{ message: string }>(`/api/bills/${id}/pdf`);
   }
 
+  /** Factures d'un client (sans toucher à la liste en cache de la page Gestion des factures). */
+  listForCompany(companyCode: string) {
+    return this.http.get<BillSummary[]>('/api/bills', { params: new HttpParams().set('companyCode', companyCode) });
+  }
+
   // ── Envoyer par courriel ──────────────────────────────────────────────
   sendEmail(id: number, req: SendEmailRequest, attachments: File[] = []) {
     this.log(`sendEmail(${id})`, `${attachments.length} PJ additionnelle(s)`);
@@ -317,6 +330,7 @@ export class InvoiceService {
     form.append('Subject', req.subject);
     form.append('Body', req.body);
     attachments.forEach(f => form.append('Attachments', f, f.name));
+    (req.attachBillIds ?? []).forEach(id => form.append('AttachBillIds', String(id)));
 
     return this.http.post<{ message: string }>(`/api/bills/${id}/send-email`, form).pipe(
       tap({

@@ -1,8 +1,8 @@
 // ── Mise en page globale ──────────────────────────────────────────────────
 .report-page {
-  max-width: 1200px;
+  max-width: 1400px;   // même largeur que Gestion des factures
   margin: 0 auto;
-  padding: 2rem 1.5rem;
+  padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;

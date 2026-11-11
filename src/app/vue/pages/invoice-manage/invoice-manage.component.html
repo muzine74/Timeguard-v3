@@ -107,8 +107,8 @@
               <button class="badge-btn"
                       [class.badge-paid]="row.node.data.isPaid"
                       [class.badge-unpaid]="!row.node.data.isPaid"
-                      [disabled]="!row.node.data.isSent"
-                      (click)="togglePaid(row.node.data, $event)">
+                      [disabled]="!row.node.data.isSent" aria-haspopup="dialog"
+                      (click)="openPay(row.node.data, $event)">
                 {{ row.node.data.isPaid ? '✓ Payée' : '◎ Impayée' }}
               </button>
             </span>
@@ -265,6 +265,84 @@
         </button>
       </ng-container>
 
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     MODAL PAIEMENT (payée / non payée, date, transaction bancaire)
+     ══════════════════════════════════ -->
+<div class="modal-backdrop" *ngIf="modalMode() === 'pay' && payBill() as b" (click)="closeModal()">
+  <div class="modal pay-modal" role="dialog" aria-modal="true" aria-labelledby="pay-title" (click)="$event.stopPropagation()" (keydown.escape)="closeModal()">
+    <div class="modal-hdr">
+      <div class="modal-title" id="pay-title">Paiement — <span data-no-i18n>{{ b.billNumber }}</span></div>
+      <button class="modal-close" (click)="closeModal()" aria-label="Fermer">✕</button>
+    </div>
+    <div class="modal-body">
+      <p class="pay-sub"><span data-no-i18n>{{ b.companyName }}</span> · <strong data-no-i18n>{{ b.totalWithTax | number:'1.2-2' }} $</strong></p>
+
+      <div class="pay-toggle" role="radiogroup" aria-label="Statut du paiement">
+        <button type="button" class="pay-opt" role="radio" [attr.aria-checked]="b.isPaid" [class.on]="b.isPaid"
+                [disabled]="acting() || !!bankLinks()?.linked" (click)="!b.isPaid && setPaid(true)">✓ Payée</button>
+        <button type="button" class="pay-opt" role="radio" [attr.aria-checked]="!b.isPaid" [class.on]="!b.isPaid" [class.off]="!b.isPaid"
+                [disabled]="acting() || !!bankLinks()?.linked" (click)="b.isPaid && setPaid(false)">◎ Non payée</button>
+      </div>
+
+      <p class="pay-state" *ngIf="b.isPaid">
+        Payée le <strong>{{ fmtDay(b.paidDate) || '—' }}</strong>
+        <span class="pay-hint" *ngIf="bankLinks()?.linked">(date de la transaction associée)</span>
+      </p>
+      <div class="pay-date" *ngIf="!b.isPaid">
+        <label for="pay-date">Date du paiement</label>
+        <input id="pay-date" type="date" class="inp inp-date" [max]="todayIso()" [ngModel]="payDate()" (ngModelChange)="payDate.set($event)" />
+        <button type="button" class="btn btn-primary" [disabled]="acting() || !payDate()" (click)="setPaid(true)">✓ Marquer payée</button>
+      </div>
+      <p class="pay-hint" *ngIf="bankLinks()?.linked">Le statut suit la transaction bancaire associée : retirez le lien pour le modifier.</p>
+
+      <div class="pay-err" role="alert" *ngIf="payError()">⚠ {{ payError() }}</div>
+
+      <!-- Transaction bancaire -->
+      <section class="pay-bank" *ngIf="canBank && b.parentBillIdentifier === null" aria-labelledby="pay-bank-title">
+        <h3 class="pay-bank-title" id="pay-bank-title">🏦 Transaction bancaire</h3>
+        <p class="pay-hint" role="status" *ngIf="bankLoading() && !bankLinks()">Chargement…</p>
+
+        <ng-container *ngIf="bankLinks() as l">
+          <div class="pay-linked" *ngIf="l.linked as t">
+            <span class="pay-tx" data-no-i18n>{{ txLabel(t) }}</span>
+            <strong class="pay-amt" data-no-i18n>{{ t.deposit | number:'1.2-2' }} $</strong>
+            <button type="button" class="btn btn-outline btn-sm" [disabled]="acting()" (click)="unlinkTx()">Retirer le lien</button>
+          </div>
+
+          <ng-container *ngIf="!l.linked">
+            <div class="pay-period" role="group" aria-label="Période des dépôts">
+              <label for="pay-bank-from">Du</label>
+              <input id="pay-bank-from" type="date" class="inp inp-date" [ngModel]="bankFrom()" (ngModelChange)="setBankPeriod('from', $event)" />
+              <label for="pay-bank-to">au</label>
+              <input id="pay-bank-to" type="date" class="inp inp-date" [ngModel]="bankTo()" (ngModelChange)="setBankPeriod('to', $event)" />
+              <button type="button" class="btn btn-outline btn-sm" *ngIf="bankFrom() || bankTo()" (click)="clearBankPeriod()">Toutes les dates</button>
+            </div>
+            <label class="pay-lbl" for="pay-bank-search">Associer à un dépôt du relevé</label>
+            <input id="pay-bank-search" class="inp" type="search" autocomplete="off" placeholder="Description, n° de ligne ou montant…"
+                   [ngModel]="bankSearch()" (ngModelChange)="setBankSearch($event)" />
+            <p class="pay-hint">Seuls les dépôts directs, les dépôts mobiles et les paiements internet sont proposés. La facture est marquée payée, à la date du dépôt.</p>
+            <p class="pay-hint" role="status" *ngIf="bankLoading()">Recherche…</p>
+            <ul class="pay-cands" *ngIf="!bankLoading()">
+              <li *ngFor="let c of l.candidates" class="pay-cand">
+                <span class="pay-tx">
+                  <span data-no-i18n>{{ txLabel(c) }}</span>
+                  <small *ngIf="c.billCount">Déjà {{ c.billCount }} facture(s) · reste <span data-no-i18n>{{ c.remaining | number:'1.2-2' }} $</span></small>
+                </span>
+                <strong class="pay-amt" [class.exact]="c.remaining === l.amount" data-no-i18n>{{ c.deposit | number:'1.2-2' }} $</strong>
+                <button type="button" class="btn btn-outline btn-sm" [disabled]="acting()" (click)="linkTx(c)">Associer</button>
+              </li>
+              <li class="pay-hint" *ngIf="!l.candidates.length">Aucun dépôt trouvé.</li>
+            </ul>
+          </ng-container>
+        </ng-container>
+      </section>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" (click)="closeModal()">Fermer</button>
     </div>
   </div>
 </div>

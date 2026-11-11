@@ -22,8 +22,10 @@ const COLUMNS: Column[] = ['date', 'description', 'withdrawal', 'deposit', 'link
 const NO_PICK: Record<Column, string[]> = { date: [], description: [], withdrawal: [], deposit: [], linkName: [], validated: [] };
 type Tab = 'statement' | 'lexicon';
 const VALIDATED_OPTIONS: MultiSelectOption[] = [{ id: 'true', label: 'Validée' }, { id: 'false', label: 'Non validée' }];
+const FOLLOW_OPTIONS: MultiSelectOption[] = [{ id: 'true', label: 'Avec suivi' }, { id: 'false', label: 'Sans suivi' }];
 const EMPTY = '__vide__';          // valeur « (vide) » d'un filtre de colonne
 const PAGE_SIZE = 50;
+const MATCH_TOLERANCE_CENTS = 200;   // case « Suivi » verte si l'écart est de 2 $ ou moins
 
 const MAX_SIZE = 5 * 1024 * 1024;
 
@@ -80,6 +82,9 @@ export class BankStatementComponent implements OnInit {
   // ── Recherche, filtres par colonne, tri, pages (dans le navigateur, sans nouvel appel) ──
   search  = signal('');
   picked  = signal<Record<Column, string[]>>({ ...NO_PICK });
+  /** Filtre « Suivi » : 'true' = la ligne a un rapprochement, une note ou une pièce jointe ; 'false' = rien. */
+  followed = signal<string[]>([]);
+  readonly followOptions = FOLLOW_OPTIONS;
   page    = signal(1);
   readonly sort = new TableSort<Column>(['date', 'withdrawal', 'deposit']);
 
@@ -108,8 +113,10 @@ export class BankStatementComponent implements OnInit {
   filtered = computed(() => {
     const terms = searchTerms(this.search());
     const picked = this.picked();
+    const followed = this.followed();
     return this._rows().filter(r => {
       for (const c of COLUMNS) if (picked[c].length && !picked[c].includes(this._id(r, c))) return false;
+      if (followed.length && !followed.includes(String(this.hasFollow(r)))) return false;
       if (!terms.length) return true;
       // Montants : tels qu'affichés (« 1 943,08 $ »), sans espace (« 1943,08 ») et bruts (« 1943.08 »)
       const amounts = [r.withdrawal, r.deposit].flatMap(a => a == null ? [] : [this.fmt(a), this.fmt(a).replace(/\s/g, ''), String(a)]);
@@ -146,7 +153,7 @@ export class BankStatementComponent implements OnInit {
   totalWithdrawals = computed(() => this._sum('withdrawal'));
   totalDeposits    = computed(() => this._sum('deposit'));
   net              = computed(() => Math.round((this.totalDeposits() - this.totalWithdrawals()) * 100) / 100);
-  hasFilters       = computed(() => !!this.search().trim() || COLUMNS.some(c => this.picked()[c].length > 0));
+  hasFilters       = computed(() => !!this.search().trim() || this.followed().length > 0 || COLUMNS.some(c => this.picked()[c].length > 0));
 
   validatedCount = computed(() => this.filtered().filter(r => r.validated).length);
   linkedCount    = computed(() => this.filtered().filter(r => r.linkType).length);
@@ -245,9 +252,30 @@ export class BankStatementComponent implements OnInit {
   cancelledTitle(r: BankTransactionRow): string { return r.cancelledBy ? `Annulée le ${r.cancelledBy.date}` : ''; }
   cancelsTitle(r: BankTransactionRow): string { return r.cancels ? `${r.cancels.date} — ${r.cancels.description}` : ''; }
 
-  /** Libellés des factures / de la charge associées (recherche, export). */
+  /** Libellés des factures / de la charge ou du paiement employé associés (recherche, export). */
   matchLabels(r: BankTransactionRow): string { return (r.matches ?? []).map(m => m.label ?? '?').join(', '); }
+  /** Écart (en cents) entre le total des éléments associés et le montant de la ligne ; null = rien d'associé. */
+  private _gapCents(r: BankTransactionRow): number | null {
+    if (!r.matches?.length) return null;
+    const total = r.matches.reduce((s, m) => s + (m.amount ?? 0), 0);
+    return Math.abs(Math.round(total * 100) - Math.round((r.withdrawal ?? r.deposit ?? 0) * 100));
+  }
+  /** 'ok' (vert) = écart de 2 $ ou moins, 'off' (rouge) = plus, null = rien d'associé. */
+  matchBalance(r: BankTransactionRow): 'ok' | 'off' | null {
+    const gap = this._gapCents(r);
+    return gap == null ? null : gap <= MATCH_TOLERANCE_CENTS ? 'ok' : 'off';
+  }
+  matchBalanceTitle(r: BankTransactionRow): string {
+    const b = this.matchBalance(r);
+    if (!b) return '';
+    const total = this.fmt(r.matches!.reduce((s, m) => s + (m.amount ?? 0), 0));
+    if (this._gapCents(r) === 0) return `Total associé : ${total} = montant de la ligne`;
+    return b === 'ok' ? `Total associé : ${total} ≈ montant de la ligne (${this.fmt(r.withdrawal ?? r.deposit)}), écart de 2 $ ou moins`
+                      : `Total associé : ${total} ≠ montant de la ligne (${this.fmt(r.withdrawal ?? r.deposit)})`;
+  }
   attCount(r: BankTransactionRow): number { return r.attachments?.length ?? (r.attachment ? 1 : 0); }
+  /** Ligne avec un suivi : facture / charge / paiement employé associé, note ou pièce jointe. */
+  hasFollow(r: BankTransactionRow): boolean { return !!r.matches?.length || !!r.note?.trim() || this.attCount(r) > 0; }
 
   /** Clic sur le nom d'un document dans la cellule : l'ouvre dans un nouvel onglet (fichier récupéré avec la session). */
   openAttachment(a: AttachmentItem, ev: Event): void {
@@ -284,10 +312,12 @@ export class BankStatementComponent implements OnInit {
 
   setSearch(v: string): void { this.search.set(v); this.page.set(1); }
   setPicked(c: Column, ids: string[]): void { this.picked.update(p => ({ ...p, [c]: ids })); this.page.set(1); }
+  setFollowed(ids: string[]): void { this.followed.set(ids); this.page.set(1); }
   toggleSort(c: Column): void { this.sort.toggle(c); this.page.set(1); }
   resetFilters(): void {
     this.search.set('');
     this.picked.set({ ...NO_PICK });
+    this.followed.set([]);
     this.page.set(1);
   }
   goTo(p: number): void { this.page.set(Math.min(Math.max(1, p), this.pageCount())); }

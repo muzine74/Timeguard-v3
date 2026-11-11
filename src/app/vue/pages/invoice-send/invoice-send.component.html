@@ -182,6 +182,19 @@
             <button class="btn-remove-att" type="button" (click)="removeExtraAttachment(f)" title="Retirer cette pièce jointe">✕</button>
           </div>
 
+          <!-- Autres factures du client -->
+          <label class="others-chk">
+            <input type="checkbox" [checked]="attachOthers()" (change)="onAttachOthers($any($event.target).checked)" />
+            <span>Joindre d'autres factures du client</span>
+          </label>
+          <div class="extra-att-row" *ngFor="let b of attachedBills()">
+            <span class="att-icon">🧾</span>
+            <span class="att-name"><span data-no-i18n>{{ b.billNumber }}.pdf</span> <small class="others-avoir" *ngIf="avoirs(b.billIdentifier) as n">+ {{ n }} avoir(s)</small></span>
+            <span class="att-badge" [class.att-unpaid]="!b.isPaid">{{ b.isPaid ? 'Payée' : 'Non payée' }}</span>
+            <button class="btn-remove-att" type="button" (click)="removeAttachedBill(b.billIdentifier)" title="Retirer cette facture">✕</button>
+          </div>
+          <button type="button" class="btn-link" *ngIf="attachedBills().length" (click)="openOthers()">Modifier la sélection</button>
+
           <label class="btn-add-attachment">
             <span>+ Ajouter une pièce jointe</span>
             <input type="file" multiple style="display:none"
@@ -214,5 +227,54 @@
       </ng-container>
     </ng-container>
 
+  </div>
+</div>
+
+<!-- Fenêtre : autres factures du client (non payées, puis payées) -->
+<div class="others-backdrop" *ngIf="othersOpen()" (click)="cancelOthers()">
+  <div class="others-modal" role="dialog" aria-modal="true" aria-labelledby="others-title" (click)="$event.stopPropagation()" (keydown.escape)="cancelOthers()">
+    <div class="others-hdr">
+      <h2 id="others-title">Factures du client — <span data-no-i18n>{{ detail()?.companyName }}</span></h2>
+      <button type="button" class="btn-remove-att" (click)="cancelOthers()" aria-label="Fermer">✕</button>
+    </div>
+    <div class="others-body">
+      <p class="others-hint">Cochez les factures à joindre au courriel : un PDF par facture, avec ses avoirs.</p>
+      <div class="others-err" role="alert" *ngIf="othersError()">⚠ {{ othersError() }}</div>
+      <div class="att-generating" *ngIf="othersLoading()"><div class="mini-spinner"></div><span>Chargement…</span></div>
+
+      <ng-container *ngIf="!othersLoading()">
+        <p class="others-hint" *ngIf="!clientBills().length">Aucune autre facture pour ce client.</p>
+
+        <section *ngIf="othersUnpaid().length" aria-labelledby="others-unpaid">
+          <label class="others-group">
+            <input type="checkbox" [checked]="groupChecked(othersUnpaid())" (change)="toggleGroup(othersUnpaid(), $any($event.target).checked)" />
+            <span id="others-unpaid">Non payées ({{ othersUnpaid().length }})</span>
+          </label>
+          <label class="others-row" *ngFor="let b of othersUnpaid()">
+            <input type="checkbox" [checked]="isDraft(b.billIdentifier)" (change)="toggleDraft(b.billIdentifier)" />
+            <span><span class="num-cell" data-no-i18n>{{ b.billNumber }}</span> <small class="others-avoir" *ngIf="avoirs(b.billIdentifier) as n">+ {{ n }} avoir(s)</small></span>
+            <span class="others-period" data-no-i18n>{{ b.period }}</span>
+            <span class="col-r amt-cell" data-no-i18n>{{ b.totalWithTax | number:'1.2-2' }} $</span>
+          </label>
+        </section>
+
+        <section *ngIf="othersPaid().length" aria-labelledby="others-paid">
+          <label class="others-group">
+            <input type="checkbox" [checked]="groupChecked(othersPaid())" (change)="toggleGroup(othersPaid(), $any($event.target).checked)" />
+            <span id="others-paid">Payées ({{ othersPaid().length }})</span>
+          </label>
+          <label class="others-row" *ngFor="let b of othersPaid()">
+            <input type="checkbox" [checked]="isDraft(b.billIdentifier)" (change)="toggleDraft(b.billIdentifier)" />
+            <span><span class="num-cell" data-no-i18n>{{ b.billNumber }}</span> <small class="others-avoir" *ngIf="avoirs(b.billIdentifier) as n">+ {{ n }} avoir(s)</small></span>
+            <span class="others-period" data-no-i18n>{{ b.period }}</span>
+            <span class="col-r amt-cell" data-no-i18n>{{ b.totalWithTax | number:'1.2-2' }} $</span>
+          </label>
+        </section>
+      </ng-container>
+    </div>
+    <div class="others-ftr">
+      <button type="button" class="btn" (click)="cancelOthers()">Annuler</button>
+      <button type="button" class="btn btn-primary" [disabled]="othersLoading()" (click)="confirmOthers()">Joindre ({{ draftIds().size }})</button>
+    </div>
   </div>
 </div>

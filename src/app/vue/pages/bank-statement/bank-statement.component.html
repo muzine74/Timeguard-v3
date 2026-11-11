@@ -118,6 +118,11 @@
           <app-multi-select aria-labelledby="bank-f-val" [options]="options().validated" [selected]="picked().validated"
                             (selectedChange)="setPicked('validated', $event)" placeholder="Toutes" plural="états"></app-multi-select>
         </div>
+        <div class="field">
+          <span class="lbl" id="bank-f-follow">Suivi</span>
+          <app-multi-select aria-labelledby="bank-f-follow" [options]="followOptions" [selected]="followed()"
+                            (selectedChange)="setFollowed($event)" placeholder="Toutes" plural="états"></app-multi-select>
+        </div>
         <button type="button" class="btn btn-outline" *ngIf="hasFilters()" (click)="resetFilters()">Réinitialiser</button>
         <app-export-buttons [build]="exportRows" [disabled]="!filtered().length" label="les lignes du relevé filtrées"></app-export-buttons>
       </div>
@@ -182,12 +187,14 @@
               </td>
               <td class="follow">
                 <button type="button" class="follow-btn" [attr.id]="'tx-open-' + r.bankTransactionId" (click)="openPanel(r, $event)" aria-haspopup="dialog"
+                        [class.bal-ok]="matchBalance(r) === 'ok'" [class.bal-off]="matchBalance(r) === 'off'" [title]="matchBalanceTitle(r)"
                         [attr.aria-label]="'Suivi de la transaction ' + txRef(r) + ' du ' + r.date">
                   <span class="badge" *ngIf="r.matches?.length" [title]="matchLabels(r)">
-                    <span aria-hidden="true">{{ r.matchKind === 'charge' ? '💼' : '🧾' }}</span> <span data-no-i18n>{{ r.matchKind === 'charge' ? r.matches![0].label : r.matches!.length }}</span>
+                    <span aria-hidden="true">{{ r.matchKind !== 'charge' ? '🧾' : r.matches!.length > 1 ? '💼' : r.matches![0].targetType === 'employeePayment' ? '👷' : '💼' }}</span> <span data-no-i18n>{{ r.matchKind === 'charge' && r.matches!.length === 1 ? r.matches![0].label : r.matches!.length }}</span>
                   </span>
                   <span class="badge" *ngIf="r.note" [title]="r.note"><span aria-hidden="true">📝</span><span class="sr-only">Note</span></span>
                   <span class="badge" *ngIf="attCount(r)"><span aria-hidden="true">📎</span> <span data-no-i18n>{{ attCount(r) }}</span></span>
+                  <span class="sr-only" *ngIf="matchBalance(r)">{{ matchBalanceTitle(r) }}</span>
                   <span class="follow-more" aria-hidden="true">⋯</span>
                 </button>
               </td>

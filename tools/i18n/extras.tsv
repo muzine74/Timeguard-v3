@@ -389,18 +389,13 @@ P	Annulée le {0} par la transaction	Reversed on {0} by transaction	Anulada el {
 P	Annule la transaction du {0} :	Reverses the transaction of {0}:	Anula la transacción del {0}:	Annulla la transazione del {0}:
 P	Annulée le {0}	Reversed on {0}	Anulada el {0}	Annullata il {0}
 E	🧾 Factures associées	🧾 Linked invoices	🧾 Facturas asociadas	🧾 Fatture associate
-E	💼 Charge associée	💼 Linked expense	💼 Gasto asociado	💼 Spesa associata
 E	🔗 Rapprochement	🔗 Reconciliation	🔗 Conciliación	🔗 Riconciliazione
 E	Une transaction d'annulation ne se rapproche pas.	A reversal transaction is not reconciled.	Una transacción de anulación no se concilia.	Una transazione di annullamento non si riconcilia.
-E	Seuls les dépôts directs et les dépôts mobiles (factures) et les retraits (charge) se rapprochent.	Only direct deposits and mobile deposits (invoices) and withdrawals (expense) can be reconciled.	Solo se concilian los depósitos directos y móviles (facturas) y los retiros (gasto).	Si riconciliano solo i depositi diretti e mobili (fatture) e i prelievi (spesa).
 E	Charge supprimée	Expense deleted	Gasto eliminado	Spesa eliminata
 E	Associé	Linked	Asociado	Associato
 E	Associer une facture la marque payée : il faut le droit de modifier les factures.	Linking an invoice marks it paid: you need the right to edit invoices.	Asociar una factura la marca como pagada: se necesita el permiso para modificar facturas.	Associare una fattura la segna come pagata: serve il permesso di modificare le fatture.
 E	Ajouter une facture	Add an invoice	Agregar una factura	Aggiungi una fattura
-E	Remplacer la charge	Replace the expense	Reemplazar el gasto	Sostituisci la spesa
-E	Choisir une charge	Choose an expense	Elegir un gasto	Scegli una spesa
 E	N° de facture, compagnie ou montant…	Invoice no., company or amount…	N.º de factura, compañía o importe…	N. fattura, azienda o importo…
-E	Titre de la charge ou montant…	Expense title or amount…	Título del gasto o importe…	Titolo della spesa o importo…
 E	Une facture associée est marquée payée à la date du dépôt.	A linked invoice is marked paid on the deposit date.	Una factura asociada se marca como pagada en la fecha del depósito.	Una fattura associata viene segnata come pagata alla data del deposito.
 E	Impossible de charger les propositions	Unable to load the suggestions	No se pueden cargar las propuestas	Impossibile caricare le proposte
 E	Recherche…	Searching…	Buscando…	Ricerca…
@@ -420,7 +415,6 @@ P	Renommer {0}	Rename {0}	Renombrar {0}	Rinomina {0}
 P	Supprimer {0}	Delete {0}	Eliminar {0}	Elimina {0}
 E	Aucune pièce jointe.	No attachment.	Ningún archivo adjunto.	Nessun allegato.
 E	📁 Choisir des fichiers	📁 Choose files	📁 Elegir archivos	📁 Scegli file
-E	Remplacer la charge associée ?	Replace the linked expense?	¿Reemplazar el gasto asociado?	Sostituire la spesa associata?
 E	Remplacer	Replace	Reemplazar	Sostituisci
 E	Retirer la facture ?	Remove the invoice?	¿Quitar la factura?	Rimuovere la fattura?
 E	Retirer la charge ?	Remove the expense?	¿Quitar el gasto?	Rimuovere la spesa?
@@ -443,3 +437,54 @@ P	Annulée par {0}	Reversed by {0}	Anulada por {0}	Annullata da {0}
 P	Annule {0}	Reverses {0}	Anula {0}	Annulla {0}
 E	Déjà associée	Already linked	Ya asociada	Già associata
 P	Associée à la transaction du {0} :	Linked to the transaction of {0}:	Asociada a la transacción del {0}:	Associata alla transazione del {0}:
+E	Seuls les dépôts directs, les dépôts mobiles et les paiements internet (factures) et les retraits (charge ou paiement employé) se rapprochent.	Only direct deposits, mobile deposits and internet payments (invoices) and withdrawals (expense or employee payment) can be reconciled.	Solo se concilian los depósitos directos, los depósitos móviles y los pagos por internet (facturas) y los retiros (gasto o pago de empleado).	Si riconciliano solo i depositi diretti, i depositi mobili e i pagamenti internet (fatture) e i prelievi (spesa o pagamento dipendente).
+E	Paiement employé supprimé	Employee payment deleted	Pago de empleado eliminado	Pagamento dipendente eliminato
+P	Semaine du {0} au {1}	Week of {0} to {1}	Semana del {0} al {1}	Settimana dal {0} al {1}
+E	Transféré	Transferred	Transferido	Trasferito
+E	À transférer	To transfer	Por transferir	Da trasferire
+E	Charge, employé ou montant…	Expense, employee or amount…	Gasto, empleado o importe…	Spesa, dipendente o importo…
+E	Un paiement employé associé est marqué « Paiement transféré » (à la date du retrait s'il n'en a pas).	A linked employee payment is marked "Payment transferred" (on the withdrawal date if it has none).	Un pago de empleado asociado se marca como «Pago transferido» (en la fecha del retiro si no tiene).	Un pagamento dipendente associato viene segnato «Pagamento trasferito» (alla data del prelievo se non ne ha).
+P	Associé à la transaction du {0} :	Linked to the transaction of {0}:	Asociado a la transacción del {0}:	Associato alla transazione del {0}:
+E	Déjà associé	Already linked	Ya asociado	Già associato
+E	Retirer le paiement employé ?	Remove the employee payment?	¿Quitar el pago de empleado?	Rimuovere il pagamento dipendente?
+E	Le paiement redeviendra « à transférer ».	The payment will be set back to "to transfer".	El pago volverá a «por transferir».	Il pagamento tornerà «da trasferire».
+E	Avec suivi	With follow-up	Con seguimiento	Con monitoraggio
+E	Sans suivi	Without follow-up	Sin seguimiento	Senza monitoraggio
+P	Total associé : {0} = montant de la ligne	Linked total: {0} = line amount	Total asociado: {0} = importe de la línea	Totale associato: {0} = importo della riga
+P	Total associé : {0} ≠ montant de la ligne ({1})	Linked total: {0} ≠ line amount ({1})	Total asociado: {0} ≠ importe de la línea ({1})	Totale associato: {0} ≠ importo della riga ({1})
+E	💼 Charges et paiements employé associés	💼 Linked expenses and employee payments	💼 Gastos y pagos de empleado asociados	💼 Spese e pagamenti dipendente associati
+E	Ajouter une charge ou un paiement employé	Add an expense or an employee payment	Añadir un gasto o un pago de empleado	Aggiungi una spesa o un pagamento dipendente
+P	Total associé : {0} ≈ montant de la ligne ({1}), écart de 2 $ ou moins	Linked total: {0} ≈ line amount ({1}), difference of $2 or less	Total asociado: {0} ≈ importe de la línea ({1}), diferencia de 2 $ o menos	Totale associato: {0} ≈ importo della riga ({1}), differenza di 2 $ o meno
+E	Paiement —	Payment —	Pago —	Pagamento —
+E	✓ Payée	✓ Paid	✓ Pagada	✓ Pagata
+E	◎ Non payée	◎ Unpaid	◎ No pagada	◎ Non pagata
+E	Non payée	Unpaid	No pagada	Non pagata
+E	Date du paiement	Payment date	Fecha del pago	Data del pagamento
+E	✓ Marquer payée	✓ Mark as paid	✓ Marcar como pagada	✓ Segna come pagata
+E	Le statut suit la transaction bancaire associée : retirez le lien pour le modifier.	The status follows the linked bank transaction: remove the link to change it.	El estado sigue la transacción bancaria asociada: quite el vínculo para modificarlo.	Lo stato segue la transazione bancaria associata: rimuovi il collegamento per modificarlo.
+E	🏦 Transaction bancaire	🏦 Bank transaction	🏦 Transacción bancaria	🏦 Transazione bancaria
+E	Associer à un dépôt du relevé	Link to a statement deposit	Asociar a un depósito del extracto	Associa a un deposito dell'estratto conto
+E	Description, n° de ligne ou montant…	Description, line no. or amount…	Descripción, n.º de línea o importe…	Descrizione, n. di riga o importo…
+E	Seuls les dépôts directs, les dépôts mobiles et les paiements internet sont proposés. La facture est marquée payée, à la date du dépôt.	Only direct deposits, mobile deposits and internet payments are offered. The invoice is marked paid on the deposit date.	Solo se proponen los depósitos directos, los depósitos móviles y los pagos por internet. La factura se marca como pagada en la fecha del depósito.	Vengono proposti solo i depositi diretti, i depositi mobili e i pagamenti internet. La fattura viene segnata pagata alla data del deposito.
+P	Déjà {0} facture(s) · reste	Already {0} invoice(s) · remaining	Ya {0} factura(s) · resta	Già {0} fattura/e · resta
+E	Aucun dépôt trouvé.	No deposit found.	No se encontró ningún depósito.	Nessun deposito trovato.
+E	Indiquez la date du paiement.	Enter the payment date.	Indique la fecha del pago.	Indica la data del pagamento.
+E	La date de paiement ne peut pas être dans le futur.	The payment date cannot be in the future.	La fecha de pago no puede estar en el futuro.	La data di pagamento non può essere nel futuro.
+E	Impossible de charger les transactions bancaires	Unable to load the bank transactions	No se pueden cargar las transacciones bancarias	Impossibile caricare le transazioni bancarie
+E	Le paiement n'a pas été enregistré	The payment was not saved	El pago no se guardó	Il pagamento non è stato salvato
+E	Le lien n'a pas été retiré	The link was not removed	El vínculo no se quitó	Il collegamento non è stato rimosso
+E	(date de la transaction associée)	(date of the linked transaction)	(fecha de la transacción asociada)	(data della transazione associata)
+E	Joindre d'autres factures du client	Attach other invoices of the client	Adjuntar otras facturas del cliente	Allega altre fatture del cliente
+E	Retirer cette facture	Remove this invoice	Quitar esta factura	Rimuovi questa fattura
+E	Modifier la sélection	Change the selection	Modificar la selección	Modifica la selezione
+E	Factures du client —	Client invoices —	Facturas del cliente —	Fatture del cliente —
+E	Aucune autre facture pour ce client.	No other invoice for this client.	No hay otras facturas para este cliente.	Nessun'altra fattura per questo cliente.
+E	Impossible de charger les factures du client	Unable to load the client's invoices	No se pueden cargar las facturas del cliente	Impossibile caricare le fatture del cliente
+P	Non payées ({0})	Unpaid ({0})	No pagadas ({0})	Non pagate ({0})
+P	Payées ({0})	Paid ({0})	Pagadas ({0})	Pagate ({0})
+P	Joindre ({0})	Attach ({0})	Adjuntar ({0})	Allega ({0})
+P	Vous pouvez joindre {0} autres factures au plus.	You can attach at most {0} other invoices.	Puede adjuntar como máximo {0} facturas más.	Puoi allegare al massimo {0} altre fatture.
+E	Cochez les factures à joindre au courriel : un PDF par facture, avec ses avoirs.	Check the invoices to attach to the email: one PDF per invoice, with its credit notes.	Marque las facturas que se adjuntarán al correo: un PDF por factura, con sus notas de crédito.	Seleziona le fatture da allegare all'email: un PDF per fattura, con le sue note di credito.
+P	+ {0} avoir(s)	+ {0} credit note(s)	+ {0} nota(s) de crédito	+ {0} nota/e di credito
+E	au	to	al	al
+E	Période des dépôts	Deposit period	Período de los depósitos	Periodo dei depositi

@@ -119,21 +119,23 @@ export class BankTxPanelComponent implements OnInit, AfterViewInit {
 
   async associate(c: BankMatchCandidate): Promise<void> {
     if (this.busy() || !this.canAdd() || c.linkedTo) return;
-    const prev = this.matched()[0];
-    if (c.targetType === 'charge' && prev
-        && !await this.confirm.ask({ title: 'Remplacer la charge associée ?', message: `${prev.label ?? ''} → ${c.label}`, confirmLabel: 'Remplacer' })) return;
     this._run(this.svc.addMatch(this.row.bankTransactionId, c), `L'association n'a pas été enregistrée`, () => this._search$.next(this.search().trim()));
   }
 
   async unlink(m: BankMatch): Promise<void> {
     if (this.busy()) return;
-    const what = m.targetType === 'bill' ? 'Retirer la facture ?' : 'Retirer la charge ?';
-    const msg = m.targetType === 'bill' && m.setBillPaid && m.isPaid ? 'La facture redeviendra non payée.' : undefined;
+    const what = m.targetType === 'bill' ? 'Retirer la facture ?' : m.targetType === 'employeePayment' ? 'Retirer le paiement employé ?' : 'Retirer la charge ?';
+    const msg = m.targetType === 'bill' && m.setBillPaid && m.isPaid ? 'La facture redeviendra non payée.'
+              : m.targetType === 'employeePayment' && m.setTransferred && m.isPaid ? 'Le paiement redeviendra « à transférer ».' : undefined;
     if (!await this.confirm.ask({ title: what, message: msg, confirmLabel: 'Retirer', danger: true })) return;
     this._run(this.svc.removeMatch(this.row.bankTransactionId, m.id), `L'association n'a pas été retirée`, () => this._search$.next(this.search().trim()));
   }
 
-  targetIcon(t: BankMatchTarget): string { return t === 'bill' ? '🧾' : '💼'; }
+  targetIcon(t: BankMatchTarget): string { return t === 'bill' ? '🧾' : t === 'employeePayment' ? '👷' : '💼'; }
+  /** Libellé d'un élément associé qui n'existe plus. */
+  deletedLabel(t: BankMatchTarget): string {
+    return t === 'bill' ? 'Facture supprimée' : t === 'employeePayment' ? 'Paiement employé supprimé' : 'Charge supprimée';
+  }
 
   // ── Note ──────────────────────────────────────────────────────────────────
   readonly maxNote = 1000;

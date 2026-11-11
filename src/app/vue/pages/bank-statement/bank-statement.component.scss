@@ -1,4 +1,4 @@
-.page-wrap { padding: 24px; max-width: 1150px; margin: 0 auto; }
+.page-wrap { padding: 24px; max-width: 1400px; margin: 0 auto; }   // même largeur que Gestion des factures
 .page-hdr { margin-bottom: 20px; }
 
 .card {
@@ -144,3 +144,6 @@ th[aria-sort="ascending"] .th-sort, th[aria-sort="descending"] .th-sort { color:
 }
 .badge { display: inline-flex; align-items: center; gap: 3px; max-width: 140px; overflow: hidden; text-overflow: ellipsis; }
 .follow-more { color: var(--muted); font-weight: 700; }
+// Total associé = montant de la ligne : vert ; différent : rouge
+.follow-btn.bal-ok  { border-color: var(--success); background: color-mix(in srgb, var(--success) 18%, var(--surface2)); color: var(--success-text); }
+.follow-btn.bal-off { border-color: var(--danger);  background: color-mix(in srgb, var(--danger) 18%, var(--surface2));  color: var(--danger-text); }
