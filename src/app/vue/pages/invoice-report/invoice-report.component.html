@@ -124,11 +124,14 @@
   <div class="alert alert-success" *ngIf="success()">{{ success() }}</div>
 
   <!-- ── Barre d'actions ──────────────────────────────────────────────── -->
-  <div class="action-bar" *ngIf="displayedBills().length > 0">
+  <div class="action-bar" *ngIf="baseBills().length > 0">
     <span class="selection-info">
-      {{ selectedIds().size }} / {{ displayedBills().length }} facture(s) sélectionnée(s)
+      {{ selectedList().length }} / {{ displayedBills().length }} facture(s) sélectionnée(s)
     </span>
 
+    <div class="action-btns">
+    <button type="button" class="btn-company-pick" (click)="openColPopup('view', $event)">Colonnes affichées ▾</button>
+    <button type="button" class="btn-company-pick" (click)="openColPopup('print', $event)">Colonnes à imprimer ▾</button>
     <div class="export-wrap">
       <button class="btn-export"
               [disabled]="!someSelected() || exporting()"
@@ -175,10 +178,89 @@
         </button>
       </div>
     </div>
+    </div>
+  </div>
+
+  <!-- ── Popup colonnes affichées / à imprimer ───────────────────────────── -->
+  <div class="popup-backdrop" *ngIf="colPopup() as mode" (click)="closeColPopup()">
+    <div class="company-popup col-popup" role="dialog" aria-modal="true" aria-labelledby="ir-col-title" (click)="$event.stopPropagation()">
+      <div class="popup-hdr">
+        <span class="popup-title" id="ir-col-title">{{ mode === 'view' ? 'Colonnes affichées' : 'Colonnes à imprimer' }}</span>
+        <button type="button" class="popup-close" (click)="closeColPopup()" aria-label="Fermer">✕</button>
+      </div>
+      <p class="col-popup-hint" *ngIf="mode === 'print'">Colonnes du PDF Récapitulatif.</p>
+      <div class="popup-list">
+        <ng-container *ngIf="mode === 'view'">
+          <label class="popup-item" *ngFor="let c of columns">
+            <input type="checkbox" [checked]="visibleCols().has(c.key)"
+                   [disabled]="visibleCols().has(c.key) && visibleCols().size === 1"
+                   (change)="toggleViewCol(c.key)" />
+            <span>{{ c.label }}</span>
+          </label>
+        </ng-container>
+        <ng-container *ngIf="mode === 'print'">
+          <label class="popup-item" *ngFor="let c of printColumnList">
+            <input type="checkbox" [checked]="printCols().has(c.key)"
+                   [disabled]="printCols().has(c.key) && printCols().size === 1"
+                   (change)="togglePrintCol(c.key)" />
+            <span>{{ c.label }}</span>
+          </label>
+        </ng-container>
+      </div>
+      <div class="popup-footer">
+        <button type="button" class="btn-popup-confirm" (click)="closeColPopup()">Confirmer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Popup valeurs à afficher d'une colonne ──────────────────────────── -->
+  <div class="popup-backdrop" *ngIf="valuePopup() as vkey" (click)="closeValuePopup()">
+    <div class="company-popup col-popup" role="dialog" aria-modal="true" aria-labelledby="ir-val-title" (click)="$event.stopPropagation()">
+      <div class="popup-hdr">
+        <span class="popup-title" id="ir-val-title">Valeurs à afficher : {{ valuePopupLabel() }}</span>
+        <button type="button" class="popup-close" (click)="closeValuePopup()" aria-label="Fermer">✕</button>
+      </div>
+      <div class="popup-toolbar">
+        <label class="check-all">
+          <input type="checkbox" [checked]="allValuesShown()" (change)="toggleAllValues()" />
+          <span>Tout sélectionner</span>
+        </label>
+        <input class="popup-search" type="search" [(ngModel)]="valueSearch"
+               aria-label="Rechercher une valeur" placeholder="Rechercher…" />
+      </div>
+      <div class="popup-list">
+        <label class="popup-item" *ngFor="let v of filteredValues">
+          <input type="checkbox" [checked]="isValueShown(vkey, v)" (change)="toggleValue(vkey, v)" />
+          <span>{{ v }}</span>
+        </label>
+        <p class="popup-empty" *ngIf="filteredValues.length === 0">Aucun résultat.</p>
+      </div>
+      <div class="popup-footer">
+        <button type="button" class="btn-popup-confirm" (click)="closeValuePopup()">Confirmer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Filtres de colonnes en vigueur ───────────────────────────────────── -->
+  <div class="active-filters" *ngIf="baseBills().length > 0 && (activeFilters().length || sortLabel())"
+       role="status" aria-live="polite">
+    <span class="active-filters-label">Filtres actifs :</span>
+    <div class="chips-row">
+      <span class="chip" *ngFor="let f of activeFilters()">
+        <strong>{{ f.label }}</strong> {{ f.detail }}
+        <button type="button" class="chip-rm" (click)="removeFilter(f)"
+                [attr.aria-label]="'Retirer le filtre : ' + f.label">✕</button>
+      </span>
+      <span class="chip chip-sort" *ngIf="sortLabel()">
+        Tri : {{ sortLabel() }}
+        <button type="button" class="chip-rm" (click)="clearSort()" aria-label="Retirer le tri">✕</button>
+      </span>
+    </div>
+    <button type="button" class="btn-clear-filters" *ngIf="activeFilters().length" (click)="clearColFilters()">Effacer les filtres</button>
   </div>
 
   <!-- ── Tableau ────────────────────────────────────────────────────────── -->
-  <div class="table-wrap" *ngIf="displayedBills().length > 0">
+  <div class="table-wrap" *ngIf="baseBills().length > 0">
     <table class="report-table">
       <thead>
         <tr>
@@ -188,13 +270,29 @@
                    [indeterminate]="someSelected() && !allSelected()"
                    (change)="toggleSelectAll()" />
           </th>
-          <th>N° Facture</th>
-          <th>Compagnie</th>
-          <th>Période</th>
-          <th class="col-num">Montant HT</th>
-          <th class="col-num">TPS</th>
-          <th class="col-num">TVQ</th>
-          <th class="col-num col-ttc">Total TTC</th>
+          <th *ngFor="let c of shownColumns()" [class.col-num]="c.num" [class.col-ttc]="c.key === 'ttc'"
+              [class.col-filtered]="isColFiltered(c.key)" [attr.aria-sort]="sortState(c.key)">
+            <button type="button" class="th-sort" (click)="toggleSort(c.key)"
+                    title="Trier (croissant / décroissant)">{{ c.label }}<span class="th-sort-ind" aria-hidden="true">{{
+                sortState(c.key) === 'ascending' ? '▲' : sortState(c.key) === 'descending' ? '▼' : '↕' }}</span></button>
+          </th>
+        </tr>
+        <!-- Filtres sous les en-têtes -->
+        <tr class="th-filters">
+          <th class="col-check">
+            <button type="button" class="th-filter-clear" *ngIf="hasColFilters()" (click)="clearColFilters()"
+                    title="Effacer les filtres des colonnes" aria-label="Effacer les filtres des colonnes">✕</button>
+          </th>
+          <th *ngFor="let c of shownColumns()">
+            <div class="th-filter-wrap">
+              <input type="search" class="th-filter" [class.num]="c.num" [class.active]="!!colFilters()[c.key]?.trim()" placeholder="Filtrer…"
+                     [value]="colFilters()[c.key] ?? ''" (input)="setColFilter(c.key, $any($event.target).value)"
+                     [attr.aria-label]="'Filtrer : ' + c.label" />
+              <button type="button" class="th-values" [class.active]="hasValueFilter(c.key)"
+                      (click)="openValuePopup(c.key, $event)"
+                      [attr.aria-label]="'Valeurs à afficher : ' + c.label" title="Valeurs à afficher">▾</button>
+            </div>
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -207,36 +305,45 @@
                    [checked]="isSelected(b.billIdentifier)"
                    (change)="toggleSelect(b.billIdentifier)" [attr.aria-label]="'Sélectionner la facture ' + b.billNumber" />
           </td>
-          <td>
-            <span class="bill-num">{{ b.billNumber }}</span>
-            <span class="tag-avoir" *ngIf="b.parentBillIdentifier !== null">AVOIR</span>
-          </td>
-          <td>{{ b.companyName }}</td>
-          <td>{{ b.period }}</td>
-          <td class="col-num">{{ b.totalBeforeTax | number:'1.2-2' }} $</td>
-          <td class="col-num">{{ b.tps | number:'1.2-2' }} $</td>
-          <td class="col-num">{{ b.tvq | number:'1.2-2' }} $</td>
-          <td class="col-num col-ttc">{{ b.totalWithTax | number:'1.2-2' }} $</td>
+          <ng-container *ngFor="let c of shownColumns()" [ngSwitch]="c.key">
+            <td *ngSwitchCase="'number'">
+              <span class="bill-num">{{ b.billNumber }}</span>
+              <span class="tag-avoir" *ngIf="b.parentBillIdentifier !== null">AVOIR</span>
+            </td>
+            <td *ngSwitchCase="'company'">{{ b.companyName }}</td>
+            <td *ngSwitchCase="'period'">{{ b.period }}</td>
+            <td *ngSwitchCase="'sentDate'">{{ sentLabel(b) }}</td>
+            <td *ngSwitchCase="'paidDate'">{{ paidLabel(b) }}</td>
+            <td *ngSwitchCase="'ht'" class="col-num">{{ b.totalBeforeTax | number:'1.2-2' }} $</td>
+            <td *ngSwitchCase="'tps'" class="col-num">{{ b.tps | number:'1.2-2' }} $</td>
+            <td *ngSwitchCase="'tvq'" class="col-num">{{ b.tvq | number:'1.2-2' }} $</td>
+            <td *ngSwitchCase="'ttc'" class="col-num col-ttc">{{ b.totalWithTax | number:'1.2-2' }} $</td>
+          </ng-container>
+        </tr>
+        <tr class="no-match" *ngIf="displayedBills().length === 0">
+          <td [attr.colspan]="shownColumns().length + 1">Aucune facture ne correspond aux filtres des colonnes.</td>
         </tr>
       </tbody>
 
       <!-- Ligne totaux sélection -->
       <tfoot *ngIf="someSelected()">
         <tr class="totals-row">
-          <td colspan="4">
-            Totaux — {{ selectedIds().size }} facture(s) sélectionnée(s)
+          <td [attr.colspan]="totalsLabelSpan()">
+            Totaux — {{ selectedList().length }} facture(s) sélectionnée(s)
           </td>
-          <td class="col-num">{{ totals().ht  | number:'1.2-2' }} $</td>
-          <td class="col-num">{{ totals().tps | number:'1.2-2' }} $</td>
-          <td class="col-num">{{ totals().tvq | number:'1.2-2' }} $</td>
-          <td class="col-num col-ttc">{{ totals().ttc | number:'1.2-2' }} $</td>
+          <ng-container *ngFor="let c of shownMoney()" [ngSwitch]="c.key">
+            <td *ngSwitchCase="'ht'"  class="col-num">{{ totals().ht  | number:'1.2-2' }} $</td>
+            <td *ngSwitchCase="'tps'" class="col-num">{{ totals().tps | number:'1.2-2' }} $</td>
+            <td *ngSwitchCase="'tvq'" class="col-num">{{ totals().tvq | number:'1.2-2' }} $</td>
+            <td *ngSwitchCase="'ttc'" class="col-num col-ttc">{{ totals().ttc | number:'1.2-2' }} $</td>
+          </ng-container>
         </tr>
       </tfoot>
     </table>
   </div>
 
   <!-- ── État vide ─────────────────────────────────────────────────────── -->
-  <div class="empty-state" *ngIf="!loading() && displayedBills().length === 0 && !error()">
+  <div class="empty-state" *ngIf="!loading() && baseBills().length === 0 && !error()">
     <span class="empty-icon" aria-hidden="true">📋</span>
     <p>Appliquez un filtre pour charger les factures.</p>
   </div>

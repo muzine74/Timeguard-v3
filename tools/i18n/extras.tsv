@@ -499,3 +499,23 @@ P	Accusé reçu le {0} — {1}	Receipt received on {0} — {1}	Confirmación rec
 P	Accusé reçu le {0}	Receipt received on {0}	Confirmación recibida el {0}	Conferma ricevuta il {0}
 E	Télécharger la facture	Download the invoice	Descargar la factura	Scarica la fattura
 E	Impossible de télécharger la facture	Unable to download the invoice	No se puede descargar la factura	Impossibile scaricare la fattura
+E	Colonnes affichées ▾	Displayed columns ▾	Columnas mostradas ▾	Colonne visualizzate ▾
+E	Colonnes à imprimer ▾	Columns to print ▾	Columnas para imprimir ▾	Colonne da stampare ▾
+E	Colonnes affichées	Displayed columns	Columnas mostradas	Colonne visualizzate
+E	Colonnes à imprimer	Columns to print	Columnas para imprimir	Colonne da stampare
+E	Colonnes du PDF Récapitulatif.	Columns of the Summary PDF.	Columnas del PDF resumen.	Colonne del PDF riepilogativo.
+E	Date de la facture	Invoice date	Fecha de la factura	Data della fattura
+E	Effacer les filtres des colonnes	Clear the column filters	Borrar los filtros de columnas	Cancella i filtri delle colonne
+E	Aucune facture ne correspond aux filtres des colonnes.	No invoice matches the column filters.	Ninguna factura coincide con los filtros de columnas.	Nessuna fattura corrisponde ai filtri delle colonne.
+P	Filtrer : {0}	Filter: {0}	Filtrar: {0}	Filtra: {0}
+E	Trier (croissant / décroissant)	Sort (ascending / descending)	Ordenar (ascendente / descendente)	Ordina (crescente / decrescente)
+E	Valeurs à afficher	Values to show	Valores a mostrar	Valori da mostrare
+P	Valeurs à afficher : {0}	Values to show: {0}	Valores a mostrar: {0}	Valori da mostrare: {0}
+E	Rechercher une valeur	Search for a value	Buscar un valor	Cerca un valore
+E	(vide)	(empty)	(vacío)	(vuoto)
+E	Filtres actifs :	Active filters:	Filtros activos:	Filtri attivi:
+E	Retirer le tri	Remove sorting	Quitar el orden	Rimuovi l'ordinamento
+P	Retirer le filtre : {0}	Remove filter: {0}	Quitar el filtro: {0}	Rimuovi il filtro: {0}
+P	sans {0}	without {0}	sin {0}	senza {0}
+P	{0} valeur(s) masquée(s)	{0} hidden value(s)	{0} valor(es) oculto(s)	{0} valore/i nascosto/i
+P	Tri : {0}	Sort: {0}	Orden: {0}	Ordinamento: {0}

@@ -271,11 +271,12 @@ export class InvoiceService {
   }
 
   // ── Exporter un rapport ───────────────────────────────────────────────
-  exportReport(billIds: number[], exportType: 'summary' | 'merged' | 'zip' | 'grouped' | 'merged-zip' | 'print', filterLabel = '') {
+  /** `columns` : PDF récapitulatif seulement — colonnes à imprimer (absent = colonnes habituelles). */
+  exportReport(billIds: number[], exportType: 'summary' | 'merged' | 'zip' | 'grouped' | 'merged-zip' | 'print', filterLabel = '', columns?: string[]) {
     this.log(`exportReport(${exportType}, ${billIds.length} facture(s))`);
     return this.http.post(
       '/api/bills/report/export',
-      { billIds, exportType, filterLabel: this.i18n.tText(filterLabel) },
+      { billIds, exportType, filterLabel: this.i18n.tText(filterLabel), ...(columns ? { columns } : {}) },
       { responseType: 'blob' as const },
     );
   }

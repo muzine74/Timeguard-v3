@@ -27,6 +27,8 @@ export interface ExportTable {
   title:   string;
   columns: ExportColumn[];
   rows:    ExportRow[];
+  /** Excel : lignes de données alternées sur deux couleurs (le PDF les alterne déjà). */
+  striped?: boolean;
 }
 
 export interface ExportDoc {
@@ -92,8 +94,10 @@ export class TableExportService {
         cell.alignment = { vertical: 'middle', horizontal: this._isNum(table.columns[i - 1]) ? 'right' : 'left', wrapText: true };
       });
 
+      let dataRow = 0;
       for (const r of table.rows) {
         const row = ws.addRow(r.cells.map(v => v ?? ''));
+        const stripe = !!table.striped && !r.kind && dataRow++ % 2 === 1;
         row.eachCell({ includeEmpty: true }, (cell, i) => {
           const col = table.columns[i - 1];
           if (!col) return;
@@ -104,6 +108,8 @@ export class TableExportService {
             horizontal: this._isNum(col) ? 'right' : 'left',
             indent: r.kind === 'detail' && i === 1 ? 2 : 0,
           };
+          // Bleu clair des styles de tableau Excel : bien visible à l'écran comme à l'impression
+          if (stripe) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDCE6F1' } };
           if (r.kind === 'group') {
             cell.font = { bold: true };
             cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF1F1EC' } };
