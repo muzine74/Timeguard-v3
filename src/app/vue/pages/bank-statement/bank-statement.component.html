@@ -114,11 +114,6 @@
                             (selectedChange)="setPicked('linkName', $event)" placeholder="Tous les liens" plural="liens"></app-multi-select>
         </div>
         <div class="field">
-          <span class="lbl" id="bank-f-val">Validée</span>
-          <app-multi-select aria-labelledby="bank-f-val" [options]="options().validated" [selected]="picked().validated"
-                            (selectedChange)="setPicked('validated', $event)" placeholder="Toutes" plural="états"></app-multi-select>
-        </div>
-        <div class="field">
           <span class="lbl" id="bank-f-follow">Suivi</span>
           <app-multi-select aria-labelledby="bank-f-follow" [options]="followOptions" [selected]="followed()"
                             (selectedChange)="setFollowed($event)" placeholder="Toutes" plural="états"></app-multi-select>
@@ -127,7 +122,6 @@
         <app-export-buttons [build]="exportRows" [disabled]="!filtered().length" label="les lignes du relevé filtrées"></app-export-buttons>
       </div>
 
-      <div class="msg msg-err" role="alert" *ngIf="validateError()">⚠ {{ validateError() }}</div>
       <div class="msg msg-err" role="alert" *ngIf="attachError()">⚠ {{ attachError() }}</div>
 
       <dl class="totals" *ngIf="l.rows.length">
@@ -136,7 +130,6 @@
         <div><dt>Total des dépôts</dt><dd class="pos">{{ fmt(totalDeposits()) }}</dd></div>
         <div><dt>Dépôts − retraits</dt><dd>{{ fmt(net()) }}</dd></div>
         <div><dt>Reliées</dt><dd>{{ linkedCount() }} / {{ filtered().length }}</dd></div>
-        <div><dt>Validées</dt><dd aria-live="polite">{{ validatedCount() }} / {{ filtered().length }}</dd></div>
       </dl>
 
       <div class="table-wrap" *ngIf="filtered().length" tabindex="0" role="region" aria-label="Lignes du relevé bancaire">
@@ -149,13 +142,13 @@
               <th scope="col" class="num" [attr.aria-sort]="sort.aria('withdrawal')"><button type="button" class="th-sort" (click)="toggleSort('withdrawal')">Retrait <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('withdrawal') }}</span></button></th>
               <th scope="col" class="num" [attr.aria-sort]="sort.aria('deposit')"><button type="button" class="th-sort" (click)="toggleSort('deposit')">Dépôt <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('deposit') }}</span></button></th>
               <th scope="col" [attr.aria-sort]="sort.aria('linkName')"><button type="button" class="th-sort" (click)="toggleSort('linkName')">Lié à <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('linkName') }}</span></button></th>
-              <th scope="col" class="ctr" [attr.aria-sort]="sort.aria('validated')"><button type="button" class="th-sort" (click)="toggleSort('validated')">Validée <span class="th-sort-ind" aria-hidden="true">{{ sort.icon('validated') }}</span></button></th>
+              <th scope="col">Factures</th>
               <th scope="col">Suivi</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let r of paged(); trackBy: trackRow" [attr.id]="'tx-' + r.bankTransactionId"
-                [class.row-validated]="r.validated" [class.row-hl]="highlight() === r.bankTransactionId" [class.row-cancel]="r.cancelledBy || r.cancels">
+                [class.row-hl]="highlight() === r.bankTransactionId" [class.row-cancel]="r.cancelledBy || r.cancels">
               <td class="nowrap">{{ r.date }}</td>
               <td class="desc-cell" [class.mobile-cell]="isMobile(r)" (click)="isMobile(r) && openPanel(r, $event)"
                   [title]="isMobile(r) ? 'Cliquez pour joindre ou gérer les documents' : ''">
@@ -180,11 +173,7 @@
                   <span aria-hidden="true">{{ linkIcon[t] }}</span><span class="sr-only">{{ linkLabel[t] }} : </span>{{ r.linkName }}
                 </span>
               </td>
-              <td class="ctr">
-                <input type="checkbox" class="chk" [checked]="r.validated" [disabled]="saving().has(r.bankTransactionId)"
-                       (change)="setValidated(r, $any($event.target).checked)" [title]="validatedTitle(r)"
-                       [attr.aria-label]="'Validée : ' + r.date + ' ' + r.description + ' ' + (fmt(r.withdrawal) || fmt(r.deposit))" />
-              </td>
+              <td class="nowrap"><span class="bill-line" *ngFor="let line of billNumberLines(r); trackBy: trackIndex"><ng-container *ngFor="let m of line; let last = last; trackBy: trackMatch"><button type="button" class="link-btn" *ngIf="m.billIdentifier != null; else noFile" (click)="downloadBill(m, $event)" title="Télécharger la facture"><span data-no-i18n>{{ m.label ?? '?' }}</span></button><ng-template #noFile><span data-no-i18n>{{ m.label ?? '?' }}</span></ng-template><span *ngIf="!last" data-no-i18n>, </span></ng-container></span></td>
               <td class="follow">
                 <button type="button" class="follow-btn" [attr.id]="'tx-open-' + r.bankTransactionId" (click)="openPanel(r, $event)" aria-haspopup="dialog"
                         [class.bal-ok]="matchBalance(r) === 'ok'" [class.bal-off]="matchBalance(r) === 'off'" [title]="matchBalanceTitle(r)"
@@ -206,7 +195,7 @@
               <td class="num neg">{{ fmt(totalWithdrawals()) }}</td>
               <td class="num pos">{{ fmt(totalDeposits()) }}</td>
               <td>{{ linkedCount() }} / {{ filtered().length }}</td>
-              <td class="ctr">{{ validatedCount() }} / {{ filtered().length }}</td>
+              <td></td>
               <td></td>
             </tr>
           </tfoot>

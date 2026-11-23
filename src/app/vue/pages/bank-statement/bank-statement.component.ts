@@ -2,8 +2,9 @@ import { Component, OnInit, signal, computed, ChangeDetectionStrategy, DestroyRe
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { BankTransactionsService, BankTransactionList, BankTransactionRow, BankTransactionRef, BankImportResult, isMobileDeposit, txRef } from '../../../state/bank/bank-transactions.service';
+import { BankTransactionsService, BankTransactionList, BankTransactionRow, BankTransactionRef, BankMatch, BankImportResult, isMobileDeposit, txRef } from '../../../state/bank/bank-transactions.service';
 import { AttachmentsService, AttachmentItem } from '../../../state/attachments/attachments.service';
+import { InvoiceService } from '../../../state/invoice/invoice.service';
 import { AuthService } from '../../../state/auth/auth.service';
 import { BankTxPanelComponent } from './bank-tx-panel/bank-tx-panel.component';
 import { downloadBlob } from '../../shared/download';
@@ -11,17 +12,15 @@ import { BankLexiconComponent, LINK_ICON, LINK_LABEL } from './bank-lexicon/bank
 import { TableSort, SortValue } from '../../shared/table-sort';
 import { MultiSelectComponent, MultiSelectOption } from '../../components/multi-select/multi-select.component';
 import { httpErrorMessage } from '../../shared/http-error';
-import { locale } from '../../../state/i18n/i18n.service';
 import { ExportButtonsComponent } from '../../components/export-buttons/export-buttons.component';
 import { SearchHintComponent } from '../../components/search-hint/search-hint.component';
 import { ExportDoc } from '../../../state/export/table-export.service';
 import { searchTerms, matchesAll, listExportDoc, kw } from '../../shared/multi-search';
 
-type Column = 'date' | 'description' | 'withdrawal' | 'deposit' | 'linkName' | 'validated';
-const COLUMNS: Column[] = ['date', 'description', 'withdrawal', 'deposit', 'linkName', 'validated'];
-const NO_PICK: Record<Column, string[]> = { date: [], description: [], withdrawal: [], deposit: [], linkName: [], validated: [] };
+type Column = 'date' | 'description' | 'withdrawal' | 'deposit' | 'linkName';
+const COLUMNS: Column[] = ['date', 'description', 'withdrawal', 'deposit', 'linkName'];
+const NO_PICK: Record<Column, string[]> = { date: [], description: [], withdrawal: [], deposit: [], linkName: [] };
 type Tab = 'statement' | 'lexicon';
-const VALIDATED_OPTIONS: MultiSelectOption[] = [{ id: 'true', label: 'Validée' }, { id: 'false', label: 'Non validée' }];
 const FOLLOW_OPTIONS: MultiSelectOption[] = [{ id: 'true', label: 'Avec suivi' }, { id: 'false', label: 'Sans suivi' }];
 const EMPTY = '__vide__';          // valeur « (vide) » d'un filtre de colonne
 const PAGE_SIZE = 50;
@@ -40,6 +39,7 @@ const MAX_SIZE = 5 * 1024 * 1024;
 export class BankStatementComponent implements OnInit {
   private svc        = inject(BankTransactionsService);
   private files      = inject(AttachmentsService);
+  private invoiceSvc = inject(InvoiceService);
   private auth       = inject(AuthService);
   private destroyRef = inject(DestroyRef);
 
@@ -106,7 +106,7 @@ export class BankStatementComponent implements OnInit {
       return ids.map(id => ({ id, label: id === EMPTY ? '(vide)' : num ? this.fmt(Number(id)) : id }));
     };
     return { date: build('date'), description: build('description'), withdrawal: build('withdrawal'), deposit: build('deposit'),
-             linkName: build('linkName').map(o => o.id === EMPTY ? { ...o, label: '(aucun lien)' } : o), validated: VALIDATED_OPTIONS };
+             linkName: build('linkName').map(o => o.id === EMPTY ? { ...o, label: '(aucun lien)' } : o) };
   });
 
   /** Critères « & » (ET) / « | » (OU) dans n'importe quelle colonne (ET) + valeurs cochées (OU dans une colonne, ET entre colonnes). */
@@ -120,7 +120,7 @@ export class BankStatementComponent implements OnInit {
       if (!terms.length) return true;
       // Montants : tels qu'affichés (« 1 943,08 $ »), sans espace (« 1943,08 ») et bruts (« 1943.08 »)
       const amounts = [r.withdrawal, r.deposit].flatMap(a => a == null ? [] : [this.fmt(a), this.fmt(a).replace(/\s/g, ''), String(a)]);
-      return matchesAll(terms, r.date, r.description, amounts, kw(r.validated ? 'validée' : 'non validée'),
+      return matchesAll(terms, r.date, r.description, amounts,
                         r.linkName ?? '', r.linkType ? LINK_LABEL[r.linkType] : '', txRef(r), r.note ?? '', this.matchLabels(r),
                         (r.matches ?? []).map(m => m.companyName ?? ''), r.cancelledBy || r.cancels ? kw('annulée') : '');
     });
@@ -131,10 +131,10 @@ export class BankStatementComponent implements OnInit {
     name: 'Releve_bancaire', title: 'Relevé bancaire', search: this.search(),
     extra: [this.dateFrom && `Du ${this.dateFrom}`, this.dateTo && `au ${this.dateTo}`].filter(Boolean).join(' '),
     columns: [{ header: 'Date', width: 12 }, { header: 'Description', width: 44 }, { header: 'Retrait', type: 'money' },
-              { header: 'Dépôt', type: 'money' }, { header: 'Lié à', width: 28 }, { header: 'Validée', width: 10 },
+              { header: 'Dépôt', type: 'money' }, { header: 'Lié à', width: 28 }, { header: 'Factures', width: 20 },
               { header: 'N°', width: 8 }, { header: 'Annulation', width: 14 }, { header: 'Rapprochement', width: 30 },
               { header: 'Note', width: 40 }, { header: 'Pièces jointes', width: 10 }],
-    rows: this.sorted().map(r => [r.date, r.description, r.withdrawal, r.deposit, r.linkName ?? '', r.validated ? 'Oui' : 'Non',
+    rows: this.sorted().map(r => [r.date, r.description, r.withdrawal, r.deposit, r.linkName ?? '', this.billNumbers(r),
                                   txRef(r), r.cancelledBy ? `Annulée par ${txRef(r.cancelledBy)}` : r.cancels ? `Annule ${txRef(r.cancels)}` : '',
                                   this.matchLabels(r), r.note ?? '', this.attCount(r) || '']),
     landscape: true,
@@ -155,41 +155,10 @@ export class BankStatementComponent implements OnInit {
   net              = computed(() => Math.round((this.totalDeposits() - this.totalWithdrawals()) * 100) / 100);
   hasFilters       = computed(() => !!this.search().trim() || this.followed().length > 0 || COLUMNS.some(c => this.picked()[c].length > 0));
 
-  validatedCount = computed(() => this.filtered().filter(r => r.validated).length);
   linkedCount    = computed(() => this.filtered().filter(r => r.linkType).length);
-
-  // ── Colonne « Validée » ───────────────────────────────────────────────────
-  saving        = signal<ReadonlySet<string>>(new Set());
-  validateError = signal('');
-
-  /** Coche / décoche « Validée » : affiché tout de suite, annulé si l'enregistrement échoue. */
-  setValidated(row: BankTransactionRow, validated: boolean): void {
-    if (this.saving().has(row.bankTransactionId)) return;
-    this.validateError.set('');
-    this._replace({ ...row, validated });
-    this._saving(row.bankTransactionId, true);
-    this.svc.setValidated(row.bankTransactionId, validated).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      // La réponse contient la ligne complète (pièces jointes, note, rapprochement)
-      next: saved => {
-        this._replace(saved);
-        this._saving(row.bankTransactionId, false);
-      },
-      error: err => {
-        this._replace(row);
-        this._saving(row.bankTransactionId, false);
-        this.validateError.set(httpErrorMessage(err, `La validation n'a pas été enregistrée`));
-      },
-    });
-  }
 
   private _replace(row: BankTransactionRow): void {
     this.list.update(l => l ? { ...l, rows: l.rows.map(r => r.bankTransactionId === row.bankTransactionId ? row : r) } : l);
-  }
-
-  private _saving(id: string, on: boolean): void {
-    const next = new Set(this.saving());
-    on ? next.add(id) : next.delete(id);
-    this.saving.set(next);
   }
 
   // ── Suivi d'une transaction (annulation, rapprochement, note, pièces jointes) ──
@@ -254,6 +223,31 @@ export class BankStatementComponent implements OnInit {
 
   /** Libellés des factures / de la charge ou du paiement employé associés (recherche, export). */
   matchLabels(r: BankTransactionRow): string { return (r.matches ?? []).map(m => m.label ?? '?').join(', '); }
+  /** Colonne « Factures » : numéros des factures associées par le suivi. */
+  billNumbers(r: BankTransactionRow): string {
+    return (r.matches ?? []).filter(m => m.targetType === 'bill').map(m => m.label ?? '?').join(', ');
+  }
+  /** Colonne « Factures » à l'écran : 3 factures au plus par ligne de la cellule. */
+  billNumberLines(r: BankTransactionRow): BankMatch[][] {
+    const bills = (r.matches ?? []).filter(m => m.targetType === 'bill');
+    const lines: BankMatch[][] = [];
+    for (let i = 0; i < bills.length; i += 3) lines.push(bills.slice(i, i + 3));
+    return lines;
+  }
+  /** Les groupes sont recréés à chaque vérification : sans suivi stable, Angular remplacerait les boutons
+   *  entre l'appui et le relâchement de la souris, et le clic serait perdu. */
+  trackIndex = (i: number) => i;
+  trackMatch = (_: number, m: BankMatch) => m.id;
+  /** Clic sur un numéro de la colonne « Factures » : télécharge le PDF de la facture. */
+  downloadBill(m: BankMatch, ev: Event): void {
+    ev.stopPropagation();
+    if (m.billIdentifier == null) return;
+    this.error.set('');
+    this.invoiceSvc.downloadFile(m.billIdentifier).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: blob => downloadBlob(blob, `${m.label ?? m.billIdentifier}.pdf`),
+      error: err => this.error.set(httpErrorMessage(err, `Impossible de télécharger la facture`)),
+    });
+  }
   /** Écart (en cents) entre le total des éléments associés et le montant de la ligne ; null = rien d'associé. */
   private _gapCents(r: BankTransactionRow): number | null {
     if (!r.matches?.length) return null;
@@ -299,12 +293,6 @@ export class BankStatementComponent implements OnInit {
   }
 
   trackRow(_: number, r: BankTransactionRow): string { return r.bankTransactionId; }
-
-  validatedTitle(r: BankTransactionRow): string {
-    if (!r.validated || !r.validatedAt) return '';
-    const d = new Date(r.validatedAt).toLocaleString(locale(), { dateStyle: 'medium', timeStyle: 'short' });
-    return `Validée le ${d}${r.validatedBy ? ' par ' + r.validatedBy : ''}`;
-  }
 
   private _sum(c: 'withdrawal' | 'deposit'): number {
     return Math.round(this.filtered().reduce((s, r) => s + (r[c] ?? 0), 0) * 100) / 100;
@@ -375,7 +363,6 @@ export class BankStatementComponent implements OnInit {
           withdrawal:  p.withdrawal.filter(id => opts.withdrawal.some(o => o.id === id)),
           deposit:     p.deposit.filter(id => opts.deposit.some(o => o.id === id)),
           linkName:    p.linkName.filter(id => opts.linkName.some(o => o.id === id)),
-          validated:   p.validated,
         }));
         this.page.set(1);
         // Lien d'annulation vers une ligne hors des dates : la montrer une fois chargée

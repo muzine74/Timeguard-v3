@@ -324,7 +324,7 @@
             <label class="pay-lbl" for="pay-bank-search">Associer à un dépôt du relevé</label>
             <input id="pay-bank-search" class="inp" type="search" autocomplete="off" placeholder="Description, n° de ligne ou montant…"
                    [ngModel]="bankSearch()" (ngModelChange)="setBankSearch($event)" />
-            <p class="pay-hint">Seuls les dépôts directs, les dépôts mobiles et les paiements internet sont proposés. La facture est marquée payée, à la date du dépôt.</p>
+            <p class="pay-hint">Seuls les dépôts du relevé sont proposés. La facture est marquée payée, à la date du dépôt.</p>
             <p class="pay-hint" role="status" *ngIf="bankLoading()">Recherche…</p>
             <ul class="pay-cands" *ngIf="!bankLoading()">
               <li *ngFor="let c of l.candidates" class="pay-cand">

@@ -437,7 +437,7 @@ P	Annulée par {0}	Reversed by {0}	Anulada por {0}	Annullata da {0}
 P	Annule {0}	Reverses {0}	Anula {0}	Annulla {0}
 E	Déjà associée	Already linked	Ya asociada	Già associata
 P	Associée à la transaction du {0} :	Linked to the transaction of {0}:	Asociada a la transacción del {0}:	Associata alla transazione del {0}:
-E	Seuls les dépôts directs, les dépôts mobiles et les paiements internet (factures) et les retraits (charge ou paiement employé) se rapprochent.	Only direct deposits, mobile deposits and internet payments (invoices) and withdrawals (expense or employee payment) can be reconciled.	Solo se concilian los depósitos directos, los depósitos móviles y los pagos por internet (facturas) y los retiros (gasto o pago de empleado).	Si riconciliano solo i depositi diretti, i depositi mobili e i pagamenti internet (fatture) e i prelievi (spesa o pagamento dipendente).
+E	Seuls les dépôts (factures) et les retraits (charge ou paiement employé) se rapprochent.	Only deposits (invoices) and withdrawals (expense or employee payment) can be reconciled.	Solo se concilian los depósitos (facturas) y los retiros (gasto o pago a empleado).	Si riconciliano solo i depositi (fatture) e i prelievi (spesa o pagamento dipendente).
 E	Paiement employé supprimé	Employee payment deleted	Pago de empleado eliminado	Pagamento dipendente eliminato
 P	Semaine du {0} au {1}	Week of {0} to {1}	Semana del {0} al {1}	Settimana dal {0} al {1}
 E	Transféré	Transferred	Transferido	Trasferito
@@ -465,7 +465,7 @@ E	Le statut suit la transaction bancaire associée : retirez le lien pour le mod
 E	🏦 Transaction bancaire	🏦 Bank transaction	🏦 Transacción bancaria	🏦 Transazione bancaria
 E	Associer à un dépôt du relevé	Link to a statement deposit	Asociar a un depósito del extracto	Associa a un deposito dell'estratto conto
 E	Description, n° de ligne ou montant…	Description, line no. or amount…	Descripción, n.º de línea o importe…	Descrizione, n. di riga o importo…
-E	Seuls les dépôts directs, les dépôts mobiles et les paiements internet sont proposés. La facture est marquée payée, à la date du dépôt.	Only direct deposits, mobile deposits and internet payments are offered. The invoice is marked paid on the deposit date.	Solo se proponen los depósitos directos, los depósitos móviles y los pagos por internet. La factura se marca como pagada en la fecha del depósito.	Vengono proposti solo i depositi diretti, i depositi mobili e i pagamenti internet. La fattura viene segnata pagata alla data del deposito.
+E	Seuls les dépôts du relevé sont proposés. La facture est marquée payée, à la date du dépôt.	Only statement deposits are offered. The invoice is marked paid on the deposit date.	Solo se proponen los depósitos del extracto. La factura se marca como pagada en la fecha del depósito.	Vengono proposti solo i depositi dell'estratto conto. La fattura viene segnata come pagata alla data del deposito.
 P	Déjà {0} facture(s) · reste	Already {0} invoice(s) · remaining	Ya {0} factura(s) · resta	Già {0} fattura/e · resta
 E	Aucun dépôt trouvé.	No deposit found.	No se encontró ningún depósito.	Nessun deposito trovato.
 E	Indiquez la date du paiement.	Enter the payment date.	Indique la fecha del pago.	Indica la data del pagamento.
@@ -497,3 +497,5 @@ E	Supprimé sans être lu	Deleted without being read	Eliminado sin leer	Eliminat
 E	Accusé de lecture demandé	Read receipt requested	Confirmación de lectura solicitada	Conferma di lettura richiesta
 P	Accusé reçu le {0} — {1}	Receipt received on {0} — {1}	Confirmación recibida el {0} — {1}	Conferma ricevuta il {0} — {1}
 P	Accusé reçu le {0}	Receipt received on {0}	Confirmación recibida el {0}	Conferma ricevuta il {0}
+E	Télécharger la facture	Download the invoice	Descargar la factura	Scarica la fattura
+E	Impossible de télécharger la facture	Unable to download the invoice	No se puede descargar la factura	Impossibile scaricare la fattura

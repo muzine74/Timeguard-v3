@@ -52,6 +52,7 @@ input[type="date"].inp { color-scheme: var(--color-scheme); }
   td { padding: 8px 12px; border-top: 1px solid var(--border); color: var(--text); }
   .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
   .nowrap { white-space: nowrap; }
+  .bill-line { display: block; }
   tbody tr:hover { background: var(--hover, rgba(var(--overlay-rgb), .03)); }
   tfoot th, tfoot td { border-top: 2px solid var(--border); font-weight: 700; font-size: 13px; color: var(--text); background: var(--bg); padding: 9px 12px; }
 }

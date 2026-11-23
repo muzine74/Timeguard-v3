@@ -48,7 +48,7 @@
 
         <p class="hint" *ngIf="!r().matchKind">
           <ng-container *ngIf="r().cancels">Une transaction d'annulation ne se rapproche pas.</ng-container>
-          <ng-container *ngIf="!r().cancels">Seuls les dépôts directs, les dépôts mobiles et les paiements internet (factures) et les retraits (charge ou paiement employé) se rapprochent.</ng-container>
+          <ng-container *ngIf="!r().cancels">Seuls les dépôts (factures) et les retraits (charge ou paiement employé) se rapprochent.</ng-container>
         </p>
 
         <ng-container *ngIf="r().matchKind">
