@@ -73,7 +73,8 @@ export class BankStatementComponent implements OnInit {
   result      = signal<BankImportResult | null>(null);
 
   // ── Liste ─────────────────────────────────────────────────────────────────
-  dateFrom = '';
+  /** Par défaut, les lignes à partir du 1er mai 2026 (« Tout afficher » retire le filtre). */
+  dateFrom = '2026-05-01';
   dateTo   = '';
   loading  = signal(false);
   error    = signal('');
