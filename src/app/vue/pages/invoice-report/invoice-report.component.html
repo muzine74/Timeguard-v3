@@ -15,6 +15,14 @@
               (click)="setFilterMode('date')">
         Par date de création
       </button>
+      <button class="toggle-btn" [class.active]="filterMode() === 'paid'"
+              (click)="setFilterMode('paid')">
+        Par date de paiement
+      </button>
+      <button class="toggle-btn" [class.active]="filterMode() === 'sent'"
+              (click)="setFilterMode('sent')">
+        Par date d'envoi
+      </button>
       <button class="toggle-btn" [class.active]="filterMode() === 'period'"
               (click)="setFilterMode('period')">
         Par période
@@ -22,7 +30,7 @@
     </div>
 
     <!-- ── Filtre par date ──────────────────────────────────────────── -->
-    <div class="filter-row" *ngIf="filterMode() === 'date'">
+    <div class="filter-row" *ngIf="filterMode() !== 'period'">
       <div class="field-group">
         <label for="invoice-report-du">Du</label>
         <input id="invoice-report-du" type="date" [(ngModel)]="dateFrom" />
@@ -56,57 +64,6 @@
       <p class="filter-hint" *ngIf="!periods().length">
         Ajoutez une ou plusieurs périodes.
       </p>
-    </div>
-
-    <!-- ── Filtre par compagnies ────────────────────────────────────── -->
-    <div class="filter-section" *ngIf="availableCompanies().length > 0">
-      <div class="company-filter-hdr">
-        <span class="section-label">Compagnies</span>
-        <button class="btn-company-pick" (click)="openCompanyPopup($event)">
-          <span *ngIf="selectedCompanies().size === 0">Toutes — Modifier ▾</span>
-          <span *ngIf="selectedCompanies().size > 0">{{ selectedCompanies().size }} sélectionnée(s) — Modifier ▾</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- ── Popup sélection compagnies ──────────────────────────────────── -->
-    <div class="popup-backdrop" *ngIf="companyPopupOpen()" (click)="closeCompanyPopup()">
-      <div class="company-popup" (click)="$event.stopPropagation()">
-
-        <div class="popup-hdr">
-          <span class="popup-title">Sélectionner des compagnies</span>
-          <button class="popup-close" (click)="closeCompanyPopup()">✕</button>
-        </div>
-
-        <div class="popup-toolbar">
-          <label class="check-all">
-            <input type="checkbox"
-                   [checked]="allCompaniesSelected()"
-                   [indeterminate]="someCompaniesSelected()"
-                   (change)="toggleAllCompanies()" />
-            <span>Tout sélectionner</span>
-          </label>
-          <input class="popup-search" type="search"
-                 [(ngModel)]="companySearch" aria-label="Rechercher une compagnie" aria-describedby="ir-search-hint"
-                 placeholder="Rechercher…" />
-        </div>
-        <div class="popup-hint"><app-search-hint hintId="ir-search-hint" /></div>
-
-        <div class="popup-list">
-          <label class="popup-item" *ngFor="let name of filteredCompanies">
-            <input type="checkbox"
-                   [checked]="isCompanySelected(name)"
-                   (change)="toggleCompany(name)" />
-            <span>{{ name }}</span>
-          </label>
-          <p class="popup-empty" *ngIf="filteredCompanies.length === 0">Aucun résultat.</p>
-        </div>
-
-        <div class="popup-footer">
-          <button class="btn-popup-confirm" (click)="closeCompanyPopup()">Confirmer</button>
-        </div>
-
-      </div>
     </div>
 
     <!-- ── Bouton Appliquer ─────────────────────────────────────────── -->

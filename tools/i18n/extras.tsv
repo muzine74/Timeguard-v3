@@ -519,3 +519,8 @@ P	Retirer le filtre : {0}	Remove filter: {0}	Quitar el filtro: {0}	Rimuovi il fi
 P	sans {0}	without {0}	sin {0}	senza {0}
 P	{0} valeur(s) masquée(s)	{0} hidden value(s)	{0} valor(es) oculto(s)	{0} valore/i nascosto/i
 P	Tri : {0}	Sort: {0}	Orden: {0}	Ordinamento: {0}
+E	Par date de paiement	By payment date	Por fecha de pago	Per data di pagamento
+E	Par date d'envoi	By sent date	Por fecha de envío	Per data di invio
+P	Créées du {0} au {1}	Created from {0} to {1}	Creadas del {0} al {1}	Create dal {0} al {1}
+P	Payées du {0} au {1}	Paid from {0} to {1}	Pagadas del {0} al {1}	Pagate dal {0} al {1}
+P	Envoyées du {0} au {1}	Sent from {0} to {1}	Enviadas del {0} al {1}	Inviate dal {0} al {1}

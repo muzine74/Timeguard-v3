@@ -9,9 +9,9 @@ import { ExportDoc, TableExportService } from '../../../state/export/table-expor
 
 import { downloadBlob } from '../../shared/download';
 import { httpErrorMessage } from '../../shared/http-error';
-import { SearchHintComponent } from '../../components/search-hint/search-hint.component';
 import { multiMatch, kw } from '../../shared/multi-search';
-type FilterMode = 'date' | 'period';
+/** Date filtrée (création, paiement, envoi) ou périodes. */
+type FilterMode = 'date' | 'paid' | 'sent' | 'period';
 type ExportType = 'summary' | 'merged' | 'zip' | 'excel' | 'csv';
 
 /** Colonnes du tableau à l'écran. */
@@ -70,7 +70,7 @@ function writeKeys(store: string, keys: Set<string>): void {
 @Component({
     selector: 'app-invoice-report',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule, SearchHintComponent],
+    imports: [CommonModule, FormsModule],
     templateUrl: './invoice-report.component.html',
     styleUrls: ['./invoice-report.component.scss']
 })
@@ -84,32 +84,19 @@ export class InvoiceReportComponent {
   periodInput = '';
   periods     = signal<string[]>([]);
 
-  selectedCompanies = signal<Set<string>>(new Set());
-  companySearch     = '';
-  companyPopupOpen  = signal(false);
-
   // ── Données — signal LOCAL, n'affecte pas les autres pages ───────────
   private _allBills = signal<BillSummary[]>([]);
   loading = signal(false);
   error   = signal('');
   success = signal('');
 
-  // Compagnies disponibles dans les factures chargées
-  availableCompanies = computed(() => {
-    const names = new Set(this._allBills().map(b => b.companyName).filter(Boolean));
-    return [...names].sort();
-  });
-
-  // Factures filtrées côté client (périodes + compagnies)
+  // Factures filtrées côté client (périodes) ; les compagnies se filtrent dans la colonne Compagnie
   baseBills = computed(() => {
     let bills = this._allBills();
 
     const periods = this.periods();
     if (periods.length > 0)
       bills = bills.filter(b => periods.includes(b.period));
-
-    const sel = this.selectedCompanies();
-    bills = bills.filter(b => sel.has(b.companyName));
 
     return bills;
   });
@@ -156,17 +143,6 @@ export class InvoiceReportComponent {
     const dir = this.sortDir() === 'asc' ? 1 : -1;
     return [...bills].sort((a, b) => dir * this._compare(a, b, key));
   });
-
-  // ── Compagnies popup ──────────────────────────────────────────────────
-  allCompaniesSelected = computed(() => {
-    const list = this.availableCompanies();
-    const sel  = this.selectedCompanies();
-    return list.length > 0 && list.every(n => sel.has(n));
-  });
-
-  someCompaniesSelected = computed(() =>
-    this.selectedCompanies().size > 0 && !this.allCompaniesSelected()
-  );
 
   // ── Sélection de factures ─────────────────────────────────────────────
   selectedIds = signal(new Set<number>());
@@ -233,21 +209,20 @@ export class InvoiceReportComponent {
     this.error.set('');
     this.success.set('');
     this.selectedIds.set(new Set());
-    this.selectedCompanies.set(new Set());
     this._allBills.set([]);
     this.loading.set(true);
 
-    // Appel API : uniquement le filtre de dates (les périodes sont filtrées côté client)
-    const dateFrom = mode === 'date' && this.dateFrom
-      ? new Date(this.dateFrom).toISOString() : undefined;
-    const dateTo   = mode === 'date' && this.dateTo
-      ? new Date(this.dateTo).toISOString()   : undefined;
+    // Appel API : uniquement le filtre de dates (les périodes sont filtrées côté client).
+    // « Au » inclut toute la journée (les dates d'envoi et de paiement ont une heure).
+    const byDate   = mode !== 'period';
+    const dateFrom = byDate && this.dateFrom ? new Date(this.dateFrom).toISOString() : undefined;
+    const dateTo   = byDate && this.dateTo
+      ? new Date(new Date(this.dateTo).getTime() + 86_400_000 - 1).toISOString() : undefined;
+    const field    = mode === 'paid' ? 'paid' : mode === 'sent' ? 'sent' : 'created';
 
-    this.invoiceSvc.fetchReport(dateFrom, dateTo).subscribe({
+    this.invoiceSvc.fetchReport(dateFrom, dateTo, field).subscribe({
       next: list => {
         this._allBills.set(list);
-        const allNames = new Set<string>(list.map((b: BillSummary) => b.companyName).filter(Boolean));
-        this.selectedCompanies.set(allNames);
         this.loading.set(false);
       },
       error: e => {
@@ -257,40 +232,6 @@ export class InvoiceReportComponent {
     });
   }
 
-  // ── Actions compagnies ────────────────────────────────────────────────
-
-  toggleCompany(name: string): void {
-    this.selectedCompanies.update(s => {
-      const next = new Set(s);
-      if (next.has(name)) next.delete(name); else next.add(name);
-      return next;
-    });
-  }
-
-  isCompanySelected(name: string): boolean {
-    return this.selectedCompanies().has(name);
-  }
-
-  toggleAllCompanies(): void {
-    if (this.allCompaniesSelected())
-      this.selectedCompanies.set(new Set());
-    else
-      this.selectedCompanies.set(new Set(this.availableCompanies()));
-  }
-
-  openCompanyPopup(e: MouseEvent): void {
-    e.stopPropagation();
-    this.companySearch = '';
-    this.companyPopupOpen.set(true);
-  }
-
-  closeCompanyPopup(): void { this.companyPopupOpen.set(false); }
-
-  get filteredCompanies(): string[] {
-    // Critères « & » (ET) / « | » (OU) : nom, « sélectionnée » / « non sélectionnée »
-    return this.availableCompanies().filter(n =>
-      multiMatch(this.companySearch, n, kw(this.isCompanySelected(n) ? 'sélectionnée' : 'non sélectionnée')));
-  }
 
   // ── Actions tableau ───────────────────────────────────────────────────
 
@@ -617,12 +558,13 @@ export class InvoiceReportComponent {
 
   private _buildFilterLabel(): string {
     const parts: string[] = [];
-    if (this.filterMode() === 'period' && this.periods().length)
+    const mode = this.filterMode();
+    if (mode === 'period' && this.periods().length)
       parts.push(`Périodes : ${this.periods().join(', ')}`);
-    else if (this.dateFrom || this.dateTo)
-      parts.push(`Du ${this.dateFrom || '…'} au ${this.dateTo || '…'}`);
-    if (this.selectedCompanies().size)
-      parts.push(`Compagnies : ${[...this.selectedCompanies()].join(', ')}`);
+    else if (mode !== 'period' && (this.dateFrom || this.dateTo)) {
+      const range = `du ${this.dateFrom || '…'} au ${this.dateTo || '…'}`;
+      parts.push(mode === 'paid' ? `Payées ${range}` : mode === 'sent' ? `Envoyées ${range}` : `Créées ${range}`);
+    }
     return parts.join(' | ');
   }
 

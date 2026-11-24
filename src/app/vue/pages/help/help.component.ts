@@ -61,7 +61,6 @@ export class HelpComponent {
       { label: 'Nouvelle facture',            link: '/invoices/new',             perms: [PERM.invoicesEdit] },
       { label: 'Gérer les factures',          link: '/invoices',                 perms: [PERM.invoicesView] },
       { label: 'Envoyer les factures',        link: '/invoices/send',            perms: [PERM.invoicesSend] },
-      { label: 'Téléchargement des factures', link: '/invoices/download',        perms: [PERM.invoicesView] },
       { label: 'Rapports',                    link: '/invoices/report',          perms: [PERM.invoicesView] },
       { label: 'Calcul',                      link: '/prix',                     perms: [PERM.invoicesView] },
       { label: 'Charges',                     link: '/charges',                  perms: [PERM.invoicesView] },

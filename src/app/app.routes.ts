@@ -193,13 +193,8 @@ export const routes: Routes = [
       import('./vue/pages/invoice-report/invoice-report.component')
         .then(m => m.InvoiceReportComponent)
   },
-  {
-    path: 'invoices/download',
-    canActivate: [permGuard(PERM.invoicesView)],
-    loadComponent: () =>
-      import('./vue/pages/invoice-download/invoice-download.component')
-        .then(m => m.InvoiceDownloadComponent)
-  },
+  // Ancienne page « Téléchargement des factures » : remplacée par le Rapport de factures
+  { path: 'invoices/download', redirectTo: 'invoices/report', pathMatch: 'full' },
   // Deux sous-pages : Calcul de prix (/prix) et Calculateur de taxes (/prix/taxes)
   {
     path: 'prix',

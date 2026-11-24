@@ -177,10 +177,12 @@ export class InvoiceService {
   }
 
   // ── Rapport (signal local, ne touche pas à _list) ────────────────────────
-  fetchReport(dateFrom?: string, dateTo?: string) {
+  /** dateField : date filtrée par dateFrom/dateTo (création par défaut, paiement ou envoi). */
+  fetchReport(dateFrom?: string, dateTo?: string, dateField: 'created' | 'paid' | 'sent' = 'created') {
     let params = new HttpParams();
     if (dateFrom) params = params.set('dateFrom', dateFrom);
     if (dateTo)   params = params.set('dateTo',   dateTo);
+    if (dateField !== 'created') params = params.set('dateField', dateField);
     return this.http.get<BillSummary[]>('/api/bills', { params });
   }
 
@@ -281,11 +283,6 @@ export class InvoiceService {
     );
   }
 
-  // ── Téléchargement des factures (recherche par date d'envoi/paiement + statut) ──
-  searchDownloadable(filter: { dateFrom?: string; dateTo?: string; dateField: 'sent' | 'paid'; status: 'all' | 'paid' | 'unpaid' }) {
-    this.log('searchDownloadable', filter);
-    return this.http.post<BillSummary[]>('/api/bills/download/search', filter);
-  }
 
   // ── Supprimer un avoir ─────────────────────────────────────────────────
   deleteAvoir(id: number) {
